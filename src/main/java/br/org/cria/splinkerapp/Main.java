@@ -10,15 +10,13 @@ import java.io.IOException;
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        stage.setTitle("Hello!");
-        stage.setScene(Router.routes.get("login"));
+        stage.setTitle("SpLinker");
+        stage.setScene(Router.getInstance().routes.get("login"));
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
             @Override
             public void handle(WindowEvent event) {
-                Stage _stage = new Stage();
-                _stage.setScene(Router.routes.get("proxy-config"));
-                _stage.show();
+             
             }
             
         });
