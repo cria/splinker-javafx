@@ -14,11 +14,17 @@ import javafx.scene.Scene;
         if(instance == null)
         {
             instance = new Router();
-        }
+        } 
         return instance;
     }
 
-    Scene loadScene(String routeName) {
+    Scene loadScene(String routeName){
+        return loadScene(routeName, 0, 0);
+    }
+    Scene loadScene(String routeName, int width, int height) {
+        width = width < 1? 320: width;
+        height = height <1? 240: height;
+
         Scene scene = null;
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource(routeName));
