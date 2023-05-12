@@ -2,13 +2,13 @@ package br.org.cria.splinkerapp;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 
-public class LoginController {
+public class LoginController extends AbstractController{
     @FXML
     AnchorPane pane;
     @FXML 
@@ -17,16 +17,25 @@ public class LoginController {
     PasswordField password;
     @FXML
     Button loginButton;
+
+    @FXML
+    Hyperlink lnkForgotPassword;
+    @FXML
+    Hyperlink lnkTokenLogin;
+
+    @FXML
+    void onForgotPasswordLoginClicked(){
+
+    }
+
+    @FXML
+    void onTokenLoginClicked(){
+        Router.getInstance().navigateTo(getStage(), "token-login");
+    }
     @FXML
     void doLogin(MouseEvent event){
         try {
-            Stage newStage = new Stage();
-            newStage.setScene(Router.getInstance().routes.get("proxy-config"));
-            newStage.setHeight(500);
-            newStage.setWidth(500);
-            newStage.show();
-            var oldStage = (Stage) pane.getScene().getWindow();
-            oldStage.close();
+            Router.getInstance().navigateTo(getStage(), "proxy-config", 400, 300);
         } catch (Exception e) {
             System.out.println(e.toString());
             System.exit(1);

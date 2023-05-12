@@ -1,16 +1,18 @@
 package br.org.cria.splinkerapp;
 
+import java.io.IOException;
 import java.util.Map;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.stage.Stage;
 
- final class Router {
+ public final class Router {
     private static Router instance;
 
     private Router(){};
 
-    static Router getInstance(){
+    public static Router getInstance(){
         if(instance == null)
         {
             instance = new Router();
@@ -18,24 +20,38 @@ import javafx.scene.Scene;
         return instance;
     }
 
-    Scene loadScene(String routeName){
-        return loadScene(routeName, 0, 0);
+    public void navigateTo(Stage stage, String routeName) {
+        navigateTo(stage, routeName, 0, 0);
     }
-    Scene loadScene(String routeName, int width, int height) {
-        width = width < 1? 320: width;
-        height = height <1? 240: height;
 
-        Scene scene = null;
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource(routeName));
-            scene = new Scene(fxmlLoader.load(), 320, 240);
+    public void navigateTo(Stage stage, String routeName, int width, int height) {
+        try 
+        {
+            var scene  = loadScene(routeName, width, height);
+            stage.setScene(scene);
+            stage.setWidth(width);
+            stage.setHeight(height);
+            stage.show();
         } catch (Exception e) {
-            System.exit(1);
+            System.out.println("ERROR\n");
+            System.out.println(e.toString());
+            System.out.println("\n END ERROR\n");
         }
+        
 
-        return scene;
     }
 
-    Map<String, Scene> routes = Map.of("login", loadScene("login.fxml"),
-            "proxy-config", loadScene("proxy-config.fxml"));
+    private Scene loadScene(String routeName, int width, int height) throws IOException {
+        width = width < 1 ? 320 : width;
+        height = height < 1 ? 240 : height;
+        String route = "%s.fxml".formatted(routeName);
+        FXMLLoader fxmlLoader = new FXMLLoader(Router.class.getResource(route));
+        return new Scene(fxmlLoader.load(), width, height);
+
+        
+    }
+
+//  Map<String, Scene> routes = Map.of("login", loadScene("login.fxml"),
+//                                     "proxy-config", loadScene("proxy-config.fxml"), 
+//                                     "token-login", loadScene("token-login.fxml"));
 }
