@@ -1,23 +1,16 @@
-package br.org.cria.splinkerapp;
+package br.org.cria.splinkerapp.controllers;
 
-import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public abstract class AbstractController {
     
-    @FXML
-    Pane pane;
-
-    protected AbstractController(){
-        if(this.pane == null){
-            this.pane = new Pane();
-        }
-    }
+    protected abstract Pane getPane();
     protected Stage getStage(){
         
         try {
-            return (Stage) this.pane.getScene().getWindow();    
+            var scene = getPane().getScene();
+            return (Stage)scene.getWindow();    
         } catch (Exception e) {
             System.out.println("ERROR!\n");
             System.out.println(e.toString());
