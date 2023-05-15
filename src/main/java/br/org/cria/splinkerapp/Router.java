@@ -27,6 +27,8 @@ import javafx.stage.Stage;
     public void navigateTo(Stage stage, String routeName, int width, int height) {
         try 
         {
+            width = width < 1 ? 320 : width;
+            height = height < 1 ? 240 : height;
             var scene  = loadScene(routeName, width, height);
             stage.setScene(scene);
             stage.setWidth(width);
