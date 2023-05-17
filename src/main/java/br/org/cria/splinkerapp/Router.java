@@ -1,8 +1,6 @@
 package br.org.cria.splinkerapp;
 
 import java.io.IOException;
-import java.util.Map;
-
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -53,7 +51,4 @@ import javafx.stage.Stage;
         
     }
 
-//  Map<String, Scene> routes = Map.of("login", loadScene("login.fxml"),
-//                                     "proxy-config", loadScene("proxy-config.fxml"), 
-//                                     "token-login", loadScene("token-login.fxml"));
 }
