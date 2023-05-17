@@ -12,7 +12,10 @@ public class ProxyConfigService extends BaseService implements IProxyConfigServi
         ProxyConfiguration proxyConfig = null;
         try {
             var conn = getConnection();
-            String sql = "SELECT username, password, port, address from ProxyConfiguration LIMIT 1;";
+            String sql = """
+                        SELECT username, password, port, address 
+                        FROM ProxyConfiguration LIMIT 1;
+                        """;
             var ps = conn.prepareStatement(sql);
 
             //Executa o comando de consulta aonde guarda os dados retornados dentro do ResultSet.
@@ -33,10 +36,7 @@ public class ProxyConfigService extends BaseService implements IProxyConfigServi
         } catch (Exception e) {
             System.out.println(e.toString());
         }
-        finally{
             return proxyConfig;
-        }
-            
      
         
     }
