@@ -6,10 +6,10 @@ import br.org.cria.splinkerapp.models.ProxyConfiguration;
 import br.org.cria.splinkerapp.services.interfaces.IProxyConfigService;
 
 public class ProxyConfigService extends BaseService implements IProxyConfigService {
-
+    
     @Override
     public ProxyConfiguration getConfiguration() {
-        ProxyConfiguration proxyConfig = null;
+        ProxyConfiguration proxyConfig = null;    
         try {
             var conn = getConnection();
             String sql = """
@@ -43,8 +43,25 @@ public class ProxyConfigService extends BaseService implements IProxyConfigServi
 
     @Override
     public boolean saveProxyConfig(ProxyConfiguration proxyConfig) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'saveProxyConfig'");
+        var result = false;
+     try 
+     {
+        String sql = """
+            INSERT INTO ProxyConfiguration (address, password, port,username)
+            VALUES ('%s', '%s', '%s', '%s');""".formatted(
+            proxyConfig.getAddress(),proxyConfig.getPassword(),
+            proxyConfig.getPort(), proxyConfig.getUsername());
+            var conn = getConnection();
+            var statement = conn.createStatement();
+            var affectedRows = statement.executeUpdate(sql);
+            result = affectedRows > 0;
+            System.out.println(result);   
+     } 
+     catch (Exception e) 
+     {
+        e.printStackTrace();
+     }
+    return result;
     }
     
 }
