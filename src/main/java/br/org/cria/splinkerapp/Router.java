@@ -32,13 +32,13 @@ import javafx.stage.Stage;
             stage.setWidth(width);
             stage.setHeight(height);
             stage.show();
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             System.out.println("ERROR\n");
             System.out.println(e.toString());
             System.out.println("\n END ERROR\n");
         }
-        
-
     }
 
     private Scene loadScene(String routeName, int width, int height) throws IOException {
