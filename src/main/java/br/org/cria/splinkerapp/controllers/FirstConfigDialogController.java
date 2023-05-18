@@ -5,7 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 
-public class SpLinkerFirstConfigDialogController extends AbstractController{
+public class FirstConfigDialogController extends AbstractController{
     @FXML
     AnchorPane pane;
 
@@ -17,8 +17,11 @@ public class SpLinkerFirstConfigDialogController extends AbstractController{
 
     @FXML
     void onYesButtonClicked(){
-        var stage = super.getStage();
-        Router.getInstance().navigateTo(stage,"proxy-config",500,500);
+        var routeName = "proxy-config";
+        var width = 440;
+        var height = 400;
+        var stage = getStage();
+        Router.getInstance().navigateTo(stage,routeName, width, height);
     }
 
     @FXML
