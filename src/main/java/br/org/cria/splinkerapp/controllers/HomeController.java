@@ -9,7 +9,7 @@ import javafx.scene.layout.Pane;
 public class HomeController extends AbstractController{
 
     @FXML
-    AnchorPane pane;
+    Pane pane;
 
     @FXML
     MenuBar menuBar;
