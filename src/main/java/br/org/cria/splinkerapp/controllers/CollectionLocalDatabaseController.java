@@ -13,22 +13,12 @@ import javafx.scene.layout.Pane;
 
 public class CollectionLocalDatabaseController extends AbstractController{
 
-
-    private static List<String> options = Arrays.asList("Access", "MySQL", "Postgres", 
-                                                            "MSSQL Server", "Access", "Excel");
-
-    public CollectionLocalDatabaseController(){
-        datasourceField.setItems(FXCollections.observableArrayList(options));    
-    }
-    
     @FXML
     AnchorPane pane;
     @FXML
     TextField usernameField;
     @FXML
     TextField passwordField;
-    @FXML
-    ComboBox<String> datasourceField;
     @FXML
     TextField tablenameField;
     @FXML
