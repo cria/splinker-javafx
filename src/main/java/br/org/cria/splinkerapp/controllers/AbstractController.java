@@ -1,16 +1,26 @@
 package br.org.cria.splinkerapp.controllers;
 
+import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-public abstract class AbstractController {
+public abstract class AbstractController{//  implements Initializable{
     
     protected abstract Pane getPane();
+
+    // @Override
+    // public void initialize(URL location, ResourceBundle resources) {
+    //     // TODO Auto-generated method stub
+        
+    // }
+
     protected Stage getStage(){
         
         try {
             var scene = getPane().getScene();
-            return (Stage)scene.getWindow();    
+            var stage = (Stage)scene.getWindow();
+            stage.setResizable(false);
+            return stage;    
         } catch (Exception e) {
             System.out.println("ERROR!\n");
             System.out.println(e.toString());
@@ -18,5 +28,4 @@ public abstract class AbstractController {
         }
         return new Stage();
     }
-    
 }
