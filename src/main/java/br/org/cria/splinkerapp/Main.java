@@ -11,14 +11,14 @@ public class Main extends Application {
     public void start(Stage stage) throws IOException {
         try {
             DatabaseSetup.initDb();
-            stage.setTitle("SpLinker");
+            stage.setTitle("spLinker");
+            stage.setResizable(false);
             Router.getInstance().navigateTo(stage, "login", 380, 240);
     
             stage.show();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-
     }
 
     public static void main(String[] args) {
