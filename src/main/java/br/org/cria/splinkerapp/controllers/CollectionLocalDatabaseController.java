@@ -2,15 +2,10 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.List;
 
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -34,6 +29,7 @@ public class CollectionLocalDatabaseController extends AbstractController{
 
     @FXML
     void onSaveButtonClicked() throws ClassNotFoundException{
+        
         Class.forName("com.mysql.cj.jdbc.Driver");  
         String url = "jdbc:mysql://localhost:3306/bruno_testdb";
         String username = usernameField.getText();
