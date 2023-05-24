@@ -2,11 +2,10 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Stream;
 
 import br.org.cria.splinkerapp.Router;
+import br.org.cria.splinkerapp.models.DataSourceType;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,20 +14,16 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.TilePane;
+
 
 
 
 public class DataSourceSelectionController extends AbstractController implements Initializable {
     
-    private List<String> dbOptions = Arrays.asList("MySQL", "Postgres", "MSSQL Server");
-    private List<String> fileOptions = Arrays.asList( "Access", "Excel",
-                                    "CSV","dBase(DBF)","LibreOffice Calc");
-        
     @FXML
     Pane pane;
     @FXML
-    ComboBox<String> dataSourceField; 
+    ComboBox<DataSourceType> dataSourceField; 
     @FXML
     Button btnSelectDataSource;    
     @Override
@@ -37,7 +32,7 @@ public class DataSourceSelectionController extends AbstractController implements
     @Override
     public void initialize(URL location, ResourceBundle resources) 
     {
-       var options = Stream.concat(dbOptions.stream(), fileOptions.stream()).toList();
+       var options = Arrays.asList(DataSourceType.values());
        dataSourceField.setItems(FXCollections.observableArrayList(options));
     };
     
@@ -48,7 +43,7 @@ public class DataSourceSelectionController extends AbstractController implements
         var height = 200;
         var routeName = "file-selection";
         var selectedValue = dataSourceField.getValue();
-        var isDatabaseSource = dbOptions.contains(selectedValue);
+        
         
         if(selectedValue == null)
         {
@@ -59,10 +54,16 @@ public class DataSourceSelectionController extends AbstractController implements
             return;
         }
 
-        if(isDatabaseSource)
-        {
-            routeName =  "collection-database";
-            height = 400;
+        switch (selectedValue) {
+            case MySQL:
+            case Postgres:
+            case SQLServer:
+                routeName = "collection-database";
+                height = 340;
+                width = 340;
+                break;
+            default:
+                break;
         }
 
         Router.getInstance().navigateTo(getStage(), routeName, width, height);
