@@ -10,10 +10,13 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         try {
+            var routeName = "login";
+            var width = 380;
+            var height = 240;
             DatabaseSetup.initDb();
             stage.setTitle("spLinker");
             stage.setResizable(false);
-            Router.getInstance().navigateTo(stage, "login", 380, 240);
+            Router.getInstance().navigateTo(stage,routeName, width, height);
     
             stage.show();
         } catch (Exception ex) {
