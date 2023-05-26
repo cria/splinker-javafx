@@ -2,10 +2,10 @@ package br.org.cria.splinkerapp.models;
 
 public enum DataSourceType {
     MySQL,
-    Postgres,
+    PostgreSQL,
     SQLServer,
     Access,
     dBase,
     Excel,
-    LibreOffice
+    LibreOfficeCalc
 }
