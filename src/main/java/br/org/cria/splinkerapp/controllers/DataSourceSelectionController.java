@@ -47,16 +47,17 @@ public class DataSourceSelectionController extends AbstractController implements
         
         if(selectedValue == null)
         {
-            Alert a = new Alert(AlertType.ERROR);
-            a.setTitle("Fonte de dados não especificada");
-            a.setContentText("Selecione uma fonte de dados");
-            a.show();
+            Alert dialog = new Alert(AlertType.ERROR);
+            dialog.setTitle("Fonte de dados não especificada");
+            dialog.setContentText("Selecione uma fonte de dados");
+            dialog.show();
             return;
         }
 
-        switch (selectedValue) {
+        switch (selectedValue) 
+        {
             case MySQL:
-            case Postgres:
+            case PostgreSQL:
             case SQLServer:
                 routeName = "collection-database";
                 height = 340;
@@ -65,7 +66,6 @@ public class DataSourceSelectionController extends AbstractController implements
             default:
                 break;
         }
-
         Router.getInstance().navigateTo(getStage(), routeName, width, height);
     }
     
