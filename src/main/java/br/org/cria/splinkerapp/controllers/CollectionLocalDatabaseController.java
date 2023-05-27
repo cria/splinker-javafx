@@ -9,7 +9,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-
+/*
+ * Classe responsável pelo formulário de configuração de banco de dados
+ */
 public class CollectionLocalDatabaseController extends AbstractController{
 
     @FXML
@@ -25,12 +27,30 @@ public class CollectionLocalDatabaseController extends AbstractController{
     @FXML
     Button saveBtn;
 
+    boolean testConnection(){
+        var url = "jdbc:mysql://localhost:3306/bruno_testdb";
+        var username = usernameField.getText();
+        var password = passwordField.getText();
+        var tableName = tablenameField.getText();
+        var isConnectionValid = true;
+        try(Connection connection = DriverManager.getConnection(url, username, password)) {
+            Statement statement = connection.createStatement();
+
+            String sql = "SELECT * FROM %s LIMIT 1;".formatted(tableName);
+
+            statement.executeQuery(sql);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            isConnectionValid = false;
+        }
+        return isConnectionValid;
+    }
 
 
     @FXML
     void onSaveButtonClicked() throws ClassNotFoundException{
         
-        Class.forName("com.mysql.cj.jdbc.Driver");  
         String url = "jdbc:mysql://localhost:3306/bruno_testdb";
         String username = usernameField.getText();
         String password = passwordField.getText();
@@ -38,7 +58,7 @@ public class CollectionLocalDatabaseController extends AbstractController{
         try(Connection connection = DriverManager.getConnection(url, username, password)) {
             Statement statement = connection.createStatement();
 
-            String sql = "SELECT * FROM %s;".formatted(tablenameField.getText());
+            String sql = "SELECT * FROM %s LIMIT 1;".formatted(tablenameField.getText());
 
             var result = statement.executeQuery(sql);
             while(result.next()){
