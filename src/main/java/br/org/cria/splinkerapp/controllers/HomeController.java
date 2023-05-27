@@ -110,7 +110,7 @@ public class HomeController extends AbstractController{
         e.printStackTrace();
     }
 
-\    }
+    }
 
     @Override
     protected Pane getPane() {
