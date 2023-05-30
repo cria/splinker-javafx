@@ -10,9 +10,9 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         try {
-            var routeName = "login";
-            var width = 380;
-            var height = 240;
+            var routeName = "first-config-dialog";
+            var width = 330;
+            var height = 150;
             DatabaseSetup.initDb();
             stage.setTitle("spLinker");
             stage.setResizable(false);
