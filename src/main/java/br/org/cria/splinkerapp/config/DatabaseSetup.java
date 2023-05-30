@@ -1,12 +1,11 @@
 package br.org.cria.splinkerapp.config;
 
-import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.DriverManager;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import br.org.cria.splinkerapp.models.DataSourceType;
 
 
 public class DatabaseSetup {
@@ -30,5 +29,10 @@ public class DatabaseSetup {
                 e.printStackTrace();
             }
         });
+    }
+  
+    private static String getDbConnectioString(DataSourceType datasource){
+
+        return "";
     }
 }
