@@ -49,7 +49,7 @@ public class CollectionLocalDatabaseController extends AbstractController{
 
 
     @FXML
-    void onSaveButtonClicked() throws ClassNotFoundException{
+    void onSaveButtonClicked(){
         
         String url = "jdbc:mysql://localhost:3306/bruno_testdb";
         String username = usernameField.getText();
