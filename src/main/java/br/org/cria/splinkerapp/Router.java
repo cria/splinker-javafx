@@ -2,6 +2,7 @@ package br.org.cria.splinkerapp;
 
 import java.io.IOException;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -38,17 +39,20 @@ import javafx.stage.Stage;
             System.out.println("ERROR\n");
             System.out.println(e.toString());
             System.out.println("\n END ERROR\n");
+            e.printStackTrace();
         }
     }
 
-    private Scene loadScene(String routeName, int width, int height) throws IOException {
+    private Scene loadScene(String routeName, int width, int height) throws IOException 
+    {
+        var route = "%s.fxml".formatted(routeName);
+        var resource = getClass().getResource(route);
+        var fxmlLoader = new FXMLLoader(resource);
+        var parent = (Parent)fxmlLoader.load();
         width = width < 1 ? 320 : width;
         height = height < 1 ? 240 : height;
-        String route = "%s.fxml".formatted(routeName);
-        FXMLLoader fxmlLoader = new FXMLLoader(Router.class.getResource(route));
-        return new Scene(fxmlLoader.load(), width, height);
 
-        
+        return new Scene(parent, width, height);
     }
 
 }
