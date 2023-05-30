@@ -1,20 +1,23 @@
 package br.org.cria.splinkerapp.controllers;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import br.org.cria.splinkerapp.Router;
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
 import br.org.cria.splinkerapp.services.ProxyConfigService;
 import br.org.cria.splinkerapp.services.interfaces.IProxyConfigService;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 
-public class ProxyConfigController extends AbstractController{
+public class ProxyConfigController extends AbstractController implements Initializable{
 
     @FXML
-    AnchorPane pane;
+    Pane pane;
     @FXML
     TextField proxyUsername;
     @FXML
@@ -29,13 +32,7 @@ public class ProxyConfigController extends AbstractController{
     @FXML
     Hyperlink lnkNoProxy;
     
-    IProxyConfigService proxyService;
-
-    public ProxyConfigController(){
-        proxyService = new ProxyConfigService();
-        proxyService.getConfiguration();
-    }
-
+    IProxyConfigService proxyService = new ProxyConfigService();
 
     @FXML
     void onLinkNoProxyClicked(){
@@ -55,5 +52,21 @@ public class ProxyConfigController extends AbstractController{
     @Override
     protected Pane getPane() {
         return this.pane;
+    }
+
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        
+            var config = proxyService.getConfiguration();
+            if(config != null)
+            {
+                proxyUsername.setText(config.getUsername());
+                proxyAddress.setText(config.getAddress());
+                proxyPort.setText(config.getPort());
+                proxyPassword.setText(config.getPassword());
+            }
+            
+        
     }
 }
