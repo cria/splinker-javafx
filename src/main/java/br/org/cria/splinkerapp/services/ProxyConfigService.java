@@ -1,7 +1,12 @@
 package br.org.cria.splinkerapp.services;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.URI;
 import java.sql.ResultSet;
-
+import java.util.Iterator;
+import java.util.List;
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
 import br.org.cria.splinkerapp.services.interfaces.IProxyConfigService;
 
@@ -62,6 +67,34 @@ public class ProxyConfigService extends BaseService implements IProxyConfigServi
         e.printStackTrace();
      }
     return result;
+    }
+
+    public boolean isBehindProxyServer() {
+        boolean hasProxy = false;
+        try {
+            System.setProperty("java.net.useSystemProxies","true");
+            List<Proxy> l = ProxySelector.getDefault().select(
+                        new URI("https://www.cria.org.br/"));
+    
+            for (Iterator<Proxy> iter = l.iterator(); iter.hasNext(); ) {
+    
+                Proxy proxy = iter.next();
+                InetSocketAddress addr = (InetSocketAddress)proxy.address();
+    
+                if(addr != null) 
+                {
+                    var config = new ProxyConfiguration(addr.getAddress().toString(),null,
+                                                        String.valueOf(addr.getPort()),
+                                                        null);
+                    saveProxyConfig(config);
+                    hasProxy = true;
+                } 
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return hasProxy;
     }
     
 }

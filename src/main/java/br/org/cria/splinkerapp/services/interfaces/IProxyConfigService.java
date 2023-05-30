@@ -6,5 +6,6 @@ public interface IProxyConfigService {
     
     ProxyConfiguration getConfiguration();
     boolean saveProxyConfig(ProxyConfiguration proxyConfig);
+    boolean isBehindProxyServer();
     
 }
