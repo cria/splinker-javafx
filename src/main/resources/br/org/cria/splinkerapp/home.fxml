@@ -8,8 +8,8 @@
 
 <Pane id="pane" fx:id="pane" prefHeight="222.0" prefWidth="348.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.HomeController">
     <children>
-        <Button id="syncServerBtn" fx:id="syncServerBtn" layoutX="14.0" layoutY="60.0" prefHeight="102.0" prefWidth="146.0" text="Sincronizar Servidor" />
-        <Button id="syncMetaDataBtn" fx:id="syncMetaDataBtn" layoutX="188.0" layoutY="60.0" prefHeight="102.0" prefWidth="146.0" text="Sincronizar Metadados" />
+        <Button id="syncServerBtn" fx:id="syncServerBtn" layoutX="14.0" layoutY="60.0" onMouseClicked="#onSyncServerBtnClicked" prefHeight="102.0" prefWidth="146.0" text="Sincronizar Servidor" />
+        <Button id="syncMetaDataBtn" fx:id="syncMetaDataBtn" layoutX="188.0" layoutY="60.0" onMouseClicked="#onSyncMetadataBtnClicked" prefHeight="102.0" prefWidth="146.0" text="Sincronizar Metadados" />
         <MenuBar id="menuBar" fx:id="menuBar" prefHeight="27.0" prefWidth="348.0">
             <menus>
                 <Menu mnemonicParsing="false" text="Principal">
