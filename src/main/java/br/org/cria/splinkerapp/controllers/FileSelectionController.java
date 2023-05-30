@@ -2,6 +2,7 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.io.File;
 
+import br.org.cria.splinkerapp.Router;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -25,13 +26,19 @@ public class FileSelectionController extends AbstractController{
     @FXML
     void onButtonSelectFileClicked(){
         File file = fileChooser.showOpenDialog(getStage());
-        if (file != null) {
-        filePath.setText(file.getAbsolutePath());
+        if (file != null) 
+        {
+            filePath.setText(file.getAbsolutePath());
         }
     }
     
     @FXML
-    void onButtonSaveClicked(){}
+    void onButtonSaveClicked(){
+        var routeName = "home";
+        var width = 350;
+        var height = 2540;
+        Router.getInstance().navigateTo(getStage(), routeName,width, height);
+    }
     
 
 }
