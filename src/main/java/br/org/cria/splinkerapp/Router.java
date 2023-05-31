@@ -11,7 +11,8 @@ import javafx.stage.Stage;
 
     private Router(){};
 
-    public static Router getInstance(){
+    public static Router getInstance()
+    {
         if(instance == null)
         {
             instance = new Router();
@@ -19,11 +20,13 @@ import javafx.stage.Stage;
         return instance;
     }
 
-    public void navigateTo(Stage stage, String routeName) {
+    public void navigateTo(Stage stage, String routeName) 
+    {
         navigateTo(stage, routeName, 0, 0);
     }
 
-    public void navigateTo(Stage stage, String routeName, int width, int height) {
+    public void navigateTo(Stage stage, String routeName, int width, int height) 
+    {
         try 
         {
             width = width < 1 ? 320 : width;
