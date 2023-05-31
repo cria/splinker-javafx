@@ -73,23 +73,14 @@ public class ProxyConfigService extends BaseService implements IProxyConfigServi
         boolean hasProxy = false;
         try {
             System.setProperty("java.net.useSystemProxies","true");
-            List<Proxy> l = ProxySelector.getDefault().select(
+            List<Proxy> proxies = ProxySelector.getDefault().select(
                         new URI("https://www.cria.org.br/"));
     
-            for (Iterator<Proxy> iter = l.iterator(); iter.hasNext(); ) {
+            for (Iterator<Proxy> iter = proxies.iterator(); iter.hasNext(); ) {
     
-                Proxy proxy = iter.next();
-                InetSocketAddress addr = (InetSocketAddress)proxy.address();
-    
-                if(addr != null) 
-                {
-                    var config = new ProxyConfiguration(addr.getAddress().toString(),null,
-                                                        String.valueOf(addr.getPort()),
-                                                        null);
-                    saveProxyConfig(config);
-                    hasProxy = true;
-                } 
-
+                var proxy = iter.next();
+                var addr = (InetSocketAddress)proxy.address();
+                hasProxy = addr != null;
             }
         } catch (Exception e) {
             e.printStackTrace();
