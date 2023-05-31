@@ -20,9 +20,9 @@ public class FirstConfigDialogController extends AbstractController{
 
     @FXML
     void onYesButtonClicked(){
-        var routeName = "datasource-selection";
-        var width = 320;
-        var height = 240;
+        var routeName = "central-service";
+        var width = 350;
+        var height = 200;
         var stage = getStage();
 
         if(proxyService.isBehindProxyServer())

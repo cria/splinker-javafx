@@ -36,7 +36,7 @@ public class ProxyConfigController extends AbstractController implements Initial
 
     @FXML
     void onLinkNoProxyClicked(){
-        var routeName = "datasource-selection";
+        var routeName = "central-service";
         var width = 320;
         var height = 240;
         Router.getInstance().navigateTo(getStage(), routeName, width, height);
@@ -56,17 +56,15 @@ public class ProxyConfigController extends AbstractController implements Initial
 
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        
-            var config = proxyService.getConfiguration();
-            if(config != null)
-            {
-                proxyUsername.setText(config.getUsername());
-                proxyAddress.setText(config.getAddress());
-                proxyPort.setText(config.getPort());
-                proxyPassword.setText(config.getPassword());
-            }
-            
-        
+    public void initialize(URL location, ResourceBundle resources) 
+    {
+        var config = proxyService.getConfiguration();
+        if(config != null)
+        {
+            proxyUsername.setText(config.getUsername());
+            proxyAddress.setText(config.getAddress());
+            proxyPort.setText(config.getPort());
+            proxyPassword.setText(config.getPassword());
+        }
     }
 }
