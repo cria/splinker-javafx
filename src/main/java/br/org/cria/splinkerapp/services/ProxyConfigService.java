@@ -13,7 +13,8 @@ import br.org.cria.splinkerapp.services.interfaces.IProxyConfigService;
 public class ProxyConfigService extends BaseService implements IProxyConfigService {
     
     @Override
-    public ProxyConfiguration getConfiguration() {
+    public ProxyConfiguration getConfiguration() 
+    {
         ProxyConfiguration proxyConfig = null;    
         try {
             var conn = getConnection();
@@ -30,11 +31,12 @@ public class ProxyConfigService extends BaseService implements IProxyConfigServi
             //Faz a verificação de enquanto conter registros, percorre e resgata os valores
             while(rs.next())
             {
-                //String address, String password, String port, String username
-                proxyConfig = new ProxyConfiguration(rs.getString("address"), 
-                                                        rs.getString("password"),
-                                                        rs.getString("port"), 
-                                                        rs.getString("username"));
+                var address = rs.getString("address");
+                var password = rs.getString("password");
+                var port = rs.getString("port");
+                var username = rs.getString("username");
+                
+                proxyConfig = new ProxyConfiguration(address, password, port, username);
                 
             } 
             
@@ -42,34 +44,34 @@ public class ProxyConfigService extends BaseService implements IProxyConfigServi
             System.out.println(e.toString());
         }
             return proxyConfig;
-     
-        
     }
 
     @Override
-    public boolean saveProxyConfig(ProxyConfiguration proxyConfig) {
+    public boolean saveProxyConfig(ProxyConfiguration proxyConfig) 
+    {
         var result = false;
-     try 
-     {
-        String sql = """
-            INSERT INTO ProxyConfiguration (address, password, port,username)
-            VALUES ('%s', '%s', '%s', '%s');""".formatted(
-            proxyConfig.getAddress(),proxyConfig.getPassword(),
-            proxyConfig.getPort(), proxyConfig.getUsername());
-            var conn = getConnection();
-            var statement = conn.createStatement();
-            var affectedRows = statement.executeUpdate(sql);
-            result = affectedRows > 0;
-            System.out.println(result);   
-     } 
-     catch (Exception e) 
-     {
-        e.printStackTrace();
-     }
-    return result;
+        try 
+        {
+            String sql = """
+                INSERT INTO ProxyConfiguration (address, password, port,username)
+                VALUES ('%s', '%s', '%s', '%s');""".formatted(
+                proxyConfig.getAddress(),proxyConfig.getPassword(),
+                proxyConfig.getPort(), proxyConfig.getUsername());
+                var conn = getConnection();
+                var statement = conn.createStatement();
+                var affectedRows = statement.executeUpdate(sql);
+                result = affectedRows > 0;
+                System.out.println(result);   
+        } 
+        catch (Exception e) 
+        {
+            e.printStackTrace();
+        }
+        return result;
     }
 
-    public boolean isBehindProxyServer() {
+    public boolean isBehindProxyServer() 
+    {
         boolean hasProxy = false;
         try {
             System.setProperty("java.net.useSystemProxies","true");
