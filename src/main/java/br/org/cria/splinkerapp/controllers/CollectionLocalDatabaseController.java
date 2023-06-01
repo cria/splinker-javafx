@@ -27,16 +27,21 @@ public class CollectionLocalDatabaseController extends AbstractController{
     @FXML
     Button saveBtn;
 
-    boolean testConnection(){
+    boolean testConnection()
+    {
         var url = "jdbc:mysql://localhost:3306/bruno_testdb";
         var username = usernameField.getText();
         var password = passwordField.getText();
         var tableName = tablenameField.getText();
         var isConnectionValid = true;
-        try(Connection connection = DriverManager.getConnection(url, username, password)) {
-            Statement statement = connection.createStatement();
+        try(var connection = DriverManager.getConnection(url, username, password)) {
+            var statement = connection.createStatement();
 
-            String sql = "SELECT * FROM %s LIMIT 1;".formatted(tableName);
+            var sql = """
+                        SELECT COLUMN_NAME 
+                        FROM INFORMATION_SCHEMA.COLUMNS 
+                        WHERE TABLE_NAME = '%s';
+                        ;""".formatted(tableName);
 
             statement.executeQuery(sql);
 
@@ -49,7 +54,8 @@ public class CollectionLocalDatabaseController extends AbstractController{
 
 
     @FXML
-    void onSaveButtonClicked(){
+    void onSaveButtonClicked()
+    {
         
         String url = "jdbc:mysql://localhost:3306/bruno_testdb";
         String username = usernameField.getText();
@@ -72,6 +78,7 @@ public class CollectionLocalDatabaseController extends AbstractController{
         }
 
     }
+
     @Override
     protected Pane getPane() { return this.pane; }
     
