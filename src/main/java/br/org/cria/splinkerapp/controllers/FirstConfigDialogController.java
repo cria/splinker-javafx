@@ -1,6 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 import br.org.cria.splinkerapp.Router;
-import br.org.cria.splinkerapp.services.ProxyConfigService;
+import br.org.cria.splinkerapp.services.implementations.ProxyConfigService;
 import br.org.cria.splinkerapp.services.interfaces.IProxyConfigService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

@@ -1,4 +1,4 @@
-package br.org.cria.splinkerapp.services;
+package br.org.cria.splinkerapp.services.implementations;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.List;
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
+import br.org.cria.splinkerapp.services.BaseService;
 import br.org.cria.splinkerapp.services.interfaces.IProxyConfigService;
 
 public class ProxyConfigService extends BaseService implements IProxyConfigService {
@@ -41,7 +42,7 @@ public class ProxyConfigService extends BaseService implements IProxyConfigServi
             } 
             
         } catch (Exception e) {
-            System.out.println(e.toString());
+            System.out.println(e);
         }
             return proxyConfig;
     }
