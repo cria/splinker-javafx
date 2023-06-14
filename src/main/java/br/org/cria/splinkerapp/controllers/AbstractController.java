@@ -17,7 +17,7 @@ public abstract class AbstractController{
             return stage;    
         } catch (Exception e) {
             System.out.println("ERROR!\n");
-            System.out.println(e.toString());
+            System.out.println(e);
             System.out.println("\n END ERROR!\n");
             e.printStackTrace();
         }
