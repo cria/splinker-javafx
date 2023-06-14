@@ -1,7 +1,7 @@
 package br.org.cria.splinkerapp.controllers;
 
 import br.org.cria.splinkerapp.Router;
-import br.org.cria.splinkerapp.services.ProxyConfigService;
+import br.org.cria.splinkerapp.services.implementations.ProxyConfigService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -62,7 +62,7 @@ public class LoginController extends AbstractController{
         } 
         catch (Exception e) 
         {
-            System.out.println(e.toString());
+            System.out.println(e);
             System.exit(1);
         }
         

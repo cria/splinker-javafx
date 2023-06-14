@@ -5,7 +5,7 @@ import java.util.ResourceBundle;
 
 import br.org.cria.splinkerapp.Router;
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
-import br.org.cria.splinkerapp.services.ProxyConfigService;
+import br.org.cria.splinkerapp.services.implementations.ProxyConfigService;
 import br.org.cria.splinkerapp.services.interfaces.IProxyConfigService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -34,12 +34,15 @@ public class ProxyConfigController extends AbstractController implements Initial
     
     IProxyConfigService proxyService = new ProxyConfigService();
 
-    @FXML
-    void onLinkNoProxyClicked(){
+    void navigateToNextScreen(){
         var routeName = "central-service";
         var width = 320;
         var height = 240;
         Router.getInstance().navigateTo(getStage(), routeName, width, height);
+    }
+    @FXML
+    void onLinkNoProxyClicked(){
+    navigateToNextScreen();
     }
     @FXML
     void onButtonSaveClicked(){
@@ -47,6 +50,7 @@ public class ProxyConfigController extends AbstractController implements Initial
                                         proxyPort.getText(), proxyUsername.getText());
 
         proxyService.saveProxyConfig(config);
+        navigateToNextScreen();
     }
 
     @Override
