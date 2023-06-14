@@ -9,15 +9,15 @@ import br.org.cria.splinkerapp.models.DataSourceType;
 
 
 public class DatabaseSetup {
-    private static ExecutorService executor 
+    private static final ExecutorService executor
       = Executors.newSingleThreadExecutor();
     public static void initDb() {
         
         executor.submit(() -> {
             try {
-                    var folder = System.getProperty("user.dir");
-                    var path = Paths.get(folder +"/SpLinkerApp/scripts/sql/create_tables.sql");
-                    var lines = Files.readAllLines(path);
+                    var file = "%s/SpLinkerApp/scripts/sql/create_tables.sql".formatted(System.getProperty("user.dir"));
+                    var fullPath = Paths.get(file);
+                    var lines = Files.readAllLines(fullPath);
                     var url = "jdbc:sqlite:splinker.db";
                     var conn = DriverManager.getConnection(url);
                     var commands = String.join("", lines);
