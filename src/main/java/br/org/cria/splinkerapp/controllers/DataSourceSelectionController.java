@@ -34,8 +34,9 @@ public class DataSourceSelectionController extends AbstractController implements
     {
        var options = Arrays.asList(DataSourceType.values());
        dataSourceField.setItems(FXCollections.observableArrayList(options));
-    };
-    
+       //TODO: Chamar API passando o token e puxa configuração inicial
+    }
+
     @FXML
     void onButtonSelectDataSourceClicked()
     {
