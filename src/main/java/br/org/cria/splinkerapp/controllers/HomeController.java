@@ -1,24 +1,21 @@
 package br.org.cria.splinkerapp.controllers;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.URI;
-import java.util.Iterator;
-import java.util.List;
+import br.org.cria.splinkerapp.config.ConnectionSetup;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-import com.github.fracpete.processoutput4j.output.CollectingProcessOutput;
+
+import org.apache.commons.lang3.time.StopWatch;
+import com.github.fracpete.processoutput4j.output.ConsoleOutputProcessOutput;
 import com.github.fracpete.rsync4j.RSync;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
-
+import com.github.fracpete.rsync4j.core.Binaries;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.Pane;
 
 public class HomeController extends AbstractController{
-
+  
     @FXML
     Pane pane;
 
@@ -34,34 +31,50 @@ public class HomeController extends AbstractController{
     @FXML
     void onSyncServerBtnClicked() throws Exception
     {
-      try {
-        var username = "bruno";
-        var hostname = "35.224.172.146";
-        var port = 22;
-        var password = "cria@1234";
-        JSch jsch = new JSch();
-        Session session = jsch.getSession(username, hostname, port);
-        session.setPassword(password);
-  
-        // Disable strict host key checking
-        java.util.Properties config = new java.util.Properties();
-        config.put("StrictHostKeyChecking", "no");
-        session.setConfig(config);
-  
-        session.connect();
- 
+      try 
+      {
+   
+        ConnectionSetup.firstConnection();
+        var sshKey = "%s -i /Users/brunobemfica/.ssh/splinker.pub".formatted(Binaries.sshBinary());
         RSync rsync = new RSync()
-    .source("/Users/brunobemfica/Downloads/place/dwca-amnh_birds-v3.0.zip")
-    .destination("rsync://35.224.172.146:22/home/bruno/")
-    .recursive(true);
+        .source("/Users/brunobemfica/Downloads/dwca-tropicosspecimens-v1.124.zip")
+        .destination("bruno@35.224.172.146:/home/bruno/")
+        .recursive(true).progress(true)
+        .rsh(sshKey);
+        var out = new ConsoleOutputProcessOutput();
+        var executor = Executors.newSingleThreadExecutor();
+        StopWatch watch = new StopWatch();
 
-    CollectingProcessOutput output = rsync.execute(); //new ConsoleOutputProcessOutput();
-    //output.monitor(rsync.builder());
+        executor.submit(() -> {
+          try 
+          
+          {
+                  watch.start();
+                  out.monitor(rsync.builder());
+                  var output = rsync.execute();
+                  watch.stop();
+                  var timedOut = output.hasTimedOut() ;//new ConsoleOutputProcessOutput();
+                  var time = watch.getTime(TimeUnit.SECONDS);
+                  System.out.printf("Time is %s seconds", time);
+                  while(!output.hasSucceeded())
+                  {
+                    var result = output.getStdOut();
+                    var err = output.getStdErr();
+                    var code = output.getExitCode();
+                    System.out.printf("Stdout is %s%n", result);
+                    System.out.printf("StdErr is %s%n", err);
+                    System.out.printf("ExitCode is %s%n", code);
+                  }
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
+          
 
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-     
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        
 
     }
     
