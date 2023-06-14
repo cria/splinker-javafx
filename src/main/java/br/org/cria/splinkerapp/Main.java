@@ -2,15 +2,14 @@ package br.org.cria.splinkerapp;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import java.io.IOException;
-
 import br.org.cria.splinkerapp.config.DatabaseSetup;
 
 public class Main extends Application {
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
         try {
-            var routeName = "first-config-dialog";
+            //var routeName = "first-config-dialog";
+            var routeName = "home";
             var width = 330;
             var height = 150;
             DatabaseSetup.initDb();
