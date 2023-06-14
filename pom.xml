@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.org.cria</groupId>
-    <artifactId>SpLinkerApp</artifactId>
+    <artifactId>spLinker</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>SpLinkerApp</name>
+    <name>spLinker</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,29 +25,11 @@
             <artifactId>javafx-fxml</artifactId>
             <version>20</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.ucanaccess</groupId>
-            <artifactId>ucanaccess</artifactId>
-            <version>5.0.1</version>
-        </dependency>
         <!-- SQLite JDBC driver dependency - https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.34.0</version>
+            <version>3.42.0.0</version>
         </dependency>
         <!-- MySQL JDBC driver dependency - https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
         <dependency>
@@ -55,7 +37,7 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>8.0.33</version>
         </dependency>
-         <!-- SQL Server JDBC driver dependecy -  https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
+         <!-- SQL Server JDBC driver dependency -  https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
@@ -73,21 +55,18 @@
             <artifactId>ucanaccess</artifactId>
             <version>5.0.1</version>
         </dependency>
-        <!-- Rsync4j dependency - https://mvnrepository.com/artifact/com.github.fracpete/rsync4j-all -->
+        <!-- Rsync4j dependencies - https://mvnrepository.com/artifact/com.github.fracpete/rsync4j-all -->
         <dependency>
             <groupId>com.github.fracpete</groupId>
             <artifactId>rsync4j-all</artifactId>
             <version>3.2.7-1</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <version>0.1.55</version>
-        </dependency>
-
-
-
+   
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.9</version>
+      </dependency>
     </dependencies>
 
     <build>
@@ -110,7 +89,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>br.org.cria.splinkerapp/br.org.cria.splinkerapp.SpLinker</mainClass>
+                            <mainClass>br.org.cria.splinkerapp/br.org.cria.splinkerapp.Main</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
