@@ -9,9 +9,9 @@ import javafx.stage.Stage;
  public final class Router {
     private static Router instance;
 
-    private Router(){};
+    private Router(){}
 
-    public static Router getInstance()
+     public static Router getInstance()
     {
         if(instance == null)
         {
@@ -40,7 +40,7 @@ import javafx.stage.Stage;
         catch (Exception e) 
         {
             System.out.println("ERROR\n");
-            System.out.println(e.toString());
+            System.out.println(e);
             System.out.println("\n END ERROR\n");
             e.printStackTrace();
         }
@@ -57,5 +57,4 @@ import javafx.stage.Stage;
 
         return new Scene(parent, width, height);
     }
-
 }
