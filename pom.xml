@@ -16,6 +16,13 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.perlundq.yajsync</groupId>
+            <artifactId>yajsync</artifactId>
+            <scope>system</scope>
+            <version>0.9.0</version>
+            <systemPath>${project.basedir}/libs/yajsync-app-0.9.0-SNAPSHOT-full.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>20</version>
