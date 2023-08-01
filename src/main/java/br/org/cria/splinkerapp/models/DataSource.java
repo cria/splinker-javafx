@@ -1,18 +1,20 @@
 package br.org.cria.splinkerapp.models;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DataSource {
-    private List<String> fields;
+    private Map<String, String> fields;
     private DataSourceType type;
 
 
-    public List<String> getFields() {
+    public Map<String, String> getFields() {
         return fields;
     }
 
-    public void setFields(List<String> fields) {
-        this.fields = fields;
+    public void addField(String darwinCoreField, String dataSourceField) {
+        this.fields.put(darwinCoreField,dataSourceField);
     }
 
     public DataSourceType getType() {
