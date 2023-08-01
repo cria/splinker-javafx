@@ -13,14 +13,20 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.9.2</junit.version>
     </properties>
-
+	
+<repositories>
+  <repository>
+    <id>Internal company repository</id>
+    <url>file://${project.basedir}/src/libs</url>
+  </repository>
+</repositories>
     <dependencies>
         <dependency>
-            <groupId>com.github.perlundq.yajsync</groupId>
+            <groupId>com.github.perlundq</groupId>
             <artifactId>yajsync</artifactId>
-            <scope>system</scope>
+            <!-- <scope>system</scope> -->
             <version>0.9.0</version>
-            <systemPath>${project.basedir}/libs/yajsync-app-0.9.0-SNAPSHOT-full.jar</systemPath>
+            <!-- <systemPath>${project.basedir}/libs/yajsync-app-0.9.0-SNAPSHOT-full.jar</systemPath> -->
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -57,11 +63,12 @@
                 <version>42.6.0</version>
             </dependency>
         <!-- UCanAccess MSAccess driver dependency - https://mvnrepository.com/artifact/net.sf.ucanaccess/ucanaccess -->
-        <dependency>
+        <!-- Comentando dependência com problemas de vulnerabilidade de segurança. A dependência pode não ser necessária -->
+        <!-- <dependency>
             <groupId>net.sf.ucanaccess</groupId>
             <artifactId>ucanaccess</artifactId>
             <version>5.0.1</version>
-        </dependency>
+        </dependency> -->
         <!-- Rsync4j dependencies - https://mvnrepository.com/artifact/com.github.fracpete/rsync4j-all -->
         <dependency>
             <groupId>com.github.fracpete</groupId>

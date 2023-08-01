@@ -6,19 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="51b6b81a-06d2-4832-921b-ae8b390b0fd9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/yajsync-app-0.9.0-SNAPSHOT-full.jar" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/AbstractController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/LoginController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/ProxyConfigController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/Router.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/Router.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/TokenLoginController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/dialogs/SpLinkerFirstConfigDialogController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/config/ConnectionSetup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/config/ConnectionSetup.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/dialogs/first-config-dialog.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/dialogs/first-config-dialog.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/hello-view.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/login.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/login.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/proxy-config.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/proxy-config.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/token-login.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/token-login.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +37,7 @@
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="br.org.cria.splinkerapp.Main" />
-      <module name="SpLinkerApp" />
+      <module name="spLinker" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="br.org.cria.splinkerapp.*" />
@@ -77,11 +69,6 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/Main.java</url>
-          <line>17</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/Router.java</url>
           <line>14</line>
           <option name="timeStamp" value="3" />
@@ -98,13 +85,28 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/Main.java</url>
-          <line>15</line>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/Main.java</url>
           <line>10</line>
           <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java</url>
+          <line>40</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java</url>
+          <line>81</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar://$PROJECT_DIR$/src/libs/yajsync-app-0.9.0-SNAPSHOT-full.jar!/com/github/perlundq/yajsync/ui/YajsyncClient.class</url>
+          <line>510</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar://$PROJECT_DIR$/src/libs/yajsync-app-0.9.0-SNAPSHOT-full.jar!/com/github/perlundq/yajsync/ui/YajsyncClient.class</url>
+          <line>521</line>
+          <option name="timeStamp" value="12" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
