@@ -3,6 +3,7 @@ package br.org.cria.splinkerapp.services.implementations;
 import java.util.Arrays;
 import java.util.List;
 
+import br.org.cria.splinkerapp.models.DataSource;
 import br.org.cria.splinkerapp.services.interfaces.IDarwinCoreArchiveService;
 
 public class DarwinCoreArchiveService implements IDarwinCoreArchiveService{
@@ -57,9 +58,18 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService{
     }
 
     @Override
-    public boolean readDataFromSource() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'readDataFromSource'");
+    public boolean readDataFromSource(DataSource source) {
+        //Talvez fazer essa classe ter method chaining
+        //seja mais apropriado.
+        return switch (source.getType()){
+            case MySQL, SQLServer -> false;
+            case PostgreSQL -> false;
+            case dBase -> false;
+            case Excel -> false;
+            case Access -> false;
+            case LibreOfficeCalc -> false;
+            default -> true;
+        };
     }
     
 }
