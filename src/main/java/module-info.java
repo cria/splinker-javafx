@@ -7,7 +7,7 @@ module br.org.cria.splinkerapp {
     requires rsync4j.core;
     requires rsync4j.windows64;
     requires org.apache.commons.lang3;
-    requires yajsync.app;
+    requires yajsync;
 
     opens br.org.cria.splinkerapp.controllers to javafx.fxml;
     
