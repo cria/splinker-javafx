@@ -69,13 +69,6 @@
             <artifactId>ucanaccess</artifactId>
             <version>5.0.1</version>
         </dependency> -->
-        <!-- Rsync4j dependencies - https://mvnrepository.com/artifact/com.github.fracpete/rsync4j-all -->
-        <dependency>
-            <groupId>com.github.fracpete</groupId>
-            <artifactId>rsync4j-all</artifactId>
-            <version>3.2.7-1</version>
-        </dependency>
-   
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
