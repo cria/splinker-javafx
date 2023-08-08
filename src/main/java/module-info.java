@@ -2,10 +2,6 @@ module br.org.cria.splinkerapp {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
-    requires processoutput4j;
-    requires rsync4j.all;
-    requires rsync4j.core;
-    requires rsync4j.windows64;
     requires org.apache.commons.lang3;
     requires yajsync;
 
