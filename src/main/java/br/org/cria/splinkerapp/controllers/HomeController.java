@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
@@ -21,7 +22,7 @@ public class HomeController extends AbstractController{
     @FXML
     void onSyncServerBtnClicked() throws Exception
     {
-
+        new DarwinCoreArchiveService().transferData();
     }
     
     @FXML
