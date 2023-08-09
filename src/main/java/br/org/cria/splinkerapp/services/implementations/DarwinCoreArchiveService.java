@@ -1,15 +1,9 @@
 package br.org.cria.splinkerapp.services.implementations;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import br.org.cria.splinkerapp.models.DataSource;
 import br.org.cria.splinkerapp.services.interfaces.IDarwinCoreArchiveService;
 import com.github.perlundq.yajsync.ui.YajsyncClient;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import org.apache.commons.lang3.time.StopWatch;
 
 public class DarwinCoreArchiveService implements IDarwinCoreArchiveService{
 
@@ -44,7 +38,6 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService{
 
                 @Override
                 protected Task<Void> createTask() {
-                    // Create a Task
                     return new Task<>() {
                         @Override
                         protected Void call() throws Exception {
@@ -54,15 +47,10 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService{
                     };
                 }
             };
-
-            // Start the Service
             service.start();
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return this;
     }
 
