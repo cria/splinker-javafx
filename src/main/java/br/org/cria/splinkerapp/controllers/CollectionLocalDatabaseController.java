@@ -41,7 +41,7 @@ public class CollectionLocalDatabaseController extends AbstractController{
                         SELECT COLUMN_NAME 
                         FROM INFORMATION_SCHEMA.COLUMNS 
                         WHERE TABLE_NAME = '%s';
-                        ;""".formatted(tableName);
+                        """.formatted(tableName);
 
             statement.executeQuery(sql);
 
