@@ -2,8 +2,13 @@ package br.org.cria.splinkerapp.services.implementations;
 import br.org.cria.splinkerapp.models.DataSource;
 import br.org.cria.splinkerapp.services.interfaces.IDarwinCoreArchiveService;
 import com.github.perlundq.yajsync.ui.YajsyncClient;
+import javafx.beans.property.ObjectProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
+
+import java.io.PrintStream;
 
 public class DarwinCoreArchiveService implements IDarwinCoreArchiveService{
 
@@ -29,11 +34,12 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService{
         try
         {
             var port = 10_000;
-            //TODO: Ler source e user dir do BD local
-            var source = "/Users/brunobemfica/Downloads/dwca-tropicosspecimens-v1.124.zip.old.zip";
-            var destination = "bruno@34.68.143.184::meu_modulo";
+            var source = ConfigurationData.getDarwinCoreFileSourcePath();
+            var destination = ConfigurationData.getTransferDataDestination();
             var command = new String[]{"--port=%s".formatted(port), "-r", source, destination};
             var client = new YajsyncClient();
+            var stream = new PrintStream("/Users/brunobemfica/Downloads/splinker_teste.txt");
+            client.setStandardOut(stream);
             var service = new Service<Void>() {
 
                 @Override
@@ -42,6 +48,8 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService{
                         @Override
                         protected Void call() throws Exception {
                             var session = client.start(command);
+                            stream.flush();
+                            stream.close();
                             return null;
                         }
                     };
