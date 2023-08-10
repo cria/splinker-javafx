@@ -15,7 +15,7 @@ public class DatabaseSetup {
         
         executor.submit(() -> {
             try {
-                    var file = "%s/SpLinkerApp/scripts/sql/create_tables.sql".formatted(System.getProperty("user.dir"));
+                    var file = "%s/scripts/sql/create_tables.sql".formatted(System.getProperty("user.dir"));
                     var fullPath = Paths.get(file);
                     var lines = Files.readAllLines(fullPath);
                     var url = "jdbc:sqlite:splinker.db";
@@ -27,6 +27,7 @@ public class DatabaseSetup {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                System.exit(1);
             }
         });
     }
