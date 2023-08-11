@@ -5,8 +5,6 @@ import java.nio.file.Paths;
 import java.sql.DriverManager;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import br.org.cria.splinkerapp.models.DataSourceType;
-
 
 public class DatabaseSetup {
     private static final ExecutorService executor
@@ -30,10 +28,5 @@ public class DatabaseSetup {
                 System.exit(1);
             }
         });
-    }
-  
-    private static String getDbConnectioString(DataSourceType datasource){
-
-        return "";
     }
 }
