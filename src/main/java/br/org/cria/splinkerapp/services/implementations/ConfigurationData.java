@@ -1,34 +1,42 @@
 package br.org.cria.splinkerapp.services.implementations;
 
 import java.sql.SQLException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.sql.Statement;
 import static java.sql.DriverManager.getConnection;
 
-public class ConfigurationData  {
+public abstract class ConfigurationData  {
+
+    private static Statement getStatement() throws SQLException {
+        return getConnection("jdbc:sqlite:spLinker.db").createStatement();
+    }
     static int getRSyncPort() {
-        var dbUrl = "jdbc:sqlite:splinker.db";
-        try (var conn = getConnection(dbUrl)){
-            var sql = "";
-            var statement = conn.createStatement();
+        try {
+            var sql = """
+                       SELECT rsync_port, rsync_server_destination
+                       FROM TransferConfiguration LIMIT 1;
+                       """;
+            var statement = getStatement();
             var result = statement.executeQuery(sql);
+            return result.getInt("rsync_port");
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        //var commands = String.join("", lines);
-        //var statement = conn.createStatement();
-        return 10_000;
-    }
-
-    static String getDarwinCoreFileSourcePath() {
-        //var now = ZonedDateTime.now(ZoneId.systemDefault()).toLocalDateTime().toString();
-        //return System.getProperty("user.dir");
-        return "/Users/brunobemfica/Downloads/dwca-tropicosspecimens-v1.124.zip.old.zip";
     }
 
     static String getTransferDataDestination() {
-        return "bruno@34.68.143.184::meu_modulo";
-    }
 
+        try {
+            var sql = """
+                       SELECT rsync_server_destination
+                       FROM TransferConfiguration LIMIT 1;
+                       """;
+            var statement = getStatement();
+            var result = statement.executeQuery(sql);
+            return result.getString("rsync_server_destination");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
 }
