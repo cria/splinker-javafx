@@ -2,9 +2,10 @@ package br.org.cria.splinkerapp.services.interfaces;
 
 import br.org.cria.splinkerapp.models.DataSource;
 
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
-
+import javafx.concurrent.Service;
 public interface IDarwinCoreArchiveService {
     static List<String> getDarwinCoreFields() {
         return Arrays.asList("id", "type", "modified", "language", "license", "rightsHolder",
@@ -43,5 +44,5 @@ public interface IDarwinCoreArchiveService {
     IDarwinCoreArchiveService generateTXTFile();
     IDarwinCoreArchiveService generateZIPFile();
     IDarwinCoreArchiveService readDataFromSource(DataSource source);
-    IDarwinCoreArchiveService transferData();
+    Service transferData() throws FileNotFoundException;
 }

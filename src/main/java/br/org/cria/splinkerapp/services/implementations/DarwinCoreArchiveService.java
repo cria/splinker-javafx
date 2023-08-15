@@ -51,9 +51,7 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService{
     }
 
     @Override
-    public DarwinCoreArchiveService transferData() {
-        try
-        {
+    public Service transferData() {
             //TODO: Ler map.dat e db.dat das coleções.
             //Esses arquivos são combinados para montar o select dos dados
             // nas fontes de dados das coleções (DB, planilhas, Brahms, etc)
@@ -63,29 +61,18 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService{
             var destination = ConfigurationData.getTransferDataDestination();
             var command = new String[]{"--port=%s".formatted(port), "-r", source, destination};
             var client = new YajsyncClient();
-            var stream = new PrintStream("/Users/brunobemfica/Downloads/splinker_teste.txt");
-            client.setStandardOut(stream);
-            var service = new Service<Void>() {
+            return new Service<Void>() {
                 @Override
                 protected Task<Void> createTask() {
                     return new Task<>() {
                         @Override
                         protected Void call() throws Exception {
                             var session = client.start(command);
-                            stream.println();
-                            stream.flush();
-                            stream.close();
                             return null;
                         }
                     };
                 }
             };
-            service.start();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return this;
     }
-
 }

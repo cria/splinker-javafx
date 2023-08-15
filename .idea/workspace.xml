@@ -6,10 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="51b6b81a-06d2-4832-921b-ae8b390b0fd9" name="Changes" comment="Testando yajsync">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/sql/create_tables.sql" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/sql/create_tables.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/config/DatabaseSetup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/config/DatabaseSetup.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/ConfigurationData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/ConfigurationData.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/DarwinCoreArchiveService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/DarwinCoreArchiveService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/interfaces/IDarwinCoreArchiveService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/interfaces/IDarwinCoreArchiveService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -180,23 +178,13 @@
           <option name="timeStamp" value="11" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/DarwinCoreArchiveService.java</url>
-          <line>67</line>
-          <option name="timeStamp" value="18" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/config/DatabaseSetup.java</url>
           <line>15</line>
           <option name="timeStamp" value="19" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/DarwinCoreArchiveService.java</url>
-          <line>77</line>
-          <option name="timeStamp" value="21" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/interfaces/IDarwinCoreArchiveService.java</url>
-          <line>8</line>
+          <line>9</line>
           <properties class="br.org.cria.splinkerapp.services.interfaces.IDarwinCoreArchiveService" method="getDarwinCoreFields">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
