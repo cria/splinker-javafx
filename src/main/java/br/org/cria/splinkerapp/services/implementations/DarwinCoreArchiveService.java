@@ -2,11 +2,8 @@ package br.org.cria.splinkerapp.services.implementations;
 import br.org.cria.splinkerapp.models.DataSource;
 import br.org.cria.splinkerapp.services.interfaces.IDarwinCoreArchiveService;
 import com.github.perlundq.yajsync.ui.YajsyncClient;
-import javafx.beans.property.ObjectProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -47,7 +44,7 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService{
 
     @Override
     public DarwinCoreArchiveService readDataFromSource(DataSource source) {
-        throw new UnsupportedOperationException("Unimplemented method 'generateZIPFile'");
+        throw new UnsupportedOperationException("Unimplemented method 'readDataFromSource'");
     }
 
     @Override
@@ -57,7 +54,8 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService{
             // nas fontes de dados das coleções (DB, planilhas, Brahms, etc)
             // O que não for planilha, é banco sempre
             var port = ConfigurationData.getRSyncPort();
-            var source = "%s/splinker_dwca.zip".formatted(System.getProperty("user.dir"));
+            var source = "/Users/brunobemfica/Downloads/dummy_data.dart";
+            //var source = "%s/splinker_dwca.zip".formatted(System.getProperty("user.dir"));
             var destination = ConfigurationData.getTransferDataDestination();
             var command = new String[]{"--port=%s".formatted(port), "-r", source, destination};
             var client = new YajsyncClient();
