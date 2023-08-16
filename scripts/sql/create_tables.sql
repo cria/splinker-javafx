@@ -27,4 +27,5 @@ CREATE TABLE IF NOT EXISTS TransferConfiguration (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-INSERT INTO TransferConfiguration (rsync_port, rsync_server_destination) VALUES (10000, "bruno@34.68.143.184::meu_modulo");
+INSERT INTO TransferConfiguration (rsync_port, rsync_server_destination)
+VALUES (10000, 'bruno@34.68.143.184::meu_modulo');
