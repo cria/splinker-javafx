@@ -1,6 +1,7 @@
 package br.org.cria.splinkerapp.controllers;
 
 import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
+import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -40,26 +41,30 @@ public class HomeController extends AbstractController{
     @FXML
     void onSyncServerBtnClicked() throws Exception
     {
-        transferService = new DarwinCoreArchiveService().transferData();
-        if (transferService != null)
-        {
+       try
+       {
+           transferService = new DarwinCoreArchiveService().transferData();
+           if (transferService != null)
+           {
+               transferService.setOnFailed(event -> {
+                   var exception = transferService.getException();
+                   modalStage.hide();
+                   modalStage.close();
+                   showErrorModal(exception.getMessage());
 
-            transferService.setOnFailed(event -> {
-                var exception = transferService.getException();
-                modalStage.hide();
-                modalStage.close();
-                showErrorModal(exception.getMessage());
-
-            });
-            transferService.setOnSucceeded(event -> {
-                modalStage.hide();
-                modalStage.close();
-
-            });
-            transferService.start();
-            showTransferModal();
-
-        }
+               });
+               transferService.setOnSucceeded(event -> {
+                           modalStage.hide();
+                           modalStage.close();
+                });
+               transferService.start();
+               showTransferModal();
+           }
+       }
+       catch (Exception ex)
+       {
+           ex.printStackTrace();
+       }
     }
     void onCancelTransferButtonClicked()
     {
@@ -86,7 +91,6 @@ public class HomeController extends AbstractController{
     }
 
     void showTransferModal(){
-        Stage modalStage = new Stage();
         modalStage.initOwner(getStage());
         modalStage.initModality(Modality.WINDOW_MODAL);
         modalStage.initStyle(StageStyle.TRANSPARENT);
