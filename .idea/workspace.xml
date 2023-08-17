@@ -6,7 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="51b6b81a-06d2-4832-921b-ae8b390b0fd9" name="Changes" comment="Testando yajsync">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FileSelectionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FileSelectionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +49,7 @@
       <recent name="$PROJECT_DIR$/src/libs" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.Main">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="br.org.cria.splinkerapp.Main" />
       <module name="spLinker" />
@@ -61,9 +63,14 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="esproc-bin-20230621.jar" type="JarApplication" temporary="true">
+      <option name="JAR_PATH" value="$PROJECT_DIR$/src/libs/esproc-bin-20230621.jar" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Application.Main" />
+        <item itemvalue="JAR Application.esproc-bin-20230621.jar" />
       </list>
     </recent_temporary>
   </component>
@@ -200,6 +207,11 @@
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java</url>
           <line>57</line>
           <option name="timeStamp" value="44" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FileSelectionController.java</url>
+          <line>33</line>
+          <option name="timeStamp" value="45" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/interfaces/IDarwinCoreArchiveService.java</url>
