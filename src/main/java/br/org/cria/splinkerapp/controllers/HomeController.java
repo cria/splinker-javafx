@@ -1,7 +1,12 @@
 package br.org.cria.splinkerapp.controllers;
 
+import java.time.Duration;
+import java.time.Instant;
+
+import br.org.cria.splinkerapp.models.DataSource;
+import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
-import javafx.application.Platform;
+import br.org.cria.splinkerapp.services.implementations.ExcelFileSourceParser;
 import javafx.concurrent.Service;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -43,26 +48,44 @@ public class HomeController extends AbstractController{
     {
        try
        {
-           transferService = new DarwinCoreArchiveService().transferData();
-           if (transferService != null)
-           {
-               transferService.setOnFailed(event -> {
-                   var exception = transferService.getException();
-                   modalStage.hide();
-                   modalStage.close();
-                   showErrorModal(exception.getMessage());
+        //    transferService = new DarwinCoreArchiveService().transferData();
+        //    if (transferService != null)
+        //    {
+        //        transferService.setOnFailed(event -> {
+        //            var exception = transferService.getException();
+        //            modalStage.hide();
+        //            modalStage.close();
+        //            showErrorModal(exception.getMessage());
 
-               });
-               transferService.setOnSucceeded(event -> {
-                           modalStage.hide();
-                           modalStage.close();
-                });
-               transferService.start();
-               showTransferModal();
-           }
+        //        });
+        //        transferService.setOnSucceeded(event -> {
+        //                    modalStage.hide();
+        //                    modalStage.close();
+        //         });
+        //        transferService.start();
+        //        showTransferModal();
+        //    }
+        //var path = "/Users/brunobemfica/Downloads/BancoHerbario08_08_23.xlsx";
+        //var path = "/Users/brunobemfica/Orders.csv";
+        var path = "/Users/brunobemfica/Downloads/CSVBancoHerbario08_08_23.csv";
+        Instant start = Instant.now();
+        var sourceParser = new ExcelFileSourceParser(path);
+        
+        sourceParser.createTableBasedOnSheet();
+        sourceParser.insertDataIntoTable();
+        Instant end = Instant.now();
+        Duration interval = Duration.between(start, end);
+ 
+        System.out.println("Execution time in seconds: " + (interval.getSeconds()));
+        var ds = new DataSource();
+        ds.setType(DataSourceType.Excel);
+        new DarwinCoreArchiveService().readDataFromSource(ds);
+ 
+
        }
        catch (Exception ex)
        {
+        System.out.println("\n\n\n" + ex.toString() + "\n\n\n\n");
            ex.printStackTrace();
        }
     }
