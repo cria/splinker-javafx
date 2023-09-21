@@ -6,12 +6,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 import javafx.concurrent.Service;
 public interface IDarwinCoreArchiveService {
-    IDarwinCoreArchiveService generateTXTFile() throws IOException;
+    IDarwinCoreArchiveService generateTXTFile() throws IOException, SQLException;
     IDarwinCoreArchiveService generateZIPFile() throws IOException;
     IDarwinCoreArchiveService readDataFromSource(DataSource source) throws SQLException, IOException, URISyntaxException;
-    Service transferData() throws FileNotFoundException;
+    Service<Void> transferData() throws FileNotFoundException;
 }
