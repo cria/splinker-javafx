@@ -20,6 +20,12 @@
     <url>file://${project.basedir}/src/libs</url>
   </repository>
 </repositories>
+        <!-- https://mvnrepository.com/artifact/com.github.albfernandez/javadbf -->
+        <dependency>
+            <groupId>com.github.albfernandez</groupId>
+            <artifactId>javadbf</artifactId>
+            <version>1.14.0</version>
+        </dependency>
         <dependencies>
          <!-- https://mvnrepository.com/artifact/org.jopendocument/jOpenDocument -->
             <dependency>
