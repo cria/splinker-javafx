@@ -78,7 +78,6 @@ public class HomeController extends AbstractController{
  
         System.out.println("Execution time in seconds: " + (interval.getSeconds()));
         var ds = new DataSource();
-        ds.setType(DataSourceType.Excel);
         new DarwinCoreArchiveService().readDataFromSource(ds);
  
 
