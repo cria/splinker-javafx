@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.org.cria</groupId>
-    <artifactId>spLinker</artifactId>
+    <artifactId>splinker</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>spLinker</name>
 
@@ -20,13 +19,14 @@
     <url>file://${project.basedir}/src/libs</url>
   </repository>
 </repositories>
+    <dependencies>
         <!-- https://mvnrepository.com/artifact/com.github.albfernandez/javadbf -->
         <dependency>
             <groupId>com.github.albfernandez</groupId>
             <artifactId>javadbf</artifactId>
             <version>1.14.0</version>
         </dependency>
-        <dependencies>
+        
          <!-- https://mvnrepository.com/artifact/org.jopendocument/jOpenDocument -->
             <dependency>
                 <groupId>org.jopendocument</groupId>
@@ -38,7 +38,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
-                <version>1.23.0</version>
+                <version>1.24.0</version>
             </dependency>
 
             <dependency>
@@ -133,7 +133,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>br.org.cria.splinkerapp/br.org.cria.splinkerapp.Main</mainClass>
+                            <mainClass>br.org.cria.splinkerapp.App</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
