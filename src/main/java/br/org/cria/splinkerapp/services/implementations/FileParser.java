@@ -15,11 +15,21 @@ public abstract class FileParser {
     public void createTable(){};
     public void insertData(){};
     public abstract List<String> getRowAsStringList();
+    protected abstract String buildCreateTableCommand();
     protected String normalizeString(String str) 
     {
         return StringUtils.stripAccents(str.toLowerCase()).replace(" ", "_")
                 .replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}]", "_").trim();
     }
+
+    public void createTableBasedOnSheet() throws SQLException {
+        var command = buildCreateTableCommand();
+        var conn = getConnection();
+        var statement = conn.createStatement();
+        var result = statement.executeUpdate(command);
+        System.out.println(result);
+    }
+
 
     
 }
