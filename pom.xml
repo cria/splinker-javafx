@@ -26,12 +26,11 @@
             <artifactId>javadbf</artifactId>
             <version>1.14.0</version>
         </dependency>
-        
-         <!-- https://mvnrepository.com/artifact/org.jopendocument/jOpenDocument -->
+            <!-- https://mvnrepository.com/artifact/com.github.miachm.sods/SODS -->
             <dependency>
-                <groupId>org.jopendocument</groupId>
-                <artifactId>jOpenDocument</artifactId>
-                <version>1.3</version>
+                <groupId>com.github.miachm.sods</groupId>
+                <artifactId>SODS</artifactId>
+                <version>1.6.4</version>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
