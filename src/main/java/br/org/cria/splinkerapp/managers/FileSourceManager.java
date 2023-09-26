@@ -30,7 +30,7 @@ public class FileSourceManager {
                         var isOds = filePath.endsWith(".ods");
                         var isDbf = filePath.endsWith(".dbf");
                         
-                        if(isExcel ||isCsv)
+                        if(isExcel)
                         {
                             fileParser = new ExcelFileParser(filePath);
                             type = DataSourceType.Excel;
