@@ -5,7 +5,8 @@ public enum DataSourceType {
     PostgreSQL,
     SQLServer,
     Access,
-    dBase,
+    dBaseDBF,
     Excel,
-    LibreOfficeCalc
+    LibreOfficeCalcODS,
+    CSV
 }
