@@ -13,7 +13,7 @@ import com.opencsv.exceptions.CsvValidationException;
 public abstract class FileParser {
     protected String tableName;
     protected Connection getConnection() throws SQLException { return DriverManager.getConnection("jdbc:sqlite:splinker.db"); }
-
+    protected String getTableName(){ return "spLinker_%s".formatted(getClass().getSimpleName());}
     public abstract void insertDataIntoTable() throws SQLException, CsvValidationException, IOException;
     protected abstract List<String> getRowAsStringList(Object row, int numberOfColumns);
     protected abstract String buildCreateTableCommand();
