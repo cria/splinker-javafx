@@ -2,12 +2,12 @@ package br.org.cria.splinkerapp.managers;
 
 import br.org.cria.splinkerapp.models.DataSource;
 import br.org.cria.splinkerapp.models.DataSourceType;
-import br.org.cria.splinkerapp.services.implementations.CsvFileParser;
+import br.org.cria.splinkerapp.parsers.CsvFileParser;
+import br.org.cria.splinkerapp.parsers.DbfFileParser;
+import br.org.cria.splinkerapp.parsers.ExcelFileParser;
+import br.org.cria.splinkerapp.parsers.FileParser;
+import br.org.cria.splinkerapp.parsers.OdsFileParser;
 import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
-import br.org.cria.splinkerapp.services.implementations.DbfFileParser;
-import br.org.cria.splinkerapp.services.implementations.ExcelFileParser;
-import br.org.cria.splinkerapp.services.implementations.FileParser;
-import br.org.cria.splinkerapp.services.implementations.OdsFileParser;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
@@ -52,11 +52,11 @@ public class FileSourceManager {
                         }
                         fileParser.createTableBasedOnSheet();
                         fileParser.insertDataIntoTable();
-                        var dwcManager = new DarwinCoreArchiveService();
-                        dwcManager.readDataFromSource(new DataSource(type))
-                        .generateTXTFile()
-                        .generateZIPFile()
-                        .transferData();
+                        // var dwcManager = new DarwinCoreArchiveService();
+                        // dwcManager.readDataFromSource(new DataSource(type))
+                        // .generateTXTFile()
+                        // .generateZIPFile()
+                        // .transferData();
                         return null;
                     }
                 };

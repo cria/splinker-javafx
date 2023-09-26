@@ -1,11 +1,8 @@
 package br.org.cria.splinkerapp.controllers;
 
 import java.io.File;
-
-import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
-import br.org.cria.splinkerapp.services.implementations.ExcelFileSourceParser;
 import br.org.cria.splinkerapp.Router;
-import br.org.cria.splinkerapp.models.DataSource;
+import br.org.cria.splinkerapp.managers.FileSourceManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -34,17 +31,28 @@ public class FileSelectionController extends AbstractController{
         File file = fileChooser.showOpenDialog(getStage());
         if (file != null) 
         {
+            
             filePath.setText(file.getAbsolutePath());
             try
             {
-                var sourceParser = new ExcelFileSourceParser(file.getAbsolutePath());
-                var dwcManager = new DarwinCoreArchiveService();
-                sourceParser.createTableBasedOnSheet();
-                sourceParser.insertDataIntoTable();
-                dwcManager.readDataFromSource(new DataSource())
-                .generateTXTFile()
-                .generateZIPFile()
-                .transferData();
+                transferService = FileSourceManager.processData(file.getAbsolutePath());
+                if (transferService != null)
+                   {
+                       transferService.setOnFailed(event -> {
+                           var exception = transferService.getException();
+                           modalStage.hide();
+                           modalStage.close();
+                           showErrorModal(exception.getMessage());
+
+                       });
+                       transferService.setOnSucceeded(event -> {
+                                   modalStage.hide();
+                                   modalStage.close();
+ 
+                        });
+                       transferService.start();
+                       showTransferModal("Transferindo");
+                   }
                 
             }
             catch (Exception ex)

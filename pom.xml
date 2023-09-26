@@ -20,6 +20,12 @@
   </repository>
 </repositories>
     <dependencies>
+            <!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.8</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.github.albfernandez/javadbf -->
         <dependency>
             <groupId>com.github.albfernandez</groupId>
