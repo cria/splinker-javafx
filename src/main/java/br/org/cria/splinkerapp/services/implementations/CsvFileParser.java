@@ -1,26 +1,22 @@
 package br.org.cria.splinkerapp.services.implementations;
 
-import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-public class CsvFileParser extends FileParser{
+public class CsvFileParser extends FileParser {
 
-    BufferedReader reader;
+    CSVReader  reader;
     String limiter;
-    List<String> lines = new ArrayList<String>();
+    String[] columnRow;
     public CsvFileParser(String filePath) throws Exception
     {
-        reader = new BufferedReader(new FileReader(filePath));
-        var fullPath = Paths.get(filePath);
-        lines = Files.readAllLines(fullPath);
+        reader = new CSVReader(new FileReader(filePath));
+        columnRow = reader.readNext();
     }
     
     String getCsvSeparator(String firstLine) throws IOException 
@@ -31,7 +27,6 @@ public class CsvFileParser extends FileParser{
         for (String searchItem : searchList) 
         {
             int index = firstLine.indexOf(searchItem);
-            
             if (index != -1 && index < lowestIndex)
             {
                 lowestIndex = index;
@@ -42,57 +37,41 @@ public class CsvFileParser extends FileParser{
     }
 
     @Override
-    public List<String> getRowAsStringList() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRowAsStringList'");
+    public List<String> getRowAsStringList(Object row, int numberOfColumns) 
+    {
+        String[] fullRow = (String[]) row;
+        return Arrays.asList(fullRow);
     }
 
     @Override
     protected String buildCreateTableCommand() 
     {
         var tableName = "spLinker";
-        List<String> columns = Arrays.stream(lines.get(0).split(limiter)).map((e)-> "%s VARCHAR(1),".formatted(makeColumnName(e))).toList();
+        List<String> columns = getRowAsStringList(columnRow, columnRow.length).stream().map((e)-> "%s VARCHAR(1),".formatted(makeColumnName(e))).toList();
         var columnNames = String.join(",", columns);
         var command = "CREATE TABLE IF NOT EXISTS %s (%s)".formatted(tableName,columnNames);
         return command;
     }
 
     @Override
-    protected void extractColumnNames() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'extractColumnNames'");
-    }
-
-    @Override
-    protected void readRows() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'readRows'");
-    }
-
-    @Override
-    public void insertData() throws SQLException {
-        var tableName = "spLinker";
-        var columns =  Arrays.stream(lines.get(0).split(limiter)).map((e)-> makeColumnName(e)).toList();
-        var columnNames = String.join(",", columns);
-        var rows = lines.subList(1, lines.size()-1);
+    public void insertDataIntoTable() throws SQLException, CsvValidationException, IOException {
+        String[] nextLine;
         var conn = getConnection();
+        var tableName = "spLinker";
+        var valuesStr= makeValueString(columnRow.length);
         var commandBase = "INSERT INTO %s (%s) VALUES (%s);";
-        var valuesStr= makeValueString(columns.size());
-        var command = commandBase.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
-        var statement = conn.prepareStatement(command);
-        
-        for(String row: rows)
+        var columns = getRowAsStringList(columnRow, columnRow.length).stream().map((e)->makeColumnName(e)).toList();
+        var columnNames = String.join(",", columns);
+        while ((nextLine = reader.readNext()) != null) 
         {
-            var valuesList = Arrays.stream(row.split(limiter)).map("'%s'"::formatted).toList();
-        
-            for (int k = 0; k < columns.size(); k++) 
+            var command = commandBase.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
+            var statement = conn.prepareStatement(command);
+            for (int i = 0; i < columnRow.length; i++) 
             {
-                statement.setString(k+1, valuesList.get(k));    
+                statement.setString(i + 1, nextLine[i]);
             }
+            statement.executeUpdate();
         }
-        statement.executeUpdate();    
-        
-        throw new UnsupportedOperationException("Unimplemented method 'insertData'");
+        conn.close();
     }
-    
 }
