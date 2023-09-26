@@ -24,7 +24,7 @@ public class FileSourceManager {
                     protected Void call() throws Exception
                     {
                         FileParser fileParser = null;
-                        DataSourceType type;
+                        DataSourceType type = null;
                         var isExcel = filePath.endsWith(".xlsx") ||filePath.endsWith(".xls");
                         var isCsv = filePath.endsWith(".csv");
                         var isOds = filePath.endsWith(".ods");
@@ -53,7 +53,7 @@ public class FileSourceManager {
                         fileParser.createTableBasedOnSheet();
                         fileParser.insertDataIntoTable();
                         var dwcManager = new DarwinCoreArchiveService();
-                        dwcManager.readDataFromSource(new DataSource(DataSourceType.Access))
+                        dwcManager.readDataFromSource(new DataSource(type))
                         .generateTXTFile()
                         .generateZIPFile()
                         .transferData();
