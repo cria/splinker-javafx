@@ -1,9 +1,6 @@
-package br.org.cria.splinkerapp.services.implementations;
+package br.org.cria.splinkerapp.parsers;
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,19 +16,10 @@ public class ExcelFileParser extends FileParser{
     String fileSourcePath;
     Workbook workbook;
 
-    public ExcelFileParser(String fileSourcePath) 
+    public ExcelFileParser(String fileSourcePath) throws IOException
     {
         this.fileSourcePath = fileSourcePath;
-
-        try {
-            workbook = fileSourcePath.endsWith(".csv") ? 
-                            csvToExcel(fileSourcePath) : 
-                            new XSSFWorkbook(new FileInputStream(fileSourcePath));
-
-        } catch (IOException e) {
-
-            e.printStackTrace();
-        }
+        workbook = new XSSFWorkbook(new FileInputStream(fileSourcePath));
     }
     @Override
     protected String buildCreateTableCommand() 
@@ -108,46 +96,4 @@ public class ExcelFileParser extends FileParser{
         }
     }
 
-    protected Workbook csvToExcel(String csvPath) throws FileNotFoundException, IOException {
-        workbook = new XSSFWorkbook();
-        var sheet = workbook.createSheet("spLinker");
-        var reader = new BufferedReader(new FileReader(csvPath));
-        var separator = getCsvSeparator(csvPath);
-        String line;
-        int rowNumber = 0;
-        while ((line = reader.readLine()) != null) {
-            Row row = sheet.createRow(rowNumber++);
-            String[] cells = line.split("%s".formatted(separator));
-            int columnNumber = 0;
-            for (String cellData : cells) {
-                Cell cell = row.createCell(columnNumber++);
-                cell.setCellValue(cellData);
-            }
-        }
-        reader.close();
-        
-        return workbook;
-    }
-
-    String getCsvSeparator(String filePath) throws IOException {
-        String result = null;
-    
-        try (var reader = new BufferedReader(new FileReader(filePath))) 
-        {
-            String firstLine = reader.readLine();
-            var searchList =List.of( ",", ";", "\t", "|", ":" );
-            int lowestIndex = Integer.MAX_VALUE;
-            
-            for (String searchItem : searchList) {
-                int index = firstLine.indexOf(searchItem);
-                if (index != -1 && index < lowestIndex) {
-                    lowestIndex = index;
-                    result = searchItem;
-                }
-            }
-        } catch (Exception e) {
-            throw e;
-        }
-        return result;
-    }
 }
