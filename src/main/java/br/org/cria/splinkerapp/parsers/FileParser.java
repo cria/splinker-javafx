@@ -1,5 +1,6 @@
-package br.org.cria.splinkerapp.services.implementations;
+package br.org.cria.splinkerapp.parsers;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -7,10 +8,13 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.opencsv.exceptions.CsvValidationException;
+
 public abstract class FileParser {
+    protected String tableName;
     protected Connection getConnection() throws SQLException { return DriverManager.getConnection("jdbc:sqlite:splinker.db"); }
 
-    public abstract void insertDataIntoTable() throws SQLException;
+    public abstract void insertDataIntoTable() throws SQLException, CsvValidationException, IOException;
     protected abstract List<String> getRowAsStringList(Object row, int numberOfColumns);
     protected abstract String buildCreateTableCommand();
 

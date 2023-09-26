@@ -1,9 +1,10 @@
-package br.org.cria.splinkerapp.services.implementations;
+package br.org.cria.splinkerapp.parsers;
 
 import java.io.FileReader;
 import java.sql.SQLException;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;

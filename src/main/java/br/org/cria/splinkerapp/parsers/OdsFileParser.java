@@ -1,4 +1,4 @@
-package br.org.cria.splinkerapp.services.implementations;
+package br.org.cria.splinkerapp.parsers;
 
 import java.io.File;
 import java.io.IOException;
