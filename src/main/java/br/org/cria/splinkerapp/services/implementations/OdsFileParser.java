@@ -14,18 +14,17 @@ import org.apache.commons.lang3.StringUtils;
 import com.github.miachm.sods.Sheet;
 import com.github.miachm.sods.SpreadSheet;
 
-public class OdsParser {
+public class OdsFileParser {
     private String filePath;
     private Connection conn;
     private SpreadSheet spreadSheet;
-    public OdsParser(String filePath) {
+    public OdsFileParser(String filePath) {
         this.filePath = filePath;
         try 
         {
             this.spreadSheet = new SpreadSheet(new File(this.filePath));
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:splinker.db");
-
         } 
         catch (ClassNotFoundException | SQLException e) 
         {

@@ -7,21 +7,17 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.Row;
-
 import com.linuxense.javadbf.DBFException;
 import com.linuxense.javadbf.DBFReader;
-import com.linuxense.javadbf.DBFUtils;
 
-public class DbfParser {
+public class DbfFileParser 
+{
     String fileSourcePath;
 	List<String> columnNameList = new ArrayList<String>();
     DBFReader reader = null;
-    public DbfParser(String fileSourcePath){
+    public DbfFileParser(String fileSourcePath)
+	{
         this.fileSourcePath = fileSourcePath;
 		try 
 		{
@@ -46,9 +42,10 @@ public class DbfParser {
 		var conn = getConnection();
 		int numberOfColumns = reader.getFieldCount();
 		var tableName = "spLinker";
-		var columns = this.columnNameList.stream().map((col) -> normalizeString(col)).toList();
+		//var columns = this.columnNameList.stream().map((col) ->  "`%s`".formatted(normalizeString(col))).toList();
         var valuesStr = "?,".repeat(numberOfColumns);
-        var columnNames = String.join(",", columns);
+        var columnNames = String.join(",", columnNameList);
+		var rowNum = 1;
 		while ((rowObjects = reader.nextRecord()) != null) 
 		{
 			
@@ -61,8 +58,11 @@ public class DbfParser {
             {
             	statement.setString(k+1, valuesList.get(k));    
             }
-            statement.executeUpdate();    
+            var response = statement.executeUpdate();    
+			System.out.println("inserting %s line response: %s".formatted(rowNum, response));
+			rowNum++;
 		}
+		System.out.println("inserted all data in the DB");
 		conn.close();
 	}
 	public String buildCreateTableCommand() 
@@ -76,7 +76,7 @@ public class DbfParser {
 			for (int i = 0; i < numberOfFields; i++) 
 			{
 
-				String columnName = normalizeString(reader.getField(i).getName());
+				String columnName = "`%s`".formatted(normalizeString(reader.getField(i).getName()));
 				columnNameList.add(columnName);
                 builder.append("%s VARCHAR(1),".formatted(columnName));
 					
@@ -87,7 +87,7 @@ public class DbfParser {
 	}
 	protected String normalizeString(String str) 
     {
-    	return StringUtils.stripAccents(str.toLowerCase()).replace(" ", "_")
+    	return StringUtils.stripAccents(str.toLowerCase()).replace(" ", "")
                 .replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}]", "_").trim();
     }
 	protected Connection getConnection() throws SQLException {

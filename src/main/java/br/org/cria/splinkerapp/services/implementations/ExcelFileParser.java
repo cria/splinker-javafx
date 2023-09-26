@@ -18,11 +18,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import br.org.cria.splinkerapp.services.interfaces.FileSourceParser;
 
-public class ExcelFileSourceParser extends FileSourceParser{
+public class ExcelFileParser extends FileSourceParser{
     String fileSourcePath;
     Workbook workbook;
 
-    public ExcelFileSourceParser(String fileSourcePath) {
+    public ExcelFileParser(String fileSourcePath) {
         this.fileSourcePath = fileSourcePath;
 
         try {
@@ -36,7 +36,8 @@ public class ExcelFileSourceParser extends FileSourceParser{
         }
     }
 
-    protected String buildCreateTableCommand() {
+    protected String buildCreateTableCommand() 
+    {
         int numberOfTabs = workbook.getNumberOfSheets();
         var builder = new StringBuilder();
         for (int i = 0; i < numberOfTabs; i++) {
