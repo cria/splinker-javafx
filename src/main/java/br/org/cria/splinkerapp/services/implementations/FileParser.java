@@ -10,18 +10,17 @@ import org.apache.commons.lang3.StringUtils;
 public abstract class FileParser {
     protected Connection getConnection() throws SQLException { return DriverManager.getConnection("jdbc:sqlite:splinker.db"); }
 
-    public void extractColumnNames(){}
-    public void readRows(){};
-    public void createTable(){};
-    public void insertData(){};
-    public abstract List<String> getRowAsStringList();
+    public abstract void insertDataIntoTable() throws SQLException;
+    protected abstract List<String> getRowAsStringList(Object row, int numberOfColumns);
     protected abstract String buildCreateTableCommand();
+
     protected String normalizeString(String str) 
     {
         return StringUtils.stripAccents(str.toLowerCase()).replace(" ", "_")
                 .replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}]", "_").trim();
     }
-
+    protected String makeValueString(int numberOfColumns) { return "?,".repeat(numberOfColumns); }
+    protected String makeColumnName(String originalField) { return "`%s`".formatted(normalizeString(originalField));}
     public void createTableBasedOnSheet() throws SQLException {
         var command = buildCreateTableCommand();
         var conn = getConnection();

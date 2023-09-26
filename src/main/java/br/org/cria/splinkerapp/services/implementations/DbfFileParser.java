@@ -7,11 +7,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 import com.linuxense.javadbf.DBFException;
 import com.linuxense.javadbf.DBFReader;
 
-public class DbfFileParser 
+public class DbfFileParser extends FileParser
 {
     String fileSourcePath;
 	List<String> columnNameList = new ArrayList<String>();
@@ -36,8 +35,9 @@ public class DbfFileParser
 		// 	DBFUtils.close(reader);
 		// }
     }
-
-	public void insertDataIntoTable() throws SQLException{
+	@Override
+	public void insertDataIntoTable() throws SQLException 
+	{
 		Object[] rowObjects;
 		var conn = getConnection();
 		int numberOfColumns = reader.getFieldCount();
@@ -65,6 +65,7 @@ public class DbfFileParser
 		System.out.println("inserted all data in the DB");
 		conn.close();
 	}
+	@Override
 	public String buildCreateTableCommand() 
 	{
         
@@ -83,35 +84,24 @@ public class DbfFileParser
 			}
             
 			builder.append(");");
-        	return builder.toString().replace(",);", ");");
+        	var command = builder.toString().replace(",);", ");");
+			return command;
 	}
-	protected String normalizeString(String str) 
-    {
-    	return StringUtils.stripAccents(str.toLowerCase()).replace(" ", "")
-                .replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}]", "_").trim();
-    }
-	protected Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:sqlite:splinker.db");
-    }
 
-	 protected List<String> getRowAsStringList(Object[] row, int numberOfCells) {
+	@Override
+	protected List<String> getRowAsStringList(Object row, int numberOfColumns) 
+	{
+		var fullRow = (Object[]) row;
         var list = new ArrayList<String>();
         
-        for (int colNum = 0; colNum < numberOfCells; colNum++) {
-            var value = row[colNum];
+        for (int colNum = 0; colNum < numberOfColumns; colNum++) {
+            var value = fullRow[colNum];
             list.add(value == null? "": value.toString());
 
         }
 
         return list;
 
-    }
-	public void createTableBasedOnSheet() throws SQLException {
-        var command = buildCreateTableCommand();
-        var conn = getConnection();
-        var statement = conn.createStatement();
-        var result = statement.executeUpdate(command);
-        System.out.println(result);
     }
 
 }

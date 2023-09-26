@@ -5,24 +5,22 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import br.org.cria.splinkerapp.services.interfaces.FileSourceParser;
 
-public class ExcelFileParser extends FileSourceParser{
+
+public class ExcelFileParser extends FileParser{
     String fileSourcePath;
     Workbook workbook;
 
-    public ExcelFileParser(String fileSourcePath) {
+    public ExcelFileParser(String fileSourcePath) 
+    {
         this.fileSourcePath = fileSourcePath;
 
         try {
@@ -35,7 +33,7 @@ public class ExcelFileParser extends FileSourceParser{
             e.printStackTrace();
         }
     }
-
+    @Override
     protected String buildCreateTableCommand() 
     {
         int numberOfTabs = workbook.getNumberOfSheets();
@@ -52,42 +50,26 @@ public class ExcelFileParser extends FileSourceParser{
             }
             builder.append(");");
         }
-        return builder.toString().replace(",);", ");");
+        var command = builder.toString().replace(",);", ");");
+        return command;
     }
-
-    protected String normalizeString(String str) {
-        return StringUtils.stripAccents(str.toLowerCase()).replace(" ", "_")
-                .replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}]", "_").trim();
-    }
-
-    protected Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:sqlite:splinker.db");
-    }
-
-    public void createTableBasedOnSheet() throws SQLException {
-        var command = buildCreateTableCommand();
-        var conn = getConnection();
-        var statement = conn.createStatement();
-        var result = statement.executeUpdate(command);
-        System.out.println(result);
-    }
-
-    protected List<String> getRowAsStringList(Row row, int numberOfCells) {
+    @Override
+    protected List<String> getRowAsStringList(Object row, int numberOfColumns) {
+        var fullRow = (Row) row;
         var list = new ArrayList<String>();
         var formatter = new DataFormatter();
 
-        for (int colNum = 0; colNum < numberOfCells; colNum++) {
+        for (int colNum = 0; colNum < numberOfColumns; colNum++) {
 
-            Cell cell = row.getCell(colNum, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            Cell cell = fullRow.getCell(colNum, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             var cellValue = formatter.formatCellValue(cell);
             list.add(cellValue);
-
         }
 
         return list;
 
     }
-
+    @Override
     public void insertDataIntoTable() throws SQLException {
         try {
                 int numberOfTabs = workbook.getNumberOfSheets();
