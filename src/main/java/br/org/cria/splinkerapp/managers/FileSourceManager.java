@@ -13,8 +13,9 @@ import javafx.concurrent.Task;
 
 public class FileSourceManager {
 
-    public static Service<Void> processData(String filePath) throws Exception
+    public static Service<Void> processData(String fileToProcess) throws Exception
     {
+        var filePath = fileToProcess.toLowerCase();
         return new Service<Void>() {
             @Override
             protected Task<Void> createTask()
@@ -23,6 +24,7 @@ public class FileSourceManager {
                     @Override
                     protected Void call() throws Exception
                     {
+                        
                         FileParser fileParser = null;
                         DataSourceType type = null;
                         var isExcel = filePath.endsWith(".xlsx") ||filePath.endsWith(".xls");
