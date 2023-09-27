@@ -3,6 +3,7 @@ package br.org.cria.splinkerapp.controllers;
 import javafx.concurrent.Service;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -17,15 +18,25 @@ public abstract class AbstractController{
     
     protected abstract Pane getPane();
 
-    protected Stage getStage(){
-        
-        try {
+    protected void showAlert(AlertType type, String title, String message)
+    {
+        Alert dialog = new Alert(type);
+        dialog.setTitle(title);
+        dialog.setContentText(message);
+        dialog.show();
+    }
+    protected Stage getStage()
+    {
+        try 
+        {
             var pane = getPane();
             var scene = pane.getScene();
             var stage = (Stage)scene.getWindow();
             stage.setResizable(false);
             return stage;    
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             System.out.println("ERROR!\n");
             System.out.println(e);
             System.out.println("\n END ERROR!\n");
@@ -46,7 +57,7 @@ public abstract class AbstractController{
         modalStage.showAndWait();
 
     }
-        void showErrorModal(String errorMessage) {
+    void showErrorModal(String errorMessage) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.setTitle("Error");
