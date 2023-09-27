@@ -9,11 +9,16 @@ import org.apache.commons.lang3.StringUtils;
 public abstract class FileParser {
     protected FileParser() throws Exception
     {
-        var conn = getConnection();
-        var table = getTableName();
-        conn.createStatement().execute("DROP TABLE IF EXISTS %s;".formatted(table));
+        dropTable(null);
     }
-    protected String tableName;
+    protected void dropTable(String tableName) throws Exception{
+        if(tableName == null)
+        {
+            tableName = getTableName();
+        }
+        
+        getConnection().createStatement().execute("DROP TABLE IF EXISTS %s;".formatted(tableName));
+    }
     protected static String createTableCommand = "CREATE TABLE IF NOT EXISTS %s (%s)";
     protected static String insertIntoCommand = "INSERT INTO %s (%s) VALUES (%s);";
     protected Connection getConnection() throws SQLException { return DriverManager.getConnection("jdbc:sqlite:splinker.db"); }
