@@ -1,7 +1,6 @@
 package br.org.cria.splinkerapp.parsers;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,7 @@ public class ExcelFileParser extends FileParser{
     String fileSourcePath;
     Workbook workbook;
 
-    public ExcelFileParser(String fileSourcePath) throws IOException
+    public ExcelFileParser(String fileSourcePath) throws Exception
     {
         this.fileSourcePath = fileSourcePath;
         workbook = new XSSFWorkbook(new FileInputStream(fileSourcePath));
@@ -76,18 +75,19 @@ public class ExcelFileParser extends FileParser{
                         if(row != null) 
                         {
                             var valuesList = getRowAsStringList(row, numberOfColumns).stream().map("'%s'"::formatted).toList();
-                            var commandBase = "INSERT INTO %s (%s) VALUES (%s);";
-                            var command = commandBase.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
+                            var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
                             var statement = conn.prepareStatement(command);
                             
                             for (int k = 0; k < valuesList.size(); k++) 
                             {
                                 statement.setString(k+1, valuesList.get(k));    
                             }
-                            statement.executeUpdate();    
+                            statement.executeUpdate();  
+                            statement.close();  
                         }
                         
-                    }
+                }
+                conn.close();
         }
 
 

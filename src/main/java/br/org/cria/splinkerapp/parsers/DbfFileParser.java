@@ -13,7 +13,7 @@ public class DbfFileParser extends FileParser
     String fileSourcePath;
 	List<String> columnNameList = new ArrayList<String>();
     DBFReader reader = null;
-    public DbfFileParser(String fileSourcePath)
+    public DbfFileParser(String fileSourcePath) throws Exception
 	{
         this.fileSourcePath = fileSourcePath;
 		try 
@@ -40,15 +40,13 @@ public class DbfFileParser extends FileParser
 		var conn = getConnection();
 		int numberOfColumns = reader.getFieldCount();
 		var tableName = getTableName();
-		//var columns = this.columnNameList.stream().map((col) ->  "`%s`".formatted(normalizeString(col))).toList();
-        var valuesStr = "?,".repeat(numberOfColumns);
+		var valuesStr = "?,".repeat(numberOfColumns);
         var columnNames = String.join(",", columnNameList);
 		while ((rowObjects = reader.nextRecord()) != null) 
 		{
 			
 			var valuesList = getRowAsStringList(rowObjects, numberOfColumns).stream().map("'%s'"::formatted).toList();
-            var commandBase = "INSERT INTO %s (%s) VALUES (%s);";
-            var command = commandBase.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
+            var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
             var statement = conn.prepareStatement(command);
                             
             for (int k = 0; k < valuesList.size(); k++) 
@@ -72,7 +70,6 @@ public class DbfFileParser extends FileParser
 			
 			for (int i = 0; i < numberOfFields; i++) 
 			{
-
 				String columnName = "`%s`".formatted(normalizeString(reader.getField(i).getName()));
 				columnNameList.add(columnName);
                 builder.append("%s VARCHAR(1),".formatted(columnName));

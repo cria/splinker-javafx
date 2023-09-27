@@ -1,112 +1,65 @@
 package br.org.cria.splinkerapp.parsers;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
 import com.github.miachm.sods.Range;
 import com.github.miachm.sods.Sheet;
 import com.github.miachm.sods.SpreadSheet;
 
 public class OdsFileParser extends FileParser{
     private String filePath;
-    private Connection conn;
     private SpreadSheet spreadSheet;
-    public OdsFileParser(String filePath) {
+    public OdsFileParser(String filePath)  throws Exception
+    {
         this.filePath = filePath;
-        try 
-        {
-            this.spreadSheet = new SpreadSheet(new File(this.filePath));
-            Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:splinker.db");
-        } 
-        catch (ClassNotFoundException | SQLException e) 
-        {
-            e.printStackTrace();
-         } 
-         catch (IOException e) 
-         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            }
-    }
-
-    public Service processFiles()
-    {
-        return new Service<Void>() {
-            @Override
-            protected Task<Void> createTask()
-            {
-                return new Task<>() {
-                    @Override
-                    protected Void call() throws Exception
-                    {
-                        createTables();
-                        insertDataIntoTable();
-                        return null;
-                    }
-                };
-            }
-        };
-
-    }
-
-    public void createTables() 
-    {
-       
+        var file = new File(this.filePath);
+        this.spreadSheet = new SpreadSheet(file);
     }
 
     @Override
-    public void insertDataIntoTable() throws SQLException {
-        try {
-            int numberOfTabs = spreadSheet.getSheets().size();
-            var conn = getConnection();
-            for (int i = 0; i < numberOfTabs; i++) 
-            {
-                var sheet = spreadSheet.getSheet(i);
-                var numberOfRows = sheet.getMaxRows();
-                var tableName = normalizeString(sheet.getName());
-                var numberOfColumns = sheet.getMaxColumns();
-                var valuesStr = makeValueString(numberOfColumns);
-                var columns = new ArrayList<String>();
-                IntStream.range(0, numberOfColumns).forEach(n ->
-                { 
-                    var field = sheet.getRange(0, n);
-                    var value = field.getValue() == null? "": field.getValue().toString();
-                    columns.add("`%s`".formatted(normalizeString(value)));
-                });
-                var columnNames = String.join(",", columns);
-                
-                for (int j = 1; j < numberOfRows; j++) 
-                {
-                    final int rowCount = j;
-                    var sheetRow = new ArrayList<Range>();
-                    IntStream.range(0, numberOfColumns).forEach(n -> sheetRow.add(sheet.getRange(rowCount, n)));
-                    var row = getRowAsStringList(sheetRow, numberOfColumns);
-                    var valuesList = row.stream().map("'%s'"::formatted).toList();
-                    var commandBase = "INSERT INTO %s (%s) VALUES (%s);";
-                    var command = commandBase.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
-                    var statement = conn.prepareStatement(command);
-                    
-                    for (int k = 0; k < valuesList.size(); k++) 
-                    {
-                        statement.setString(k+1, valuesList.get(k));    
-                    }
-                    statement.executeUpdate();                        
-                }
-            }
-            conn.close();
-        } 
-        catch (IllegalArgumentException e) 
+    public void insertDataIntoTable() throws SQLException 
+    {
+        int numberOfTabs = spreadSheet.getSheets().size();
+        var conn = getConnection();
+        for (int i = 0; i < numberOfTabs; i++) 
         {
-            e.printStackTrace();
+            var sheet = spreadSheet.getSheet(i);
+            var numberOfRows = sheet.getMaxRows();
+            var tableName = normalizeString(sheet.getName());
+            var numberOfColumns = sheet.getMaxColumns();
+            var valuesStr = makeValueString(numberOfColumns);
+            var columns = new ArrayList<String>();
+            IntStream.range(0, numberOfColumns).forEach(n ->
+            { 
+                var field = sheet.getRange(0, n);
+                var value = field.getValue() == null? "": field.getValue().toString();
+                columns.add("`%s`".formatted(normalizeString(value)));
+            });
+            var columnNames = String.join(",", columns);
+                
+            for (int j = 1; j < numberOfRows; j++) 
+            {
+                final int rowCount = j;
+                var sheetRow = new ArrayList<Range>();
+                IntStream.range(0, numberOfColumns).forEach(n -> sheetRow.add(sheet.getRange(rowCount, n)));
+                var row = getRowAsStringList(sheetRow, numberOfColumns);
+                var valuesList = row.stream().map("'%s'"::formatted).toList();
+                var commandBase = "INSERT INTO %s (%s) VALUES (%s);";
+                var command = commandBase.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
+                var statement = conn.prepareStatement(command);
+                    
+                for (int k = 0; k < valuesList.size(); k++) 
+                {
+                    statement.setString(k+1, valuesList.get(k));    
+                }
+                statement.executeUpdate();
+                statement.close();                        
+            }
         }
+        conn.close();
     }
 
     @Override
