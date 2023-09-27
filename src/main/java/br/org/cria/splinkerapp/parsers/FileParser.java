@@ -25,7 +25,7 @@ public abstract class FileParser {
     protected String getTableName(){ return "spLinker_%s".formatted(getClass().getSimpleName().toLowerCase()).replace("fileparser", "");}
     public abstract void insertDataIntoTable() throws Exception;
     protected abstract List<String> getRowAsStringList(Object row, int numberOfColumns);
-    protected abstract String buildCreateTableCommand();
+    protected abstract String buildCreateTableCommand() throws Exception;
 
     protected String normalizeString(String str) 
     {
@@ -34,7 +34,7 @@ public abstract class FileParser {
     }
     protected String makeValueString(int numberOfColumns) { return "?,".repeat(numberOfColumns); }
     protected String makeColumnName(String originalField) { return "`%s`".formatted(normalizeString(originalField));}
-    public void createTableBasedOnSheet() throws SQLException {
+    public void createTableBasedOnSheet() throws Exception {
         var command = buildCreateTableCommand();
         var conn = getConnection();
         var statement = conn.createStatement();
