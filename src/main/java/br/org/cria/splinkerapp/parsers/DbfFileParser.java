@@ -43,7 +43,6 @@ public class DbfFileParser extends FileParser
 		//var columns = this.columnNameList.stream().map((col) ->  "`%s`".formatted(normalizeString(col))).toList();
         var valuesStr = "?,".repeat(numberOfColumns);
         var columnNames = String.join(",", columnNameList);
-		var rowNum = 1;
 		while ((rowObjects = reader.nextRecord()) != null) 
 		{
 			
@@ -56,9 +55,8 @@ public class DbfFileParser extends FileParser
             {
             	statement.setString(k+1, valuesList.get(k));    
             }
-            var response = statement.executeUpdate();    
-			System.out.println("inserting %s line response: %s".formatted(rowNum, response));
-			rowNum++;
+            statement.executeUpdate();
+			statement.close();    
 		}
 		System.out.println("inserted all data in the DB");
 		conn.close();
