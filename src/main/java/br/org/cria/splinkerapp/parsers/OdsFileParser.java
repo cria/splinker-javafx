@@ -1,7 +1,6 @@
 package br.org.cria.splinkerapp.parsers;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -20,7 +19,7 @@ public class OdsFileParser extends FileParser{
     }
 
     @Override
-    public void insertDataIntoTable() throws SQLException 
+    public void insertDataIntoTable() throws Exception 
     {
         int numberOfTabs = spreadSheet.getSheets().size();
         var conn = getConnection();
@@ -36,7 +35,7 @@ public class OdsFileParser extends FileParser{
             { 
                 var field = sheet.getRange(0, n);
                 var value = field.getValue() == null? "": field.getValue().toString();
-                columns.add("`%s`".formatted(normalizeString(value)));
+                columns.add(makeColumnName(normalizeString(value)));
             });
             var columnNames = String.join(",", columns);
                 
@@ -78,20 +77,21 @@ public class OdsFileParser extends FileParser{
 
     }
     @Override
-    protected String buildCreateTableCommand() 
+    protected String buildCreateTableCommand() throws Exception
     {
             var builder = new StringBuilder();
             for (Sheet sheet : spreadSheet.getSheets()) 
             {
                 var numberOfColumns = sheet.getMaxColumns();
                 var tableName = normalizeString(sheet.getName());
+                dropTable(tableName);
                 builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
  
                 for (int i = 0; i < numberOfColumns; i++) 
                 {
                     var column = sheet.getRange(0, i);
                     var value = column.getValue();
-                    String columnName = normalizeString(value.toString());
+                    String columnName = makeColumnName(normalizeString(value.toString()));
                     builder.append("%s VARCHAR(1),".formatted(columnName));
                 }
                 builder.append(");");
