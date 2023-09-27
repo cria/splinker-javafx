@@ -39,7 +39,7 @@ public class DbfFileParser extends FileParser
 		Object[] rowObjects;
 		var conn = getConnection();
 		int numberOfColumns = reader.getFieldCount();
-		var tableName = "spLinker";
+		var tableName = getTableName();
 		//var columns = this.columnNameList.stream().map((col) ->  "`%s`".formatted(normalizeString(col))).toList();
         var valuesStr = "?,".repeat(numberOfColumns);
         var columnNames = String.join(",", columnNameList);
@@ -69,7 +69,7 @@ public class DbfFileParser extends FileParser
         
 			int numberOfFields = reader.getFieldCount();
         	var builder = new StringBuilder();
-			var tableName = "spLinker";
+			var tableName = getTableName();
 			builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
 			
 			for (int i = 0; i < numberOfFields; i++) 

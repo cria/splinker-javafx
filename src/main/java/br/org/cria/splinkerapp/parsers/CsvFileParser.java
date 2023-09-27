@@ -47,7 +47,7 @@ public class CsvFileParser extends FileParser {
     @Override
     protected String buildCreateTableCommand() 
     {
-        var tableName = "spLinker";
+        var tableName = getTableName();
         List<String> columns = getRowAsStringList(columnRow, columnRow.length).stream().map((e)-> "%s VARCHAR(1),".formatted(makeColumnName(e))).toList();
         var columnNames = String.join(",", columns);
         var command = "CREATE TABLE IF NOT EXISTS %s (%s)".formatted(tableName,columnNames);
@@ -58,7 +58,7 @@ public class CsvFileParser extends FileParser {
     public void insertDataIntoTable() throws SQLException, CsvValidationException, IOException {
         String[] nextLine;
         var conn = getConnection();
-        var tableName = "spLinker";
+        var tableName = getTableName();
         var valuesStr= makeValueString(columnRow.length);
         var commandBase = "INSERT INTO %s (%s) VALUES (%s);";
         var columns = getRowAsStringList(columnRow, columnRow.length).stream().map((e)->makeColumnName(e)).toList();
