@@ -22,7 +22,7 @@ public class CsvFileParser extends FileParser
         reader = new CSVReader(new FileReader(filePath));
         var columnRow = reader.readNext();
         limiter = getCsvSeparator(columnRow[0]);
-        columns = getRowAsStringList(columnRow[0], columnRow.length).stream().map((e)-> makeColumnName(normalizeString(e))).toList();
+        columns = getRowAsStringList(columnRow[0], columnRow.length).stream().map((e)-> makeColumnName(e)).toList();
     }
     
     String getCsvSeparator(String firstLine) throws IOException 

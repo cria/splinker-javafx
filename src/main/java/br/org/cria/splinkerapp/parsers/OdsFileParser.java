@@ -91,7 +91,7 @@ public class OdsFileParser extends FileParser{
                 {
                     var column = sheet.getRange(0, i);
                     var value = column.getValue();
-                    String columnName = makeColumnName(normalizeString(value.toString()));
+                    String columnName = makeColumnName(value.toString());
                     builder.append("%s VARCHAR(1),".formatted(columnName));
                 }
                 builder.append(");");

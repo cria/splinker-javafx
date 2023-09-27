@@ -34,7 +34,7 @@ public class ExcelFileParser extends FileParser {
 
             for (Cell cell : headerRow) 
             {
-                String columnName = makeColumnName(normalizeString(cell.getStringCellValue()));
+                String columnName = makeColumnName(cell.getStringCellValue());
                 builder.append("%s VARCHAR(1),".formatted(columnName));
             }
             builder.append(");");
@@ -74,7 +74,7 @@ public class ExcelFileParser extends FileParser {
             var headerRow = sheet.getRow(0);
             var tableName = normalizeString(sheet.getSheetName());
             var numberOfColumns = headerRow.getLastCellNum();
-            var columns = getRowAsStringList(headerRow, numberOfColumns).stream().map((col) -> makeColumnName(normalizeString(col)))
+            var columns = getRowAsStringList(headerRow, numberOfColumns).stream().map((col) -> makeColumnName(col))
                     .toList();
             var valuesStr = "?,".repeat(numberOfColumns);
             var columnNames = String.join(",", columns);
