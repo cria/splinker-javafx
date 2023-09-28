@@ -79,7 +79,8 @@ public class CsvFileParser extends FileParser
                 var statement = conn.prepareStatement(command);
                 for (int j = 0; j < columnCount; j++) 
                 {
-                    statement.setString(j + 1, rows.get(i)[j]);
+                    var value = rows.get(i)[j];
+                    statement.setString(j + 1, value);
                 }
                 statement.executeUpdate();    
             }
