@@ -14,13 +14,28 @@
     </properties>
 	
 <repositories>
+ <repository>
+    <id>gbif-repository</id>
+    <url>https://repository.gbif.org/content/groups/gbif</url>
+  </repository>
   <repository>
     <id>Internal company repository</id>
     <url>file://${project.basedir}/src/libs</url>
   </repository>
 </repositories>
     <dependencies>
-            <!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
+       <dependency>
+            <groupId>org.gbif</groupId>
+            <artifactId>dwca-io</artifactId>
+            <version>1.27</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.8</version>
+        </dependency>
+                
+        <!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
