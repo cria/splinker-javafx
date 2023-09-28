@@ -1,6 +1,7 @@
 package br.org.cria.splinkerapp.parsers;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -15,7 +16,8 @@ public class OdsFileParser extends FileParser{
     {
         this.filePath = filePath;
         var file = new File(this.filePath);
-        this.spreadSheet = new SpreadSheet(file);
+        //this.spreadSheet = new SpreadSheet(file);
+        this.spreadSheet = new SpreadSheet(new FileInputStream(file));
     }
 
     @Override
@@ -27,18 +29,24 @@ public class OdsFileParser extends FileParser{
         {
             var sheet = spreadSheet.getSheet(i);
             var numberOfRows = sheet.getMaxRows();
-            var tableName = normalizeString(sheet.getName());
-            var numberOfColumns = sheet.getMaxColumns();
-            var valuesStr = makeValueString(numberOfColumns);
+            var tableName = normalizeString(sheet.getName()) + "_ODS";
             var columns = new ArrayList<String>();
+            var numberOfColumns = sheet.getMaxColumns();
             IntStream.range(0, numberOfColumns).forEach(n ->
             { 
                 var field = sheet.getRange(0, n);
-                var value = field.getValue() == null? "": field.getValue().toString();
-                columns.add(makeColumnName(normalizeString(value)));
-            });
-            var columnNames = String.join(",", columns);
+                var value = field.getValue();
+                if(value!= null)
+                {
+                    columns.add(makeColumnName(value.toString()));
+                }
                 
+            });
+            numberOfColumns = columns.size(); // número real de colunas
+            var valuesStr = makeValueString(numberOfColumns);
+            
+            var columnNames = String.join(",", columns);
+  
             for (int j = 1; j < numberOfRows; j++) 
             {
                 final int rowCount = j;
@@ -62,7 +70,8 @@ public class OdsFileParser extends FileParser{
     }
 
     @Override
-    protected List<String> getRowAsStringList(Object row, int numberOfColumns) {
+    protected List<String> getRowAsStringList(Object row, int numberOfColumns) 
+    {
         
         final var fullRow = (List<Range>) row;
         var list = new ArrayList<String>();
@@ -83,7 +92,7 @@ public class OdsFileParser extends FileParser{
             for (Sheet sheet : spreadSheet.getSheets()) 
             {
                 var numberOfColumns = sheet.getMaxColumns();
-                var tableName = normalizeString(sheet.getName());
+                var tableName = normalizeString(sheet.getName()) + "_ODS";
                 dropTable(tableName);
                 builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
  
@@ -91,8 +100,12 @@ public class OdsFileParser extends FileParser{
                 {
                     var column = sheet.getRange(0, i);
                     var value = column.getValue();
-                    String columnName = makeColumnName(value.toString());
-                    builder.append("%s VARCHAR(1),".formatted(columnName));
+                    if(value != null)
+                    {
+                        String columnName = makeColumnName(value.toString());
+                        builder.append("%s VARCHAR(1),".formatted(columnName));
+                    }
+                    
                 }
                 builder.append(");");
             }
