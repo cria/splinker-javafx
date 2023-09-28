@@ -71,7 +71,7 @@ public class ProxyConfigService extends BaseService implements IProxyConfigServi
         return result;
     }
 
-    public boolean isBehindProxyServer() 
+    public static boolean isBehindProxyServer() 
     {
         boolean hasProxy = false;
         try {
