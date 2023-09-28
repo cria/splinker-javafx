@@ -29,7 +29,7 @@ public class OdsFileParser extends FileParser{
         {
             var sheet = spreadSheet.getSheet(i);
             var numberOfRows = sheet.getMaxRows();
-            var tableName = normalizeString(sheet.getName()) + "_ODS";
+            var tableName = normalizeString(sheet.getName());
             var columns = new ArrayList<String>();
             var numberOfColumns = sheet.getMaxColumns();
             IntStream.range(0, numberOfColumns).forEach(n ->
@@ -92,7 +92,7 @@ public class OdsFileParser extends FileParser{
             for (Sheet sheet : spreadSheet.getSheets()) 
             {
                 var numberOfColumns = sheet.getMaxColumns();
-                var tableName = normalizeString(sheet.getName()) + "_ODS";
+                var tableName = normalizeString(sheet.getName());
                 dropTable(tableName);
                 builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
  
