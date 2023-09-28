@@ -53,9 +53,9 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService {
         {
             var resultSetMetaData = data.getMetaData();
             var count = resultSetMetaData.getColumnCount();
-            for (int i = 0; i <= count; i++) 
+            for (int i = 1; i <= count; i++) 
             {
-                var content = "%s;".formatted(data.getString(i));
+                var content = "%s\t".formatted(data.getString(i));
                 dataSourceRows.append(content);
             }
     
@@ -66,13 +66,13 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService {
 
     private String getColumnNames() throws SQLException
     {
-        var builder = new StringBuilder();
+        var builder = new StringBuilder("\n");
         var metaData = data.getMetaData();
         int count = metaData.getColumnCount();
         
-        for(int i = 0; i<=count; i++) 
+        for(int i = 1; i<=count; i++) 
         {
-           builder.append("%s;".formatted(metaData.getColumnName(i)));
+           builder.append("%s\t".formatted(metaData.getColumnName(i)));
         }
         builder.append("\n");
         
@@ -97,11 +97,12 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService {
     }
 
     @Override
-    public DarwinCoreArchiveService readDataFromSource(DataSource source)throws SQLException, IOException, URISyntaxException
+    public DarwinCoreArchiveService readDataFromSource(DataSource source)throws Exception
     {
         var command = getQueryCommandFromAPI();
-        var uri = source.getConnectionString();
-        var conn = DriverManager.getConnection(uri);
+        // var uri = source.getConnectionString();
+        // var conn = DriverManager.getConnection(uri);
+        var conn = source.getDataSourceConnection();
         var statement = conn.createStatement();
         this.data = statement.executeQuery(command);
         
@@ -118,6 +119,7 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService {
         var port = ConfigurationData.getRSyncPort();
         // var source =
         // "%s/splinker_dwca.zip".formatted(System.getProperty("user.dir"));
+        
         var destination = ConfigurationData.getTransferDataDestination();
         var command = new String[] { "--port=%s".formatted(port), "-r", this.zipFile, destination };
         var client = new YajsyncClient();
@@ -142,7 +144,8 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService {
     {
         String line;
         var command = "";
-        var urlConn = new URI("http://localhost:8000/api/get_query").toURL();
+        var token = "csv";
+        var urlConn = new URI("http://localhost:8000/api/get_query?token="+token).toURL();
         var response = new StringBuffer();
         var connection = (HttpURLConnection) urlConn.openConnection();
         connection.setRequestMethod("GET");
