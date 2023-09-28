@@ -37,7 +37,7 @@ public class FileSelectionController extends AbstractController{
             {
                 transferService = FileSourceManager.processData(file.getAbsolutePath());
                 if (transferService != null)
-                   {
+                   {    
                        transferService.setOnFailed(event -> {
                            var exception = transferService.getException();
                            modalStage.hide();
@@ -47,11 +47,13 @@ public class FileSelectionController extends AbstractController{
                        });
                        transferService.setOnSucceeded(event -> {
                                    modalStage.hide();
-                                   modalStage.close();
+;                                  modalStage.close();
  
                         });
+                        
                        transferService.start();
                        showTransferModal("Transferindo");
+                       
                    }
                 
             }
