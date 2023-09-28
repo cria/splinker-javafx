@@ -25,7 +25,7 @@ public class FirstConfigDialogController extends AbstractController{
         var height = 200;
         var stage = getStage();
 
-        if(proxyService.isBehindProxyServer())
+        if(ProxyConfigService.isBehindProxyServer())
         {
             routeName = "proxy-config";
             width = 440;
