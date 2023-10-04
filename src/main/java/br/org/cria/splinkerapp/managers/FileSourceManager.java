@@ -1,5 +1,8 @@
 package br.org.cria.splinkerapp.managers;
 
+import java.time.Duration;
+import java.time.Instant;
+
 import br.org.cria.splinkerapp.models.DataSource;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.parsers.CsvFileParser;
@@ -16,21 +19,15 @@ public class FileSourceManager {
     public static Service<Void> processData(String fileToProcess) throws Exception
     {
         var filePath = fileToProcess.toLowerCase();
-        return new Service<Void>() {
-            @Override
-            protected Task<Void> createTask()
-            {
-                return new Task<>() {
-                    @Override
-                    protected Void call() throws Exception
-                    {
-                        
+            
                         FileParser fileParser = null;
                         DataSourceType type = null;
                         var isExcel = filePath.endsWith(".xlsx") ||filePath.endsWith(".xls");
                         var isCsv = filePath.endsWith(".csv");
                         var isOds = filePath.endsWith(".ods");
                         var isDbf = filePath.endsWith(".dbf");
+                        var start = Instant.now();
+                        System.out.println("starting at " + start);
                         
                         if(isExcel)
                         {
@@ -52,18 +49,32 @@ public class FileSourceManager {
                             fileParser = new DbfFileParser(filePath);
                             type = DataSourceType.dBaseDBF;
                         }
+                       
                         fileParser.createTableBasedOnSheet();
                         fileParser.insertDataIntoTable();
-                        // var dwcManager = new DarwinCoreArchiveService();
-                        // dwcManager.readDataFromSource(new DataSource(type))
-                        // .generateTXTFile()
-                        // .generateZIPFile()
-                        // .transferData();
-                        return null;
-                    }
-                };
-            }
-        };
+                        var end = Instant.now();
+                        var duration = Duration.between(start,end);
+                        System.out.println("Duration in seconds: %s".formatted(duration.getSeconds()));
+                        var dwcManager = new DarwinCoreArchiveService();
+                        dwcManager.readDataFromSource(new DataSource(type))
+                        .generateTXTFile()
+                        .generateZIPFile();
+                        return dwcManager.transferData();
+                        //return null;
+
+        // return new Service<Void>() {
+        //     @Override
+        //     protected Task<Void> createTask()
+        //     {
+        //         return new Task<>() {
+        //             @Override
+        //             protected Void call() throws Exception
+        //             {
+                    
+        //             }
+        //         };
+        //     }
+        //};
 
     }
     
