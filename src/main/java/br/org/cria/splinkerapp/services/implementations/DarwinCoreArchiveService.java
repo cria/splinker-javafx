@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.services.implementations;
 
+import br.org.cria.splinkerapp.config.BaseConfiguration;
 import br.org.cria.splinkerapp.models.DataSource;
 import br.org.cria.splinkerapp.services.interfaces.IDarwinCoreArchiveService;
 import com.github.perlundq.yajsync.ui.YajsyncClient;
@@ -13,7 +14,6 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -140,11 +140,12 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService {
 
     }
 
-    private String getQueryCommandFromAPI() throws IOException, URISyntaxException 
+    private String getQueryCommandFromAPI() throws Exception 
     {
         String line;
         var command = "";
-        var token = "csv";
+        
+        var token = BaseConfiguration.getToken();
         var urlConn = new URI("http://localhost:8000/api/get_query?token="+token).toURL();
         var response = new StringBuffer();
         var connection = (HttpURLConnection) urlConn.openConnection();
