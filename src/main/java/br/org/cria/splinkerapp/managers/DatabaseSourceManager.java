@@ -12,51 +12,29 @@ public class DatabaseSourceManager
 
     public static Service<Void> processData(DataSourceType type, String host, String databaseName, String tableName, String username, String password, String port ) throws Exception
     {   
-        String connString = null; 
-        var dataSource = new DataSource(type, port);
-        switch (type) {
-            case MySQL:
-            case PostgreSQL:
-                connString = "jdbc:%s://%s/%s".formatted(type.name().toLowerCase(),host, databaseName);
-                break;
-            case Oracle:
-                break;
-            case SQLServer:
-                break;
-            default:
-        }
-        
-       var dwcManager = new DarwinCoreArchiveService();
-        dwcManager.readDataFromSource(new DataSource(type, connString))
-        .generateTXTFile()
-        .generateZIPFile();
-        return dwcManager.transferData();
+        var dataSource = new DataSource(type, host, databaseName, tableName, username, password, port);
+        return extractAndSend(dataSource);
     }
 
      public static Service<Void> processData(String microsoftAccessFilePath, String userName, String password ) throws Exception
     {
-        var connString = "";
-        var dataSource = new DataSource(DataSourceType.Access, connString);
-        return new Service<Void>() 
-        {
-            @Override
-            protected Task<Void> createTask()
-            {
-                return new Task<Void>() 
-                {
-                    @Override
-                    protected Void call() throws Exception
-                    {   var hasUserNameAndPassword = userName != null && password !=null;
+        
+        var hasUserNameAndPassword = userName != null && password !=null;
+        var connString = "jdbc:ucanaccess://%s;memory=false".formatted(microsoftAccessFilePath);
+        var conn =  hasUserNameAndPassword? 
+                    DriverManager.getConnection(connString,userName, password) : 
+                    DriverManager.getConnection(connString);
+        var dataSource = new DataSource(DataSourceType.Access, conn);
+        
+        return extractAndSend(dataSource);   
+    }
 
-                        var connString = "jdbc:ucanaccess://%s".formatted(microsoftAccessFilePath);
-                        var conn =  hasUserNameAndPassword? 
-                                    DriverManager.getConnection(connString,userName, password) : 
-                                    DriverManager.getConnection(connString);
-                        return null;
-                        
-                    }
-                };
-            }
-        };
+    private static Service<Void> extractAndSend(DataSource source) throws Exception
+    {
+          return new DarwinCoreArchiveService()
+            .readDataFromSource(source)
+            .generateTXTFile()
+            .generateZIPFile()
+            .transferData();
     }
 }
