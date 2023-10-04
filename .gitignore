@@ -1,5 +1,6 @@
 dwc_files/*
 target/
+scripts/sql/helpers/*
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
