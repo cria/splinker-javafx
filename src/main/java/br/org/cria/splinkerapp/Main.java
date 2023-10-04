@@ -2,17 +2,19 @@ package br.org.cria.splinkerapp;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import br.org.cria.splinkerapp.config.BaseConfiguration;
 import br.org.cria.splinkerapp.config.DatabaseSetup;
 
 public class Main extends Application {
     @Override
     public void start(Stage stage) {
         try {
-            //var routeName = "first-config-dialog";
-            var routeName = "home";
+           DatabaseSetup.initDb();
+            var routeName = BaseConfiguration.hasConfiguration() ? "home": "first-config-dialog";
+            //var routeName = "home";
             var width = 330;
             var height = 150;
-            DatabaseSetup.initDb();
+
             stage.setTitle("spLinker");
             stage.setResizable(false);
             Router.getInstance().navigateTo(stage,routeName, width, height);
