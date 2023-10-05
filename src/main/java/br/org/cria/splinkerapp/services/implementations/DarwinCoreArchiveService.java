@@ -143,8 +143,6 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService {
     private String getQueryCommandFromAPI() throws Exception 
     {
         String line;
-        var command = "";
-        
         var token = BaseConfiguration.getToken();
         var urlConn = new URI("http://localhost:8000/api/get_query?token="+token).toURL();
         var response = new StringBuffer();
@@ -165,7 +163,7 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService {
         var strValues = json.get("cmd");
         var out = new ByteArrayOutputStream();
         strValues.forEach((e) -> out.write(e.byteValue()));
-        command = new String(out.toByteArray(), StandardCharsets.UTF_8);
+        var command = new String(out.toByteArray(), StandardCharsets.UTF_8);
         return command;
     }
 }
