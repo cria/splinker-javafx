@@ -2,7 +2,6 @@ package br.org.cria.splinkerapp.services.implementations;
 
 import br.org.cria.splinkerapp.config.BaseConfiguration;
 import br.org.cria.splinkerapp.models.DataSource;
-import br.org.cria.splinkerapp.services.interfaces.IDarwinCoreArchiveService;
 import com.github.perlundq.yajsync.ui.YajsyncClient;
 import com.google.gson.Gson;
 import javafx.concurrent.Service;
@@ -10,24 +9,23 @@ import javafx.concurrent.Task;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class DarwinCoreArchiveService implements IDarwinCoreArchiveService {
-    String zipFile = "%s/spLinker_dwca.zip".formatted(System.getProperty("user.dir"));
-    String textFile = "%s/spLinker_dwca.txt".formatted(System.getProperty("user.dir"));
+public class DarwinCoreArchiveService 
+{
+    String zipFile = "%s/%s.zip";
+    String textFile = "%s/occurences.txt".formatted(System.getProperty("user.dir"));
     ResultSet data;
 
-    @Override
-    public DarwinCoreArchiveService generateTXTFile() throws IOException, SQLException 
+    
+    public DarwinCoreArchiveService generateTXTFile() throws Exception
     {   
         var path = Path.of(textFile);
         if (Files.exists(path)) 
@@ -46,7 +44,7 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService {
         return this;
     }
 
-    private String getDataSourceRows() throws SQLException
+    private String getDataSourceRows() throws Exception
     {
         var dataSourceRows = new StringBuilder();
         while (data.next()) 
@@ -64,7 +62,7 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService {
         return dataSourceRows.toString();
     }
 
-    private String getColumnNames() throws SQLException
+    private String getColumnNames() throws Exception
     {
         var builder = new StringBuilder("\n");
         var metaData = data.getMetaData();
@@ -79,10 +77,10 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService {
         return builder.toString();
     }
 
-    @Override
-    public DarwinCoreArchiveService generateZIPFile() 
+    public DarwinCoreArchiveService generateZIPFile() throws Exception 
     {
-
+        String token = BaseConfiguration.getToken();
+        zipFile = zipFile.formatted(System.getProperty("user.dir"), token);
         try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile))) 
         {
             File fileToZip = new File(textFile);
@@ -92,12 +90,11 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService {
         } 
         catch (Exception e) 
         {
-            throw new RuntimeException(e);
+            throw e;
         }
     }
 
-    @Override
-    public DarwinCoreArchiveService readDataFromSource(DataSource source)throws Exception
+    public DarwinCoreArchiveService readDataFromSource(DataSource source) throws Exception
     {
         var command = getQueryCommandFromAPI();
         // var uri = source.getConnectionString();
@@ -109,16 +106,9 @@ public class DarwinCoreArchiveService implements IDarwinCoreArchiveService {
         return this;
     }
 
-    @Override
     public Service<Void> transferData() 
     {
-        // TODO: Ler map.dat e db.dat das coleções.
-        // Esses arquivos são combinados para montar o select dos dados
-        // nas fontes de dados das coleções (DB, planilhas, Brahms, etc)
-        // O que não for planilha, é banco sempre
         var port = ConfigurationData.getRSyncPort();
-        // var source =
-        // "%s/splinker_dwca.zip".formatted(System.getProperty("user.dir"));
         
         var destination = ConfigurationData.getTransferDataDestination();
         var command = new String[] { "--port=%s".formatted(port), "-r", this.zipFile, destination };

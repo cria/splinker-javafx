@@ -9,12 +9,11 @@ import java.util.Iterator;
 import java.util.List;
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
 import br.org.cria.splinkerapp.services.BaseService;
-import br.org.cria.splinkerapp.services.interfaces.IProxyConfigService;
 
-public class ProxyConfigService extends BaseService implements IProxyConfigService {
-    
-    @Override
-    public ProxyConfiguration getConfiguration() 
+
+public class ProxyConfigService extends BaseService{
+
+      public static ProxyConfiguration getConfiguration() 
     {
         ProxyConfiguration proxyConfig = null;    
         try {
@@ -47,13 +46,15 @@ public class ProxyConfigService extends BaseService implements IProxyConfigServi
             return proxyConfig;
     }
 
-    @Override
-    public boolean saveProxyConfig(ProxyConfiguration proxyConfig) 
+    
+    public static boolean saveProxyConfig(ProxyConfiguration proxyConfig) 
     {
         var result = false;
         try 
         {
-            String sql = """
+            
+                String sql = """
+                DELETE FROM ProxyConfiguration; 
                 INSERT INTO ProxyConfiguration (address, password, port,username)
                 VALUES ('%s', '%s', '%s', '%s');""".formatted(
                 proxyConfig.getAddress(),proxyConfig.getPassword(),
@@ -91,4 +92,7 @@ public class ProxyConfigService extends BaseService implements IProxyConfigServi
         return hasProxy;
     }
     
+    
+    
+  
 }

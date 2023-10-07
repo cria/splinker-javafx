@@ -1,7 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 import br.org.cria.splinkerapp.Router;
 import br.org.cria.splinkerapp.services.implementations.ProxyConfigService;
-import br.org.cria.splinkerapp.services.interfaces.IProxyConfigService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
@@ -16,7 +15,7 @@ public class FirstConfigDialogController extends AbstractController{
     @FXML
     Button btnYes;
 
-    IProxyConfigService proxyService = new ProxyConfigService();
+    ProxyConfigService proxyService = new ProxyConfigService();
 
     @FXML
     void onYesButtonClicked(){
@@ -24,8 +23,8 @@ public class FirstConfigDialogController extends AbstractController{
         var width = 350;
         var height = 200;
         var stage = getStage();
-
-        if(ProxyConfigService.isBehindProxyServer())
+        var computerHasProxyConfigured = ProxyConfigService.isBehindProxyServer();
+        if(computerHasProxyConfigured)
         {
             routeName = "proxy-config";
             width = 440;

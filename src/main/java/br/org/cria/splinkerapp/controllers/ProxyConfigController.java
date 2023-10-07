@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.Router;
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
 import br.org.cria.splinkerapp.services.implementations.ProxyConfigService;
-import br.org.cria.splinkerapp.services.interfaces.IProxyConfigService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -32,7 +31,7 @@ public class ProxyConfigController extends AbstractController implements Initial
     @FXML
     Hyperlink lnkNoProxy;
     
-    IProxyConfigService proxyService = new ProxyConfigService();
+    ProxyConfigService proxyService = new ProxyConfigService();
 
     void navigateToNextScreen(){
         var routeName = "central-service";
