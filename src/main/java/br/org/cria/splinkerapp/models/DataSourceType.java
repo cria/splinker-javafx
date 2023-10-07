@@ -6,8 +6,8 @@ public enum DataSourceType {
     SQLServer,
     Access,
     Oracle,
-    dBaseDBF,
+    dBase,
     Excel,
-    LibreOfficeCalcODS,
+    LibreOfficeCalc,
     CSV
 }
