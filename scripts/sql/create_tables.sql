@@ -30,12 +30,12 @@ CREATE TABLE IF NOT EXISTS ProxyConfiguration (
 CREATE TABLE IF NOT EXISTS DataSourceConfiguration (
   datasource_filepath VARCHAR(50) NULL,
   datasource_type VARCHAR(50) NOT NULL,
-  db_host VARCHAR(100) NOT NULL,
-  db_port VARCHAR(100) NOT NULL,
-  db_name VARCHAR(100) NOT NULL,
-  db_tablename VARCHAR(100) NOT NULL,
-  db_username VARCHAR(100) NOT NULL,
-  db_password VARCHAR(100) NOT NULL,  
+  db_host VARCHAR(100) NULL,
+  db_port VARCHAR(100) NULL,
+  db_name VARCHAR(100) NULL,
+  db_tablename VARCHAR(100) NULL,
+  db_username VARCHAR(100) NULL,
+  db_password VARCHAR(100) NULL,  
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );

@@ -1,15 +1,22 @@
 package br.org.cria.splinkerapp.models;
 
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class DataSource {
     private String connectionString = "jdbc:sqlite:splinker.db";
+    private Path filePath;
+    public Path getFilePath() {
+        return filePath;
+    }
+
     private DataSourceType type;
     private Connection connection;
 
     
     public DataSource(DataSourceType type) { this.type = type; };
+    public DataSource(DataSourceType type, Path filepath) { this.type = type; this.filePath = filepath; };
     public DataSource(DataSourceType type, Connection conn) 
     { this.type = type; this.connection = conn; };
     public DataSource(DataSourceType type, String connectionString) 
@@ -46,6 +53,7 @@ public class DataSource {
     public String getConnectionString() {
         return connectionString;
     }
+    public boolean isFile() { return this.filePath == null;}
     
     public Connection getDataSourceConnection() throws Exception
     {

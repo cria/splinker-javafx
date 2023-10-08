@@ -3,8 +3,6 @@ package br.org.cria.splinkerapp.controllers;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
-
-import br.org.cria.splinkerapp.Router;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -67,7 +65,7 @@ public class DataSourceSelectionController extends AbstractController implements
             default:
                 break;
         }
-        Router.getInstance().navigateTo(getStage(), routeName, width, height);
+        navigateTo(routeName, width, height);
     }
     
 }
