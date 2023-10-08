@@ -11,7 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 
-public class FileSelectionController extends AbstractController{
+public class FileSelectionController extends AbstractController {
 
     @FXML
     Pane pane;
@@ -73,6 +73,6 @@ public class FileSelectionController extends AbstractController{
         var routeName = "home";
         var width = 350;
         var height = 2540;
-        Router.getInstance().navigateTo(getStage(), routeName,width, height);
+        navigateTo(getStage(), routeName,width, height);
     }
 }
