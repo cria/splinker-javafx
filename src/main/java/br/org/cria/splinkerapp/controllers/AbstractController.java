@@ -1,5 +1,7 @@
 package br.org.cria.splinkerapp.controllers;
+import java.util.function.Function;
 
+import br.org.cria.splinkerapp.Router;
 import javafx.concurrent.Service;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -12,15 +14,27 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public abstract class AbstractController{
+public abstract class AbstractController {
     protected Service transferService;
-    protected Stage modalStage = new Stage();;
-    
+    protected Stage modalStage = new Stage();
+    Alert dialog = new Alert(AlertType.INFORMATION);
     protected abstract Pane getPane();
 
+    void navigateTo(String routeName, int width, int height)
+    {
+        Router.getInstance().navigateTo(getStage(), routeName, width, height);
+    }
+    void navigateTo(Stage stage, String routeName, int width, int height)
+    {
+        Router.getInstance().navigateTo(stage, routeName, width, height);
+    }
     protected void showAlert(AlertType type, String title, String message)
     {
-        Alert dialog = new Alert(type);
+        if(type != null)
+        {
+            dialog = new Alert(type);
+        }
+        
         dialog.setTitle(title);
         dialog.setContentText(message);
         dialog.show();
