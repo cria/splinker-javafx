@@ -4,12 +4,11 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Text?>
 
-
-<Pane fx:id="pane" id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="155.0" prefWidth="334.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FirstConfigDialogController">
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="117.0" prefWidth="299.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FirstConfigDialogController">
    <children>
-      <Text layoutX="24.0" layoutY="38.0" strokeType="OUTSIDE" strokeWidth="0.0" text="É necessário fazer a configuração inicial do SpLinker." />
+      <Text layoutX="7.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="É necessário fazer a configuração inicial do SpLinker." />
       <Text layoutX="107.0" layoutY="53.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Deseja fazê-la agora?" />
-      <Button id="btnYes" layoutX="98.0" layoutY="78.0" mnemonicParsing="false" onMouseClicked="#onYesButtonClicked" text="Sim" textAlignment="CENTER" />
+      <Button id="btnYes" layoutX="68.0" layoutY="78.0" mnemonicParsing="false" onMouseClicked="#onYesButtonClicked" text="Sim" textAlignment="CENTER" />
       <Button id="btnNo" layoutX="192.0" layoutY="78.0" mnemonicParsing="false" onMouseClicked="#onNoButtonClicked" text="Não" />
    </children>
 </Pane>
