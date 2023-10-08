@@ -1,7 +1,8 @@
 package br.org.cria.splinkerapp.services.implementations;
 
-import br.org.cria.splinkerapp.config.BaseConfiguration;
 import br.org.cria.splinkerapp.models.DataSource;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
+import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
 import com.github.perlundq.yajsync.ui.YajsyncClient;
 import com.google.gson.Gson;
 import javafx.concurrent.Service;
@@ -27,19 +28,34 @@ public class DarwinCoreArchiveService
     
     public DarwinCoreArchiveService generateTXTFile() throws Exception
     {   
-        var path = Path.of(textFile);
-        if (Files.exists(path)) 
-        {
-            Files.delete(path);
-        }
-        
         var columnNames = getColumnNames();
         var rows = getDataSourceRows();
-        var writer = new BufferedWriter(new FileWriter(textFile));
-        writer.write(columnNames);        
-        writer.write(rows);
-        writer.flush();
-        writer.close();
+        var rowCount = rows.length();
+        if( rowCount > 0)
+        {
+            var path = Path.of(textFile);
+            if(Files.lines(path).count() > rowCount+1)
+            {
+                if (Files.exists(path)) 
+                {
+                    Files.delete(path);
+                }
+                var writer = new BufferedWriter(new FileWriter(textFile));
+                writer.write(columnNames);        
+                writer.write(rows);
+                writer.flush();
+                writer.close();
+            }
+            else
+            {
+                //TODO: AVISAR O USUÁRIO QUE O ARQUIVO ATUAL TEM MAIS LINHAS QUE O ANTERIOR
+            }
+            
+            
+            
+            
+        }
+        
 
         return this;
     }
@@ -79,7 +95,7 @@ public class DarwinCoreArchiveService
 
     public DarwinCoreArchiveService generateZIPFile() throws Exception 
     {
-        String token = BaseConfiguration.getToken();
+        String token = TokenRepository.getToken();
         zipFile = zipFile.formatted(System.getProperty("user.dir"), token);
         try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile))) 
         {
@@ -106,11 +122,12 @@ public class DarwinCoreArchiveService
         return this;
     }
 
-    public Service<Void> transferData() 
+    public Service<Void> transferData() throws Exception 
     {
-        var port = ConfigurationData.getRSyncPort();
+        var rSyncConfig = TransferConfigRepository.getRSyncConfig();
+        var port = rSyncConfig.getrSyncPort();
         
-        var destination = ConfigurationData.getTransferDataDestination();
+        var destination = rSyncConfig.getrSyncDestination();
         var command = new String[] { "--port=%s".formatted(port), "-r", this.zipFile, destination };
         var client = new YajsyncClient();
         return new Service<Void>() {
@@ -133,7 +150,7 @@ public class DarwinCoreArchiveService
     private String getQueryCommandFromAPI() throws Exception 
     {
         String line;
-        var token = BaseConfiguration.getToken();
+        var token = TokenRepository.getToken();
         var urlConn = new URI("http://localhost:8000/api/get_query?token="+token).toURL();
         var response = new StringBuffer();
         var connection = (HttpURLConnection) urlConn.openConnection();
