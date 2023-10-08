@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane id="Pane" fx:id="Pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="158.0" prefWidth="424.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.AccessDbModalController">
+   <children>
+      <TextField id="accessUsernameField" fx:id="accessUsernameField" layoutX="20.0" layoutY="54.0" prefHeight="25.0" prefWidth="261.0" promptText="Nome de usuário" />
+      <TextField id="accessPasswordField" fx:id="accessPasswordField" layoutX="20.0" layoutY="85.0" prefHeight="25.0" prefWidth="261.0" promptText="Senha" />
+      <Button id="btnSave" fx:id="btnSave" layoutX="125.0" layoutY="120.0" mnemonicParsing="false" text="Salvar" />
+      <TextField id="accessFilePathField" fx:id="accessFilePathField" layoutX="20.0" layoutY="16.0" prefHeight="25.0" prefWidth="261.0" promptText="Caminho do arquivo" />
+      <Button id="btnSelectFile" fx:id="btnSelectFile" layoutX="293.0" layoutY="41.0" mnemonicParsing="false" onMouseClicked="#onBtnSelectFileClick" prefHeight="25.0" prefWidth="120.0" text="Selecionar arquivo" />
+   </children>
+</Pane>
