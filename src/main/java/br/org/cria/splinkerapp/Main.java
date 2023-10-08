@@ -5,27 +5,40 @@ import javafx.stage.Stage;
 import br.org.cria.splinkerapp.config.BaseConfiguration;
 import br.org.cria.splinkerapp.config.DatabaseSetup;
 
-public class Main extends Application {
+public class Main extends Application 
+{
     @Override
-    public void start(Stage stage) {
-        try {
-           DatabaseSetup.initDb();
-            var routeName = BaseConfiguration.hasConfiguration() ? "home": "first-config-dialog";
-            //var routeName = "home";
+    public void start(Stage stage) 
+    {
+        try 
+        {
+            DatabaseSetup.initDb();
+            var routeName = "first-config-dialog";
             var width = 330;
             var height = 150;
-
+            
+            if(BaseConfiguration.hasConfiguration())
+            {
+                routeName ="home";
+                width = 350;
+                height = 200;
+            
+            }
+            
             stage.setTitle("spLinker");
             stage.setResizable(false);
-            Router.getInstance().navigateTo(stage,routeName, width, height);
+            Router.getInstance().navigateTo(stage, routeName, width, height);
     
             stage.show();
-        } catch (Exception ex) {
+        } 
+        catch (Exception ex) 
+        {
             throw new RuntimeException(ex);
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
         launch();
     }
 }
