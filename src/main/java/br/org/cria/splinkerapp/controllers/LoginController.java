@@ -1,7 +1,7 @@
 package br.org.cria.splinkerapp.controllers;
 
 import br.org.cria.splinkerapp.Router;
-import br.org.cria.splinkerapp.services.implementations.ProxyConfigService;
+import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -27,12 +27,7 @@ public class LoginController extends AbstractController{
     @FXML
     Hyperlink lnkTokenLogin;
 
-    ProxyConfigService proxyService;
-
-    public LoginController(){
-        proxyService = new ProxyConfigService();
-    }
-
+    
     @FXML
     void onForgotPasswordLoginClicked(){
 
@@ -40,7 +35,7 @@ public class LoginController extends AbstractController{
 
     @FXML
     void onTokenLoginClicked(){
-        Router.getInstance().navigateTo(getStage(), "token-login");
+        navigateTo(getStage(), "token-login",300,200);
     }
     @FXML
     void onLoginButtonClicked(MouseEvent event){
@@ -50,7 +45,7 @@ public class LoginController extends AbstractController{
         int height = 300;
         try 
         {
-            var config = proxyService.getConfiguration(); 
+            var config = ProxyConfigRepository.getConfiguration(); 
             if(config == null)
             {
                 route = "first-config-dialog";
