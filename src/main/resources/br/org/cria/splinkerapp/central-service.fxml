@@ -4,8 +4,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="346.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.CentralServiceController">
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="346.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.CentralServiceController">
    <children>
       <TextField id="urlField" fx:id="urlField" layoutX="10.0" layoutY="34.0" prefHeight="25.0" prefWidth="325.0" promptText="URL do Serviço Central" />
       <TextField id="uriField" fx:id="uriField" layoutX="11.0" layoutY="69.0" prefHeight="25.0" prefWidth="325.0" promptText="URI do Serviço Central" />
