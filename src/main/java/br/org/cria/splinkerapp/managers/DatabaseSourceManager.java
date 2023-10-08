@@ -5,7 +5,6 @@ import br.org.cria.splinkerapp.models.DataSource;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
 import javafx.concurrent.Service;
-import javafx.concurrent.Task;
 
 public class DatabaseSourceManager 
 {
