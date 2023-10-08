@@ -15,50 +15,47 @@ public class FileSourceManager {
     public static Service<Void> processData(String fileToProcess) throws Exception
     {
         var filePath = fileToProcess.toLowerCase();
-            
-                        FileParser fileParser = null;
-                        DataSourceType type = null;
-                        var dwcManager = new DarwinCoreArchiveService();
-                        var isExcel = filePath.endsWith(".xlsx") ||filePath.endsWith(".xls");
-                        var isCsv = filePath.endsWith(".csv");
-                        var isOds = filePath.endsWith(".ods");
-                        var isDbf = filePath.endsWith(".dbf");
-                        var unsupportedFileFormat = isExcel || isCsv || isOds || isDbf;
+        FileParser fileParser = null;
+        DataSourceType type = null;
+        var dwcManager = new DarwinCoreArchiveService();
+        var isExcel = filePath.endsWith(".xlsx") ||filePath.endsWith(".xls");
+        var isCsv = filePath.endsWith(".csv");
+        var isOds = filePath.endsWith(".ods");
+        var isDbf = filePath.endsWith(".dbf");
+        var unsupportedFileFormat = isExcel || isCsv || isOds || isDbf;
 
-                        if(unsupportedFileFormat)
-                        {
-                            throw new Exception("Formato de arquivo não suportado");
-                        }
-                        if(isExcel)
-                        {
-                            fileParser = new ExcelFileParser(filePath);
-                            type = DataSourceType.Excel;
-                        }
-                        if(isCsv)
-                        {
-                            fileParser = new CsvFileParser(filePath);
-                            type = DataSourceType.CSV;
-                        }
-                        if(isOds)
-                        {
-                            fileParser = new OdsFileParser(filePath);
-                            type = DataSourceType.LibreOfficeCalcODS;
-                        }
-                        if(isDbf)
-                        {
-                            fileParser = new DbfFileParser(filePath);
-                            type = DataSourceType.dBaseDBF;
-                        }
-                       
-                        fileParser.createTableBasedOnSheet();
-                        fileParser.insertDataIntoTable();
-                        
-                        
-                        dwcManager.readDataFromSource(new DataSource(type))
-                        .generateTXTFile()
-                        .generateZIPFile();
-                        return dwcManager.transferData();
+        if(unsupportedFileFormat)
+        {
+            throw new Exception("Formato de arquivo não suportado");
+        }
+        if(isExcel)
+        {
+            fileParser = new ExcelFileParser(filePath);
+            type = DataSourceType.Excel;
+        }
+        if(isCsv)
+        {
+            fileParser = new CsvFileParser(filePath);
+            type = DataSourceType.CSV;
+        }
+        if(isOds)
+        {
+            fileParser = new OdsFileParser(filePath);
+            type = DataSourceType.LibreOfficeCalc;
+        }
+        if(isDbf)
+        {
+            fileParser = new DbfFileParser(filePath);
+            type = DataSourceType.dBase;
+        }
 
+        fileParser.createTableBasedOnSheet();
+        fileParser.insertDataIntoTable();
+
+        dwcManager.readDataFromSource(new DataSource(type))
+        .generateTXTFile()
+        .generateZIPFile();
+        return dwcManager.transferData();
     }
     
 }
