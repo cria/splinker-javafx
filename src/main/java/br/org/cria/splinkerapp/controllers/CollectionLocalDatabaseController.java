@@ -1,18 +1,23 @@
 package br.org.cria.splinkerapp.controllers;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.ResourceBundle;
 
+import br.org.cria.splinkerapp.managers.DatabaseSourceManager;
+import br.org.cria.splinkerapp.models.DataSourceType;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 /*
  * Classe responsável pelo formulário de configuração de banco de dados
  */
-public class CollectionLocalDatabaseController extends AbstractController{
+public class CollectionLocalDatabaseController extends AbstractController implements Initializable{
 
     @FXML
     AnchorPane pane;
@@ -25,58 +30,44 @@ public class CollectionLocalDatabaseController extends AbstractController{
     @FXML
     TextField portField;
     @FXML
+    TextField hostAddressField;
+    @FXML
+    TextField dbNameField;
+    @FXML
+    ComboBox<DataSourceType>  databaseTypeField;
+    @FXML
     Button saveBtn;
 
-    boolean testConnection()
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) 
     {
-        var url = "jdbc:mysql://localhost:3306/bruno_testdb";
-        var username = usernameField.getText();
-        var password = passwordField.getText();
-        var tableName = tablenameField.getText();
-        var isConnectionValid = true;
-        try(var connection = DriverManager.getConnection(url, username, password)) {
-            var statement = connection.createStatement();
-
-            var sql = """
-                        SELECT COLUMN_NAME 
-                        FROM INFORMATION_SCHEMA.COLUMNS 
-                        WHERE TABLE_NAME = '%s';
-                        """.formatted(tableName);
-
-            statement.executeQuery(sql);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            isConnectionValid = false;
-        }
-        return isConnectionValid;
+        var fileTypes = Arrays.asList(DataSourceType.CSV.name(), DataSourceType.Excel.name(), 
+                        DataSourceType.LibreOfficeCalc.name(), DataSourceType.dBase.name());
+        var options = Arrays.asList(DataSourceType.values()).stream().filter(e-> !fileTypes.contains(e)).toList();
+        databaseTypeField.setItems(FXCollections.observableArrayList(options));
+       //TODO: Chamar API passando o token e puxa configuração inicial
     }
 
 
     @FXML
     void onSaveButtonClicked()
     {
-        
-        String url = "jdbc:mysql://localhost:3306/bruno_testdb";
-        String username = usernameField.getText();
-        String password = passwordField.getText();
-
-        try(Connection connection = DriverManager.getConnection(url, username, password)) {
-            Statement statement = connection.createStatement();
-
-            String sql = "SELECT * FROM %s LIMIT 1;".formatted(tablenameField.getText());
-
-            var result = statement.executeQuery(sql);
-            while(result.next()){
-                var name = result.getString("name");
-                var address = result.getString("address");
-                var phone = result.getString("phone");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            try 
+        {
+            var username = usernameField.getText();
+            var password = passwordField.getText();
+            var tableName = tablenameField.getText();
+            var hostName = hostAddressField.getText();
+            var databaseName = dbNameField.getText();
+            var port = portField.getText();
+            DatabaseSourceManager.processData(DataSourceType.MySQL, hostName, databaseName, 
+                                                        tableName, username, password, port);
+        } 
+        catch (Exception e) 
+        {
+            showErrorModal(e.getMessage());
         }
-
     }
 
     @Override
