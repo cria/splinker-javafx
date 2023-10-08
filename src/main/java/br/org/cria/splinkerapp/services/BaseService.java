@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public abstract class BaseService {
     
-protected Connection getConnection() throws SQLException {
+protected static Connection getConnection() throws SQLException {
     String url = "jdbc:sqlite:splinker.db";
     return DriverManager.getConnection(url);
 }

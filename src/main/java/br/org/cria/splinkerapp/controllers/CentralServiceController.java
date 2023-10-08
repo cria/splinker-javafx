@@ -2,9 +2,8 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
-import br.org.cria.splinkerapp.config.BaseConfiguration;
 import br.org.cria.splinkerapp.models.CentralService;
+import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -16,7 +15,9 @@ public class CentralServiceController extends AbstractController implements Init
     @FXML
     Pane pane;
     @Override
-    protected Pane getPane() { return this.pane; }
+    protected Pane getPane() { 
+        return this.pane; 
+    }
     @FXML
     Button btnSave;
     @FXML
@@ -29,8 +30,13 @@ public class CentralServiceController extends AbstractController implements Init
     {
        try 
        {
-            var cserv = new CentralService(uriField.getText(),urlField.getText());
-            BaseConfiguration.saveCentralServiceData(cserv); 
+            
+            var cserv = new CentralService(uriField.getText(), urlField.getText());
+            CentralServiceRepository.saveCentralServiceData(cserv);
+            dialog.setOnCloseRequest(e-> {
+                 navigateTo(this.getStage(), "token-login",280,150);
+            }); 
+            showAlert(null, "Mensagem", "Salvo com sucesso");
        } 
        catch (Exception e) 
        {
@@ -43,7 +49,7 @@ public class CentralServiceController extends AbstractController implements Init
     {
         try 
         {
-            var centralServiceConfig = BaseConfiguration.getCentraServiceData();
+            var centralServiceConfig = CentralServiceRepository.getCentraServiceData();
             if(centralServiceConfig != null)
             {
                 uriField.setText(centralServiceConfig.getCentralServiceUri());

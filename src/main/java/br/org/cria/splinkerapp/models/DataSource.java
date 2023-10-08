@@ -17,9 +17,10 @@ public class DataSource {
     
     public DataSource(DataSourceType type, String host, String databaseName, String tableName,
                      String username, String password, String port )
-
     {
-        switch (type) {
+        this.type = type;
+        switch (type) 
+        {
             case MySQL:
             case PostgreSQL:
                 this.connectionString = "jdbc:%s://%s/%s?user=%s&password=%s"
@@ -27,10 +28,10 @@ public class DataSource {
                 break;
             case Oracle:
                 this.connectionString = "jdbc:%s:thin:%s/%s@%s:%s:%s"
-                            .formatted(type.name().toLowerCase(),username,password,host,port,databaseName);
+                            .formatted(type.name().toLowerCase(), username, password, host, port, databaseName);
                 break;
             case SQLServer:
-                this.connectionString = "jdbc:%s://%s:%s;encrypt=true;databaseName=%s;user=%s;password=%s"
+                this.connectionString = "jdbc:%s://%s:%s;encrypt=true;trustServerCertificate=true;databaseName=%s;user=%s;password=%s"
                         .formatted(type.name().toLowerCase(), host, port, databaseName, username, password);
                 break;
             default:
