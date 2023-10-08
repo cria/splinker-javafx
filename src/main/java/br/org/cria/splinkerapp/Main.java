@@ -2,8 +2,8 @@ package br.org.cria.splinkerapp;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import br.org.cria.splinkerapp.config.BaseConfiguration;
 import br.org.cria.splinkerapp.config.DatabaseSetup;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
 
 public class Main extends Application 
 {
@@ -17,7 +17,7 @@ public class Main extends Application
             var width = 330;
             var height = 150;
             
-            if(BaseConfiguration.hasConfiguration())
+            if(TokenRepository.hasConfiguration())
             {
                 routeName ="home";
                 width = 350;
