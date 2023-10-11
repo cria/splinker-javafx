@@ -38,23 +38,22 @@ public class DataSourceSelectionController extends AbstractController implements
     @FXML
     void onButtonSelectDataSourceClicked()
     {
-        var width = 360;
-        var height = 200;
-        var routeName = "file-selection";
         var selectedValue = dataSourceField.getValue();
-        
-        
         if(selectedValue == null)
         {
             showErrorModal("Fonte de dados não especificada");
             return;
         }
-
+        var width = 360;
+        var height = 200;
+        var routeName = "file-selection";
+        
         switch (selectedValue) 
         {
             case MySQL:
             case PostgreSQL:
             case SQLServer:
+            case Oracle:
                 routeName = "collection-database";
                 height = 340;
                 width = 340;
