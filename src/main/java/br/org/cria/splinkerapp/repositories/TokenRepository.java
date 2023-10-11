@@ -27,7 +27,7 @@ public class TokenRepository extends BaseRepository
 
     public static String getToken() throws Exception
     { 
-        var cmd = "SELECT token FROM BasicConfiguration";
+        var cmd = "SELECT token FROM BasicConfiguration;";
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var result = runQuery(cmd, conn);
         var token = result.getString("token");
