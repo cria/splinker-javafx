@@ -46,10 +46,7 @@ public class DataSourceSelectionController extends AbstractController implements
         
         if(selectedValue == null)
         {
-            Alert dialog = new Alert(AlertType.ERROR);
-            dialog.setTitle("Fonte de dados não especificada");
-            dialog.setContentText("Selecione uma fonte de dados");
-            dialog.show();
+            showErrorModal("Fonte de dados não especificada");
             return;
         }
 
@@ -59,6 +56,11 @@ public class DataSourceSelectionController extends AbstractController implements
             case PostgreSQL:
             case SQLServer:
                 routeName = "collection-database";
+                height = 340;
+                width = 340;
+                break;
+            case Access:
+                routeName = "access-db-modal";
                 height = 340;
                 width = 340;
                 break;
