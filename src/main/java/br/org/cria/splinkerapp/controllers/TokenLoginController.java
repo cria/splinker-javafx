@@ -27,16 +27,14 @@ public class TokenLoginController extends AbstractController implements Initiali
         try 
         {
             var token = tokenField.getText();
-            var isTokenValid = TokenRepository.tokenIsValid(token);
+            var isTokenValid = TokenRepository.validateToken(token);
             if(isTokenValid)
             {
                 TokenRepository.saveToken(token);
-                navigateTo(getStage(), "datasource-selection",400,300);   
+                navigateTo(getStage(), "datasource-selection",400,300);
+                return;   
             }
-            else
-            {
                 showAlert(AlertType.ERROR,"Token inválido", "O token digitado é inválido");
-            }
              
         } 
         catch (Exception e) 
