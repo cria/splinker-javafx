@@ -10,8 +10,6 @@ import com.google.gson.Gson;
 
 public class TokenRepository extends BaseRepository
 {
-    public static String LOCAL_DB_CONNECTION = "jdbc:sqlite:splinker.db";
-    
     public static boolean hasConfiguration() throws Exception
     {
         return getToken() != null;
