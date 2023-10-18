@@ -4,8 +4,8 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
-import br.org.cria.splinkerapp.managers.DatabaseSourceManager;
 import br.org.cria.splinkerapp.models.DataSourceType;
+import br.org.cria.splinkerapp.repositories.DataSourceRepository;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -40,13 +40,23 @@ public class CollectionLocalDatabaseController extends AbstractController implem
 
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) 
+    public void initialize(URL location, ResourceBundle resources)
     {
         var fileTypes = Arrays.asList(DataSourceType.CSV.name(), DataSourceType.Excel.name(), 
                         DataSourceType.LibreOfficeCalc.name(), DataSourceType.dBase.name());
         var options = Arrays.asList(DataSourceType.values()).stream().filter(e-> !fileTypes.contains(e)).toList();
         databaseTypeField.setItems(FXCollections.observableArrayList(options));
-       //TODO: Chamar API passando o token e puxa configuração inicial
+        
+        try 
+        {
+            var ds = DataSourceRepository.getDataSource();
+            databaseTypeField.setValue(ds.getType());    
+        } 
+        catch (Exception e) 
+        {
+            showErrorModal(e.getMessage());
+        }
+        
     }
 
 
@@ -61,8 +71,12 @@ public class CollectionLocalDatabaseController extends AbstractController implem
             var hostName = hostAddressField.getText();
             var databaseName = dbNameField.getText();
             var port = portField.getText();
-            DatabaseSourceManager.processData(DataSourceType.MySQL, hostName, databaseName, 
-                                                        tableName, username, password, port);
+            var type = databaseTypeField.getValue();
+            DataSourceRepository.saveDataSource(type, hostName , port,databaseName,tableName,username,password);
+            var routeName ="home";
+            var width = 350;
+            var height = 200;
+            navigateTo(getStage(), routeName, width, height);
         } 
         catch (Exception e) 
         {
