@@ -6,6 +6,8 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.sql.DriverManager;
 import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gson.Gson;
 
 public class TokenRepository extends BaseRepository
@@ -43,11 +45,11 @@ public class TokenRepository extends BaseRepository
         statement.executeUpdate();
     };
     
-    public static boolean tokenIsValid(String token) throws Exception
+    public static Map getConfigurationDataFromAPI(String token) throws Exception
     {
         isNullToken(token);
         String line;
-        var url = "http://localhost:8000/api/validate_token?token=%s".formatted(token);
+        var url = "http://localhost:8000/api/login?token=%s".formatted(token);
         var urlConn = new URI(url).toURL();
         var response = new StringBuffer();
         var connection = (HttpURLConnection) urlConn.openConnection();
@@ -61,10 +63,8 @@ public class TokenRepository extends BaseRepository
         
         reader.close();
         connection.disconnect();
-        HashMap<String, Boolean> json = new Gson().fromJson(response.toString(), HashMap.class);
-
-        var isValid = json.get("valid");
-        return isValid;
+        HashMap json =  new Gson().fromJson(response.toString(), HashMap.class);
+        return json;
 
     }
     
