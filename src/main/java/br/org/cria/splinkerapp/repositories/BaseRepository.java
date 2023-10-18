@@ -1,8 +1,11 @@
 package br.org.cria.splinkerapp.repositories;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.util.List;
 
 public class BaseRepository 
 {
@@ -25,5 +28,12 @@ public class BaseRepository
         conn.close();
 
     }
-    
+
+    public static String byteArrayToString(List<Double> byteArr)
+    {
+        var out = new ByteArrayOutputStream();
+        byteArr.forEach((e) -> out.write(e.byteValue()));
+        var str = new String(out.toByteArray(), StandardCharsets.UTF_8);
+        return str;
+    }
 }
