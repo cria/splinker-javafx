@@ -1,25 +1,21 @@
 package br.org.cria.splinkerapp.services.implementations;
 
 import br.org.cria.splinkerapp.models.DataSource;
+import br.org.cria.splinkerapp.repositories.DataSourceRepository;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
+
 import com.github.perlundq.yajsync.ui.YajsyncClient;
-import com.google.gson.Gson;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class DarwinCoreArchiveService 
+public class DarwinCoreArchiveService
 {
     String zipFile = "%s/%s.zip";
     String textFile = "%s/occurences.txt".formatted(System.getProperty("user.dir"));
@@ -28,35 +24,29 @@ public class DarwinCoreArchiveService
     
     public DarwinCoreArchiveService generateTXTFile() throws Exception
     {   
+        var path = Path.of(textFile);
         var columnNames = getColumnNames();
         var rows = getDataSourceRows();
         var rowCount = rows.length();
-        if( rowCount > 0)
+        if(Files.exists(path))
         {
-            var path = Path.of(textFile);
-            if(Files.lines(path).count() > rowCount+1)
+            var dataSourceLineCount = rowCount + 1;
+            var fileLineCount = Files.lines(path).count();
+            if(rowCount > 0 && fileLineCount > dataSourceLineCount)
             {
-                if (Files.exists(path)) 
-                {
-                    Files.delete(path);
-                }
+                    throw new Exception("Não é possível apagar registros!");
+            }
+            else
+            {
+                Files.delete(path);
+            }
+        }
                 var writer = new BufferedWriter(new FileWriter(textFile));
                 writer.write(columnNames);        
                 writer.write(rows);
                 writer.flush();
                 writer.close();
-            }
-            else
-            {
-                //TODO: AVISAR O USUÁRIO QUE O ARQUIVO ATUAL TEM MAIS LINHAS QUE O ANTERIOR
-            }
             
-            
-            
-            
-        }
-        
-
         return this;
     }
 
@@ -89,8 +79,8 @@ public class DarwinCoreArchiveService
            builder.append("%s\t".formatted(metaData.getColumnName(i)));
         }
         builder.append("\n");
-        
-        return builder.toString();
+        var columns = builder.toString();
+        return columns;
     }
 
     public DarwinCoreArchiveService generateZIPFile() throws Exception 
@@ -112,14 +102,17 @@ public class DarwinCoreArchiveService
 
     public DarwinCoreArchiveService readDataFromSource(DataSource source) throws Exception
     {
-        var command = getQueryCommandFromAPI();
-        // var uri = source.getConnectionString();
-        // var conn = DriverManager.getConnection(uri);
+        var command = DataSourceRepository.getSQLCommand();
         var conn = source.getDataSourceConnection();
         var statement = conn.createStatement();
         this.data = statement.executeQuery(command);
         
         return this;
+    }
+    public DarwinCoreArchiveService readDataFromSource() throws Exception
+    {
+        DataSource source = DataSourceRepository.getDataSource();
+        return readDataFromSource(source);
     }
 
     public Service<Void> transferData() throws Exception 
@@ -145,32 +138,5 @@ public class DarwinCoreArchiveService
             }
         };
 
-    }
-
-    private String getQueryCommandFromAPI() throws Exception 
-    {
-        String line;
-        var token = TokenRepository.getToken();
-        var urlConn = new URI("http://localhost:8000/api/get_query?token="+token).toURL();
-        var response = new StringBuffer();
-        var connection = (HttpURLConnection) urlConn.openConnection();
-        connection.setRequestMethod("GET");
-        var reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        
-        while ((line = reader.readLine()) != null) 
-        {
-            response.append(line);
-        }
-        
-        reader.close();
-        connection.disconnect();
-
-        HashMap<String, List<Double>> json = new Gson().fromJson(response.toString(), HashMap.class);
-
-        var strValues = json.get("cmd");
-        var out = new ByteArrayOutputStream();
-        strValues.forEach((e) -> out.write(e.byteValue()));
-        var command = new String(out.toByteArray(), StandardCharsets.UTF_8);
-        return command;
     }
 }
