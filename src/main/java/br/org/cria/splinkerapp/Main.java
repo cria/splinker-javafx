@@ -8,28 +8,39 @@ import br.org.cria.splinkerapp.repositories.TokenRepository;
 public class Main extends Application 
 {
     @Override
-    public void start(Stage stage) 
+    public void start(Stage stage) throws Exception
     {
         try 
         {
-            DatabaseSetup.initDb();
-            var routeName = "first-config-dialog";
-            var width = 330;
-            var height = 150;
-            
-            if(TokenRepository.hasConfiguration())
+            var initDb = DatabaseSetup.initDb();
+            if (initDb != null) 
             {
-                routeName ="home";
-                width = 350;
-                height = 200;
+                initDb.setOnFailed(event -> {
+                    var exception = initDb.getException();
+                });
+
+                initDb.setOnSucceeded((event )-> {
+                        stage.setTitle("spLinker");
+                        stage.setResizable(false); 
+                        try {
+                            if(TokenRepository.hasConfiguration())
+                        {
+                            Router.getInstance().navigateTo(stage, "home", 350 ,200);
+                        }
+                        else
+                        {
+                            Router.getInstance().navigateTo(stage, "first-config-dialog", 330,150);
+                        }
+                        } catch (Exception e) {
+                             throw new RuntimeException(e);
+                        }
+                        stage.show();
             
+                });
+                
+                initDb.start();
             }
-            
-            stage.setTitle("spLinker");
-            stage.setResizable(false);
-            Router.getInstance().navigateTo(stage, routeName, width, height);
-    
-            stage.show();
+          
         } 
         catch (Exception ex) 
         {
