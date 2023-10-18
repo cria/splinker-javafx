@@ -20,8 +20,15 @@ public class CentralServiceRepository extends BaseRepository
         return new CentralService(uri, url);
     };
 
+    public static void saveCentralServiceData(String uri, String url) throws Exception
+    {
+        saveCentralServiceData(new CentralService(uri, url));
+
+    }
+
     public static void saveCentralServiceData(CentralService cserv) throws Exception
     {
+        cleanTable("CentralServiceConfiguration");
         var uri = cserv.getCentralServiceUri();
         var url = cserv.getCentralServiceUrl();
         var isEmptyUri = Strings.isNullOrEmpty(url);
