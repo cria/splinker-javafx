@@ -1,5 +1,4 @@
 package br.org.cria.splinkerapp.controllers;
-import java.util.function.Function;
 
 import br.org.cria.splinkerapp.Router;
 import javafx.concurrent.Service;
