@@ -1,14 +1,9 @@
 package br.org.cria.splinkerapp.repositories;
 
-import java.sql.SQLException;
-import java.sql.Statement;
-
+import java.sql.DriverManager;
 import br.org.cria.splinkerapp.models.RSyncConfig;
 
-import static java.sql.DriverManager.getConnection;
-
-//TODO: Mudar essa configuração para ser remotamente chamada da API
-public class TransferConfigRepository  {
+public class TransferConfigRepository  extends BaseRepository {
 
     public static RSyncConfig getRSyncConfig() throws Exception
     {
@@ -16,15 +11,29 @@ public class TransferConfigRepository  {
                        SELECT rsync_port, rsync_server_destination
                        FROM TransferConfiguration LIMIT 1;
                        """;
-            var statement = getStatement();
+            var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+            var statement = conn.createStatement();
             var result = statement.executeQuery(sql);
             var port = result.getInt("rsync_port");
-            var destination = result.getString("rsync_port");
+            var destination = result.getString("rsync_server_destination");
             var conf = new RSyncConfig(port, destination);
             return conf;
     }
-    private static Statement getStatement() throws SQLException 
+
+    public static void saveRSyncConfig(int port, String destination) throws Exception
     {
-        return getConnection("jdbc:sqlite:spLinker.db").createStatement();
+        cleanTable("TransferConfiguration");
+        var sql = """
+                INSERT INTO 
+                TransferConfiguration (rsync_port, rsync_server_destination)
+                VALUES(?,?);
+                """;
+        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+        var statement = conn.prepareStatement(sql);
+        statement.setInt(1, port);
+        statement.setString(2, destination);
+        statement.executeUpdate();
+        statement.close();
+        conn.close();    
     }
 }
