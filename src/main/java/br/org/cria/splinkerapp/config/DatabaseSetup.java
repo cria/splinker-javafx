@@ -1,12 +1,22 @@
 package br.org.cria.splinkerapp.config;
 
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.DriverManager;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
 public class DatabaseSetup {
+    
+    public static void deleteLocalDatabase() throws IOException
+    {
+        var file = "%s/spLinker.db".formatted(System.getProperty("user.dir"));
+        var path = Path.of(file);
+        Files.delete(path);
+    }
+
     public static Service initDb() {
 
         return new Service<Void>() {
