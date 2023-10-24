@@ -4,13 +4,13 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.models.CentralService;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
+import br.org.cria.splinkerapp.repositories.DataSourceRepository;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 
-public class CentralServiceController extends AbstractController implements Initializable {
+public class CentralServiceController extends AbstractController {
 
     @FXML
     Pane pane;
@@ -30,12 +30,16 @@ public class CentralServiceController extends AbstractController implements Init
     {
        try 
        {
-            
+            var ds = DataSourceRepository.getDataSource();
             var cserv = new CentralService(uriField.getText(), urlField.getText());
             CentralServiceRepository.saveCentralServiceData(cserv);
-            dialog.setOnCloseRequest(e-> {
+            if(ds == null)
+            {
+                dialog.setOnCloseRequest(e-> {
                  navigateTo(this.getStage(), "token-login",280,150);
-            }); 
+                }); 
+            }
+            
             showAlert(null, "Mensagem", "Salvo com sucesso");
        } 
        catch (Exception e) 
