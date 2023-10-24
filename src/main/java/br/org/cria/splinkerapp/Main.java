@@ -25,7 +25,7 @@ public class Main extends Application
                         try {
                             if(TokenRepository.hasConfiguration())
                         {
-                            Router.getInstance().navigateTo(stage, "home", 350 ,200);
+                            Router.getInstance().navigateTo(stage, "home", 231 ,222);
                         }
                         else
                         {
