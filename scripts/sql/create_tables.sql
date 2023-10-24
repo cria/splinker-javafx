@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS DataSourceConfiguration (
   db_name VARCHAR(100) NULL,
   db_tablename VARCHAR(100) NULL,
   db_username VARCHAR(100) NULL,
-  db_password VARCHAR(100) NULL,  
+  db_password VARCHAR(100) NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );

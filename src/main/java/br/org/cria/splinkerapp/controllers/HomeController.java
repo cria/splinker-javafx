@@ -1,12 +1,17 @@
 package br.org.cria.splinkerapp.controllers;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
+import br.org.cria.splinkerapp.config.DatabaseSetup;
 import br.org.cria.splinkerapp.facade.ConfigFacade;
+import br.org.cria.splinkerapp.managers.DatabaseSourceManager;
+import br.org.cria.splinkerapp.managers.FileSourceManager;
+import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.DataSourceRepository;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
-import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.Pane;
 
@@ -24,8 +29,7 @@ public class HomeController extends AbstractController {
     @FXML
     Button syncMetaDataBtn;
 
-    Label lblMessage;
-
+    
     @FXML
     void onSyncServerBtnClicked() throws Exception 
     {
@@ -33,11 +37,20 @@ public class HomeController extends AbstractController {
             var ds = DataSourceRepository.getDataSource();
             if (ds != null) 
             {
-                transferService = new DarwinCoreArchiveService()
-                        .readDataFromSource(ds)
-                        .generateTXTFile()
-                        .generateZIPFile()
-                        .transferData();
+                if(ds.isFile())
+                {
+                    transferService = FileSourceManager.processData(ds.getDataSourceFilePath());
+                }
+                if(ds.isAccessDb())
+                {
+                    transferService = DatabaseSourceManager.processData(ds.getDataSourceFilePath(), 
+                                                                ds.getDbUser(),ds.getDbPassword());
+                }
+                if(ds.isSQLDatabase())
+                {
+                    transferService = DatabaseSourceManager.processData(ds.getType(), ds.getDbHost(), 
+                    ds.getDbName(), ds.getDbTableName(), ds.getDbUser(), ds.getDbPassword(), ds.getDbPort());
+                }
 
                 if (transferService != null) 
                 {
@@ -61,10 +74,7 @@ public class HomeController extends AbstractController {
             return;
         }
         catch (Exception ex) {
-            System.out.println("\n\n\n" + ex.toString() + "\n\n\n\n");
-            ex.printStackTrace();
             showErrorModal(ex.toString());
-
         }
     }
 
@@ -75,7 +85,63 @@ public class HomeController extends AbstractController {
     }
 
     @FXML
-    void onSyncMetadataBtnClicked() {
+    void onDbConfigMenuItemClick() 
+    {
+        openNewWindow("collection-database", 340, 340);
+    }
+    @FXML
+    void onFilePathConfigMenuOptionClick() 
+    {
+        try
+        {
+            var ds = DataSourceRepository.getDataSource();
+            var isAccessFile = ds.getType() == DataSourceType.Access;
+            var width = 360;
+            var height = 200;
+            var routeName = "file-selection";
+            if(isAccessFile)
+            {
+                routeName = "access-db-modal";
+                width = 424;
+                height = 200;
+            }
+            openNewWindow(routeName, width, height);
+        }
+        catch(Exception ex)
+        {
+
+        }
+    }
+
+    @FXML
+    void onProxyConfigMenuOptionClick() 
+    {
+        openNewWindow("proxy-config", 440, 400);
+    }
+    @FXML
+    void onCentralServiceConfigMenuOptionClick() 
+    {
+        openNewWindow("central-service", 320, 240);
+    }
+    @FXML
+    void onDeleteLocalConfigMenuItemClick() 
+    {
+        try 
+        {
+            DatabaseSetup.deleteLocalDatabase();
+            System.exit(0);
+        } 
+        catch (Exception e) 
+        {
+            showErrorModal(e.getLocalizedMessage());
+        }
+        
+    }
+    
+    
+    @FXML
+    void onSyncMetaDataMenuItemClick()
+    {
         try 
         {
             var token = TokenRepository.getToken();
@@ -84,13 +150,28 @@ public class HomeController extends AbstractController {
         } 
         catch (Exception e) 
         {
-            showErrorModal(e.getMessage());
-        }
+            showErrorModal(e.getLocalizedMessage());
+        }  
     }
-
     @Override
     protected Pane getPane() {
         return this.pane;
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        try 
+        {
+            if(TokenRepository.getToken() == null)
+            {
+                navigateTo(getStage(), "first-config-dialog", 330,150);
+            }    
+        } 
+        catch (Exception e) 
+        {
+            showErrorModal(e.getLocalizedMessage());
+        }
+        
     }
 
 }
