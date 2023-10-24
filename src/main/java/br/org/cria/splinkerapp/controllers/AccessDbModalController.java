@@ -6,14 +6,13 @@ import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.DataSourceRepository;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 
-public class AccessDbModalController extends AbstractController  implements Initializable {
+public class AccessDbModalController extends AbstractController {
     @FXML
     Pane pane;
     @FXML
@@ -40,11 +39,14 @@ public class AccessDbModalController extends AbstractController  implements Init
             var path = file.getAbsolutePath();
             var userName = accessUsernameField.getText();
             var password = accessPasswordField.getText();
+            var ds = DataSourceRepository.getDataSource();  
             DataSourceRepository.saveDataSource(DataSourceType.Access, path, userName, password);
-            var routeName ="home";
-            var width = 231;
-            var height = 222;
-            navigateTo(getStage(), routeName, width, height);
+            if(ds.getDataSourceFilePath() == null)
+            {
+                navigateTo(getStage(), "home", 350, 200);
+            }
+            
+            
         } 
         catch(Exception ex)
         {
@@ -65,35 +67,27 @@ public class AccessDbModalController extends AbstractController  implements Init
     @Override
     public void initialize(URL location, ResourceBundle resources) 
     {
+        accessFilePathField.setDisable(true);
         try 
         {
             var ds = DataSourceRepository.getDataSource();
-            if(ds!= null)
+            
+            if(ds.getDataSourceFilePath() != null)
             {
-                var hasUserName = ds.getDbUser() != null;
-                var hasPassword = ds.getDbPassword() != null;
-                var hasFilePath = ds.getDataSourceFilePath() != null;
-                if(hasFilePath)
-                {
-                    accessFilePathField.setText(ds.getDataSourceFilePath());
-                }
-                if(hasUserName)
-                {
-                    accessUsernameField.setText(ds.getDbUser());
-                }
-                if(hasPassword)
-                {
-                    accessPasswordField.setText(ds.getDbPassword());
-                }
+                file = new File(ds.getDataSourceFilePath());
+                accessFilePathField.setText(ds.getDataSourceFilePath());
+                accessUsernameField.setText(ds.getDbUser());
+                accessPasswordField.setText(ds.getDbPassword());
+            }
+            else
+            {
+                btnSave.setDisable(true);
             }
         } 
         catch (Exception e) 
         {
             showErrorModal(e.getMessage());
         }
-        
-        
-        btnSave.setDisable(true);    
     }
     
 }
