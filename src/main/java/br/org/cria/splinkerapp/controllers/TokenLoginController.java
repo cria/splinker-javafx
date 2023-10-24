@@ -35,7 +35,7 @@ public class TokenLoginController extends AbstractController implements Initiali
                 TokenRepository.saveToken(token);
                 ConfigFacade.handleConfiguration(apiConfig);
                 var dsType = DataSourceType.valueOf(apiConfig.get("data_source_type").toString());
-                DataSourceRepository.saveDataSource(dsType);
+                DataSourceRepository.saveDataSource(dsType, null, null, null, null, null, null, null);
                 var routeName = "collection-database";
                 var width = 255;
                 var height = 360;
@@ -44,13 +44,13 @@ public class TokenLoginController extends AbstractController implements Initiali
                     case Access:
                         routeName = "access-db-modal";
                         width = 424;
-                        height = 158;
+                        height = 200;
                         break;
                     case dBase:
                     case Excel:
                     case LibreOfficeCalc:
                     case CSV:
-                        routeName = "";
+                        routeName = "file-selection";
                         width = 369;
                         height = 127;
                         break;
