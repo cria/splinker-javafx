@@ -2,6 +2,9 @@ package br.org.cria.splinkerapp.controllers;
 
 import br.org.cria.splinkerapp.Router;
 import javafx.concurrent.Service;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -13,7 +16,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public abstract class AbstractController {
+public abstract class AbstractController  implements Initializable {
     protected Service transferService;
     protected Stage modalStage = new Stage();
     Alert dialog = new Alert(AlertType.INFORMATION);
@@ -57,7 +60,8 @@ public abstract class AbstractController {
         }
         return new Stage();
     }
-     void showTransferModal(String modalText){
+    protected void showTransferModal(String modalText)
+    {
         modalStage.initOwner(getStage());
         modalStage.initModality(Modality.WINDOW_MODAL);
         modalStage.initStyle(StageStyle.TRANSPARENT);
@@ -70,13 +74,49 @@ public abstract class AbstractController {
         modalStage.showAndWait();
 
     }
-    void showErrorModal(String errorMessage) {
+    protected void showErrorModal(String errorMessage) 
+    {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.setTitle("Error");
         alert.setHeaderText(null);
         alert.setContentText(errorMessage);
         alert.showAndWait();
+    }
+    protected void navigateOrOpenNewWindowOnExistingDataSource(String routeName, int width, int height, boolean newWindow)
+    {
+        if(newWindow)
+        {
+            openNewWindow(routeName, width, height);
+        }
+        else
+        {
+            navigateTo(routeName, width, height);
+        }
+    }
+    protected void openNewWindow(String routeName, int width, int height)
+    {
+        try 
+        {
+            var stage = new Stage();
+            width = width < 1 ? 320 : width;
+            height = height < 1 ? 240 : height;
+            var route = "/br/org/cria/splinkerapp/%s.fxml".formatted(routeName);
+            var resource = getClass().getResource(route);
+            var fxmlLoader = new FXMLLoader(resource);
+            var parent = (Parent) fxmlLoader.load();
+            var scene  = new Scene(parent, height, height);
+            stage.setScene(scene);
+            stage.setWidth(width);
+            stage.setHeight(height);
+            stage.show();    
+        } 
+        catch (Exception e) 
+        {
+            showErrorModal(e.getLocalizedMessage());
+        }
+        
+
     }
 
 }
