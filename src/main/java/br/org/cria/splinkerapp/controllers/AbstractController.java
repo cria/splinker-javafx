@@ -16,7 +16,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public abstract class AbstractController  implements Initializable {
+public abstract class AbstractController implements Initializable {
     protected Service transferService;
     protected Stage modalStage = new Stage();
     Alert dialog = new Alert(AlertType.INFORMATION);
