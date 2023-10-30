@@ -1,36 +1,26 @@
 package br.org.cria.splinkerapp.models;
 
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.time.LocalDate;
 
 public class DataSource {
     private DataSourceType type;
-    private Connection connection;
-    private String connectionString = "jdbc:sqlite:splinker.db";
-    private String dataSourceFilePath;
-    public String getDataSourceFilePath() {
-        return dataSourceFilePath;
+    public DataSourceType getType() {
+        return type;
     }
-    public void setDataSourceFilePath(String dataSourceFilePath) {
-        this.dataSourceFilePath = dataSourceFilePath;
+    public void setType(DataSourceType type) {
+        this.type = type;
     }
 
+    private Connection connection;
+    private String connectionString;
     private String dbHost;
     public String getDbHost() {
         return dbHost;
     }
     public void setDbHost(String dbHost) {
         this.dbHost = dbHost;
-    }
-
-    private String dbPort;
-    public String getDbPort() {
-        return dbPort;
-    }
-    public void setDbPort(String dbPort) {
-        this.dbPort = dbPort;
     }
 
     private String dbName;
@@ -65,65 +55,98 @@ public class DataSource {
         this.dbPassword = dbPassword;
     }
 
-    private LocalDate createdAt;
-    public LocalDate getCreatedAt() {
-        return createdAt;
+    private String dbPort;
+    public String getDbPort() {
+        return dbPort;
     }
-    public void setCreatedAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
+    public void setDbPort(String dbPort) {
+        this.dbPort = dbPort;
+    }
+
+    private String dataSourceFilePath;
+    public String getDataSourceFilePath() {
+        return dataSourceFilePath;
+    }
+    public void setDataSourceFilePath(String dataSourceFilePath) {
+        this.dataSourceFilePath = dataSourceFilePath;
     }
 
     private LocalDate updatedAt;
-  
-    private Path filePath;
-    public Path getFilePath() {
-        return filePath;
+    public LocalDate getUpdatedAt() {
+        return updatedAt;
     }
-    public DataSource(DataSourceType type) { this.type = type; };
-    public DataSource(DataSourceType type, Path filepath) { this.type = type; this.filePath = filepath; };
-    public DataSource(DataSourceType type, Connection conn) 
-    { this.type = type; this.connection = conn; };
-    public DataSource(DataSourceType type, String connectionString) 
-    { this.type = type; this.connectionString = connectionString; };
-    
-    public DataSource(DataSourceType type, String host, String databaseName, String tableName,
-                     String username, String password, String port )
+    public void setUpdatedAt(LocalDate updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    private LocalDate createdAt = LocalDate.now();
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    private DataSource(DataSourceType type, String filePath, String host, String databaseName, String tableName,
+                     String username, String password, String port, String connectionString)
     {
         this.type = type;
+        this.dbHost = host;
+        this.dbName = databaseName;
+        this.type = type;
+        this.dbHost = host;
+        this.dbName = databaseName;
+        this.dbTableName = tableName;
+        this.dbUser = username;
+        this.dbPassword = password;
+        this.dbPort = port;
+        this.connectionString = connectionString;
+        this.dataSourceFilePath = filePath;
+    }
+    
+    public boolean isFile() { return this.dataSourceFilePath != null && this.type != DataSourceType.Access; }
+    public boolean isAccessDb() { return this.dataSourceFilePath != null && this.type == DataSourceType.Access; }
+    public boolean isSQLDatabase() { return this.dataSourceFilePath == null; }
+    public static DataSource factory(DataSourceType type, String filePath, String host, 
+                                        String databaseName, String tableName,
+                                        String username, String password, String port) 
+    {
+        DataSource ds;
+        String connectionString = null;
+              
         switch (type) 
         {
             case MySQL:
             case PostgreSQL:
-                this.connectionString = "jdbc:%s://%s/%s?user=%s&password=%s"
+                connectionString = "jdbc:%s://%s/%s?user=%s&password=%s"
                             .formatted(type.name().toLowerCase(),host, databaseName, username, password);
                 break;
             case Oracle:
-                this.connectionString = "jdbc:%s:thin:%s/%s@%s:%s:%s"
+                connectionString = "jdbc:%s:thin:%s/%s@%s:%s:%s"
                             .formatted(type.name().toLowerCase(), username, password, host, port, databaseName);
                 break;
             case SQLServer:
-                this.connectionString = "jdbc:%s://%s:%s;encrypt=true;trustServerCertificate=true;databaseName=%s;user=%s;password=%s"
+                connectionString = "jdbc:%s://%s:%s;encrypt=true;trustServerCertificate=true;databaseName=%s;user=%s;password=%s"
                         .formatted(type.name().toLowerCase(), host, port, databaseName, username, password);
                 break;
+            case Access:
+                connectionString = "jdbc:ucanaccess://%s;memory=false".formatted(filePath);
+                break;
             default:
+                connectionString = "jdbc:sqlite:splinker.db";
             break;
         }
+        ds = new DataSource(type, filePath, host, databaseName, tableName, 
+                            username, password, port, connectionString);
+        return ds;
     }
-    public DataSourceType getType() 
-    {
-        return type;
-    }
-
-    public String getConnectionString() {
-        return connectionString;
-    }
-    public boolean isFile() { return this.filePath == null;}
-    
     public Connection getDataSourceConnection() throws Exception
     {
         if(this.connection == null)
         {
-            this.connection = DriverManager.getConnection(connectionString);
+            var hasUserName = this.dbUser != null && this.dbUser.trim().length() > 0;
+            var hasPassword = this.dbPassword != null && this.dbPassword.trim().length() > 0;
+            var hasUserNameAndPassword = hasUserName && hasPassword;
+            this.connection = hasUserNameAndPassword ? 
+                    DriverManager.getConnection(connectionString, this.dbUser, this.dbPassword) : 
+                    DriverManager.getConnection(connectionString);
         }
         
         return this.connection;
