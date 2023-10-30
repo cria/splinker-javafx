@@ -41,12 +41,15 @@ public class AccessDbModalController extends AbstractController {
             var password = accessPasswordField.getText();
             var ds = DataSourceRepository.getDataSource();  
             DataSourceRepository.saveDataSource(DataSourceType.Access, path, userName, password);
-            if(ds.getDataSourceFilePath() == null)
+            if(ds.getDataSourceFilePath() == null && ds.isAccessDb())
             {
-                navigateTo(getStage(), "home", 350, 200);
+                navigateTo(getStage(), "home", 231, 222);
             }
-            
-            
+            else
+            {
+                var stage = getStage();
+                stage.close();
+            }
         } 
         catch(Exception ex)
         {
@@ -71,8 +74,7 @@ public class AccessDbModalController extends AbstractController {
         try 
         {
             var ds = DataSourceRepository.getDataSource();
-            
-            if(ds.getDataSourceFilePath() != null)
+            if(ds.getDataSourceFilePath() != null && ds.isAccessDb())
             {
                 file = new File(ds.getDataSourceFilePath());
                 accessFilePathField.setText(ds.getDataSourceFilePath());

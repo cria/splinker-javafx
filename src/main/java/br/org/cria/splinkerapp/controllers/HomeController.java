@@ -87,7 +87,9 @@ public class HomeController extends AbstractController {
     @FXML
     void onDbConfigMenuItemClick() 
     {
-        openNewWindow("collection-database", 340, 340);
+        var width = 364;
+        var height = 370;
+        openNewWindow("collection-database", width, height);
     }
     @FXML
     void onFilePathConfigMenuOptionClick() 
@@ -116,12 +118,14 @@ public class HomeController extends AbstractController {
     @FXML
     void onProxyConfigMenuOptionClick() 
     {
-        openNewWindow("proxy-config", 440, 400);
+        var width = 330;
+        var height = 300;
+        openNewWindow("proxy-config", width, height);
     }
     @FXML
     void onCentralServiceConfigMenuOptionClick() 
     {
-        openNewWindow("central-service", 320, 240);
+        openNewWindow("central-service", 360, 170);
     }
     @FXML
     void onDeleteLocalConfigMenuItemClick() 
@@ -160,6 +164,7 @@ public class HomeController extends AbstractController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        
         try 
         {
             if(TokenRepository.getToken() == null)

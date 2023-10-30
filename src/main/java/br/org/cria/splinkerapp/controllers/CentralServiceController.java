@@ -35,12 +35,12 @@ public class CentralServiceController extends AbstractController {
             CentralServiceRepository.saveCentralServiceData(cserv);
             if(ds == null)
             {
-                dialog.setOnCloseRequest(e-> {
                  navigateTo(this.getStage(), "token-login",280,150);
-                }); 
             }
-            
-            showAlert(null, "Mensagem", "Salvo com sucesso");
+            else
+            {
+                getStage().close();
+            }
        } 
        catch (Exception e) 
        {

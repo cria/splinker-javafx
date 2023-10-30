@@ -7,14 +7,13 @@ import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.DataSourceRepository;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.control.Button;
 
-public class TokenLoginController extends AbstractController implements Initializable{
+public class TokenLoginController extends AbstractController {
 
     @FXML
     AnchorPane pane;
@@ -37,7 +36,7 @@ public class TokenLoginController extends AbstractController implements Initiali
                 var dsType = DataSourceType.valueOf(apiConfig.get("data_source_type").toString());
                 DataSourceRepository.saveDataSource(dsType, null, null, null, null, null, null, null);
                 var routeName = "collection-database";
-                var width = 255;
+                var width = 364;
                 var height = 360;
                 switch(dsType)
                 {
