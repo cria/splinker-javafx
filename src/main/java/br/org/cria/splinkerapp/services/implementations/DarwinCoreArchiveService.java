@@ -102,6 +102,7 @@ public class DarwinCoreArchiveService
 
     public DarwinCoreArchiveService readDataFromSource(DataSource source) throws Exception
     {
+        ClassLoader.load(source.getType());
         var command = DataSourceRepository.getSQLCommand();
         var conn = source.getDataSourceConnection();
         var statement = conn.createStatement();
