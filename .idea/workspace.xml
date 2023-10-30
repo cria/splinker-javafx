@@ -1,18 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="splinker:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="51b6b81a-06d2-4832-921b-ae8b390b0fd9" name="Changes" comment="Testando yajsync">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/AccessDbModalController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/AccessDbModalController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/CentralServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/CentralServiceController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/CollectionLocalDatabaseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/CollectionLocalDatabaseController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FileSelectionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FileSelectionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FirstConfigDialogController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FirstConfigDialogController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/ExcelFileParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/ExcelFileParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/FileParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/FileParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/ProxyConfigController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/ProxyConfigController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/TokenLoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/TokenLoginController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/managers/DatabaseSourceManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/managers/DatabaseSourceManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/managers/FileSourceManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/managers/FileSourceManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/models/DataSource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/models/DataSource.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/parsers/ExcelFileParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/parsers/ExcelFileParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/parsers/FileParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/parsers/FileParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/CentralServiceRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/CentralServiceRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/DataSourceRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/DataSourceRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/ProxyConfigRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/ProxyConfigRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/TokenRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/TokenRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/BaseService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/DarwinCoreArchiveService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/DarwinCoreArchiveService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/access-db-modal.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/access-db-modal.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/central-service.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/central-service.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/collection-database.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/collection-database.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/home.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/home.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/proxy-config.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/proxy-config.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/token-login.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/token-login.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,15 +67,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/brunobemfica/IdeaProjects/SPlinkerApp/splinker&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "/Users/brunobemfica/IdeaProjects/SPlinkerApp/splinker",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.1150748"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/libs" />
@@ -185,32 +212,32 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java</url>
-          <line>63</line>
+          <line>61</line>
           <option name="timeStamp" value="21" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java</url>
-          <line>42</line>
+          <line>37</line>
           <option name="timeStamp" value="37" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java</url>
-          <line>57</line>
+          <line>60</line>
           <option name="timeStamp" value="41" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java</url>
-          <line>33</line>
+          <line>29</line>
           <option name="timeStamp" value="43" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java</url>
-          <line>49</line>
+          <line>44</line>
           <option name="timeStamp" value="44" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FileSelectionController.java</url>
-          <line>41</line>
+          <line>37</line>
           <option name="timeStamp" value="52" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
