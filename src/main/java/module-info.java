@@ -1,6 +1,6 @@
 module br.org.cria.splinkerapp {
-    requires javafx.controls;
-    requires javafx.fxml;
+    requires javafx.controlsEmpty;
+    requires javafx.fxmlEmpty;
     requires java.sql;
     requires org.apache.commons.lang3;
     requires yajsync;
