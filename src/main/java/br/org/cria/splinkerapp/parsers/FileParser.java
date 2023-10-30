@@ -16,8 +16,11 @@ public abstract class FileParser {
         {
             tableName = getTableName();
         }
-        
-        getConnection().createStatement().execute("DROP TABLE IF EXISTS %s;".formatted(tableName));
+        var conn = getConnection();
+        var statement = conn.createStatement();
+        statement.execute("DROP TABLE IF EXISTS %s;".formatted(tableName));
+        statement.close();
+        conn.close();
     }
     protected static String createTableCommand = "CREATE TABLE IF NOT EXISTS %s (%s)";
     protected static String insertIntoCommand = "INSERT INTO %s (%s) VALUES (%s);";
