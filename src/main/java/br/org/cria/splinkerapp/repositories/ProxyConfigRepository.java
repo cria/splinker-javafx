@@ -4,19 +4,20 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.URI;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.List;
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
-import br.org.cria.splinkerapp.services.BaseService;
 
 
-public class ProxyConfigRepository extends BaseService{
+
+public class ProxyConfigRepository {
 
     public static ProxyConfiguration getConfiguration() throws Exception
     {
         ProxyConfiguration proxyConfig = null;    
-        var conn = getConnection();
+        var conn = DriverManager.getConnection("jdbc:sqlite:splinker.db");
         String sql = """
                         SELECT proxy_username, proxy_password, proxy_port, proxy_address 
                         FROM ProxyConfiguration LIMIT 1;
@@ -38,7 +39,7 @@ public class ProxyConfigRepository extends BaseService{
     
     public static void saveProxyConfig(ProxyConfiguration proxyConfig) throws Exception
     {
-        var conn = getConnection();
+        var conn = DriverManager.getConnection("jdbc:sqlite:splinker.db");
         var statement = conn.createStatement();
         var sql = """
                 DELETE FROM ProxyConfiguration; 
@@ -47,6 +48,8 @@ public class ProxyConfigRepository extends BaseService{
         proxyConfig.getAddress(),proxyConfig.getPassword(),
         proxyConfig.getPort(), proxyConfig.getUsername());
         statement.executeUpdate(sql);
+        statement.close();
+        conn.close();
     }
 
     public static boolean isBehindProxyServer() 
