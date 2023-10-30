@@ -45,6 +45,7 @@ public class CentralServiceRepository extends BaseRepository
             statement.setString(1, uri);
             statement.setString(2, url);
             statement.executeUpdate();
+            statement.close();
             conn.close();
         }
         else
