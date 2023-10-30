@@ -1,7 +1,8 @@
 package br.org.cria.splinkerapp.controllers;
-import br.org.cria.splinkerapp.Router;
-import br.org.cria.splinkerapp.services.implementations.ProxyConfigService;
-import br.org.cria.splinkerapp.services.interfaces.IProxyConfigService;
+import java.net.URL;
+import java.util.ResourceBundle;
+
+import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
@@ -16,24 +17,23 @@ public class FirstConfigDialogController extends AbstractController{
     @FXML
     Button btnYes;
 
-    IProxyConfigService proxyService = new ProxyConfigService();
+    boolean computerHasProxyConfigured;
 
     @FXML
-    void onYesButtonClicked(){
+    void onYesButtonClicked()
+    {
         var routeName = "central-service";
-        var width = 350;
-        var height = 200;
+        var width = 360;
+        var height = 150;
         var stage = getStage();
-
-        if(proxyService.isBehindProxyServer())
+        
+        if(computerHasProxyConfigured)
         {
             routeName = "proxy-config";
-            width = 440;
-            height = 400;
-            stage = getStage(); 
+            width = 350;
+            height = 300;
         }
-        
-        Router.getInstance().navigateTo(stage,routeName, width, height);
+        navigateTo(stage,routeName, width, height);
     }
 
     @FXML
@@ -44,6 +44,12 @@ public class FirstConfigDialogController extends AbstractController{
     @Override
     protected Pane getPane() {
         return this.pane;
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources)
+    {
+        computerHasProxyConfigured = ProxyConfigRepository.isBehindProxyServer();
     }
     
 }

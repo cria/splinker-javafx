@@ -6,19 +6,21 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane id="pane" fx:id="pane" prefHeight="222.0" prefWidth="348.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.HomeController">
+<Pane id="pane" fx:id="pane" prefHeight="222.0" prefWidth="231.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.HomeController">
     <children>
-        <Button id="syncServerBtn" fx:id="syncServerBtn" layoutX="14.0" layoutY="60.0" onMouseClicked="#onSyncServerBtnClicked" prefHeight="102.0" prefWidth="146.0" text="Sincronizar Servidor" />
-        <Button id="syncMetaDataBtn" fx:id="syncMetaDataBtn" layoutX="188.0" layoutY="60.0" onMouseClicked="#onSyncMetadataBtnClicked" prefHeight="102.0" prefWidth="146.0" text="Sincronizar Metadados" />
-        <MenuBar id="menuBar" fx:id="menuBar" prefHeight="27.0" prefWidth="348.0">
+        <Button id="syncServerBtn" fx:id="syncServerBtn" layoutX="43.0" layoutY="60.0" onMouseClicked="#onSyncServerBtnClicked" prefHeight="102.0" prefWidth="146.0" text="Sincronizar Servidor" />
+        <MenuBar id="menuBar" fx:id="menuBar" prefHeight="27.0" prefWidth="231.0">
             <menus>
                 <Menu mnemonicParsing="false" text="Principal">
-                    <MenuItem mnemonicParsing="false" text="Option 1" />
-                    <MenuItem mnemonicParsing="false" text="Option 2" />
+                    <MenuItem id="syncMetaDataMenuItem" fx:id="syncMetaDataMenuItem" mnemonicParsing="false" onAction="#onSyncMetaDataMenuItemClick" text="Sincronizar Metadados" />
+                    <MenuItem id="spLinkerUpdateMenuItem" fx:id="spLinkerUpdateMenuItem" mnemonicParsing="false" text="Atualizar SpLinker" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="Configuração">
-                    <MenuItem mnemonicParsing="false" text="Option 3" />
-                    <MenuItem mnemonicParsing="false" text="Option 4" />
+                    <MenuItem id="dbConfigMenuItem" fx:id="dbConfigMenuItem" mnemonicParsing="false" onAction="#onDbConfigMenuItemClick" text="Configurar banco de dados" />
+                    <MenuItem id="filePathConfigMenuOption" fx:id="filePathConfigMenuOption" mnemonicParsing="false" onAction="#onFilePathConfigMenuOptionClick" text="Configurar caminho do arquivo" />
+               <MenuItem id="proxyConfigMenuItem" fx:id="proxyConfigMenuItem" mnemonicParsing="false" onAction="#onProxyConfigMenuOptionClick" text="Configurar proxy" />
+               <MenuItem id="centralServiceConfigMenuItem" fx:id="centralServiceConfigMenuItem" mnemonicParsing="false" onAction="#onCentralServiceConfigMenuOptionClick" text="Configurar serviço central" />
+               <MenuItem id="deleteLocalConfigMenuItem" fx:id="deleteLocalConfigMenuItem" mnemonicParsing="false" onAction="#onDeleteLocalConfigMenuItemClick" text="Excluir configurações locais" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="Ajuda">
                     <MenuItem mnemonicParsing="false" text="About" />
