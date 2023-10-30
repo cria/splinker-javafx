@@ -2,19 +2,28 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="255.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.CollectionLocalDatabaseController">
+<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="364.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.CollectionLocalDatabaseController">
    <children>
-      <TextField fx:id="usernameField" layoutX="47.0" layoutY="20.0" promptText="Usuário" />
-      <TextField fx:id="passwordField" layoutX="47.0" layoutY="62.0" promptText="Senha" />
+      <TextField fx:id="usernameField" layoutX="182.0" layoutY="25.0" promptText="Usuário" />
       
-      <TextField fx:id="tablenameField" layoutX="47.0" layoutY="174.0" promptText="Nome da Tabela" />
-      <Button fx:id="btnSalvar" layoutX="47.0" layoutY="305.0" mnemonicParsing="false" onAction="#onSaveButtonClicked" prefHeight="25.0" prefWidth="161.0" text="Salvar" />
-      <TextField id="portField" fx:id="portField" layoutX="47.0" layoutY="99.0" promptText="Porta" />
-      <TextField id="hostAddressField" fx:id="hostAddressField" layoutX="47.0" layoutY="211.0" promptText="Endereço de Host" />
-      <ComboBox id="databaseTypeField" fx:id="databaseTypeField" layoutX="47.0" layoutY="249.0" prefHeight="25.0" prefWidth="161.0" promptText="Banco de dados" />
-      <TextField id="dbNameField" fx:id="dbNameField" layoutX="47.0" layoutY="137.0" promptText="Nome do Banco de dados" />
+      <TextField fx:id="tablenameField" layoutX="182.0" layoutY="179.0" promptText="Nome da Tabela" />
+      <Button fx:id="btnSalvar" layoutX="18.0" layoutY="310.0" mnemonicParsing="false" onAction="#onSaveButtonClicked" prefHeight="25.0" prefWidth="325.0" text="Salvar" />
+      <TextField id="portField" fx:id="portField" layoutX="182.0" layoutY="104.0" promptText="Porta" />
+      <TextField id="hostAddressField" fx:id="hostAddressField" layoutX="182.0" layoutY="216.0" promptText="Endereço de Host" />
+      <ComboBox id="databaseTypeField" fx:id="databaseTypeField" layoutX="182.0" layoutY="254.0" prefHeight="25.0" prefWidth="161.0" promptText="Selecione" />
+      <TextField id="dbNameField" fx:id="dbNameField" layoutX="182.0" layoutY="142.0" promptText="Nome do Banco de dados" />
+      <PasswordField id="passwordField" fx:id="passwordField" layoutX="182.0" layoutY="68.0" promptText="Senha" />
+      <Label layoutX="23.0" layoutY="29.0" text="Nome de usuário" />
+      <Label layoutX="23.0" layoutY="72.0" text="Senha" />
+      <Label layoutX="23.0" layoutY="108.0" text="Porta" />
+      <Label layoutX="23.0" layoutY="146.0" text="Nome do banco de dados" />
+      <Label layoutX="23.0" layoutY="183.0" text="Nome da tabela" />
+      <Label layoutX="23.0" layoutY="220.0" text="Endereço de host" />
+      <Label layoutX="23.0" layoutY="258.0" text="Tipo de banco de dados" />
    </children>
 </AnchorPane>
