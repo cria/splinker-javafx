@@ -31,22 +31,15 @@ public class DataSourceRepository extends BaseRepository {
 
         while(result.next())
         {
-            var filePath = result.getString("datasource_filepath");
-            var type = DataSourceType.valueOf(result.getString("datasource_type"));
-            if(filePath == null)
-            {
                 var host = result.getString("db_host");
                 var port = result.getString("db_port");
                 var dbName = result.getString("db_name");
                 var table = result.getString("db_tablename");
                 var user = result.getString("db_username");
                 var pwd = result.getString("db_password");
-                ds = new DataSource(type, host, dbName, table, user, pwd, port);
-            }
-            else
-            {
-                ds = new DataSource(type, Path.of(filePath));   
-            }
+                var filePath = result.getString("datasource_filepath");
+                var type = DataSourceType.valueOf(result.getString("datasource_type"));
+                ds = DataSource.factory(type, filePath, host,dbName, table,user, pwd, port);
             
         }
         return ds;
@@ -72,21 +65,15 @@ public class DataSourceRepository extends BaseRepository {
         return read;
     }
 
-
-    public static void saveDataSource(DataSourceType type) throws Exception
-    {
-        saveDataSource(type, null, null, null,null,null,null);
-    }
-
-    public static void saveDataSource(DataSourceType type, String host, String port, 
+    public static void saveDataSource(DataSourceType type, String filePath, String host, String port, 
                             String dbName, String table, String user, String password) throws Exception
     {
         cleanTable("DataSourceConfiguration");
         var cmd = """
                     INSERT INTO DataSourceConfiguration
                     (datasource_type, db_host, db_port, 
-                    db_name, db_tablename, db_username, db_password)
-                    VALUES(?,?,?,?,?,?,?);
+                    db_name, db_tablename, db_username, db_password, datasource_filepath)
+                    VALUES(?,?,?,?,?,?,?,?);
                 """;
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var stm = conn.prepareStatement(cmd);
@@ -97,28 +84,19 @@ public class DataSourceRepository extends BaseRepository {
         stm.setString(5, table);
         stm.setString(6, user);
         stm.setString(7, password);
+        stm.setString(8, filePath);
         stm.executeUpdate();
         stm.close();
         conn.close();
 
     }
     
-    public void saveDataSource(DataSourceType type, Path filePath) throws Exception
+    public static void saveDataSource(DataSourceType type, String filePath) throws Exception
     {
-        cleanTable("DataSourceConfiguration");
-        var cmd = """
-                    INSERT INTO DataSourceConfiguration
-                    (datasource_filepath, datasource_type)
-                    VALUES(?,?);
-                """;
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var stm = conn.prepareStatement(cmd);
-        var path = filePath.toAbsolutePath().toString();
-        var sourceType = type.name();
-        stm.setString(1, path);
-        stm.setString(2, sourceType);
-        stm.executeUpdate();
-        stm.close();
-        conn.close();
+        saveDataSource(type,filePath, null,null,null,null,null,null);
+    }
+    public static void saveDataSource(DataSourceType type, String filePath, String username, String password) throws Exception
+    {
+        saveDataSource(type, filePath, null,null,null,null, username, password);
     }
 }
