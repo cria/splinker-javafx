@@ -43,6 +43,8 @@ public class TokenRepository extends BaseRepository
         var statement = conn.prepareStatement(cmd);
         statement.setString(1, token);
         statement.executeUpdate();
+        statement.close();
+        conn.close();
     };
     
     public static Map getConfigurationDataFromAPI(String token) throws Exception
