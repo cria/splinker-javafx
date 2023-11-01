@@ -13,11 +13,11 @@ public class ConfigFacade {
         var cmd = (List<Double>) apiConfig.get("sql_command");
         var rsyncPort = (Double) apiConfig.get("rsync_port");
         var rsyncDestination = apiConfig.get("rsync_destination").toString();
-        var centralServiceUri = apiConfig.get("central_service_uri").toString();
         var centralServiceUrl = apiConfig.get("central_service_url").toString();
+
         DataSourceRepository.saveSQLCommand(cmd);
         TransferConfigRepository.saveRSyncConfig(rsyncPort.intValue(), rsyncDestination);
-        CentralServiceRepository.saveCentralServiceData(centralServiceUri, centralServiceUrl);
+        CentralServiceRepository.saveCentralServiceData(centralServiceUrl);
     }
     
 }
