@@ -24,7 +24,7 @@ public class FirstConfigDialogController extends AbstractController{
     {
         var routeName = "central-service";
         var width = 360;
-        var height = 150;
+        var height = 200;
         var stage = getStage();
         
         if(computerHasProxyConfigured)

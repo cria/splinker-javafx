@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS BasicConfiguration (
 );
 
 CREATE TABLE IF NOT EXISTS CentralServiceConfiguration (
-  central_service_uri VARCHAR(100) NOT NULL,
   central_service_url VARCHAR(100) NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL

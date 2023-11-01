@@ -22,8 +22,6 @@ public class CentralServiceController extends AbstractController {
     Button btnSave;
     @FXML
     TextField urlField;
-    @FXML
-    TextField uriField;
     
     @FXML
     void onButtonSavedClick() 
@@ -31,7 +29,7 @@ public class CentralServiceController extends AbstractController {
        try 
        {
             var ds = DataSourceRepository.getDataSource();
-            var cserv = new CentralService(uriField.getText(), urlField.getText());
+            var cserv = new CentralService(urlField.getText());
             CentralServiceRepository.saveCentralServiceData(cserv);
             if(ds == null)
             {
@@ -56,7 +54,6 @@ public class CentralServiceController extends AbstractController {
             var centralServiceConfig = CentralServiceRepository.getCentraServiceData();
             if(centralServiceConfig != null)
             {
-                uriField.setText(centralServiceConfig.getCentralServiceUri());
                 urlField.setText(centralServiceConfig.getCentralServiceUrl());
             }    
         } 
