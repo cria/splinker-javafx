@@ -1,0 +1,42 @@
+name: Compilar e empacotar o spLinker para Windows e Linux
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configurar Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 20
+
+      - name: Maven clean
+        run: mvn clean 
+
+      - name: Maven install
+        run: mvn install
+        
+      - name: Maven compile
+        run: mvn compilar
+
+      - name: Maven Package
+        run: mvn package
+
+      - name: Empacotar para Windows
+        run: jpackage --input build/libs --name spLinker --type msi --dest dist
+
+      - name: Empacotar para Linux
+        run: jpackage --input build/libs --name spLinker --type deb --dest dist
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: dist
