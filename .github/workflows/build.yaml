@@ -3,7 +3,7 @@ name: Compilar e empacotar o spLinker para Windows e Linux
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
