@@ -34,7 +34,7 @@ jobs:
         run: mvn package
 
       - name: Empacotar para Linux
-        run: jpackage --input build/libs --main-jar ".\target\splinker-1.0-SNAPSHOT-shaded.jar" --name spLinker --type deb --dest dist
+        run: jpackage --input target/ --main-jar splinker-1.0-SNAPSHOT-shaded.jar --name spLinker --type deb --dest dist
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
@@ -70,7 +70,7 @@ jobs:
         run: mvn package
 
       - name: Empacotar para Windows
-        run: jpackage --input build/libs --main-jar target\splinker-1.0-SNAPSHOT-shaded.jar --name spLinker --type msi --dest dist
+        run: jpackage --input target/ --main-jar splinker-1.0-SNAPSHOT-shaded.jar --name spLinker --type msi --dest dist
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
