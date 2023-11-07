@@ -6,9 +6,44 @@ on:
       - master
 
 jobs:
-  build:
+  build-on-linux:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
+      - name: Configurar Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 20
+          distribution: 'temurin'
+          architecture: x64
+
+      - name: Maven clean
+        run: mvn clean 
+
+      - name: Maven local dependency
+        run: mvn install:install-file -Dfile=".\src\libs\yajsync-app-0.9.0-SNAPSHOT-full.jar" -DgroupId="com.github.perlundq" -DartifactId="yajsync" -Dversion="0.9.0-SNAPSHOT" -Dpackaging="jar"
+
+      - name: Maven install
+        run: mvn install
+        
+      - name: Maven compile
+        run: mvn compile
+
+      - name: Maven Package
+        run: mvn package
+
+      - name: Empacotar para Linux
+        run: jpackage --input build/libs --main-jar .\target\splinker-1.0-SNAPSHOT-shaded.jar --name spLinker --type deb --dest dist
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: dist
+
+  build-on-windows:
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
 
@@ -36,9 +71,6 @@ jobs:
 
       - name: Empacotar para Windows
         run: jpackage --input build/libs --main-jar .\target\splinker-1.0-SNAPSHOT-shaded.jar --name spLinker --type msi --dest dist
-
-      - name: Empacotar para Linux
-        run: jpackage --input build/libs --main-jar .\target\splinker-1.0-SNAPSHOT-shaded.jar --name spLinker --type deb --dest dist
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
