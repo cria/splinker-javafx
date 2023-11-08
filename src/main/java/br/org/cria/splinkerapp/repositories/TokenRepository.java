@@ -51,7 +51,8 @@ public class TokenRepository extends BaseRepository
     {
         isNullToken(token);
         String line;
-        var url = "http://localhost:8000/api/login?token=%s".formatted(token);
+        var config = CentralServiceRepository.getCentraServiceData();
+        var url = "%s/login?token=%s".formatted(config.getCentralServiceUrl(), token);
         var urlConn = new URI(url).toURL();
         var response = new StringBuffer();
         var connection = (HttpURLConnection) urlConn.openConnection();
