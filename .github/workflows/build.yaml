@@ -19,7 +19,7 @@ jobs:
           architecture: x64
 
       - name: Maven local dependency
-        run: mvn install:install-file -Dfile=".\src\libs\yajsync-app-0.9.0-SNAPSHOT-full.jar" -DgroupId="com.github.perlundq" -DartifactId="yajsync" -Dversion="0.9.0-SNAPSHOT" -Dpackaging="jar"
+        run: mvn install:install-file -Dfile=".\libs\yajsync-app-0.9.0-SNAPSHOT-full.jar" -DgroupId="com.github.perlundq" -DartifactId="yajsync" -Dversion="0.9.0-SNAPSHOT" -Dpackaging="jar"
 
       - name: Maven install
         run: mvn install
@@ -58,7 +58,7 @@ jobs:
           architecture: x64
 
       - name: Maven local dependency
-        run: mvn install:install-file -Dfile=".\src\libs\yajsync-app-0.9.0-SNAPSHOT-full.jar" -DgroupId="com.github.perlundq" -DartifactId="yajsync" -Dversion="0.9.0-SNAPSHOT" -Dpackaging="jar"
+        run: mvn install:install-file -Dfile=".\libs\yajsync-app-0.9.0-SNAPSHOT-full.jar" -DgroupId="com.github.perlundq" -DartifactId="yajsync" -Dversion="0.9.0-SNAPSHOT" -Dpackaging="jar"
 
       - name: Maven install
         run: mvn install
