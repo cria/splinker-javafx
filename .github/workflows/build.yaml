@@ -31,10 +31,10 @@ jobs:
         run: mvn package
 
       - name: Cria pasta do arquivo SQL
-        run: mkdir target\scripts; mkdir target\scripts\sql;
+        run: mkdir ./target/scripts; mkdir ./target/scripts/sql;
       
       - name: Copia arquivo SQL
-        run: cp .\scripts\sql\create_tables.sql .\target\scripts\sql
+        run: cp ./scripts/sql/create_tables.sql ./target/scripts/sql
 
       - name: Empacotar para Linux
         run: jpackage --input .\target\ --main-jar splinker-1.0-SNAPSHOT.jar --name spLinker --type deb --dest dist
