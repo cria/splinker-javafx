@@ -96,6 +96,7 @@ public abstract class AbstractController implements Initializable {
     }
     protected void openNewWindow(String routeName, int width, int height)
     {
+
         try 
         {
             var stage = new Stage();
