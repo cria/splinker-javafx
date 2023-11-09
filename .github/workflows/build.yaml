@@ -37,7 +37,7 @@ jobs:
         run: cp ./scripts/sql/create_tables.sql ./target/scripts/sql
 
       - name: Empacotar para Linux
-        run: jpackage --input .\target\ --main-jar splinker-1.0-SNAPSHOT.jar --name spLinker --type deb --dest dist
+        run: jpackage --input ./target/ --main-jar splinker-1.0-SNAPSHOT.jar --name spLinker --type deb --dest dist
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
