@@ -69,12 +69,11 @@ jobs:
       - name: Maven Package
         run: mvn package
 
-        - name: Cria pasta do arquivo SQL
-          run: mkdir target\scripts; mkdir target\scripts\sql;
+      - name: Cria pasta do arquivo SQL
+        run: mkdir target\scripts; mkdir target\scripts\sql;
       
-        - name: Copia arquivo SQL
-          run: cp scripts\sql\create_tables.sql target\scripts\sql
-        
+      - name: Copia arquivo SQL
+        run: cp scripts\sql\create_tables.sql target\scripts\sql 
 
       - name: Empacotar para Windows
         run: jpackage --input target/ --main-jar splinker-1.0-SNAPSHOT.jar --name spLinker --type msi --dest dist
