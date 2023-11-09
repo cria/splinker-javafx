@@ -45,41 +45,41 @@ jobs:
           name: artifacts
           path: dist
 
-  # build-on-windows:
-  #   runs-on: windows-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
+  build-on-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
 
-  #     - name: Configurar Java
-  #       uses: actions/setup-java@v3
-  #       with:
-  #         java-version: 20
-  #         distribution: 'temurin'
-  #         architecture: x64
+      - name: Configurar Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 20
+          distribution: 'temurin'
+          architecture: x64
 
-  #     - name: Maven local dependency
-  #       run: mvn install:install-file -Dfile=".\libs\yajsync-app-0.9.0-SNAPSHOT-full.jar" -DgroupId="com.github.perlundq" -DartifactId="yajsync" -Dversion="0.9.0-SNAPSHOT" -Dpackaging="jar"
+      - name: Maven local dependency
+        run: mvn install:install-file -Dfile=".\libs\yajsync-app-0.9.0-SNAPSHOT-full.jar" -DgroupId="com.github.perlundq" -DartifactId="yajsync" -Dversion="0.9.0-SNAPSHOT" -Dpackaging="jar"
 
-  #     - name: Maven install
-  #       run: mvn install
+      - name: Maven install
+        run: mvn install
         
-  #     - name: Maven compile
-  #       run: mvn compile
+      - name: Maven compile
+        run: mvn compile
 
-  #     - name: Maven Package
-  #       run: mvn package
+      - name: Maven Package
+        run: mvn package
 
-  #     - name: Cria pasta do arquivo SQL
-  #       run: mkdir target\scripts; mkdir target\scripts\sql;
+      - name: Cria pasta do arquivo SQL
+        run: mkdir target\scripts; mkdir target\scripts\sql;
       
-  #     - name: Copia arquivo SQL
-  #       run: cp scripts\sql\create_tables.sql target\scripts\sql 
+      - name: Copia arquivo SQL
+        run: cp scripts\sql\create_tables.sql target\scripts\sql 
 
-  #     - name: Empacotar para Windows
-  #       run: jpackage --input target/ --main-jar splinker-1.0-SNAPSHOT.jar --name spLinker --type msi --dest dist
+      - name: Empacotar para Windows
+        run: jpackage --input target/ --main-jar splinker-1.0-SNAPSHOT.jar --name spLinker --type msi --dest dist
 
-  #     - name: Upload artifacts
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: artifacts
-  #         path: dist
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: dist
