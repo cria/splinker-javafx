@@ -16,16 +16,22 @@
 <repositories>
   <repository>
     <id>Internal company repository</id>
-    <url>file:\\${project.basedir}/src/libs</url>
+    <url>file://${project.basedir}/libs</url>
   </repository>
 </repositories>
     <dependencies>
+        <dependency>
+            <groupId>com.github.perlundq</groupId>
+            <artifactId>yajsync</artifactId>
+            <scope>system</scope>
+            <version>0.9.0-SNAPSHOT</version>
+            <systemPath>${project.basedir}/libs/yajsync-app-0.9.0-SNAPSHOT-full.jar</systemPath>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
             <version>1.8</version>
         </dependency>
-                
         <!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
         <dependency>
             <groupId>com.opencsv</groupId>
@@ -71,13 +77,6 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.10.1</version>
-        </dependency>
-         <dependency>
-            <groupId>com.github.perlundq</groupId>
-            <artifactId>yajsync</artifactId>
-            <!-- <scope>system</scope> -->
-            <version>0.9.0-SNAPSHOT</version>
-            <!-- <systemPath>${project.basedir}/libs/yajsync-app-0.9.0-SNAPSHOT-full.jar</systemPath> -->
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -129,6 +128,11 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.1</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
