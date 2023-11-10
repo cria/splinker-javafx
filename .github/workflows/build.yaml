@@ -82,7 +82,7 @@ jobs:
         run: cp scripts\sql\create_tables.sql spLinker\scripts\sql 
 
       - name: Empacota para Windows
-        run: jpackage --name spLinker --type msi --dest dist --win-shortcut --app-image spLinker
+        run: jpackage --name spLinker --app-image spLinker --type msi --dest dist --win-shortcut  --win-dir-chooser
         #--java-options '-Djava.library.path=$APPDIR'
 
       - name: Upload artifacts
