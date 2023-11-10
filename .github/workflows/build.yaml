@@ -6,44 +6,44 @@ on:
       - master
 
 jobs:
-  build-on-linux:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+  # build-on-linux:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Configurar Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: 20
-          distribution: 'temurin'
-          architecture: x64
+  #     - name: Configurar Java
+  #       uses: actions/setup-java@v3
+  #       with:
+  #         java-version: 20
+  #         distribution: 'temurin'
+  #         architecture: x64
 
-      - name: Maven local dependency
-        run: mvn install:install-file -Dfile=".\libs\yajsync-app-0.9.0-SNAPSHOT-full.jar" -DgroupId="com.github.perlundq" -DartifactId="yajsync" -Dversion="0.9.0-SNAPSHOT" -Dpackaging="jar"
+  #     - name: Maven local dependency
+  #       run: mvn install:install-file -Dfile=".\libs\yajsync-app-0.9.0-SNAPSHOT-full.jar" -DgroupId="com.github.perlundq" -DartifactId="yajsync" -Dversion="0.9.0-SNAPSHOT" -Dpackaging="jar"
 
-      - name: Maven install
-        run: mvn install
+  #     - name: Maven install
+  #       run: mvn install
         
-      - name: Maven compile
-        run: mvn compile
+  #     - name: Maven compile
+  #       run: mvn compile
 
-      - name: Maven Package
-        run: mvn package
+  #     - name: Maven Package
+  #       run: mvn package
 
-      - name: Cria pasta do arquivo SQL
-        run: mkdir ./target/scripts; mkdir ./target/scripts/sql;
+  #     - name: Cria pasta do arquivo SQL
+  #       run: mkdir ./target/scripts; mkdir ./target/scripts/sql;
       
-      - name: Copia arquivo SQL
-        run: cp ./scripts/sql/create_tables.sql ./target/scripts/sql
+  #     - name: Copia arquivo SQL
+  #       run: cp ./scripts/sql/create_tables.sql ./target/scripts/sql
 
-      - name: Empacotar para Linux
-        run: jpackage --input ./target/ --main-jar splinker-1.0-SNAPSHOT.jar --name spLinker --type deb --dest dist
+  #     - name: Empacotar para Linux
+  #       run: jpackage --input ./target/ --main-jar splinker-1.0-SNAPSHOT.jar --name spLinker --type deb --dest dist --java-options '-Djava.library.path=$APPDIR'
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: artifacts
-          path: dist
+  #     - name: Upload artifacts
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: artifacts
+  #         path: dist
 
   build-on-windows:
     runs-on: windows-latest
@@ -69,14 +69,24 @@ jobs:
       - name: Maven Package
         run: mvn package
 
+      - name: Cria image jpackage
+        run: jpackage --type app-image --name spLinkerDeploy --input target/ --main-jar splinker-1.0-SNAPSHOT.jar
+
+      - name: exibe arquivos na pasta do projeto
+        run: ls ./
+      
+      - name: exibe arquivos na pasta target
+        run: ls ./target
+
       - name: Cria pasta do arquivo SQL
-        run: mkdir target\scripts; mkdir target\scripts\sql;
+        run: mkdir spLinkerDeploy\scripts; mkdir spLinkerDeploy\scripts\sql;
       
       - name: Copia arquivo SQL
-        run: cp scripts\sql\create_tables.sql target\scripts\sql 
+        run: cp scripts\sql\create_tables.sql spLinkerDeploy\scripts\sql 
 
-      - name: Empacotar para Windows
-        run: jpackage --input target/ --main-jar splinker-1.0-SNAPSHOT.jar --name spLinker --type msi --dest dist
+      - name: Empacota para Windows
+        run: jpackage --input target/ --main-jar splinker-1.0-SNAPSHOT.jar --name spLinker --type msi --dest dist --win-shortcut --app-image spLinkerDeploy
+        #--java-options '-Djava.library.path=$APPDIR'
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
