@@ -19,6 +19,7 @@ public class DarwinCoreArchiveService
 {
     String zipFile = "%s/%s.zip";
     String textFile = "%s/occurences.txt".formatted(System.getProperty("user.dir"));
+    String token = "";
     ResultSet data;
 
     
@@ -85,7 +86,7 @@ public class DarwinCoreArchiveService
 
     public DarwinCoreArchiveService generateZIPFile() throws Exception 
     {
-        String token = TokenRepository.getToken();
+        token = TokenRepository.getToken();
         zipFile = zipFile.formatted(System.getProperty("user.dir"), token);
         try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile))) 
         {
@@ -120,8 +121,7 @@ public class DarwinCoreArchiveService
     {
         var rSyncConfig = TransferConfigRepository.getRSyncConfig();
         var port = rSyncConfig.getrSyncPort();
-        
-        var destination = rSyncConfig.getrSyncDestination();
+        var destination = "%s::%s".formatted(rSyncConfig.getrSyncDestination(), token);
         var command = new String[] { "--port=%s".formatted(port), "-r", this.zipFile, destination };
         var client = new YajsyncClient();
         return new Service<Void>() {
