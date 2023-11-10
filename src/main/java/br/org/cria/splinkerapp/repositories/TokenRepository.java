@@ -52,7 +52,7 @@ public class TokenRepository extends BaseRepository
         isNullToken(token);
         String line;
         var config = CentralServiceRepository.getCentraServiceData();
-        var url = "%s/login?token=%s".formatted(config.getCentralServiceUrl(), token);
+        var url = "%s/login?version=1&token=%s".formatted(config.getCentralServiceUrl(), token);
         var urlConn = new URI(url).toURL();
         var response = new StringBuffer();
         var connection = (HttpURLConnection) urlConn.openConnection();
