@@ -31,10 +31,17 @@ public class TokenLoginController extends AbstractController {
             var apiConfig = TokenRepository.getConfigurationDataFromAPI(token);
             if(apiConfig != null)
             {
-                TokenRepository.saveToken(token);
+                var version = apiConfig.get("version").toString();
+                var currentVersion = TokenRepository.getCurrentVersion();
+                var hasNewVersion = true;//Double.parseDouble(version) > Double.parseDouble(currentVersion);
+                TokenRepository.saveBasicConfiguration(token, version);
                 ConfigFacade.handleConfiguration(apiConfig);
                 var dsType = DataSourceType.valueOf(apiConfig.get("data_source_type").toString());
                 DataSourceRepository.saveDataSource(dsType, null, null, null, null, null, null, null);
+                if(hasNewVersion)
+                {
+                    navigateOrOpenNewWindowOnExistingDataSource("splinker-update", 260, 150, true);
+                }
                 var routeName = "collection-database";
                 var width = 364;
                 var height = 360;

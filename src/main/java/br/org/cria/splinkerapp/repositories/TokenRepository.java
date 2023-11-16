@@ -35,6 +35,16 @@ public class TokenRepository extends BaseRepository
         return token;
     }
 
+    public static String getCurrentVersion() throws Exception
+    { 
+        var cmd = "SELECT system_version FROM BasicConfiguration;";
+        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+        var result = runQuery(cmd, conn);
+        var system_version = result.getString("system_version");
+        conn.close();
+        return system_version;
+    }
+
     public static void saveToken(String token) throws Exception{
         isNullToken(token);
         //cleanTable("BasicConfiguration");
@@ -42,6 +52,19 @@ public class TokenRepository extends BaseRepository
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var statement = conn.prepareStatement(cmd);
         statement.setString(1, token);
+        statement.executeUpdate();
+        statement.close();
+        conn.close();
+    };
+
+    public static void saveBasicConfiguration(String token, String version) throws Exception{
+        isNullToken(token);
+        cleanTable("BasicConfiguration");
+        var cmd = "INSERT INTO BasicConfiguration (token, system_version) VALUES(?,?)";
+        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+        var statement = conn.prepareStatement(cmd);
+        statement.setString(1, token);
+        statement.setString(2, version);
         statement.executeUpdate();
         statement.close();
         conn.close();

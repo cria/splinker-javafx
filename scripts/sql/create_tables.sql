@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS BasicConfiguration (
-  token VARCHAR(50) NOT NULL,
+  token VARCHAR(50),
+  system_version VARCHAR(100) NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
@@ -44,3 +45,6 @@ VALUES (10000, 'bruno@35.224.172.146');
 
 INSERT INTO CentralServiceConfiguration (central_service_url)
 VALUES ('https://specieslink.net/ws/1.0/splinker/');
+
+INSERT INTO BasicConfiguration (token, system_version)
+VALUES (null, "1.0");
