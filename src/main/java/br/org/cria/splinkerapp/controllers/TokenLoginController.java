@@ -33,7 +33,7 @@ public class TokenLoginController extends AbstractController {
             {
                 var version = apiConfig.get("version").toString();
                 var currentVersion = TokenRepository.getCurrentVersion();
-                var hasNewVersion = true;//Double.parseDouble(version) > Double.parseDouble(currentVersion);
+                var hasNewVersion = Double.parseDouble(version) > Double.parseDouble(currentVersion);
                 TokenRepository.saveBasicConfiguration(token, version);
                 ConfigFacade.handleConfiguration(apiConfig);
                 var dsType = DataSourceType.valueOf(apiConfig.get("data_source_type").toString());
