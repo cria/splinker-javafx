@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS DataSourceConfiguration (
   db_password VARCHAR(100) NULL,  -- senha do banco de dados quando a fonte de dados é um BD
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  FOREIGN KEY (token) REFERENCES BasicConfiguration (token)  -- chave primária
+  FOREIGN KEY (token) REFERENCES BasicConfiguration (token) ON DELETE CASCADE -- chave primária
 );
 
 
