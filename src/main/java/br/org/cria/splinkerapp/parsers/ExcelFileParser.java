@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import br.org.cria.splinkerapp.utils.StringStandards;
 
 public class ExcelFileParser extends FileParser {
     String fileSourcePath;
@@ -27,7 +28,7 @@ public class ExcelFileParser extends FileParser {
         {
             var sheet = workbook.getSheetAt(i);
             Row headerRow = sheet.getRow(0);
-            var tableName = normalizeString(sheet.getSheetName());
+            var tableName = StringStandards.normalizeString(sheet.getSheetName());
             dropTable(tableName);
             builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
 
@@ -71,7 +72,7 @@ public class ExcelFileParser extends FileParser {
             var sheet = workbook.getSheetAt(i);
             var numberOfRows = sheet.getLastRowNum();
             var headerRow = sheet.getRow(0);
-            var tableName = normalizeString(sheet.getSheetName());
+            var tableName = StringStandards.normalizeString(sheet.getSheetName());
             var numberOfColumns = headerRow.getLastCellNum();
             var columns = getRowAsStringList(headerRow, numberOfColumns).stream().map((col) -> makeColumnName(col))
                     .toList();

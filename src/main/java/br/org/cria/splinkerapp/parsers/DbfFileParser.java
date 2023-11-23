@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.linuxense.javadbf.DBFException;
 import com.linuxense.javadbf.DBFReader;
+import br.org.cria.splinkerapp.utils.StringStandards;
 
 public class DbfFileParser extends FileParser
 {
@@ -70,7 +71,7 @@ public class DbfFileParser extends FileParser
 			
 			for (int i = 0; i < numberOfFields; i++) 
 			{
-				String columnName = "`%s`".formatted(normalizeString(reader.getField(i).getName()));
+				String columnName = "`%s`".formatted(StringStandards.normalizeString(reader.getField(i).getName()));
 				columnNameList.add(columnName);
                 builder.append("%s VARCHAR(1),".formatted(columnName));
 					
