@@ -37,6 +37,8 @@ public class DatabaseSetup {
                                 var statement = conn.createStatement();
                                 var result = statement.executeUpdate(content);
                                 System.out.println(result);     
+                                statement.close();
+                                conn.close();
                                 
                             } 
                             catch (Exception e) 
