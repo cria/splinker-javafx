@@ -7,9 +7,19 @@ public final class StringStandards {
     {
         var normalizedString = StringUtils.stripAccents(str.toLowerCase()).trim()
                 .replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}]", "_")
-                .replace("__", "_");
-                //TODO: LTRIM e RTRIM na string
-                //TODO: Checar caracteres especiais no começo e fim da string
+                .replaceAll("(_+)", "_");
+        var lastCharPosition = normalizedString.length() - 1;
+        var lastChar = normalizedString.charAt(lastCharPosition);
+        var firstChar = normalizedString.charAt(0);
+        
+        if(firstChar == '_')
+        {
+            normalizedString = normalizedString.substring(1, lastCharPosition);
+        }
+        if(lastChar == '_')
+        {
+            normalizedString = normalizedString.substring(0, lastCharPosition-1);
+        }
         
         return normalizedString;
     }
