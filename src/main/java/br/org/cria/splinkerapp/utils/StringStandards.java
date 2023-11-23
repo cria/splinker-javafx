@@ -8,6 +8,8 @@ public final class StringStandards {
         var normalizedString = StringUtils.stripAccents(str.toLowerCase()).trim()
                 .replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}]", "_")
                 .replace("__", "_");
+                //TODO: LTRIM e RTRIM na string
+                //TODO: Checar caracteres especiais no começo e fim da string
         
         return normalizedString;
     }
