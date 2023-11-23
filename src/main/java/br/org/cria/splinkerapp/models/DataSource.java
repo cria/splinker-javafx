@@ -83,10 +83,33 @@ public class DataSource {
     public LocalDate getCreatedAt() {
         return createdAt;
     }
-
-    private DataSource(DataSourceType type, String filePath, String host, String databaseName, String tableName,
-                     String username, String password, String port, String connectionString)
+    
+    private String token;
+    public String getToken() {
+        return token;
+    }
+    public void setToken(String token) {
+        this.token = token;
+    }
+    private String datasetName;
+    public String getDatasetName() {
+        return datasetName;
+    }
+    public void setDatasetName(String datasetName) {
+        this.datasetName = datasetName;
+    }
+    
+    private String datasetAcronym;
+    public String getDatasetAcronym() {
+        return datasetAcronym;
+    }
+    public void setDatasetAcronym(String datasetAcronym) {
+        this.datasetAcronym = datasetAcronym;
+    }
+    private DataSource(String token, DataSourceType type, String filePath, String host, String databaseName, String tableName,
+                     String username, String password, String port, String connectionString, String datasetAcronym, String datasetName)
     {
+        this.token = token;
         this.type = type;
         this.dbHost = host;
         this.dbName = databaseName;
@@ -99,14 +122,16 @@ public class DataSource {
         this.dbPort = port;
         this.connectionString = connectionString;
         this.dataSourceFilePath = filePath;
+        this.datasetAcronym = datasetAcronym;
+        this.datasetName = datasetName;
     }
     
     public boolean isFile() { return this.dataSourceFilePath != null && this.type != DataSourceType.Access; }
     public boolean isAccessDb() { return this.dataSourceFilePath != null && this.type == DataSourceType.Access; }
     public boolean isSQLDatabase() { return this.dataSourceFilePath == null; }
-    public static DataSource factory(DataSourceType type, String filePath, String host, 
+    public static DataSource factory(String token, DataSourceType type, String filePath, String host, 
                                         String databaseName, String tableName,
-                                        String username, String password, String port) 
+                                        String username, String password, String port, String datasetAcronym, String datasetName) 
     {
         DataSource ds;
         String connectionString = null;
@@ -133,8 +158,8 @@ public class DataSource {
                 connectionString = "jdbc:sqlite:splinker.db";
             break;
         }
-        ds = new DataSource(type, filePath, host, databaseName, tableName, 
-                            username, password, port, connectionString);
+        ds = new DataSource(token, type, filePath, host, databaseName, tableName, 
+                            username, password, port, connectionString, datasetAcronym, datasetName);
         return ds;
     }
     public Connection getDataSourceConnection() throws Exception

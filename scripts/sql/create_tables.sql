@@ -2,15 +2,15 @@ PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS BasicConfiguration (
   token VARCHAR(50) PRIMARY KEY, -- Código da coleção
-  collection_name, -- nome da coleção do token correspondente
   last_rowcount INTEGER, -- quantidade de linhas no último sync
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS DataSourceConfiguration (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
   token VARCHAR(50), -- Código da coleção
+  dataset_name VARCHAR(50), -- nome da coleção do token correspondente
+  dataset_acronym VARCHAR(50), -- nome da coleção do token correspondente
   datasource_filepath VARCHAR(50) NULL, -- caminho do arquivo quando a fonte de dados é um arquivo
   datasource_type VARCHAR(50) NOT NULL, -- tipo da fonte de dados
   db_host VARCHAR(100) NULL, -- host do banco de dados quando a fonte de dados é um BD
