@@ -4,8 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.facade.ConfigFacade;
 import br.org.cria.splinkerapp.models.DataSourceType;
-import br.org.cria.splinkerapp.repositories.DataSourceRepository;
-import br.org.cria.splinkerapp.repositories.TokenRepository;
+import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
@@ -28,20 +27,24 @@ public class TokenLoginController extends AbstractController {
         try 
         {
             var token = tokenField.getText();
-            var apiConfig = TokenRepository.getConfigurationDataFromAPI(token);
+            var apiConfig = DataSetService.getConfigurationDataFromAPI(token);
             if(apiConfig != null)
             {
-                var version = apiConfig.get("version").toString();
-                var currentVersion = TokenRepository.getCurrentVersion();
-                var hasNewVersion = Double.parseDouble(version) > Double.parseDouble(currentVersion);
-                TokenRepository.saveBasicConfiguration(token, version);
-                ConfigFacade.handleConfiguration(apiConfig);
+                // var version = apiConfig.get("version").toString();
+                // var currentVersion = DataSetService.getCurrentVersion();
+                // var hasNewVersion = Double.parseDouble(version) > Double.parseDouble(currentVersion);
+                //TODO: Adicionar ao reponse django
+                var collName = apiConfig.get("dataset_name").toString();
+                var datasetAcronym = apiConfig.get("dataset_acronym").toString();
+                DataSetService.setCurrentToken(token);
+                                
+                ConfigFacade.HandleBackendData(token, apiConfig);
                 var dsType = DataSourceType.valueOf(apiConfig.get("data_source_type").toString());
-                DataSourceRepository.saveDataSource(dsType, null, null, null, null, null, null, null);
-                if(hasNewVersion)
-                {
-                    navigateOrOpenNewWindowOnExistingDataSource("splinker-update", 260, 150, true);
-                }
+                DataSetService.saveDataSet(token, dsType, datasetAcronym, collName);
+                // if(hasNewVersion)
+                // {
+                //     navigateOrOpenNewWindowOnExistingDataSource("splinker-update", 260, 150, true);
+                // }
                 var routeName = "collection-database";
                 var width = 364;
                 var height = 360;
@@ -56,6 +59,7 @@ public class TokenLoginController extends AbstractController {
                     case Excel:
                     case LibreOfficeCalc:
                     case CSV:
+                    case Numbers:
                         routeName = "file-selection";
                         width = 369;
                         height = 127;
@@ -82,22 +86,5 @@ public class TokenLoginController extends AbstractController {
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) 
-    {
-        try 
-        {
-            var token = TokenRepository.getToken();
-            if(token != null)
-            {
-                tokenField.setText(token);
-            }
-
-        } 
-        catch (Exception e) 
-        {
-            showErrorModal(e.getMessage());
-        }    
-    }
-
-
+    public void initialize(URL location, ResourceBundle resources) { }
 }

@@ -2,9 +2,8 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import br.org.cria.splinkerapp.models.CentralService;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
-import br.org.cria.splinkerapp.repositories.DataSourceRepository;
+import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -28,10 +27,10 @@ public class CentralServiceController extends AbstractController {
     {
        try 
        {
-            var ds = DataSourceRepository.getDataSource();
-            var cserv = new CentralService(urlField.getText());
-            CentralServiceRepository.saveCentralServiceData(cserv);
-            if(ds == null)
+            var hasConfig = DataSetService.hasConfiguration();
+            var systemVersion = CentralServiceRepository.getCurrentVersion();
+            CentralServiceRepository.saveCentralServiceData(urlField.getText(), systemVersion);
+            if(!hasConfig)
             {
                  navigateTo(this.getStage(), "token-login",280,150);
             }
@@ -51,7 +50,7 @@ public class CentralServiceController extends AbstractController {
     {
         try 
         {
-            var centralServiceConfig = CentralServiceRepository.getCentraServiceData();
+            var centralServiceConfig = CentralServiceRepository.getCentralServiceData();
             if(centralServiceConfig != null)
             {
                 urlField.setText(centralServiceConfig.getCentralServiceUrl());

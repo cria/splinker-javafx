@@ -12,18 +12,14 @@ import br.org.cria.splinkerapp.models.ProxyConfiguration;
 
 
 
-public class ProxyConfigRepository {
+public class ProxyConfigRepository extends BaseRepository{
 
     public static ProxyConfiguration getConfiguration() throws Exception
     {
         ProxyConfiguration proxyConfig = null;    
-        var conn = DriverManager.getConnection("jdbc:sqlite:splinker.db");
-        String sql = """
-                        SELECT proxy_username, proxy_password, proxy_port, proxy_address 
-                        FROM ProxyConfiguration LIMIT 1;
-                        """;
-        var ps = conn.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
+        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+        String sql = "SELECT * FROM ProxyConfiguration LIMIT 1;";
+        ResultSet rs = runQuery(sql,conn);
         while(rs.next())
         {
             var address = rs.getString("proxy_address");
@@ -39,14 +35,16 @@ public class ProxyConfigRepository {
     
     public static void saveProxyConfig(ProxyConfiguration proxyConfig) throws Exception
     {
-        var conn = DriverManager.getConnection("jdbc:sqlite:splinker.db");
-        var statement = conn.createStatement();
+        cleanTable("ProxyConfiguration");
+        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var sql = """
-                DELETE FROM ProxyConfiguration; 
-                INSERT INTO ProxyConfiguration (proxy_address, proxy_password, proxy_port,proxy_username)
-                VALUES ('%s', '%s', '%s', '%s');""".formatted(
-        proxyConfig.getAddress(),proxyConfig.getPassword(),
-        proxyConfig.getPort(), proxyConfig.getUsername());
+                INSERT INTO ProxyConfiguration (proxy_address, proxy_password, proxy_port, proxy_username)
+                VALUES (?,?,?,?);""";
+        var statement = conn.prepareStatement(sql);
+        statement.setString(1, proxyConfig.getAddress());
+        statement.setString(2, proxyConfig.getPassword());
+        statement.setString(3, proxyConfig.getPort());
+        statement.setString(4, proxyConfig.getUsername());
         statement.executeUpdate(sql);
         statement.close();
         conn.close();

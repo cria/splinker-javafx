@@ -17,6 +17,8 @@ public class TransferConfigRepository  extends BaseRepository {
             var port = result.getInt("rsync_port");
             var destination = result.getString("rsync_server_destination");
             var conf = new RSyncConfig(port, destination);
+            statement.close();
+            conn.close();
             return conf;
     }
 

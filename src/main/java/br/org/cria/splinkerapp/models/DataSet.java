@@ -4,7 +4,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.time.LocalDate;
 
-public class DataSource {
+public class DataSet {
+    private int lastRowCount;
+    public int getLastRowCount() {
+        return lastRowCount;
+    }
+    public void setLastRowCount(int lastRowCount) {
+        this.lastRowCount = lastRowCount;
+    }
+
     private DataSourceType type;
     public DataSourceType getType() {
         return type;
@@ -64,7 +72,7 @@ public class DataSource {
     }
 
     private String dataSourceFilePath;
-    public String getDataSourceFilePath() {
+    public String getDataSetFilePath() {
         return dataSourceFilePath;
     }
     public void setDataSourceFilePath(String dataSourceFilePath) {
@@ -83,10 +91,33 @@ public class DataSource {
     public LocalDate getCreatedAt() {
         return createdAt;
     }
-
-    private DataSource(DataSourceType type, String filePath, String host, String databaseName, String tableName,
-                     String username, String password, String port, String connectionString)
+    
+    private String token;
+    public String getToken() {
+        return token;
+    }
+    public void setToken(String token) {
+        this.token = token;
+    }
+    private String datasetName;
+    public String getDataSetName() {
+        return datasetName;
+    }
+    public void setDataSetName(String datasetName) {
+        this.datasetName = datasetName;
+    }
+    
+    private String datasetAcronym;
+    public String getDataSetAcronym() {
+        return datasetAcronym;
+    }
+    public void setDataSetAcronym(String datasetAcronym) {
+        this.datasetAcronym = datasetAcronym;
+    }
+    private DataSet(String token, DataSourceType type, String filePath, String host, String databaseName, String tableName,
+                     String username, String password, String port, String connectionString, String datasetAcronym, String datasetName, int lastRowCount)
     {
+        this.token = token;
         this.type = type;
         this.dbHost = host;
         this.dbName = databaseName;
@@ -99,16 +130,19 @@ public class DataSource {
         this.dbPort = port;
         this.connectionString = connectionString;
         this.dataSourceFilePath = filePath;
+        this.datasetAcronym = datasetAcronym;
+        this.datasetName = datasetName;
+        this.lastRowCount = lastRowCount;
     }
     
     public boolean isFile() { return this.dataSourceFilePath != null && this.type != DataSourceType.Access; }
     public boolean isAccessDb() { return this.dataSourceFilePath != null && this.type == DataSourceType.Access; }
     public boolean isSQLDatabase() { return this.dataSourceFilePath == null; }
-    public static DataSource factory(DataSourceType type, String filePath, String host, 
+    public static DataSet factory(String token, DataSourceType type, String filePath, String host, 
                                         String databaseName, String tableName,
-                                        String username, String password, String port) 
+                                        String username, String password, String port, String datasetAcronym, String datasetName, int lastRowCount) 
     {
-        DataSource ds;
+        DataSet ds;
         String connectionString = null;
               
         switch (type) 
@@ -133,11 +167,11 @@ public class DataSource {
                 connectionString = "jdbc:sqlite:splinker.db";
             break;
         }
-        ds = new DataSource(type, filePath, host, databaseName, tableName, 
-                            username, password, port, connectionString);
+        ds = new DataSet(token, type, filePath, host, databaseName, tableName, 
+                            username, password, port, connectionString, datasetAcronym, datasetName, lastRowCount);
         return ds;
     }
-    public Connection getDataSourceConnection() throws Exception
+    public Connection getDataSetConnection() throws Exception
     {
         if(this.connection == null)
         {

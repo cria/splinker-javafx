@@ -9,5 +9,6 @@ public enum DataSourceType {
     dBase,
     Excel,
     LibreOfficeCalc,
-    CSV
+    CSV,
+    Numbers,
 }

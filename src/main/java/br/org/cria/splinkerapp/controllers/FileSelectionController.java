@@ -3,8 +3,8 @@ package br.org.cria.splinkerapp.controllers;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
-import br.org.cria.splinkerapp.models.DataSource;
-import br.org.cria.splinkerapp.repositories.DataSourceRepository;
+import br.org.cria.splinkerapp.models.DataSet;
+import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -23,7 +23,7 @@ public class FileSelectionController extends AbstractController {
     Button btnSave;
     File file ;
     FileChooser fileChooser = new FileChooser();
-    DataSource ds;
+    DataSet ds;
     @Override
     protected Pane getPane() {return pane;}
     
@@ -43,13 +43,17 @@ public class FileSelectionController extends AbstractController {
     {
         try 
         {
-            var ds = DataSourceRepository.getDataSource();  
-            DataSourceRepository.saveDataSource(ds.getType(), filePath.getText());
-            if(!ds.isFile() && ds.getDataSourceFilePath() == null)
+            var ds = DataSetService.getDataSet(token);  
+            DataSetService.saveSpreadsheetDataSource(token, filePath.getText());
+            
+            if(ds.getDataSetFilePath() == null)
             {
                 navigateTo(getStage(), "home", 231, 222);
             }
-            
+            else
+            {
+                getStage().close();
+            }
         } 
         catch (Exception e) 
         {
@@ -62,19 +66,20 @@ public class FileSelectionController extends AbstractController {
     {
         try 
         {
+            token = DataSetService.getCurrentToken();
             filePath.setEditable(false);
-            ds = DataSourceRepository.getDataSource();
-            if(ds.getDataSourceFilePath() == null)
+            ds = DataSetService.getDataSet(token);
+            if(ds.getDataSetFilePath() == null)
             {
                 btnSave.setDisable(true);            
                 return;
             }
-            filePath.setText(ds.getDataSourceFilePath());
+            filePath.setText(ds.getDataSetFilePath());
         
         } 
         catch (Exception e) 
         {
-            // TODO: handle exception
+            showErrorModal(e.getLocalizedMessage());
         }
     }
 }

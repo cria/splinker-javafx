@@ -1,26 +1,28 @@
 package br.org.cria.splinkerapp.managers;
 
+import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.parsers.CsvFileParser;
 import br.org.cria.splinkerapp.parsers.DbfFileParser;
 import br.org.cria.splinkerapp.parsers.ExcelFileParser;
 import br.org.cria.splinkerapp.parsers.FileParser;
+import br.org.cria.splinkerapp.parsers.NumbersFileParser;
 import br.org.cria.splinkerapp.parsers.OdsFileParser;
-import br.org.cria.splinkerapp.repositories.DataSourceRepository;
 import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
 import javafx.concurrent.Service;
 
 public class FileSourceManager {
 
-    public static Service<Void> processData(String fileToProcess) throws Exception
+    public static Service<Void> processData(DataSet ds) throws Exception
     {
-        var filePath = fileToProcess.toLowerCase();
+        var filePath = ds.getDataSetFilePath().toLowerCase();//fileToProcess.toLowerCase();
         FileParser fileParser = null;
-        var dwcManager = new DarwinCoreArchiveService();
+        var dwcManager = new DarwinCoreArchiveService(ds);
         var isExcel = filePath.endsWith(".xlsx") ||filePath.endsWith(".xls");
         var isCsv = filePath.endsWith(".csv");
         var isOds = filePath.endsWith(".ods");
         var isDbf = filePath.endsWith(".dbf");
-        var unsupportedFileFormat = !(isExcel || isCsv || isOds || isDbf);
+        var isNumbers = filePath.endsWith(".numbers");
+        var unsupportedFileFormat = !(isExcel || isCsv || isOds || isDbf || isCsv || isNumbers);
 
         if(unsupportedFileFormat)
         {
@@ -42,11 +44,19 @@ public class FileSourceManager {
         {
             fileParser = new DbfFileParser(filePath);
         }
-
-        fileParser.createTableBasedOnSheet();
-        fileParser.insertDataIntoTable();
-        var ds = DataSourceRepository.getDataSource();
-        dwcManager.readDataFromSource(ds)
+        if(!isNumbers)
+        {
+            fileParser.createTableBasedOnSheet();
+            fileParser.insertDataIntoTable();
+        }
+        else
+        {
+            var fp = new NumbersFileParser();
+            var finalFile = NumbersFileParser.numbersToXLSX(filePath);
+            fp.parseFile(finalFile);
+        }
+      
+        dwcManager.readDataFromSource()
         .generateTXTFile()
         .generateZIPFile();
         return dwcManager.transferData();

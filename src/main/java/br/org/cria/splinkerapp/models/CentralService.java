@@ -3,6 +3,7 @@ package br.org.cria.splinkerapp.models;
 public class CentralService {
 
     String centralServiceUrl;
+    String systemVersion;
     
     public String getCentralServiceUrl() 
     {
@@ -12,9 +13,16 @@ public class CentralService {
     {
         this.centralServiceUrl = centralServiceUrl;
     }
-    public CentralService(String centralServiceUrl) {
+    public CentralService(String centralServiceUrl, String systemVersion) {
         
         this.centralServiceUrl = centralServiceUrl;
+        this.systemVersion = systemVersion;
+    }
+    public String getSystemVersion() {
+        return systemVersion;
+    }
+    public void setSystemVersion(String systemVersion) {
+        this.systemVersion = systemVersion;
     }
     
     

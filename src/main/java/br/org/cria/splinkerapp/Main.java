@@ -3,7 +3,7 @@ package br.org.cria.splinkerapp;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import br.org.cria.splinkerapp.config.DatabaseSetup;
-import br.org.cria.splinkerapp.repositories.TokenRepository;
+import br.org.cria.splinkerapp.services.implementations.DataSetService;
 
 public class Main extends Application 
 {
@@ -23,7 +23,7 @@ public class Main extends Application
                         stage.setTitle("spLinker");
                         stage.setResizable(false); 
                         try {
-                            if(TokenRepository.hasConfiguration())
+                            if(DataSetService.hasConfiguration())
                         {
                             Router.getInstance().navigateTo(stage, "home", 231 ,222);
                         }

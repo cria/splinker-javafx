@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
+import br.org.cria.splinkerapp.utils.StringStandards;
 
 public abstract class FileParser {
     protected FileParser() throws Exception
@@ -30,13 +30,8 @@ public abstract class FileParser {
     protected abstract List<String> getRowAsStringList(Object row, int numberOfColumns);
     protected abstract String buildCreateTableCommand() throws Exception;
 
-    protected String normalizeString(String str) 
-    {
-        return StringUtils.stripAccents(str.toLowerCase()).trim()//.replace(" ", "")
-                .replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}]", "_");
-    }
     protected String makeValueString(int numberOfColumns) { return "?,".repeat(numberOfColumns); }
-    protected String makeColumnName(String originalField) { return "`%s`".formatted(normalizeString(originalField));}
+    protected String makeColumnName(String originalField) { return "`%s`".formatted(StringStandards.normalizeString(originalField));}
     public void createTableBasedOnSheet() throws Exception {
         var command = buildCreateTableCommand();
         var conn = getConnection();
