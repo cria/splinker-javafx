@@ -1,14 +1,10 @@
 package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
-import java.util.Arrays;
 import java.util.ResourceBundle;
-import br.org.cria.splinkerapp.models.DataSourceType;
-import br.org.cria.splinkerapp.repositories.DataSourceRepository;
-import javafx.collections.FXCollections;
+import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -32,8 +28,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
     TextField hostAddressField;
     @FXML
     TextField dbNameField;
-    @FXML
-    ComboBox<DataSourceType>  databaseTypeField;
+    
     @FXML
     Button saveBtn;
 
@@ -41,16 +36,11 @@ public class CollectionLocalDatabaseController extends AbstractController {
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        var allValues = DataSourceType.values();
-        var fileTypes = Arrays.asList(DataSourceType.CSV, DataSourceType.Excel, 
-                        DataSourceType.LibreOfficeCalc, DataSourceType.dBase, 
-                        DataSourceType.Access);
-        var options = Arrays.asList(allValues).stream().filter(e-> !fileTypes.contains(e)).toList();
-        databaseTypeField.setItems(FXCollections.observableArrayList(options));
         
         try 
         {
-            var ds = DataSourceRepository.getDataSource();
+            var token = DataSetService.getCurrentToken();
+            var ds = DataSetService.getDataSet(token);
             if(ds != null)
             {
                 usernameField.setText(ds.getDbUser());
@@ -59,7 +49,6 @@ public class CollectionLocalDatabaseController extends AbstractController {
                 hostAddressField.setText(ds.getDbHost());
                 dbNameField.setText(ds.getDbName());
                 portField.setText(ds.getDbPort());
-                databaseTypeField.setValue(ds.getType());    
             }
             
         } 
@@ -67,7 +56,6 @@ public class CollectionLocalDatabaseController extends AbstractController {
         {
             showErrorModal(e.getMessage());
         }
-        
     }
 
 
@@ -82,10 +70,9 @@ public class CollectionLocalDatabaseController extends AbstractController {
             var hostName = hostAddressField.getText();
             var databaseName = dbNameField.getText();
             var port = portField.getText();
-            var type = databaseTypeField.getValue();
-            var ds = DataSourceRepository.getDataSource();
-            DataSourceRepository.saveDataSource(type,null, hostName , port,databaseName,tableName,username,password);
-            var hasFilePath = ds.getDataSourceFilePath() != null;
+            var ds = DataSetService.getDataSet(token);
+            DataSetService.saveSQLDataSource(token, hostName, port, databaseName, tableName, username, password);
+            var hasFilePath = ds.getDataSetFilePath() != null;
             var hasUserAndPass = ds.getDbUser() != null && ds.getDbPassword() != null;
             var hasConfig = hasFilePath || hasUserAndPass;
             if(!hasConfig)
