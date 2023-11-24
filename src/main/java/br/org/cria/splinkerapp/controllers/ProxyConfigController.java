@@ -3,8 +3,8 @@ package br.org.cria.splinkerapp.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
-import br.org.cria.splinkerapp.repositories.BasicConfigurationRepository;
 import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
+import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
@@ -34,7 +34,7 @@ public class ProxyConfigController extends AbstractController
         
         try 
         {
-            var hasConfig = BasicConfigurationRepository.hasConfiguration();
+            var hasConfig = DataSetService.hasConfiguration();
             var config = new ProxyConfiguration(proxyAddress.getText(), proxyPassword.getText(), 
                                         proxyPort.getText(), proxyUsername.getText());
             ProxyConfigRepository.saveProxyConfig(config);
