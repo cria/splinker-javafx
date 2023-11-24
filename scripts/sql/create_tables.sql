@@ -1,29 +1,24 @@
 PRAGMA foreign_keys = ON;
 
-CREATE TABLE IF NOT EXISTS BasicConfiguration (
-  token VARCHAR(50) PRIMARY KEY, -- Código da coleção
-  last_rowcount INTEGER, -- quantidade de linhas no último sync
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS DataSourceConfiguration (
+CREATE TABLE IF NOT EXISTS  DataSetConfiguration (
+  -- CAMPOS VINDOS DO BACKEND
   token VARCHAR(50), -- Código da coleção
   dataset_name VARCHAR(50), -- nome da coleção do token correspondente
   dataset_acronym VARCHAR(50), -- nome da coleção do token correspondente
-  datasource_filepath VARCHAR(50) NULL, -- caminho do arquivo quando a fonte de dados é um arquivo
   datasource_type VARCHAR(50) NOT NULL, -- tipo da fonte de dados
+  -- CAMPOS CONFIGURADOS PELO USUÁRIO
+  datasource_filepath VARCHAR(50) NULL, -- caminho do arquivo quando a fonte de dados é um arquivo
   db_host VARCHAR(100) NULL, -- host do banco de dados quando a fonte de dados é um BD
   db_port VARCHAR(100) NULL, -- porta do banco de dados quando a fonte de dados é um BD
   db_name VARCHAR(100) NULL, -- nome do banco de dados quando a fonte de dados é um BD
   db_tablename VARCHAR(100) NULL,  -- nome da tabela do banco de dados quando a fonte de dados é um BD
   db_username VARCHAR(100) NULL,  -- nome de usuário do banco de dados quando a fonte de dados é um BD
   db_password VARCHAR(100) NULL,  -- senha do banco de dados quando a fonte de dados é um BD
+  -- CAMPOS ATUALIZADOS AUTOMATICAMENTE
+  last_rowcount INTEGER, -- quantidade de linhas no último sync
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  FOREIGN KEY (token) REFERENCES BasicConfiguration (token) ON DELETE CASCADE -- chave primária
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
-
 
 CREATE TABLE IF NOT EXISTS CentralServiceConfiguration (
   last_system_version VARCHAR(100) NOT NULL, --versão do spLinker
