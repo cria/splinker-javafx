@@ -200,7 +200,8 @@ public class DataSetService extends BaseRepository {
     {
         var normalizedToken = StringStandards.normalizeString(token);
         var fileName = "%s/%s_sql_command.sql".formatted(System.getProperty("user.dir"), normalizedToken);
-        String read = String.join("",Files.readAllLines(Path.of(fileName)));
+        var lines = Files.readAllLines(Path.of(fileName));
+        String read = String.join(" ", lines);
         return read;
     }
 
