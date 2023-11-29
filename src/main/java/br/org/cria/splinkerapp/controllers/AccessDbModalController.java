@@ -54,6 +54,7 @@ public class AccessDbModalController extends AbstractController {
         } 
         catch(Exception ex)
         {
+            logger.error(ex.getLocalizedMessage());
             showErrorModal(ex.getMessage());
         }
     }
@@ -90,6 +91,7 @@ public class AccessDbModalController extends AbstractController {
         } 
         catch (Exception e) 
         {
+            logger.error(e.getLocalizedMessage());
             showErrorModal(e.getMessage());
         }
     }
