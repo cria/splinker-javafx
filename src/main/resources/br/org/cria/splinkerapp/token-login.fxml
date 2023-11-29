@@ -8,7 +8,7 @@
 <AnchorPane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="111.0" prefWidth="289.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.TokenLoginController">
    <children>
       <TextField id="tokenField" fx:id="tokenField" layoutX="64.0" layoutY="37.0" promptText="Token" />
-      <Button id="btnLogin" fx:id="btnLogin" layoutX="120.0" layoutY="72.0" mnemonicParsing="false" onMouseClicked="#onButtonLoginClicked" text="Login" />
+      <Button id="btnAddToken" fx:id="btnAddToken" layoutX="97.0" layoutY="72.0" mnemonicParsing="false" onMouseClicked="#onButtonAddTokenClicked" text="Adicionar Token" />
       <Label layoutX="14.0" layoutY="41.0" text="Token" />
    </children>
 </AnchorPane>

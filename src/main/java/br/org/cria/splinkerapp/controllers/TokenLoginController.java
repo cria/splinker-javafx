@@ -7,7 +7,6 @@ import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.control.Button;
@@ -17,30 +16,31 @@ public class TokenLoginController extends AbstractController {
     @FXML
     AnchorPane pane;
     @FXML
-    Button btnLogin;
+    Button btnAddToken;
     @FXML
     TextField tokenField;
 
+
+    
     @FXML
-    void onButtonLoginClicked() 
+    void onButtonAddTokenClicked() 
     {
         try 
         {
             var token = tokenField.getText();
+            var hasConfig = DataSetService.hasConfiguration();
             var apiConfig = DataSetService.getConfigurationDataFromAPI(token);
             if(apiConfig != null)
             {
                 // var version = apiConfig.get("version").toString();
                 // var currentVersion = DataSetService.getCurrentVersion();
                 // var hasNewVersion = Double.parseDouble(version) > Double.parseDouble(currentVersion);
-                //TODO: Adicionar ao reponse django
                 var collName = apiConfig.get("dataset_name").toString();
                 var datasetAcronym = apiConfig.get("dataset_acronym").toString();
                 DataSetService.setCurrentToken(token);
-                                
-                ConfigFacade.HandleBackendData(token, apiConfig);
                 var dsType = DataSourceType.valueOf(apiConfig.get("data_source_type").toString());
                 DataSetService.saveDataSet(token, dsType, datasetAcronym, collName);
+                ConfigFacade.HandleBackendData(token, apiConfig);
                 // if(hasNewVersion)
                 // {
                 //     navigateOrOpenNewWindowOnExistingDataSource("splinker-update", 260, 150, true);
@@ -67,15 +67,22 @@ public class TokenLoginController extends AbstractController {
                     default:
                         break;
                 }
-        
-                navigateTo(getStage(), routeName, width, height);
-                return;
+            
+                
+                if(!hasConfig)
+                {
+                    navigateTo(getStage(), routeName, width, height); 
+                }
+                else
+                {
+                    getStage().close();
+                }
             }
-                showAlert(AlertType.ERROR,"Token inválido", "O token digitado é inválido");
              
         } 
         catch (Exception e) 
         {
+            logger.error(e.getLocalizedMessage());
             showErrorModal(e.getMessage());
         }
     }
