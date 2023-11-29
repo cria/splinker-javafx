@@ -14,25 +14,22 @@ import java.util.zip.ZipOutputStream;
 
 public class DarwinCoreArchiveService
 {
-    String zipFile = "%s/%s.zip";
-    String textFile = "%s/%s_occurences.txt";
+    String zipFile;
+    String textFile;
     DataSet ds;
     ResultSet data;
 
     public DarwinCoreArchiveService (DataSet ds) throws Exception
     {
         this.ds = ds;
+        var userDir = System.getProperty("user.dir");
+        this.zipFile = "%s/%s/dwc.zip".formatted(userDir, ds.getDataSetAcronym());
+        this.textFile = "%s/%s/occurences.txt".formatted(userDir, ds.getDataSetAcronym());
     }
-
-    public String getOccurencesFile()
-    {
-        var occurencesFile = textFile.formatted(System.getProperty("user.dir"), ds.getToken());
-        return occurencesFile;
-    }
-    
+        
     public DarwinCoreArchiveService generateTXTFile() throws Exception
     {   
-        var path = Path.of(getOccurencesFile());
+        var path = Path.of(this.textFile);
         var columnNames = getColumnNames();
         var rows = getDataSetRows();
         var rowCount = rows.length();
@@ -49,7 +46,7 @@ public class DarwinCoreArchiveService
                 Files.delete(path);
             }
         }
-                var writer = new BufferedWriter(new FileWriter(getOccurencesFile()));
+                var writer = new BufferedWriter(new FileWriter(this.textFile));
                 writer.write(columnNames);        
                 writer.write(rows);
                 writer.flush();
@@ -93,10 +90,9 @@ public class DarwinCoreArchiveService
 
     public DarwinCoreArchiveService generateZIPFile() throws Exception 
     {
-        zipFile = zipFile.formatted(System.getProperty("user.dir"), ds.getToken());
-        try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile))) 
+        try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(this.zipFile))) 
         {
-            File fileToZip = new File(getOccurencesFile());
+            File fileToZip = new File(this.textFile);
             zipOut.putNextEntry(new ZipEntry(fileToZip.getName()));
             Files.copy(fileToZip.toPath(), zipOut);
             return this;
