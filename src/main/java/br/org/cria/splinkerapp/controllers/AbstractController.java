@@ -15,11 +15,14 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class AbstractController implements Initializable {
     protected String token;
     protected Service transferService;
     protected Stage modalStage = new Stage();
+    protected static final Logger logger = LogManager.getLogger(AbstractController.class);
     Alert dialog = new Alert(AlertType.INFORMATION);
     protected abstract Pane getPane();
 
@@ -58,6 +61,7 @@ public abstract class AbstractController implements Initializable {
             System.out.println(e);
             System.out.println("\n END ERROR!\n");
             e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
         return new Stage();
     }
@@ -115,6 +119,7 @@ public abstract class AbstractController implements Initializable {
         } 
         catch (Exception e) 
         {
+            logger.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
         
