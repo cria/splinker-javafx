@@ -2,7 +2,7 @@ PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS  DataSetConfiguration (
   -- CAMPOS VINDOS DO BACKEND
-  token VARCHAR(50), -- Código da coleção
+  token VARCHAR(50) PRIMARY KEY, -- Código da coleção
   dataset_name VARCHAR(50), -- nome da coleção do token correspondente
   dataset_acronym VARCHAR(50), -- nome da coleção do token correspondente
   datasource_type VARCHAR(50) NOT NULL, -- tipo da fonte de dados
@@ -47,4 +47,4 @@ INSERT INTO TransferConfiguration (rsync_port, rsync_server_destination)
 VALUES (10000, 'bruno@35.224.172.146');
 
 INSERT INTO CentralServiceConfiguration (central_service_url, last_system_version)
-VALUES ('https://specieslink.net/ws/1.0/splinker/', "1.0");
+VALUES ('https://specieslink.net/ws/1.0/splinker/login', "1.0");
