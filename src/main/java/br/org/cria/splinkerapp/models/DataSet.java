@@ -145,27 +145,30 @@ public class DataSet {
         DataSet ds;
         String connectionString = null;
               
-        switch (type) 
+        if(type != null)
         {
-            case MySQL:
-            case PostgreSQL:
-                connectionString = "jdbc:%s://%s/%s?user=%s&password=%s"
-                            .formatted(type.name().toLowerCase(),host, databaseName, username, password);
+            switch (type) 
+            {
+                case MySQL:
+                case PostgreSQL:
+                    connectionString = "jdbc:%s://%s/%s?user=%s&password=%s"
+                                .formatted(type.name().toLowerCase(),host, databaseName, username, password);
+                    break;
+                case Oracle:
+                    connectionString = "jdbc:%s:thin:%s/%s@%s:%s:%s"
+                                .formatted(type.name().toLowerCase(), username, password, host, port, databaseName);
+                    break;
+                case SQLServer:
+                    connectionString = "jdbc:%s://%s:%s;encrypt=true;trustServerCertificate=true;databaseName=%s;user=%s;password=%s"
+                            .formatted(type.name().toLowerCase(), host, port, databaseName, username, password);
+                    break;
+                case Access:
+                    connectionString = "jdbc:ucanaccess://%s;memory=false".formatted(filePath);
+                    break;
+                default:
+                    connectionString = "jdbc:sqlite:splinker.db";
                 break;
-            case Oracle:
-                connectionString = "jdbc:%s:thin:%s/%s@%s:%s:%s"
-                            .formatted(type.name().toLowerCase(), username, password, host, port, databaseName);
-                break;
-            case SQLServer:
-                connectionString = "jdbc:%s://%s:%s;encrypt=true;trustServerCertificate=true;databaseName=%s;user=%s;password=%s"
-                        .formatted(type.name().toLowerCase(), host, port, databaseName, username, password);
-                break;
-            case Access:
-                connectionString = "jdbc:ucanaccess://%s;memory=false".formatted(filePath);
-                break;
-            default:
-                connectionString = "jdbc:sqlite:splinker.db";
-            break;
+            } 
         }
         ds = new DataSet(token, type, filePath, host, databaseName, tableName, 
                             username, password, port, connectionString, datasetAcronym, datasetName, lastRowCount);
