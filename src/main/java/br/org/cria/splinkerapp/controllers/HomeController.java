@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
 
 public class HomeController extends AbstractController {
@@ -52,6 +53,7 @@ public class HomeController extends AbstractController {
                 transferService.setOnSucceeded(event -> {
                     modalStage.hide();
                     modalStage.close();
+                    showAlert(AlertType.INFORMATION, "Transferência concluída", "Arquivo transferido com sucesso");
                 });
                 transferService.start();
                 showTransferModal("Transferindo");
@@ -112,6 +114,12 @@ public class HomeController extends AbstractController {
     }
 
     @FXML
+    void onDataSetAddMenuItemClick()
+    {
+        openNewWindow("token-login", 280, 150);
+    }
+
+    @FXML
     void onDeleteLocalConfigMenuItemClick() {
         try {
             DatabaseSetup.deleteLocalDatabase();
@@ -165,16 +173,20 @@ public class HomeController extends AbstractController {
             // TODO: Tela de adicionar nova coleção (só um item no menu + alterar tela de
             // login)
             token = DataSetService.getCurrentToken();
-            var sources = DataSetService.getAllDataSets().stream();
-            var options = sources.map(e -> e.getToken()).toList();
-            cmbCollection.setItems(FXCollections.observableArrayList(options));
-            cmbCollection.setValue(token);
+            populateDatasetCombo();
             var collName = DataSetService.getDataSet(token).getDataSetName();
             lblCollectionName.setText(collName);
         } catch (Exception e) {
             showErrorModal(e.getLocalizedMessage());
         }
 
+    }
+    private void populateDatasetCombo() throws Exception
+    {
+            var sources = DataSetService.getAllDataSets().stream();
+            var options = sources.map(e -> e.getToken()).toList();
+            cmbCollection.setItems(FXCollections.observableArrayList(options));
+            cmbCollection.setValue(token);
     }
 
 }

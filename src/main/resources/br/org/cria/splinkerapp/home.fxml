@@ -22,6 +22,7 @@
                <MenuItem id="proxyConfigMenuItem" fx:id="proxyConfigMenuItem" mnemonicParsing="false" onAction="#onProxyConfigMenuOptionClick" text="Configurar proxy" />
                <MenuItem id="centralServiceConfigMenuItem" fx:id="centralServiceConfigMenuItem" mnemonicParsing="false" onAction="#onCentralServiceConfigMenuOptionClick" text="Configurar serviço central" />
                <MenuItem id="deleteLocalConfigMenuItem" fx:id="deleteLocalConfigMenuItem" mnemonicParsing="false" onAction="#onDeleteLocalConfigMenuItemClick" text="Excluir configurações locais" />
+               <MenuItem id="addDatasetItemMenu" fx:id="addDatasetItemMenu" mnemonicParsing="false" onAction="#onDataSetAddMenuItemClick" text="Adicionar conjunto de dados" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="Ajuda">
                     <MenuItem mnemonicParsing="false" text="About" />
