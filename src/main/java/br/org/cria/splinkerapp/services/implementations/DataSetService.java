@@ -72,7 +72,7 @@ public class DataSetService extends BaseRepository {
      
         String line;
         var config = CentralServiceRepository.getCentralServiceData();
-        var url = "%s/login?version=1&token=%s".formatted(config.getCentralServiceUrl(), token);
+        var url = "%s?version=%s&token=%s".formatted(config.getCentralServiceUrl(), config.getSystemVersion(), token);
         var urlConn = new URI(url).toURL();
         var response = new StringBuffer();
         var connection = (HttpURLConnection) urlConn.openConnection();
@@ -143,11 +143,8 @@ public class DataSetService extends BaseRepository {
 
     public static DataSet getDataSetBy(String field, String value) throws Exception
     {
-        var cmd = """
-                SELECT * FROM  DataSetConfiguration
-                WHERE %s = ?
-                LIMIT 1;
-                """.formatted(field);
+        var cmd = "SELECT * FROM  DataSetConfiguration WHERE %s = ? LIMIT 1;"
+        .formatted(field);
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var stm = conn.prepareStatement(cmd);
         stm.setString(1, value);
@@ -170,8 +167,10 @@ public class DataSetService extends BaseRepository {
                 var filePath = result.getString("datasource_filepath");
                 var acronym =  result.getString("dataset_acronym");
                 var name =  result.getString("dataset_name");
-                var type = DataSourceType.valueOf(result.getString("datasource_type"));
                 var lastRowCount =  result.getInt("last_rowcount");
+                var type =result.getString("datasource_type") == null? null:
+                 DataSourceType.valueOf(result.getString("datasource_type"));
+                
                 var ds = DataSet.factory(token, type, filePath, host,dbName, table,user, pwd, port, acronym, name, lastRowCount);
                 return ds;
     }
@@ -184,8 +183,9 @@ public class DataSetService extends BaseRepository {
 
     public static void saveSQLCommand(String token, List<Double> cmd) throws Exception
     {
-        var normalizedToken = StringStandards.normalizeString(token);
-        var fileName = "%s/%s_sql_command.sql".formatted(System.getProperty("user.dir"), normalizedToken);
+        var ds = getDataSet(token);
+        var normalizedName = StringStandards.normalizeString(ds.getDataSetAcronym());
+        var fileName = "%s/%s.sql".formatted(System.getProperty("user.dir"), normalizedName);
         var sqlCmd = byteArrayToString(cmd);
         Path path = Paths.get(fileName);
         byte[] strToBytes = sqlCmd.getBytes();
@@ -198,8 +198,9 @@ public class DataSetService extends BaseRepository {
 
     public static String getSQLCommand(String token) throws Exception 
     {
-        var normalizedToken = StringStandards.normalizeString(token);
-        var fileName = "%s/%s_sql_command.sql".formatted(System.getProperty("user.dir"), normalizedToken);
+        var ds = getDataSet(token);
+        var normalizedName = StringStandards.normalizeString(ds.getDataSetAcronym());
+        var fileName = "%s/%s.sql".formatted(System.getProperty("user.dir"), normalizedName);
         var lines = Files.readAllLines(Path.of(fileName));
         String read = String.join(" ", lines);
         return read;
