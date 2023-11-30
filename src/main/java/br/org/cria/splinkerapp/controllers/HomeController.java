@@ -2,9 +2,12 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
+
 import br.org.cria.splinkerapp.config.DatabaseSetup;
 import br.org.cria.splinkerapp.facade.ConfigFacade;
 import br.org.cria.splinkerapp.managers.SyncManager;
+import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -29,6 +32,9 @@ public class HomeController extends AbstractController {
 
     @FXML
     Button syncMetaDataBtn;
+
+    @FXML
+    Button btnDeleteDataset;
 
     @FXML
     ComboBox<String> cmbCollection;
@@ -142,9 +148,7 @@ public class HomeController extends AbstractController {
     }
 
     @Override
-    protected Pane getPane() {
-        return this.pane;
-    }
+    protected Pane getPane() { return this.pane; }
     @FXML
     void onCmbCollectionChange(ActionEvent event) {
 
@@ -161,6 +165,12 @@ public class HomeController extends AbstractController {
 
     }
 
+    @FXML
+    void onDeleteDatasetButtonClick()
+    {
+        openNewWindow("delete-dataset",300,200);
+
+    }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -169,11 +179,13 @@ public class HomeController extends AbstractController {
             // {
             // navigateTo(getStage(), "first-config-dialog", 330,150);
             // }
-
-            // TODO: Tela de adicionar nova coleção (só um item no menu + alterar tela de
-            // login)
             token = DataSetService.getCurrentToken();
-            populateDatasetCombo();
+            var sources = DataSetService.getAllDataSets().stream();
+            this.pane.focusedProperty().addListener(
+                (prop, oldNode, newNode) -> {
+                    //populateDatasetCombo(sources); 
+                    System.out.println("Teste!!!!");});
+            populateDatasetCombo(sources);
             var collName = DataSetService.getDataSet(token).getDataSetName();
             lblCollectionName.setText(collName);
         } catch (Exception e) {
@@ -181,12 +193,10 @@ public class HomeController extends AbstractController {
         }
 
     }
-    private void populateDatasetCombo() throws Exception
+    private void populateDatasetCombo(Stream<DataSet> sources)
     {
-            var sources = DataSetService.getAllDataSets().stream();
             var options = sources.map(e -> e.getToken()).toList();
             cmbCollection.setItems(FXCollections.observableArrayList(options));
             cmbCollection.setValue(token);
     }
-
 }
