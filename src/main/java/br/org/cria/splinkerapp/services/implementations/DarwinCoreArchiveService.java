@@ -8,6 +8,7 @@ import javafx.concurrent.Task;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -22,9 +23,11 @@ public class DarwinCoreArchiveService
     public DarwinCoreArchiveService (DataSet ds) throws Exception
     {
         this.ds = ds;
-        var userDir = System.getProperty("user.dir");
-        this.zipFile = "%s/%s/dwc.zip".formatted(userDir, ds.getDataSetAcronym());
-        this.textFile = "%s/%s/occurences.txt".formatted(userDir, ds.getDataSetAcronym());
+        var userDir = System.getProperty("user.dir") + "/" + ds.getDataSetAcronym();
+        Files.createDirectories(Paths.get(userDir));
+        //TODO:trocar nome da pasta para o id da coleção que vem do webservice);
+        this.zipFile = "%s/dwca.zip".formatted(userDir);
+        this.textFile = "%s/occurence.txt".formatted(userDir);
     }
         
     public DarwinCoreArchiveService generateTXTFile() throws Exception
@@ -129,6 +132,7 @@ public class DarwinCoreArchiveService
                     @Override
                     protected Void call() throws Exception 
                     {
+                        //Thread.sleep(5000);
                         var session = client.start(command);
                         return null;
                     }
