@@ -23,10 +23,9 @@ public class DarwinCoreArchiveService
     public DarwinCoreArchiveService (DataSet ds) throws Exception
     {
         this.ds = ds;
-        var userDir = System.getProperty("user.dir") + "/" + ds.getDataSetAcronym();
+        var userDir = System.getProperty("user.dir") + "/" + ds.getId();
         Files.createDirectories(Paths.get(userDir));
-        //TODO:trocar nome da pasta para o id da coleção que vem do webservice);
-        this.zipFile = "%s/dwca.zip".formatted(userDir);
+        this.zipFile = "%s/dwca_created_on_mac_and_sent_on_december.zip".formatted(userDir);
         this.textFile = "%s/occurence.txt".formatted(userDir);
     }
         
