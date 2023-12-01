@@ -2,7 +2,8 @@ PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS  DataSetConfiguration (
   -- CAMPOS VINDOS DO BACKEND
-  token VARCHAR(50) PRIMARY KEY, -- Código da coleção
+  id INT NOT NULL, -- ID da coleção, usado 
+  token VARCHAR(50), -- Código da coleção
   dataset_name VARCHAR(50), -- nome da coleção do token correspondente
   dataset_acronym VARCHAR(50), -- nome da coleção do token correspondente
   datasource_type VARCHAR(50) NOT NULL, -- tipo da fonte de dados
