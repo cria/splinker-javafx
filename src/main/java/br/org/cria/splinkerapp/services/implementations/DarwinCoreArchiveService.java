@@ -25,7 +25,7 @@ public class DarwinCoreArchiveService
         this.ds = ds;
         var userDir = System.getProperty("user.dir") + "/" + ds.getId();
         Files.createDirectories(Paths.get(userDir));
-        this.zipFile = "%s/dwca_created_on_mac_and_sent_on_december.zip".formatted(userDir);
+        this.zipFile = "%s/dwca_gustavo.zip".formatted(userDir);
         this.textFile = "%s/occurence.txt".formatted(userDir);
     }
         
