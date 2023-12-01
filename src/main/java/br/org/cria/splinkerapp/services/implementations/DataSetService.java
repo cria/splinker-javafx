@@ -185,8 +185,8 @@ public class DataSetService extends BaseRepository {
     public static void saveSQLCommand(String token, List<Double> cmd) throws Exception
     {
         var ds = getDataSet(token);
-        var normalizedName = StringStandards.normalizeString(ds.getDataSetAcronym());
-        var fileName = "%s/%s.sql".formatted(System.getProperty("user.dir"), normalizedName);
+        var id = ds.getId();
+        var fileName = "%s/%s.sql".formatted(System.getProperty("user.dir"), id);
         var sqlCmd = byteArrayToString(cmd);
         Path path = Paths.get(fileName);
         byte[] strToBytes = sqlCmd.getBytes();
@@ -200,8 +200,8 @@ public class DataSetService extends BaseRepository {
     public static String getSQLCommand(String token) throws Exception 
     {
         var ds = getDataSet(token);
-        var normalizedName = StringStandards.normalizeString(ds.getDataSetAcronym());
-        var fileName = "%s/%s.sql".formatted(System.getProperty("user.dir"), normalizedName);
+        var id = ds.getId();
+        var fileName = "%s/%s.sql".formatted(System.getProperty("user.dir"), id);
         var lines = Files.readAllLines(Path.of(fileName));
         String read = String.join(" ", lines);
         return read;
