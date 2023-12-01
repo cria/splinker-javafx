@@ -28,8 +28,6 @@ public class CentralServiceRepository extends BaseRepository
 
     private static void saveCentralServiceData(CentralService cserv) throws Exception
     {
-        cleanTable("CentralServiceConfiguration");
-        
         var isEmptyUrl = Strings.isNullOrEmpty(cserv.getCentralServiceUrl());
         if(!isEmptyUrl)
         {
