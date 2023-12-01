@@ -5,6 +5,14 @@ import java.sql.DriverManager;
 import java.time.LocalDate;
 
 public class DataSet {
+    private int id;
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+
     private int lastRowCount;
     public int getLastRowCount() {
         return lastRowCount;
@@ -115,8 +123,9 @@ public class DataSet {
         this.datasetAcronym = datasetAcronym;
     }
     private DataSet(String token, DataSourceType type, String filePath, String host, String databaseName, String tableName,
-                     String username, String password, String port, String connectionString, String datasetAcronym, String datasetName, int lastRowCount)
+                     String username, String password, String port, String connectionString, String datasetAcronym, String datasetName, int lastRowCount, int id)
     {
+        this.id = id;
         this.token = token;
         this.type = type;
         this.dbHost = host;
@@ -140,7 +149,7 @@ public class DataSet {
     public boolean isSQLDatabase() { return this.dataSourceFilePath == null; }
     public static DataSet factory(String token, DataSourceType type, String filePath, String host, 
                                         String databaseName, String tableName,
-                                        String username, String password, String port, String datasetAcronym, String datasetName, int lastRowCount) 
+                                        String username, String password, String port, String datasetAcronym, String datasetName, int lastRowCount, int id) 
     {
         DataSet ds;
         String connectionString = null;
@@ -171,7 +180,7 @@ public class DataSet {
             } 
         }
         ds = new DataSet(token, type, filePath, host, databaseName, tableName, 
-                            username, password, port, connectionString, datasetAcronym, datasetName, lastRowCount);
+                            username, password, port, connectionString, datasetAcronym, datasetName, lastRowCount, id);
         return ds;
     }
     public Connection getDataSetConnection() throws Exception

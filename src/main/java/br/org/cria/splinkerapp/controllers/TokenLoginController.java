@@ -37,9 +37,10 @@ public class TokenLoginController extends AbstractController {
                 // var hasNewVersion = Double.parseDouble(version) > Double.parseDouble(currentVersion);
                 var collName = apiConfig.get("dataset_name").toString();
                 var datasetAcronym = apiConfig.get("dataset_acronym").toString();
+                var id = (int)Double.parseDouble(apiConfig.get("dataset_id").toString());
                 DataSetService.setCurrentToken(token);
                 var dsType = DataSourceType.valueOf(apiConfig.get("data_source_type").toString());
-                DataSetService.saveDataSet(token, dsType, datasetAcronym, collName);
+                DataSetService.saveDataSet(token, dsType, datasetAcronym, collName, id);
                 ConfigFacade.HandleBackendData(token, apiConfig);
                 // if(hasNewVersion)
                 // {

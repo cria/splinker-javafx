@@ -157,6 +157,7 @@ public class DataSetService extends BaseRepository {
 
     private static DataSet buildFromResultSet(ResultSet result) throws Exception
     {
+                var id =  result.getInt("id");
                 var token = result.getString("token");
                 var host = result.getString("db_host");
                 var port = result.getString("db_port");
@@ -171,7 +172,7 @@ public class DataSetService extends BaseRepository {
                 var type =result.getString("datasource_type") == null? null:
                  DataSourceType.valueOf(result.getString("datasource_type"));
                 
-                var ds = DataSet.factory(token, type, filePath, host,dbName, table,user, pwd, port, acronym, name, lastRowCount);
+                var ds = DataSet.factory(token, type, filePath, host,dbName, table,user, pwd, port, acronym, name, lastRowCount, id);
                 return ds;
     }
 
@@ -213,14 +214,14 @@ public class DataSetService extends BaseRepository {
      * @param acronym - acrônimo da coleção
      * @param name - nome da coleção
      */
-    public static void saveDataSet(String token, DataSourceType type, String acronym, String name) throws Exception
+    public static void saveDataSet(String token, DataSourceType type, String acronym, String name, int id) throws Exception
     {
  
         var cmd = """
                     INSERT INTO DataSetConfiguration
                     (token, datasource_type,
-                    dataset_acronym, dataset_name, last_rowcount)
-                    VALUES(?,?,?,?,?);
+                    dataset_acronym, dataset_name, last_rowcount, id)
+                    VALUES(?,?,?,?,?,?);
                 """;
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var stm = conn.prepareStatement(cmd);
@@ -229,6 +230,7 @@ public class DataSetService extends BaseRepository {
         stm.setString(3, acronym);
         stm.setString(4, name);
         stm.setInt(5, 0);
+        stm.setInt(6, id);
         stm.executeUpdate();
         stm.close();
         conn.close();
