@@ -2,7 +2,6 @@ package br.org.cria.splinkerapp.services.implementations;
 
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
-import com.github.perlundq.yajsync.ui.YajsyncClient;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import java.io.*;
@@ -10,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
+import java.time.Instant;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -118,11 +118,12 @@ public class DarwinCoreArchiveService
  
     public Service<Void> transferData() throws Exception 
     {
+        var userDir = System.getProperty("user.dir");
         var rSyncConfig = TransferConfigRepository.getRSyncConfig();
         var port = rSyncConfig.getrSyncPort();
         var destination = "%s::%s".formatted(rSyncConfig.getrSyncDestination(), ds.getToken());
-        var command = new String[] { "--port=%s".formatted(port), "-r", this.zipFile, destination };
-        var client = new YajsyncClient();
+        var command = new String[] {"java", "-jar", "%s/libs/yajsync-app-0.9.0-SNAPSHOT-full.jar".formatted(userDir), 
+                                    "client", "--port=%s".formatted(port), "-r", this.zipFile, destination };
         return new Service<Void>() {
             @Override
             protected Task<Void> createTask() 
@@ -131,8 +132,7 @@ public class DarwinCoreArchiveService
                     @Override
                     protected Void call() throws Exception 
                     {
-                        //Thread.sleep(5000);
-                        var session = client.start(command);
+                        sendFileUsingCommandLine(command);
                         return null;
                     }
                 };
@@ -140,4 +140,35 @@ public class DarwinCoreArchiveService
         };
 
     }
+
+    static void sendFileUsingCommandLine(String[] cmd) throws Exception
+    {
+        System.out.println(Instant.now() + " - Iniciando processo via linha de comando: " + String.join(" ",cmd));
+        //Cria o processo
+
+        var proc = Runtime.getRuntime().exec(cmd);
+        //Cria o leitor de buffer do resultado do processamento
+        var reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+        //Cria o leitor de buffer de erro, caso haja algum erro
+        var err = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+        String line;
+        String errLine;
+        
+        //Exibe a saída do processo
+        while ((line = reader.readLine()) != null) 
+        {
+            System.out.println(line);
+        }
+        
+        //Exibe a saída do erro
+        while ((errLine = err.readLine()) != null) 
+        {
+            System.out.println(errLine);
+        }
+        //Captura código de saída do comando executado na linha de comando.
+        var exitCode = proc.waitFor();
+
+        System.out.println("exitcode " + exitCode);
+        System.out.println("completed at " + Instant.now());
+    }  
 }

@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
 
 Main-Class: br.org.cria.splinkerapp.App
+Class-Path: libs\
