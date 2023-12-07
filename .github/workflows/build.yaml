@@ -60,33 +60,30 @@ jobs:
           distribution: 'temurin'
           architecture: x64
 
-      - name: Maven local dependency
-        run: mvn install:install-file -Dfile=".\libs\yajsync-app-0.9.0-SNAPSHOT-full.jar" -DgroupId="com.github.perlundq" -DartifactId="yajsync" -Dversion="0.9.0-SNAPSHOT" -Dpackaging="jar"
-
-      - name: Maven install
-        run: mvn install
+      - name: Maven - Instalar bibliotecas, compilar e empacotar 
+        run: mvn install compile package
         
-      - name: Maven compile
-        run: mvn compile
-
-      - name: Maven Package
-        run: mvn package
-
-      - name: Cria image jpackage
+      - name: Criar image jpackage
         run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-1.0-SNAPSHOT.jar
 
-      - name: Cria pasta do arquivo SQL
-        run: mkdir spLinker\scripts; mkdir spLinker\scripts\sql;
+      - name: Criar pasta do yajsync
+        run: mkdir spLinker\libs
       
-      - name: Copia arquivo SQL
+      - name: Copiar yajsync
+        run: cp libs\yajsync-app-0.9.0-SNAPSHOT-full.jar spLinker\libs;
+
+      - name: Criar pasta do arquivo SQL
+        run: mkdir spLinker\scripts; mkdir spLinker\scripts\sql;
+
+      - name: Copiar arquivo SQL
         run: cp scripts\sql\create_tables.sql spLinker\scripts\sql 
 
-      - name: Empacota para Windows
-        run: jpackage --name spLinker --app-image spLinker --type msi --dest dist --win-shortcut  --win-dir-chooser --icon app.ico
-        #--java-options '-Djava.library.path=$APPDIR'
+      - name: Empacotar para Windows
+        run: jpackage --name spLinker --java-options '-cp $APPDIR\libs' --app-image spLinker --type msi --dest dist --win-shortcut  --win-dir-chooser --icon app.ico
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: artifacts
           path: dist
+          retention-days: 3
