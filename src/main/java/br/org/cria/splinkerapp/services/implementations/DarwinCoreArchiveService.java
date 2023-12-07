@@ -2,6 +2,7 @@ package br.org.cria.splinkerapp.services.implementations;
 
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
+import br.org.cria.splinkerapp.utils.StringStandards;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import java.io.*;
@@ -25,7 +26,8 @@ public class DarwinCoreArchiveService
         this.ds = ds;
         var userDir = System.getProperty("user.dir") + "/" + ds.getId();
         Files.createDirectories(Paths.get(userDir));
-        this.zipFile = "%s/dwca_gustavo.zip".formatted(userDir);
+        var normalizedNow = StringStandards.normalizeString(Instant.now().toString());
+        this.zipFile = "%s/dwca_%s.zip".formatted(userDir, normalizedNow);
         this.textFile = "%s/occurence.txt".formatted(userDir);
     }
         
