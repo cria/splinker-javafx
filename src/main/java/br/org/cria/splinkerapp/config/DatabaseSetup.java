@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.DriverManager;
+import br.org.cria.splinkerapp.ApplicationLog;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
@@ -43,6 +44,7 @@ public class DatabaseSetup {
                             } 
                             catch (Exception e) 
                             {
+                                ApplicationLog.error(e.getLocalizedMessage());
                                 e.printStackTrace();
                                 System.exit(1);
                             }

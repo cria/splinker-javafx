@@ -3,6 +3,7 @@ package br.org.cria.splinkerapp.controllers;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -54,7 +55,7 @@ public class AccessDbModalController extends AbstractController {
         } 
         catch(Exception ex)
         {
-            logger.error(ex.getLocalizedMessage());
+            ApplicationLog.error(ex.getLocalizedMessage());
             showErrorModal(ex.getMessage());
         }
     }
@@ -91,7 +92,7 @@ public class AccessDbModalController extends AbstractController {
         } 
         catch (Exception e) 
         {
-            logger.error(e.getLocalizedMessage());
+            ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getMessage());
         }
     }

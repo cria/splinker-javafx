@@ -8,6 +8,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.List;
+
+import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
 
 
@@ -65,6 +67,7 @@ public class ProxyConfigRepository extends BaseRepository{
                 hasProxy = addr != null;
             }
         } catch (Exception e) {
+            ApplicationLog.error(e.getLocalizedMessage());
             e.printStackTrace();
         }
         finally

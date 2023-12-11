@@ -20,15 +20,13 @@ import javafx.stage.Stage;
         return instance;
     }
 
-    public void navigateTo(Stage stage, String routeName) 
+    public void navigateTo(Stage stage, String routeName) throws Exception
     {
         navigateTo(stage, routeName, 0, 0);
     }
 
-    public void navigateTo(Stage stage, String routeName, int width, int height) 
+    public void navigateTo(Stage stage, String routeName, int width, int height) throws Exception
     {
-        try 
-        {
             width = width < 1 ? 320 : width;
             height = height < 1 ? 240 : height;
             var scene  = loadScene(routeName, width, height);
@@ -36,14 +34,7 @@ import javafx.stage.Stage;
             stage.setWidth(width);
             stage.setHeight(height);
             stage.show();
-        } 
-        catch (Exception e) 
-        {
-            System.out.println("ERROR\n");
-            System.out.println(e);
-            System.out.println("\n END ERROR\n");
-            e.printStackTrace();
-        }
+        
     }
 
     private Scene loadScene(String routeName, int width, int height) throws IOException 

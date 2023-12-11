@@ -2,6 +2,8 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -54,6 +56,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
         } 
         catch (Exception e) 
         {
+            ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getMessage());
         }
     }
@@ -91,6 +94,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
         } 
         catch (Exception e) 
         {
+            ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getMessage());
         }
     }

@@ -3,6 +3,8 @@ package br.org.cria.splinkerapp.controllers;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
@@ -48,6 +50,7 @@ public class FileSelectionController extends AbstractController {
         } 
         catch (Exception e) 
         {
+            ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }     
     }
@@ -70,6 +73,7 @@ public class FileSelectionController extends AbstractController {
         } 
         catch (Exception e) 
         {
+            ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
     }

@@ -2,6 +2,8 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
 import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
@@ -30,8 +32,6 @@ public class ProxyConfigController extends AbstractController
     @FXML
     void onButtonSaveClicked()
     {
-        
-        
         try 
         {
             var hasConfig = DataSetService.hasConfiguration();
@@ -53,16 +53,15 @@ public class ProxyConfigController extends AbstractController
         } 
         catch (Exception e) 
         {
+            ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getMessage());
         }
-        
     }
 
     @Override
     protected Pane getPane() {
         return this.pane;
     }
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) 
@@ -80,6 +79,7 @@ public class ProxyConfigController extends AbstractController
         } 
         catch (Exception e) 
         {
+            ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getMessage());
         }
         

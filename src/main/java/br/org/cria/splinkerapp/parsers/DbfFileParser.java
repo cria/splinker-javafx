@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import com.linuxense.javadbf.DBFException;
 import com.linuxense.javadbf.DBFReader;
+
+import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.utils.StringStandards;
 
 public class DbfFileParser extends FileParser
@@ -23,10 +25,12 @@ public class DbfFileParser extends FileParser
 		} 
 		catch (DBFException e) 
 		{
+			ApplicationLog.error(e.getLocalizedMessage());
 			e.printStackTrace();
 		} 
 		catch (IOException e) 
 		{
+			ApplicationLog.error(e.getLocalizedMessage());
 			e.printStackTrace();
 		}
 		// finally 

@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.services.implementations;
 
+import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
 import br.org.cria.splinkerapp.utils.StringStandards;
@@ -103,6 +104,7 @@ public class DarwinCoreArchiveService
         } 
         catch (Exception e) 
         {
+            ApplicationLog.error(e.getLocalizedMessage());
             throw e;
         }
     }

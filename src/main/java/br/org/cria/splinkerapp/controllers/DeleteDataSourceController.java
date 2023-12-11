@@ -3,6 +3,7 @@ package br.org.cria.splinkerapp.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -33,7 +34,8 @@ public class DeleteDataSourceController extends AbstractController {
             }
             getStage().close();
         } catch (Exception e) {
-            logger.error(e.getLocalizedMessage());
+
+            ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
         
@@ -55,7 +57,7 @@ public class DeleteDataSourceController extends AbstractController {
             lblMsg.setText(msg);
         } catch (Exception e) {
             
-            logger.error(e.getLocalizedMessage());
+            ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
     }

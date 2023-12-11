@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
+import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.config.DatabaseSetup;
 import br.org.cria.splinkerapp.facade.ConfigFacade;
 import br.org.cria.splinkerapp.managers.SyncManager;
@@ -45,28 +46,29 @@ public class HomeController extends AbstractController {
     @FXML
     void onSyncServerBtnClicked() throws Exception {
         try {
-            
-            var token = DataSetService.getCurrentToken();
-            transferService = SyncManager.SyncCollectionData(token);
-            if (transferService != null) 
-            {
-                transferService.setOnFailed(event -> {
-                    var exception = transferService.getException();
-                    modalStage.hide();
-                    modalStage.close();
-                    showErrorModal(exception.getMessage());
-                });
-                transferService.setOnSucceeded(event -> {
-                    modalStage.hide();
-                    modalStage.close();
-                    showAlert(AlertType.INFORMATION, "Transferência concluída", "Arquivo transferido com sucesso");
-                });
-                showTransferModal("Transferindo");
-                transferService.start();
-            }
+            throw new Exception("Teste 1234");
+            // var token = DataSetService.getCurrentToken();
+            // transferService = SyncManager.SyncCollectionData(token);
+            // if (transferService != null) 
+            // {
+            //     transferService.setOnFailed(event -> {
+            //         var exception = transferService.getException();
+            //         modalStage.hide();
+            //         modalStage.close();
+            //         showErrorModal(exception.getMessage());
+            //     });
+            //     transferService.setOnSucceeded(event -> {
+            //         modalStage.hide();
+            //         modalStage.close();
+            //         showAlert(AlertType.INFORMATION, "Transferência concluída", "Arquivo transferido com sucesso");
+            //     });
+            //     showTransferModal("Transferindo");
+            //     transferService.start();
+            // }
         } catch (IllegalStateException ex) {
             return;
         } catch (Exception ex) {
+            ApplicationLog.error(ex.getLocalizedMessage());
             showErrorModal(ex.toString());
         }
     }
@@ -102,6 +104,7 @@ public class HomeController extends AbstractController {
         } 
         catch (Exception e) 
         {
+            ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
     }
@@ -130,6 +133,7 @@ public class HomeController extends AbstractController {
             DatabaseSetup.deleteLocalDatabase();
             System.exit(0);
         } catch (Exception e) {
+            ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
 
@@ -142,6 +146,7 @@ public class HomeController extends AbstractController {
             var config = DataSetService.getConfigurationDataFromAPI(token);
             ConfigFacade.HandleBackendData(token, config);
         } catch (Exception e) {
+            ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
     }
@@ -159,6 +164,7 @@ public class HomeController extends AbstractController {
             lblCollectionName.setText(dataSet.getDataSetName());
 
         } catch (Exception e) {
+            ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
 
@@ -188,6 +194,7 @@ public class HomeController extends AbstractController {
             var collName = DataSetService.getDataSet(token).getDataSetName();
             lblCollectionName.setText(collName);
         } catch (Exception e) {
+            ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
 

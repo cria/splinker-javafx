@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.Router;
 import javafx.concurrent.Service;
 import javafx.fxml.FXMLLoader;
@@ -22,15 +23,14 @@ public abstract class AbstractController implements Initializable {
     protected String token;
     protected Service transferService;
     protected Stage modalStage = new Stage();
-    protected static final Logger logger = LogManager.getLogger(AbstractController.class);
     Alert dialog = new Alert(AlertType.INFORMATION);
     protected abstract Pane getPane();
 
-    void navigateTo(String routeName, int width, int height)
+    void navigateTo(String routeName, int width, int height) throws Exception
     {
         Router.getInstance().navigateTo(getStage(), routeName, width, height);
     }
-    void navigateTo(Stage stage, String routeName, int width, int height)
+    void navigateTo(Stage stage, String routeName, int width, int height) throws Exception
     {
         Router.getInstance().navigateTo(stage, routeName, width, height);
     }
@@ -57,11 +57,9 @@ public abstract class AbstractController implements Initializable {
         } 
         catch (Exception e) 
         {
-            System.out.println("ERROR!\n");
-            System.out.println(e);
-            System.out.println("\n END ERROR!\n");
             e.printStackTrace();
-            logger.error(e.getLocalizedMessage());
+            ApplicationLog.error(e.getLocalizedMessage());
+            showErrorModal(e.getLocalizedMessage());
         }
         return new Stage();
     }
@@ -88,7 +86,7 @@ public abstract class AbstractController implements Initializable {
         alert.setContentText(errorMessage);
         alert.showAndWait();
     }
-    protected void navigateOrOpenNewWindowOnExistingDataSource(String routeName, int width, int height, boolean newWindow)
+    protected void navigateOrOpenNewWindowOnExistingDataSource(String routeName, int width, int height, boolean newWindow) throws Exception
     {
         if(newWindow)
         {
@@ -119,7 +117,7 @@ public abstract class AbstractController implements Initializable {
         } 
         catch (Exception e) 
         {
-            logger.error(e.getLocalizedMessage());
+            ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
         

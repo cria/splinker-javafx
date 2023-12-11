@@ -2,6 +2,7 @@ package br.org.cria.splinkerapp.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -22,18 +23,27 @@ public class FirstConfigDialogController extends AbstractController{
     @FXML
     void onYesButtonClicked()
     {
-        var routeName = "central-service";
-        var width = 360;
-        var height = 200;
-        var stage = getStage();
-        
-        if(computerHasProxyConfigured)
+        try 
         {
-            routeName = "proxy-config";
-            width = 350;
-            height = 300;
+            var routeName = "central-service";
+            var width = 360;
+            var height = 200;
+            var stage = getStage();
+            
+            if(computerHasProxyConfigured)
+            {
+                routeName = "proxy-config";
+                width = 350;
+                height = 300;
+            }
+            navigateTo(stage,routeName, width, height);    
+        } 
+        catch (Exception e) 
+        {
+            ApplicationLog.error(e.getLocalizedMessage());
+            showErrorModal(e.getLocalizedMessage());
         }
-        navigateTo(stage,routeName, width, height);
+        
     }
 
     @FXML
