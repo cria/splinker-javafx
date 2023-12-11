@@ -59,7 +59,6 @@ public abstract class AbstractController implements Initializable {
         {
             e.printStackTrace();
             ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
         }
         return new Stage();
     }
@@ -118,7 +117,6 @@ public abstract class AbstractController implements Initializable {
         catch (Exception e) 
         {
             ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
         }
         
 

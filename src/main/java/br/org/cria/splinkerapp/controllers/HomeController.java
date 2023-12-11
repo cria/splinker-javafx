@@ -46,25 +46,24 @@ public class HomeController extends AbstractController {
     @FXML
     void onSyncServerBtnClicked() throws Exception {
         try {
-            throw new Exception("Teste 1234");
-            // var token = DataSetService.getCurrentToken();
-            // transferService = SyncManager.SyncCollectionData(token);
-            // if (transferService != null) 
-            // {
-            //     transferService.setOnFailed(event -> {
-            //         var exception = transferService.getException();
-            //         modalStage.hide();
-            //         modalStage.close();
-            //         showErrorModal(exception.getMessage());
-            //     });
-            //     transferService.setOnSucceeded(event -> {
-            //         modalStage.hide();
-            //         modalStage.close();
-            //         showAlert(AlertType.INFORMATION, "Transferência concluída", "Arquivo transferido com sucesso");
-            //     });
-            //     showTransferModal("Transferindo");
-            //     transferService.start();
-            // }
+            var token = DataSetService.getCurrentToken();
+            transferService = SyncManager.SyncCollectionData(token);
+            if (transferService != null) 
+            {
+                transferService.setOnFailed(event -> {
+                    var exception = transferService.getException();
+                    modalStage.hide();
+                    modalStage.close();
+                    showErrorModal(exception.getMessage());
+                });
+                transferService.setOnSucceeded(event -> {
+                    modalStage.hide();
+                    modalStage.close();
+                    showAlert(AlertType.INFORMATION, "Transferência concluída", "Arquivo transferido com sucesso");
+                });
+                showTransferModal("Transferindo");
+                transferService.start();
+            }
         } catch (IllegalStateException ex) {
             return;
         } catch (Exception ex) {
