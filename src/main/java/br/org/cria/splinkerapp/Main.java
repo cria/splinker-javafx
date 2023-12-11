@@ -2,6 +2,9 @@ package br.org.cria.splinkerapp;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+
+import org.apache.logging.log4j.LogManager;
+
 import br.org.cria.splinkerapp.config.DatabaseSetup;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 
@@ -15,6 +18,9 @@ public class Main extends Application
             var initDb = DatabaseSetup.initDb();
             if (initDb != null) 
             {
+                stage.setOnCloseRequest(event ->{
+                    LogManager.shutdown();
+                });
                 initDb.setOnFailed(event -> {
                     var exception = initDb.getException();
                 });
@@ -32,6 +38,7 @@ public class Main extends Application
                             Router.getInstance().navigateTo(stage, "first-config-dialog", 330,150);
                         }
                         } catch (Exception e) {
+                            ApplicationLog.error(e.getLocalizedMessage());
                              throw new RuntimeException(e);
                         }
                         stage.show();
@@ -43,6 +50,7 @@ public class Main extends Application
         } 
         catch (Exception ex) 
         {
+            ApplicationLog.error(ex.getLocalizedMessage());
             throw new RuntimeException(ex);
         }
     }
