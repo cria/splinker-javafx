@@ -60,7 +60,6 @@ public class HomeController extends AbstractController {
                     modalStage.hide();
                     modalStage.close();
                     showAlert(AlertType.INFORMATION, "Transferência concluída", "Arquivo transferido com sucesso");
-
                 });
                 showTransferModal("Transferindo");
                 transferService.start();
