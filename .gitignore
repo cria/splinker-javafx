@@ -4,6 +4,7 @@ scripts/sql/helpers/*
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+splinker.log
 
 ### IntelliJ IDEA ###
 .idea/*
