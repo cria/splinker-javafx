@@ -48,7 +48,8 @@ public class HomeController extends AbstractController {
             
             var token = DataSetService.getCurrentToken();
             transferService = SyncManager.SyncCollectionData(token);
-            if (transferService != null) {
+            if (transferService != null) 
+            {
                 transferService.setOnFailed(event -> {
                     var exception = transferService.getException();
                     modalStage.hide();
@@ -63,9 +64,7 @@ public class HomeController extends AbstractController {
                 });
                 showTransferModal("Transferindo");
                 transferService.start();
-                
             }
-
         } catch (IllegalStateException ex) {
             return;
         } catch (Exception ex) {
