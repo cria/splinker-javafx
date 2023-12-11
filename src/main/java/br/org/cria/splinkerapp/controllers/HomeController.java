@@ -45,7 +45,7 @@ public class HomeController extends AbstractController {
     @FXML
     void onSyncServerBtnClicked() throws Exception {
         try {
-
+            
             var token = DataSetService.getCurrentToken();
             transferService = SyncManager.SyncCollectionData(token);
             if (transferService != null) {
@@ -54,15 +54,16 @@ public class HomeController extends AbstractController {
                     modalStage.hide();
                     modalStage.close();
                     showErrorModal(exception.getMessage());
-
                 });
                 transferService.setOnSucceeded(event -> {
                     modalStage.hide();
                     modalStage.close();
                     showAlert(AlertType.INFORMATION, "Transferência concluída", "Arquivo transferido com sucesso");
+
                 });
-                transferService.start();
                 showTransferModal("Transferindo");
+                transferService.start();
+                
             }
 
         } catch (IllegalStateException ex) {

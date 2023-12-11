@@ -76,7 +76,7 @@ public abstract class AbstractController implements Initializable {
         modalLayout.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);"); 
         Scene modalScene = new Scene(modalLayout, 300, 200, Color.TRANSPARENT);
         modalStage.setScene(modalScene);
-        modalStage.showAndWait();
+        modalStage.show();
 
     }
     protected void showErrorModal(String errorMessage) 
