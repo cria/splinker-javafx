@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.ApplicationLog;
+import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -45,7 +46,8 @@ public class AccessDbModalController extends AbstractController {
             
             if(ds.getDataSetFilePath() == null && ds.isAccessDb())
             {
-                navigateTo(getStage(), "home", 231, 222);
+                navigateTo(getStage(),"home", WindowSizes.SMALL_SQUARE_SCREEN_WIDTH,
+                                                        WindowSizes.SMALL_SQUARE_SCREEN_WIDTH);
             }
             else
             {
@@ -95,5 +97,11 @@ public class AccessDbModalController extends AbstractController {
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getMessage());
         }
+    }
+    @Override
+    protected void setScreensize() {
+        var stage = getStage();
+        stage.setWidth(WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH);
+        stage.setHeight(WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT);
     }
 }

@@ -2,8 +2,8 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
 import br.org.cria.splinkerapp.ApplicationLog;
+import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
@@ -34,7 +34,9 @@ public class CentralServiceController extends AbstractController {
             CentralServiceRepository.saveCentralServiceData(urlField.getText(), systemVersion);
             if(!hasConfig)
             {
-                 navigateTo(this.getStage(), "token-login",280,150);
+                navigateTo(this.getStage(), "token-login",
+                            WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH,
+                            WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH);
             }
             else
             {
@@ -65,5 +67,11 @@ public class CentralServiceController extends AbstractController {
             showErrorModal(e.getMessage());
         }    
     }
-    
+
+    @Override
+    protected void setScreensize() {
+        var stage = getStage();
+        stage.setWidth(WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH);
+        stage.setHeight(WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT);
+    }
 }

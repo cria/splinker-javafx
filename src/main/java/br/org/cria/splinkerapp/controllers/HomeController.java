@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.config.DatabaseSetup;
+import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.facade.ConfigFacade;
 import br.org.cria.splinkerapp.managers.SyncManager;
 import br.org.cria.splinkerapp.models.DataSet;
@@ -84,22 +85,20 @@ public class HomeController extends AbstractController {
         try 
         {
             var ds = DataSetService.getDataSet(token);
-            var width = 364;
-            var height = 370;
-            var routeName = "collection-database";
             if(ds.isAccessDb())
-            {
-                width = 424;
-                height = 200;
-                routeName = "access-db-modal";
+            {    
+                openNewWindow("access-db-modal", WindowSizes.LARGE_SQUARE_SCREEN_WIDTH, 
+                                    WindowSizes.SMALL_SQUARE_SCREEN_HEIGHT);
             }
+
             if(ds.isFile())
             {
-                width = 360;
-                height = 200;
-                routeName = "file-selection";
+                openNewWindow("file-selection", WindowSizes.LARGE_SQUARE_SCREEN_WIDTH, 
+                                    WindowSizes.SMALL_SQUARE_SCREEN_HEIGHT);
             }
-            openNewWindow(routeName, width, height);
+
+            openNewWindow("collection-database", WindowSizes.LARGE_SQUARE_SCREEN_WIDTH, 
+                                    WindowSizes.LARGE_SQUARE_SCREEN_HEIGHT);
         } 
         catch (Exception e) 
         {
@@ -112,7 +111,8 @@ public class HomeController extends AbstractController {
     void onProxyConfigMenuOptionClick() {
         var width = 330;
         var height = 300;
-        openNewWindow("proxy-config", width, height);
+        openNewWindow("proxy-config", WindowSizes.LARGE_SQUARE_SCREEN_WIDTH,
+                                                WindowSizes.SMALL_SQUARE_SCREEN_HEIGHT);
     }
 
     @FXML
@@ -128,23 +128,25 @@ public class HomeController extends AbstractController {
 
     @FXML
     void onDeleteLocalConfigMenuItemClick() {
-        try {
+        try 
+        {
             DatabaseSetup.deleteLocalDatabase();
             System.exit(0);
         } catch (Exception e) {
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
-
     }
 
     @FXML
     void onSyncMetaDataMenuItemClick() {
-        try {
+        try 
+        {
             var token = DataSetService.getCurrentToken();
             var config = DataSetService.getConfigurationDataFromAPI(token);
             ConfigFacade.HandleBackendData(token, config);
-        } catch (Exception e) {
+        } catch (Exception e) 
+        {
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
@@ -161,12 +163,10 @@ public class HomeController extends AbstractController {
             DataSetService.setCurrentToken(token);
             var dataSet = DataSetService.getDataSet(token);
             lblCollectionName.setText(dataSet.getDataSetName());
-
         } catch (Exception e) {
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
-
     }
 
     @FXML
@@ -185,10 +185,9 @@ public class HomeController extends AbstractController {
             // }
             token = DataSetService.getCurrentToken();
             var sources = DataSetService.getAllDataSets().stream();
-            this.pane.focusedProperty().addListener(
-                (prop, oldNode, newNode) -> {
-                    //populateDatasetCombo(sources); 
-                    System.out.println("Teste!!!!");});
+            // this.pane.focusedProperty().addListener(
+            //     (prop, oldNode, newNode) -> {
+            //         });
             populateDatasetCombo(sources);
             var collName = DataSetService.getDataSet(token).getDataSetName();
             lblCollectionName.setText(collName);
@@ -196,12 +195,19 @@ public class HomeController extends AbstractController {
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
-
     }
     private void populateDatasetCombo(Stream<DataSet> sources)
     {
-            var options = sources.map(e -> e.getToken()).toList();
-            cmbCollection.setItems(FXCollections.observableArrayList(options));
-            cmbCollection.setValue(token);
+        var options = sources.map(e -> e.getToken()).toList();
+        cmbCollection.setItems(FXCollections.observableArrayList(options));
+        cmbCollection.setValue(token);
+    }
+
+    @Override
+    protected void setScreensize() 
+    {
+        var stage = getStage();
+        stage.setWidth(WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH);
+        stage.setHeight(WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT);
     }
 }

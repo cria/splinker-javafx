@@ -2,8 +2,8 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
 import br.org.cria.splinkerapp.ApplicationLog;
+import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.facade.ConfigFacade;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
@@ -97,4 +97,11 @@ public class TokenLoginController extends AbstractController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) { }
+
+    @Override
+    protected void setScreensize() {
+        var stage = getStage();
+        stage.setWidth(WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH);
+        stage.setHeight(WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT);
+    }
 }

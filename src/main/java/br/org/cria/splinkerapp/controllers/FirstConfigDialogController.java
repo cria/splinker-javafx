@@ -1,8 +1,8 @@
 package br.org.cria.splinkerapp.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
-
 import br.org.cria.splinkerapp.ApplicationLog;
+import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -43,7 +43,6 @@ public class FirstConfigDialogController extends AbstractController{
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
-        
     }
 
     @FXML
@@ -61,5 +60,11 @@ public class FirstConfigDialogController extends AbstractController{
     {
         computerHasProxyConfigured = ProxyConfigRepository.isBehindProxyServer();
     }
-    
+
+    @Override
+    protected void setScreensize() {
+        var stage = getStage();
+        stage.setWidth(WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH);
+        stage.setHeight(WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT);
+    }
 }
