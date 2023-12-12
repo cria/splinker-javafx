@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import br.org.cria.splinkerapp.ApplicationLog;
+import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
 import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
@@ -83,5 +84,12 @@ public class ProxyConfigController extends AbstractController
             showErrorModal(e.getMessage());
         }
         
+    }
+
+    @Override
+    protected void setScreensize() {
+        var stage = getStage();
+        stage.setWidth(WindowSizes.LARGE_SQUARE_SCREEN_WIDTH);
+        stage.setHeight(WindowSizes.LARGE_SQUARE_SCREEN_HEIGHT);
     }
 }

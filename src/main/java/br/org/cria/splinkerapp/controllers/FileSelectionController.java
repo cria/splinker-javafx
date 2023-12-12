@@ -3,8 +3,8 @@ package br.org.cria.splinkerapp.controllers;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
-
 import br.org.cria.splinkerapp.ApplicationLog;
+import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
@@ -46,7 +46,8 @@ public class FileSelectionController extends AbstractController {
         try 
         {
             DataSetService.saveSpreadsheetDataSource(token, filePath.getText());
-            navigateTo("home",231 ,222);
+            navigateTo("home", WindowSizes.SMALL_SQUARE_SCREEN_WIDTH,
+                                        WindowSizes.SMALL_SQUARE_SCREEN_WIDTH);
         } 
         catch (Exception e) 
         {
@@ -76,5 +77,12 @@ public class FileSelectionController extends AbstractController {
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
+    }
+
+    @Override
+    protected void setScreensize() {
+        var stage = getStage();
+        stage.setWidth(WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH);
+        stage.setHeight(WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT);
     }
 }

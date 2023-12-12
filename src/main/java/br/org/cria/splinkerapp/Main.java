@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 
 import br.org.cria.splinkerapp.config.DatabaseSetup;
+import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 
 public class Main extends Application 
@@ -31,7 +32,7 @@ public class Main extends Application
                         try {
                             if(DataSetService.hasConfiguration())
                         {
-                            Router.getInstance().navigateTo(stage, "home", 231 ,222);
+                            Router.getInstance().navigateTo(stage, "home", WindowSizes.SMALL_SQUARE_SCREEN_WIDTH ,WindowSizes.SMALL_SQUARE_SCREEN_WIDTH);
                         }
                         else
                         {

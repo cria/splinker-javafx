@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import br.org.cria.splinkerapp.ApplicationLog;
+import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -80,10 +81,9 @@ public class CollectionLocalDatabaseController extends AbstractController {
             var hasConfig = hasFilePath || hasUserAndPass;
             if(!hasConfig)
             {
-                var routeName ="home";
-                var width = 231;
-                var height = 222;
-                navigateTo(getStage(), routeName, width, height);
+                navigateTo(getStage(), "home", 
+                            WindowSizes.LARGE_SQUARE_SCREEN_WIDTH,
+                            WindowSizes.LARGE_SQUARE_SCREEN_HEIGHT);
             }
             else
             {
@@ -101,5 +101,11 @@ public class CollectionLocalDatabaseController extends AbstractController {
 
     @Override
     protected Pane getPane() { return this.pane; }
-    
+
+    @Override
+    protected void setScreensize() {
+        var stage = getStage();
+        stage.setWidth(WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH);
+        stage.setHeight(WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT);
+    }    
 }

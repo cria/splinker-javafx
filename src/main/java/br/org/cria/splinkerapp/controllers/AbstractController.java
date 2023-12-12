@@ -16,8 +16,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public abstract class AbstractController implements Initializable {
     protected String token;
@@ -26,14 +24,23 @@ public abstract class AbstractController implements Initializable {
     Alert dialog = new Alert(AlertType.INFORMATION);
     protected abstract Pane getPane();
 
+    public AbstractController()
+    {
+        this.setScreensize();
+    }
+
+    protected abstract void setScreensize();
+
     void navigateTo(String routeName, int width, int height) throws Exception
     {
         Router.getInstance().navigateTo(getStage(), routeName, width, height);
     }
+    
     void navigateTo(Stage stage, String routeName, int width, int height) throws Exception
     {
         Router.getInstance().navigateTo(stage, routeName, width, height);
     }
+
     protected void showAlert(AlertType type, String title, String message)
     {
         if(type != null)
@@ -45,6 +52,7 @@ public abstract class AbstractController implements Initializable {
         dialog.setContentText(message);
         dialog.show();
     }
+
     protected Stage getStage()
     {
         try 
@@ -62,6 +70,7 @@ public abstract class AbstractController implements Initializable {
         }
         return new Stage();
     }
+
     protected void showTransferModal(String modalText)
     {
         modalStage.initOwner(getStage());
@@ -76,6 +85,7 @@ public abstract class AbstractController implements Initializable {
         modalStage.show();
 
     }
+
     protected void showErrorModal(String errorMessage) 
     {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -85,6 +95,7 @@ public abstract class AbstractController implements Initializable {
         alert.setContentText(errorMessage);
         alert.showAndWait();
     }
+
     protected void navigateOrOpenNewWindowOnExistingDataSource(String routeName, int width, int height, boolean newWindow) throws Exception
     {
         if(newWindow)
@@ -96,6 +107,7 @@ public abstract class AbstractController implements Initializable {
             navigateTo(routeName, width, height);
         }
     }
+
     protected void openNewWindow(String routeName, int width, int height)
     {
 
@@ -118,8 +130,5 @@ public abstract class AbstractController implements Initializable {
         {
             ApplicationLog.error(e.getLocalizedMessage());
         }
-        
-
     }
-
 }
