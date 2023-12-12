@@ -8,5 +8,5 @@ public class WindowSizes {
     public final static int LARGE_SQUARE_SCREEN_WIDTH = 360;
     public final static int LARGE_SQUARE_SCREEN_HEIGHT = 360;
     public final static int LARGE_RECTANGULAR_SCREEN_WIDTH = 360;
-    public final static int LARGE_RECTANGULAR_SCREEN_HEIGHT = 200;
+    public final static int LARGE_RECTANGULAR_SCREEN_HEIGHT = 300;
 }
