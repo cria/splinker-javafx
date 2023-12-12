@@ -89,12 +89,14 @@ public class HomeController extends AbstractController {
             {    
                 openNewWindow("access-db-modal", WindowSizes.LARGE_SQUARE_SCREEN_WIDTH, 
                                     WindowSizes.SMALL_SQUARE_SCREEN_HEIGHT);
+                return;
             }
 
             if(ds.isFile())
             {
                 openNewWindow("file-selection", WindowSizes.LARGE_SQUARE_SCREEN_WIDTH, 
-                                    WindowSizes.SMALL_SQUARE_SCREEN_HEIGHT);
+                                    WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT);
+                return;
             }
 
             openNewWindow("collection-database", WindowSizes.LARGE_SQUARE_SCREEN_WIDTH, 
@@ -109,21 +111,21 @@ public class HomeController extends AbstractController {
 
     @FXML
     void onProxyConfigMenuOptionClick() {
-        var width = 330;
-        var height = 300;
         openNewWindow("proxy-config", WindowSizes.LARGE_SQUARE_SCREEN_WIDTH,
                                                 WindowSizes.SMALL_SQUARE_SCREEN_HEIGHT);
     }
 
     @FXML
     void onCentralServiceConfigMenuOptionClick() {
-        openNewWindow("central-service", 360, 170);
+        openNewWindow("central-service",WindowSizes.LARGE_RECTANGULAR_SCREEN_WIDTH,
+        WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT);
     }
 
     @FXML
     void onDataSetAddMenuItemClick()
     {
-        openNewWindow("token-login", 280, 150);
+        openNewWindow("token-login", WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH,
+                                            WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT);
     }
 
     @FXML
