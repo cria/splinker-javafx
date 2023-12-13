@@ -1,5 +1,7 @@
 package br.org.cria.splinkerapp.controllers;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.Router;
 import javafx.concurrent.Service;
@@ -24,21 +26,22 @@ public abstract class AbstractController implements Initializable {
     Alert dialog = new Alert(AlertType.INFORMATION);
     protected abstract Pane getPane();
 
-    public AbstractController()
+    @Override
+    public void initialize(URL location, ResourceBundle resources) 
     {
         this.setScreensize();
     }
 
     protected abstract void setScreensize();
 
-    void navigateTo(String routeName, int width, int height) throws Exception
+    void navigateTo(String routeName) throws Exception
     {
-        Router.getInstance().navigateTo(getStage(), routeName, width, height);
+        Router.getInstance().navigateTo(getStage(), routeName);
     }
     
-    void navigateTo(Stage stage, String routeName, int width, int height) throws Exception
+    void navigateTo(Stage stage, String routeName) throws Exception
     {
-        Router.getInstance().navigateTo(stage, routeName, width, height);
+        Router.getInstance().navigateTo(stage, routeName);
     }
 
     protected void showAlert(AlertType type, String title, String message)
@@ -96,34 +99,30 @@ public abstract class AbstractController implements Initializable {
         alert.showAndWait();
     }
 
-    protected void navigateOrOpenNewWindowOnExistingDataSource(String routeName, int width, int height, boolean newWindow) throws Exception
+    protected void navigateOrOpenNewWindowOnExistingDataSource(String routeName, boolean newWindow) throws Exception
     {
         if(newWindow)
         {
-            openNewWindow(routeName, width, height);
+            openNewWindow(routeName);
         }
         else
         {
-            navigateTo(routeName, width, height);
+            navigateTo(routeName);
         }
     }
 
-    protected void openNewWindow(String routeName, int width, int height)
+    protected void openNewWindow(String routeName)
     {
 
         try 
         {
             var stage = new Stage();
-            width = width < 1 ? 320 : width;
-            height = height < 1 ? 240 : height;
             var route = "/br/org/cria/splinkerapp/%s.fxml".formatted(routeName);
             var resource = getClass().getResource(route);
             var fxmlLoader = new FXMLLoader(resource);
             var parent = (Parent) fxmlLoader.load();
-            var scene  = new Scene(parent, height, height);
+            var scene  = new Scene(parent);
             stage.setScene(scene);
-            stage.setWidth(width);
-            stage.setHeight(height);
             stage.show();    
         } 
         catch (Exception e) 

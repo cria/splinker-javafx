@@ -44,7 +44,7 @@ public class ProxyConfigController extends AbstractController
                 var routeName = "central-service";
                 var width = 320;
                 var height = 240;
-                navigateTo(getStage(), routeName, width, height);
+                navigateTo(getStage(), routeName);
             }
             else
             {
@@ -69,6 +69,7 @@ public class ProxyConfigController extends AbstractController
     {
         try 
         {
+            super.initialize(location, resources);
             var config = ProxyConfigRepository.getConfiguration();
             if(config != null)
             {

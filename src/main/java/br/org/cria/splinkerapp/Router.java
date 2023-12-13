@@ -22,30 +22,20 @@ import javafx.stage.Stage;
 
     public void navigateTo(Stage stage, String routeName) throws Exception
     {
-        navigateTo(stage, routeName, 0, 0);
-    }
-
-    public void navigateTo(Stage stage, String routeName, int width, int height) throws Exception
-    {
-            width = width < 1 ? 320 : width;
-            height = height < 1 ? 240 : height;
-            var scene  = loadScene(routeName, width, height);
+            var scene  = loadScene(routeName);
             stage.setScene(scene);
-            stage.setWidth(width);
-            stage.setHeight(height);
             stage.show();
         
     }
 
-    private Scene loadScene(String routeName, int width, int height) throws IOException 
+    private Scene loadScene(String routeName) throws IOException 
     {
         var route = "%s.fxml".formatted(routeName);
         var resource = getClass().getResource(route);
         var fxmlLoader = new FXMLLoader(resource);
         var parent = (Parent)fxmlLoader.load();
-        width = width < 1 ? 320 : width;
-        height = height < 1 ? 240 : height;
-
-        return new Scene(parent, width, height);
+        var scene = new Scene(parent);
+        
+        return scene;
     }
 }

@@ -74,7 +74,7 @@ public class TokenLoginController extends AbstractController {
                 
                 if(!hasConfig)
                 {
-                    navigateTo(getStage(), routeName, width, height); 
+                    navigateTo(getStage(), routeName); 
                 }
                 else
                 {
@@ -96,7 +96,10 @@ public class TokenLoginController extends AbstractController {
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) { }
+    public void initialize(URL location, ResourceBundle resources) {
+        super.initialize(location, resources);
+
+     }
 
     @Override
     protected void setScreensize() {

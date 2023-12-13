@@ -46,8 +46,7 @@ public class FileSelectionController extends AbstractController {
         try 
         {
             DataSetService.saveSpreadsheetDataSource(token, filePath.getText());
-            navigateTo("home", WindowSizes.SMALL_SQUARE_SCREEN_WIDTH,
-                                        WindowSizes.SMALL_SQUARE_SCREEN_WIDTH);
+            navigateTo("home");
         } 
         catch (Exception e) 
         {
@@ -61,6 +60,7 @@ public class FileSelectionController extends AbstractController {
     {
         try 
         {
+            super.initialize(location, resources);
             token = DataSetService.getCurrentToken();
             filePath.setEditable(false);
             ds = DataSetService.getDataSet(token);

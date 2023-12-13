@@ -11,6 +11,8 @@ import br.org.cria.splinkerapp.facade.ConfigFacade;
 import br.org.cria.splinkerapp.managers.SyncManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -87,20 +89,17 @@ public class HomeController extends AbstractController {
             var ds = DataSetService.getDataSet(token);
             if(ds.isAccessDb())
             {    
-                openNewWindow("access-db-modal", WindowSizes.LARGE_SQUARE_SCREEN_WIDTH, 
-                                    WindowSizes.SMALL_SQUARE_SCREEN_HEIGHT);
+                openNewWindow("access-db-modal");
                 return;
             }
 
             if(ds.isFile())
             {
-                openNewWindow("file-selection", WindowSizes.LARGE_SQUARE_SCREEN_WIDTH, 
-                                    WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT);
+                openNewWindow("file-selection");
                 return;
             }
 
-            openNewWindow("collection-database", WindowSizes.LARGE_SQUARE_SCREEN_WIDTH, 
-                                    WindowSizes.LARGE_SQUARE_SCREEN_HEIGHT);
+            openNewWindow("collection-database");
         } 
         catch (Exception e) 
         {
@@ -111,21 +110,18 @@ public class HomeController extends AbstractController {
 
     @FXML
     void onProxyConfigMenuOptionClick() {
-        openNewWindow("proxy-config", WindowSizes.LARGE_SQUARE_SCREEN_WIDTH,
-                                                WindowSizes.SMALL_SQUARE_SCREEN_HEIGHT);
+        openNewWindow("proxy-config");
     }
 
     @FXML
     void onCentralServiceConfigMenuOptionClick() {
-        openNewWindow("central-service",WindowSizes.LARGE_RECTANGULAR_SCREEN_WIDTH,
-        WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT);
+        openNewWindow("central-service");
     }
 
     @FXML
     void onDataSetAddMenuItemClick()
     {
-        openNewWindow("token-login", WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH,
-                                            WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT);
+        openNewWindow("token-login");
     }
 
     @FXML
@@ -174,13 +170,23 @@ public class HomeController extends AbstractController {
     @FXML
     void onDeleteDatasetButtonClick()
     {
-        openNewWindow("delete-dataset",300,200);
+        openNewWindow("delete-dataset");
 
     }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
         try {
+            super.initialize(location, resources);
+            getStage().focusedProperty().addListener(new ChangeListener<Boolean>()
+                {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> ov, Boolean onHidden, Boolean onShown)
+                {
+                    System.out.println("Foco na home!");
+                }
+                });
+
             // if(!DataSetService.hasConfiguration())
             // {
             // navigateTo(getStage(), "first-config-dialog", 330,150);
@@ -210,6 +216,6 @@ public class HomeController extends AbstractController {
     {
         var stage = getStage();
         stage.setWidth(WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH);
-        stage.setHeight(WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT);
+        stage.setHeight(WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT + 150);
     }
 }
