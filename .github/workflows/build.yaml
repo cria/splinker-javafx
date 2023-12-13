@@ -18,8 +18,8 @@ jobs:
   #         distribution: 'temurin'
   #         architecture: x64
 
-  #     - name: Maven - Instalar bibliotecas, executar testes, compilar e empacotar 
-  #       run: mvn install test compile package
+  #     - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar 
+  #       run: mvn install compile package
   
   #     - name: Cria image jpackage
   #       run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-1.0-SNAPSHOT.jar
@@ -51,10 +51,7 @@ jobs:
           distribution: 'temurin'
           architecture: x64
 
-      - name: Maven - Testes automatizados
-        run: mvn clean install test
-
-      - name: Maven - Instalar bibliotecas, compilar e empacotar 
+      - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar 
         run: mvn install compile package
         
       - name: Criar image jpackage
