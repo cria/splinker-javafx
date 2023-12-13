@@ -52,7 +52,7 @@ jobs:
           architecture: x64
 
       - name: Maven - Testes automatizados
-        run: mvn test
+        run: mvn clean install test
 
       - name: Maven - Instalar bibliotecas, compilar e empacotar 
         run: mvn install compile package
