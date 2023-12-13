@@ -6,7 +6,7 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 
 import br.org.cria.splinkerapp.config.DatabaseSetup;
-import br.org.cria.splinkerapp.enums.WindowSizes;
+import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 
 public class Main extends Application 
@@ -16,10 +16,12 @@ public class Main extends Application
     {
         try 
         {
+            LockFileManager.verifyLockFile();
             var initDb = DatabaseSetup.initDb();
             if (initDb != null) 
             {
                 stage.setOnCloseRequest(event ->{
+                    LockFileManager.deleteLockfile();
                     LogManager.shutdown();
                 });
                 initDb.setOnFailed(event -> {
@@ -51,6 +53,7 @@ public class Main extends Application
         } 
         catch (Exception ex) 
         {
+            LockFileManager.deleteLockfile();
             ApplicationLog.error(ex.getLocalizedMessage());
             throw new RuntimeException(ex);
         }
