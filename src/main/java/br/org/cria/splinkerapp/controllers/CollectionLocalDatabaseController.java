@@ -39,9 +39,9 @@ public class CollectionLocalDatabaseController extends AbstractController {
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        
         try 
         {
+            super.initialize(location, resources);
             var token = DataSetService.getCurrentToken();
             var ds = DataSetService.getDataSet(token);
             if(ds != null)
@@ -81,9 +81,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
             var hasConfig = hasFilePath || hasUserAndPass;
             if(!hasConfig)
             {
-                navigateTo(getStage(), "home", 
-                            WindowSizes.LARGE_SQUARE_SCREEN_WIDTH,
-                            WindowSizes.LARGE_SQUARE_SCREEN_HEIGHT);
+                navigateTo(getStage(), "home");
             }
             else
             {

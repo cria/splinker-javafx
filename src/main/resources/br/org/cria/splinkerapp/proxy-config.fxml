@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="290.0" prefWidth="341.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.ProxyConfigController">
+<AnchorPane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="253.0" prefWidth="341.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.ProxyConfigController">
    <children>
       <TextField id="proxyAddress" fx:id="proxyAddress" layoutX="133.0" layoutY="8.0" prefHeight="25.0" prefWidth="182.0" promptText="Endereço do proxy" />
       <PasswordField id="proxyPassword" fx:id="proxyPassword" layoutX="133.0" layoutY="123.0" prefHeight="25.0" prefWidth="182.0" promptText="Senha do Proxy" />

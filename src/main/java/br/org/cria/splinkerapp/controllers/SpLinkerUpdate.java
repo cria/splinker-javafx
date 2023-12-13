@@ -18,7 +18,7 @@ public class SpLinkerUpdate  extends AbstractController{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        
+        super.initialize(location, resources);
     }
 
     @Override

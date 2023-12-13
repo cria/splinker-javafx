@@ -51,6 +51,7 @@ public class DeleteDataSourceController extends AbstractController {
     public void initialize(URL location, ResourceBundle resources) 
     {
         try {
+            super.initialize(location, resources);
             token = DataSetService.getCurrentToken();
             var ds = DataSetService.getDataSet(token);
             var msg = lblMsg.getText() + "\n %s (%s)".formatted(ds.getDataSetAcronym(), ds.getDataSetName()) + "?";

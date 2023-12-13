@@ -34,9 +34,7 @@ public class CentralServiceController extends AbstractController {
             CentralServiceRepository.saveCentralServiceData(urlField.getText(), systemVersion);
             if(!hasConfig)
             {
-                navigateTo(this.getStage(), "token-login",
-                            WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH,
-                            WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH);
+                navigateTo(this.getStage(), "token-login");
             }
             else
             {
@@ -55,6 +53,7 @@ public class CentralServiceController extends AbstractController {
     {
         try 
         {
+            super.initialize(location, resources);
             var centralServiceConfig = CentralServiceRepository.getCentralServiceData();
             if(centralServiceConfig != null)
             {

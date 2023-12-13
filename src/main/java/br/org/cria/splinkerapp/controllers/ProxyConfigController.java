@@ -69,6 +69,7 @@ public class ProxyConfigController extends AbstractController
     {
         try 
         {
+            super.initialize(location, resources);
             var config = ProxyConfigRepository.getConfiguration();
             if(config != null)
             {
@@ -90,6 +91,6 @@ public class ProxyConfigController extends AbstractController
     protected void setScreensize() {
         var stage = getStage();
         stage.setWidth(WindowSizes.LARGE_SQUARE_SCREEN_WIDTH);
-        stage.setHeight(WindowSizes.LARGE_SQUARE_SCREEN_HEIGHT + 50);
+        stage.setHeight(WindowSizes.LARGE_SQUARE_SCREEN_HEIGHT);
     }
 }

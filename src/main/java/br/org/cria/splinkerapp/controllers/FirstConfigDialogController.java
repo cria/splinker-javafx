@@ -25,18 +25,9 @@ public class FirstConfigDialogController extends AbstractController{
     {
         try 
         {
-            var routeName = "central-service";
-            var width = 360;
-            var height = 200;
+            var routeName = computerHasProxyConfigured ? "proxy-config" : "central-service";
             var stage = getStage();
-            
-            if(computerHasProxyConfigured)
-            {
-                routeName = "proxy-config";
-                width = 350;
-                height = 300;
-            }
-            navigateTo(stage,routeName, width, height);    
+            navigateTo(stage, routeName);    
         } 
         catch (Exception e) 
         {
@@ -58,6 +49,7 @@ public class FirstConfigDialogController extends AbstractController{
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
+        super.initialize(location, resources);
         computerHasProxyConfigured = ProxyConfigRepository.isBehindProxyServer();
     }
 

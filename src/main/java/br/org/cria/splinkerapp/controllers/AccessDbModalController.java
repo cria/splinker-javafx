@@ -46,8 +46,7 @@ public class AccessDbModalController extends AbstractController {
             
             if(ds.getDataSetFilePath() == null && ds.isAccessDb())
             {
-                navigateTo(getStage(),"home", WindowSizes.SMALL_SQUARE_SCREEN_WIDTH,
-                                                        WindowSizes.SMALL_SQUARE_SCREEN_WIDTH);
+                navigateTo(getStage(),"home");
             }
             else
             {
@@ -75,6 +74,7 @@ public class AccessDbModalController extends AbstractController {
     @Override
     public void initialize(URL location, ResourceBundle resources) 
     {
+        super.initialize(location, resources);
         accessFilePathField.setDisable(true);
         try 
         {

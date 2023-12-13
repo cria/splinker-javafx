@@ -177,6 +177,7 @@ public class HomeController extends AbstractController {
     public void initialize(URL location, ResourceBundle resources) {
 
         try {
+            super.initialize(location, resources);
             getStage().focusedProperty().addListener(new ChangeListener<Boolean>()
                 {
                 @Override

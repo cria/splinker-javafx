@@ -32,11 +32,11 @@ public class Main extends Application
                         try {
                             if(DataSetService.hasConfiguration())
                         {
-                            Router.getInstance().navigateTo(stage, "home", WindowSizes.SMALL_SQUARE_SCREEN_WIDTH ,WindowSizes.SMALL_SQUARE_SCREEN_WIDTH);
+                            Router.getInstance().navigateTo(stage, "home");
                         }
                         else
                         {
-                            Router.getInstance().navigateTo(stage, "first-config-dialog", 330,150);
+                            Router.getInstance().navigateTo(stage, "first-config-dialog");
                         }
                         } catch (Exception e) {
                             ApplicationLog.error(e.getLocalizedMessage());
