@@ -18,17 +18,8 @@ jobs:
   #         distribution: 'temurin'
   #         architecture: x64
 
-  #     - name: Maven local dependency
-  #       run: mvn install:install-file -Dfile=".\libs\yajsync-app-0.9.0-SNAPSHOT-full.jar" -DgroupId="com.github.perlundq" -DartifactId="yajsync" -Dversion="0.9.0-SNAPSHOT" -Dpackaging="jar"
-
-  #     - name: Maven install
-  #       run: mvn install
-        
-  #     - name: Maven compile
-  #       run: mvn compile
-
-  #     - name: Maven Package
-  #       run: mvn package
+  #     - name: Maven - Instalar bibliotecas, executar testes, compilar e empacotar 
+  #       run: mvn install test compile package
   
   #     - name: Cria image jpackage
   #       run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-1.0-SNAPSHOT.jar
@@ -60,8 +51,8 @@ jobs:
           distribution: 'temurin'
           architecture: x64
 
-      - name: Maven - Instalar bibliotecas, compilar e empacotar 
-        run: mvn install compile package
+      - name: Maven - Instalar bibliotecas, executar testes, compilar e empacotar 
+        run: mvn install test compile package
         
       - name: Criar image jpackage
         run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-1.0-SNAPSHOT.jar
