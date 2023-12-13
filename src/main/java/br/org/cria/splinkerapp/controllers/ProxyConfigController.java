@@ -44,7 +44,7 @@ public class ProxyConfigController extends AbstractController
                 var routeName = "central-service";
                 var width = 320;
                 var height = 240;
-                navigateTo(getStage(), routeName, width, height);
+                navigateTo(getStage(), routeName);
             }
             else
             {
@@ -90,6 +90,6 @@ public class ProxyConfigController extends AbstractController
     protected void setScreensize() {
         var stage = getStage();
         stage.setWidth(WindowSizes.LARGE_SQUARE_SCREEN_WIDTH);
-        stage.setHeight(WindowSizes.LARGE_SQUARE_SCREEN_HEIGHT);
+        stage.setHeight(WindowSizes.LARGE_SQUARE_SCREEN_HEIGHT + 50);
     }
 }

@@ -8,14 +8,14 @@
 
 <AnchorPane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="290.0" prefWidth="341.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.ProxyConfigController">
    <children>
-      <TextField id="proxyAddress" fx:id="proxyAddress" layoutX="121.0" layoutY="41.0" prefHeight="25.0" prefWidth="182.0" promptText="Endereço do proxy" />
-      <PasswordField id="proxyPassword" fx:id="proxyPassword" layoutX="121.0" layoutY="156.0" prefHeight="25.0" prefWidth="182.0" promptText="Senha do Proxy" />
-      <TextField id="proxyPort" fx:id="proxyPort" layoutX="121.0" layoutY="80.0" prefHeight="25.0" prefWidth="182.0" promptText="Porta do Proxy" />
-      <TextField id="proxyUsername" fx:id="proxyUsername" layoutX="120.0" layoutY="120.0" prefHeight="25.0" prefWidth="182.0" promptText="Usuário do proxy" />
-      <Button id="saveBtn" fx:id="saveBtn" layoutX="16.0" layoutY="193.0" mnemonicParsing="false" onMouseClicked="#onButtonSaveClicked" prefHeight="25.0" prefWidth="288.0" text="Salvar" />
-      <Label layoutX="14.0" layoutY="45.0" text="Endereço de proxy" />
-      <Label layoutX="14.0" layoutY="160.0" text="Senha" />
-      <Label layoutX="14.0" layoutY="124.0" text="Nome de usuário" />
-      <Label layoutX="14.0" layoutY="84.0" text="Porta de proxy" />
+      <TextField id="proxyAddress" fx:id="proxyAddress" layoutX="133.0" layoutY="8.0" prefHeight="25.0" prefWidth="182.0" promptText="Endereço do proxy" />
+      <PasswordField id="proxyPassword" fx:id="proxyPassword" layoutX="133.0" layoutY="123.0" prefHeight="25.0" prefWidth="182.0" promptText="Senha do Proxy" />
+      <TextField id="proxyPort" fx:id="proxyPort" layoutX="133.0" layoutY="47.0" prefHeight="25.0" prefWidth="182.0" promptText="Porta do Proxy" />
+      <TextField id="proxyUsername" fx:id="proxyUsername" layoutX="132.0" layoutY="87.0" prefHeight="25.0" prefWidth="182.0" promptText="Usuário do proxy" />
+      <Button id="saveBtn" fx:id="saveBtn" layoutX="28.0" layoutY="160.0" mnemonicParsing="false" onMouseClicked="#onButtonSaveClicked" prefHeight="25.0" prefWidth="288.0" text="Salvar" />
+      <Label layoutX="26.0" layoutY="12.0" text="Endereço de proxy" />
+      <Label layoutX="26.0" layoutY="127.0" text="Senha" />
+      <Label layoutX="26.0" layoutY="91.0" text="Nome de usuário" />
+      <Label layoutX="26.0" layoutY="51.0" text="Porta de proxy" />
    </children>
 </AnchorPane>
