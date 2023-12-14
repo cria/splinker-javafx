@@ -1,10 +1,8 @@
 import static org.junit.Assert.assertEquals;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import org.junit.After;
 import org.junit.Test;
-
 import br.org.cria.splinkerapp.config.LockFileManager;
 
 public class LockFileManagerTest {
