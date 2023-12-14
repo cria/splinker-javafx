@@ -75,8 +75,16 @@ public abstract class AbstractController implements Initializable {
         } 
         catch (Exception e) 
         {
-            e.printStackTrace();
-            ApplicationLog.error(e.getLocalizedMessage());
+            final String windowMsg = "Cannot invoke \"javafx.scene.Scene.getWindow()\" because \"scene\" is null";
+            final String panelMsg = "Cannot invoke \"javafx.scene.layout.Pane.getScene()\" because \"pane\" is null";
+            var errorMsg = e.getMessage();
+            var isExpectedError = errorMsg.contains(windowMsg) || errorMsg.contains(panelMsg);
+            
+            if(!isExpectedError)
+            {
+                ApplicationLog.error(e.getLocalizedMessage());
+            }
+            
         }
         return new Stage();
     }
