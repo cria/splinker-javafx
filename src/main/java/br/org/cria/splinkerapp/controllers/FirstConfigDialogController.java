@@ -2,6 +2,7 @@ package br.org.cria.splinkerapp.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.ApplicationLog;
+import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
 import javafx.fxml.FXML;
@@ -38,6 +39,7 @@ public class FirstConfigDialogController extends AbstractController{
 
     @FXML
     void onNoButtonClicked(){
+        LockFileManager.deleteLockfile();
         System.exit(0);
     }
 
