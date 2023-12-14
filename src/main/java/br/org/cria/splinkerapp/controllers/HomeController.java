@@ -3,16 +3,17 @@ package br.org.cria.splinkerapp.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
-
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.config.DatabaseSetup;
+import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.facade.ConfigFacade;
+import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.managers.SyncManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,6 +26,9 @@ import javafx.scene.layout.Pane;
 
 public class HomeController extends AbstractController {
 
+    EventBus addDatasetBus;
+    @Override
+    protected Pane getPane() { return this.pane; }
     @FXML
     Pane pane;
 
@@ -149,54 +153,50 @@ public class HomeController extends AbstractController {
             showErrorModal(e.getLocalizedMessage());
         }
     }
-
-    @Override
-    protected Pane getPane() { return this.pane; }
+    
+    @FXML
+    void onDeleteDatasetButtonClick()
+    {
+        openNewWindow("delete-dataset");
+    }
+    
     @FXML
     void onCmbCollectionChange(ActionEvent event) {
 
         try 
         {
             var token = cmbCollection.getValue();
-            DataSetService.setCurrentToken(token);
-            var dataSet = DataSetService.getDataSet(token);
-            lblCollectionName.setText(dataSet.getDataSetName());
+            if(token!=null)
+            {
+                DataSetService.setCurrentToken(token);
+                var dataSet = DataSetService.getDataSet(token);
+                lblCollectionName.setText(dataSet.getDataSetName());
+            }
         } catch (Exception e) {
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
     }
-
-    @FXML
-    void onDeleteDatasetButtonClick()
-    {
-        openNewWindow("delete-dataset");
-
-    }
+    
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        super.initialize(location, resources);
+        
         try {
-            super.initialize(location, resources);
-            getStage().focusedProperty().addListener(new ChangeListener<Boolean>()
-                {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> ov, Boolean onHidden, Boolean onShown)
-                {
-                    System.out.println("Foco na home!");
-                }
-                });
-
+            addDatasetBus = EventBusManager.getEvent(EventTypes.ADD_DATASET.name());
+            bus = EventBusManager.getEvent(EventTypes.DELETE_DATASET.name());
+            
+            addDatasetBus.register(this);
+            bus.register(this);
             // if(!DataSetService.hasConfiguration())
             // {
             // navigateTo(getStage(), "first-config-dialog", 330,150);
             // }
             token = DataSetService.getCurrentToken();
-            var sources = DataSetService.getAllDataSets().stream();
             // this.pane.focusedProperty().addListener(
             //     (prop, oldNode, newNode) -> {
             //         });
-            populateDatasetCombo(sources);
+            populateDatasetCombo();
             var collName = DataSetService.getDataSet(token).getDataSetName();
             lblCollectionName.setText(collName);
         } catch (Exception e) {
@@ -204,13 +204,54 @@ public class HomeController extends AbstractController {
             showErrorModal(e.getLocalizedMessage());
         }
     }
-    private void populateDatasetCombo(Stream<DataSet> sources)
+    @Subscribe
+    void reloadDatasetListAfterChange(String eventToken)
     {
-        var options = sources.map(e -> e.getToken()).toList();
-        cmbCollection.setItems(FXCollections.observableArrayList(options));
-        cmbCollection.setValue(token);
+        try 
+        {
+            var ds = DataSetService.getDataSet(eventToken);
+            var datasetWasDeleted = ds.getId() <= 0;
+            if(datasetWasDeleted)
+            {
+                cmbCollection.getItems().remove(eventToken);
+                var size = cmbCollection.getItems().size();
+                var newToken = cmbCollection.getItems().get(size-1);
+                DataSetService.setCurrentToken(newToken);
+                cmbCollection.setValue(newToken);
+            }
+            else
+            {
+                populateDatasetCombo();
+                cmbCollection.setValue(eventToken);
+            }
+            
+            
+        } 
+        catch (Exception e) 
+        {
+            ApplicationLog.error(e.getLocalizedMessage());
+            showErrorModal(e.getLocalizedMessage());
+        }
+        
+    }
+    private void populateDatasetCombo() throws Exception
+    {
+            var sources = DataSetService.getAllDataSets().stream();
+            addOptionsToDataset(sources);
     }
 
+    private void addOptionsToDataset(Stream<DataSet> sources)
+    {
+        try {
+        var options = sources.map(e -> e.getToken()).toList();
+        cmbCollection.setItems(FXCollections.observableArrayList(options));
+        cmbCollection.setValue(token);    
+        } catch (Exception e) {
+            ApplicationLog.error(e.getLocalizedMessage());
+        }
+        
+    }
+   
     @Override
     protected void setScreensize() 
     {

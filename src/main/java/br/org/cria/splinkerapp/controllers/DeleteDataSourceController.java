@@ -3,7 +3,10 @@ package br.org.cria.splinkerapp.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.ApplicationLog;
+import br.org.cria.splinkerapp.config.LockFileManager;
+import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.enums.WindowSizes;
+import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -30,8 +33,10 @@ public class DeleteDataSourceController extends AbstractController {
             DataSetService.deleteDataSet(token);    
             if(DataSetService.getAllDataSets().isEmpty())
             {
+                LockFileManager.deleteLockfile();
                 System.exit(0);
             }
+            bus.post(token);;
             getStage().close();
         } catch (Exception e) {
 
@@ -52,6 +57,7 @@ public class DeleteDataSourceController extends AbstractController {
     {
         try {
             super.initialize(location, resources);
+            bus = EventBusManager.getEvent(EventTypes.DELETE_DATASET.name());
             token = DataSetService.getCurrentToken();
             var ds = DataSetService.getDataSet(token);
             var msg = lblMsg.getText() + "\n %s (%s)".formatted(ds.getDataSetAcronym(), ds.getDataSetName()) + "?";
