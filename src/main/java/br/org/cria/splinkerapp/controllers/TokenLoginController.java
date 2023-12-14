@@ -3,8 +3,10 @@ package br.org.cria.splinkerapp.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.ApplicationLog;
+import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.facade.ConfigFacade;
+import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
@@ -44,19 +46,16 @@ public class TokenLoginController extends AbstractController {
                 var dsType = DataSourceType.valueOf(apiConfig.get("data_source_type").toString());
                 DataSetService.saveDataSet(token, dsType, datasetAcronym, collName, id);
                 ConfigFacade.HandleBackendData(token, apiConfig);
+                bus.post(token);
                 // if(hasNewVersion)
                 // {
                 //     navigateOrOpenNewWindowOnExistingDataSource("splinker-update", 260, 150, true);
                 // }
                 var routeName = "collection-database";
-                var width = 364;
-                var height = 360;
                 switch(dsType)
                 {
                     case Access:
                         routeName = "access-db-modal";
-                        width = 424;
-                        height = 200;
                         break;
                     case dBase:
                     case Excel:
@@ -64,8 +63,6 @@ public class TokenLoginController extends AbstractController {
                     case CSV:
                     case Numbers:
                         routeName = "file-selection";
-                        width = 369;
-                        height = 127;
                         break;
                     default:
                         break;
@@ -98,6 +95,8 @@ public class TokenLoginController extends AbstractController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
+        bus = EventBusManager.getEvent(EventTypes.ADD_DATASET.name());
+        bus.register(this);
 
      }
 

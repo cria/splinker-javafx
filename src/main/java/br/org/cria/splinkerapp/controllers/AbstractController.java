@@ -2,6 +2,7 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import com.google.common.eventbus.EventBus;
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.Router;
 import javafx.concurrent.Service;
@@ -20,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public abstract class AbstractController implements Initializable {
+    protected EventBus bus;
     protected String token;
     protected Service transferService;
     protected Stage modalStage = new Stage();
@@ -65,6 +67,11 @@ public abstract class AbstractController implements Initializable {
             var stage = (Stage)scene.getWindow();
             stage.setResizable(false);
             return stage;    
+        }
+        catch (IllegalStateException ex) {
+            System.out.println("\nIllegalStateException\n");
+            ex.printStackTrace();
+            return null;
         } 
         catch (Exception e) 
         {
@@ -111,19 +118,38 @@ public abstract class AbstractController implements Initializable {
         }
     }
 
-    protected void openNewWindow(String routeName)
+    protected Stage createNewWindow(String routeName)
     {
-
+        var stage = new Stage();
         try 
         {
-            var stage = new Stage();
             var route = "/br/org/cria/splinkerapp/%s.fxml".formatted(routeName);
             var resource = getClass().getResource(route);
             var fxmlLoader = new FXMLLoader(resource);
             var parent = (Parent) fxmlLoader.load();
             var scene  = new Scene(parent);
             stage.setScene(scene);
+        }
+        catch (IllegalStateException ex) {
+                return null;
+        } 
+        catch (Exception e) 
+        {
+            ApplicationLog.error(e.getLocalizedMessage());
+        }
+        return stage;
+    }
+
+    protected void openNewWindow(String routeName)
+    {
+
+        try 
+        {
+            var stage = createNewWindow(routeName);
             stage.show();    
+        }
+        catch (IllegalStateException ex) {
+            return;
         } 
         catch (Exception e) 
         {
