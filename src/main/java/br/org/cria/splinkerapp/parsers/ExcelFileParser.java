@@ -1,13 +1,13 @@
 package br.org.cria.splinkerapp.parsers;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import br.org.cria.splinkerapp.utils.StringStandards;
 
 public class ExcelFileParser extends FileParser {
@@ -16,7 +16,7 @@ public class ExcelFileParser extends FileParser {
 
     public ExcelFileParser(String fileSourcePath) throws Exception {
         this.fileSourcePath = fileSourcePath;
-        workbook = new XSSFWorkbook(new FileInputStream(fileSourcePath));
+        workbook = WorkbookFactory.create(new File(fileSourcePath));
     }
 
     @Override
