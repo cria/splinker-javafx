@@ -22,6 +22,7 @@ public class CsvFileParser extends FileParser
         reader = new CSVReader(new FileReader(filePath));
         var columnRow = reader.readNext();
         limiter = getCsvSeparator(columnRow[0]);
+        //technical details 1
         columns = limiter == null ? Arrays.asList(columnRow) : getRowAsStringList(columnRow[0], columnRow.length)
                                                                 .stream().map((e)-> makeColumnName(e)).toList();
     }
