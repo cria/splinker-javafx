@@ -22,7 +22,8 @@ public class CsvFileParser extends FileParser
         reader = new CSVReader(new FileReader(filePath));
         var columnRow = reader.readNext();
         limiter = getCsvSeparator(columnRow[0]);
-        columns = getRowAsStringList(columnRow[0], columnRow.length).stream().map((e)-> makeColumnName(e)).toList();
+        columns = limiter == null ? Arrays.asList(columnRow) : getRowAsStringList(columnRow[0], columnRow.length)
+                                                                .stream().map((e)-> makeColumnName(e)).toList();
     }
     
     String getCsvSeparator(String firstLine) throws IOException 
@@ -64,7 +65,8 @@ public class CsvFileParser extends FileParser
         var tableName = getTableName();
         var valuesStr= makeValueString(columns.size());
         var columnNames = String.join(",", columns);
-        CSVParser csvParser = new CSVParserBuilder().withSeparator(limiter.toCharArray()[0]).build(); // custom separator
+        CSVParser csvParser = limiter == null ? new CSVParserBuilder().build() : 
+            new CSVParserBuilder().withSeparator(limiter.toCharArray()[0]).build(); // custom separator
         try(CSVReader reader = new CSVReaderBuilder(
                 new FileReader(filePath))
                 .withCSVParser(csvParser)   // custom CSV parser
