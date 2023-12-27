@@ -1,8 +1,8 @@
 package br.org.cria.splinkerapp.parsers;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
@@ -14,7 +14,8 @@ public class ExcelFileParser extends FileParser {
     String fileSourcePath;
     Workbook workbook;
 
-    public ExcelFileParser(String fileSourcePath) throws Exception {
+    public ExcelFileParser(String fileSourcePath) throws Exception 
+    {
         this.fileSourcePath = fileSourcePath;
         workbook = WorkbookFactory.create(new File(fileSourcePath));
     }
@@ -34,8 +35,13 @@ public class ExcelFileParser extends FileParser {
 
             for (Cell cell : headerRow) 
             {
-                String columnName = makeColumnName(cell.getStringCellValue());
-                builder.append("%s VARCHAR(1),".formatted(columnName));
+                var cellValue = cell.getStringCellValue();
+                if(!StringUtils.isEmpty(cellValue))
+                {
+                    String columnName = makeColumnName(cellValue);
+                    builder.append("%s VARCHAR(1),".formatted(columnName));
+                }
+                
             }
             builder.append(");");
         }
@@ -52,7 +58,6 @@ public class ExcelFileParser extends FileParser {
 
         for (int colNum = 0; colNum < numberOfColumns; colNum++) 
         {
-
             Cell cell = fullRow.getCell(colNum, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             var cellValue = formatter.formatCellValue(cell);
             list.add(cellValue);
@@ -64,16 +69,22 @@ public class ExcelFileParser extends FileParser {
     @Override
     public void insertDataIntoTable() throws Exception 
     {
-
-        int numberOfSheets = workbook.getNumberOfSheets();
+        var woorkbookIterator = workbook.sheetIterator();
+      
         var conn = getConnection();
-        for (int i = 0; i < numberOfSheets; i++) 
-        {
-            var sheet = workbook.getSheetAt(i);
-            var numberOfRows = sheet.getLastRowNum();
-            var headerRow = sheet.getRow(0);
+          while (woorkbookIterator.hasNext()) 
+          {
+            var sheet = woorkbookIterator.next();
+            var sheetIterator = sheet.iterator();
+            var headerRow = sheetIterator.next();
             var tableName = StringStandards.normalizeString(sheet.getSheetName());
-            var numberOfColumns = headerRow.getLastCellNum();
+            
+            headerRow.forEach(e -> {if(StringUtils.isEmpty(e.getStringCellValue()))
+            {
+                    headerRow.removeCell(e);
+            }});
+            int numberOfColumns = headerRow.getLastCellNum();
+            int numberOfRows = sheet.getLastRowNum()+1;
             var columns = getRowAsStringList(headerRow, numberOfColumns).stream().map((col) -> makeColumnName(col))
                     .toList();
             var valuesStr = "?,".repeat(numberOfColumns);
@@ -83,7 +94,7 @@ public class ExcelFileParser extends FileParser {
                 var row = sheet.getRow(j);
                 if (row != null) 
                 {
-                    var valuesList = getRowAsStringList(row, numberOfColumns).stream().map("'%s'"::formatted).toList();
+                    var valuesList = getRowAsStringList(row, numberOfColumns);//.stream().map("'%s'"::formatted).toList();
                     var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
                     var statement = conn.prepareStatement(command);
 
@@ -94,10 +105,8 @@ public class ExcelFileParser extends FileParser {
                     statement.executeUpdate();
                     statement.close();
                 }
-
             }
             conn.close();
         }
     }
-
 }

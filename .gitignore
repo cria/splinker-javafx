@@ -1,3 +1,7 @@
+*.tsv
+*.csv
+*.txt
+*.zip
 dwc_files/*
 target/
 scripts/sql/helpers/*

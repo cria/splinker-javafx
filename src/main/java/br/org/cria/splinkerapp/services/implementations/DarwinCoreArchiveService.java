@@ -80,7 +80,7 @@ public class DarwinCoreArchiveService
 
     private String getColumnNames() throws Exception
     {
-        var builder = new StringBuilder("\n");
+        var builder = new StringBuilder();
         var metaData = data.getMetaData();
         int count = metaData.getColumnCount();
         

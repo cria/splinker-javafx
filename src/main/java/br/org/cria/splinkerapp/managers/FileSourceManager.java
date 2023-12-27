@@ -14,11 +14,11 @@ public class FileSourceManager {
 
     public static Service<Void> processData(DataSet ds) throws Exception
     {
-        var filePath = ds.getDataSetFilePath().toLowerCase();//fileToProcess.toLowerCase();
+        var filePath = ds.getDataSetFilePath().toLowerCase();
         FileParser fileParser = null;
         var dwcManager = new DarwinCoreArchiveService(ds);
         var isExcel = filePath.endsWith(".xlsx") ||filePath.endsWith(".xls");
-        var isCsv = filePath.endsWith(".csv");
+        var isCsv = filePath.endsWith(".csv") || filePath.endsWith(".tsv") || filePath.endsWith(".txt");
         var isOds = filePath.endsWith(".ods");
         var isDbf = filePath.endsWith(".dbf");
         var isNumbers = filePath.endsWith(".numbers");
