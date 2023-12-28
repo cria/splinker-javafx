@@ -3,11 +3,14 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import br.org.cria.splinkerapp.utils.StringStandards;
 
 public class ExcelFileParser extends FileParser {
@@ -17,7 +20,10 @@ public class ExcelFileParser extends FileParser {
     public ExcelFileParser(String fileSourcePath) throws Exception 
     {
         this.fileSourcePath = fileSourcePath;
-        workbook = WorkbookFactory.create(new FileInputStream(fileSourcePath));
+        //workbook = WorkbookFactory.create(new FileInputStream(fileSourcePath));
+        var isXLSX = fileSourcePath.endsWith(".xlsx");
+        workbook = isXLSX ? new XSSFWorkbook(fileSourcePath) : 
+                            new HSSFWorkbook(new FileInputStream(fileSourcePath));
     }
 
     @Override
