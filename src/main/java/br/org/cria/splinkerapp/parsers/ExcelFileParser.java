@@ -1,5 +1,5 @@
 package br.org.cria.splinkerapp.parsers;
-import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +17,7 @@ public class ExcelFileParser extends FileParser {
     public ExcelFileParser(String fileSourcePath) throws Exception 
     {
         this.fileSourcePath = fileSourcePath;
-        workbook = WorkbookFactory.create(new File(fileSourcePath));
+        workbook = WorkbookFactory.create(new FileInputStream(fileSourcePath));
     }
 
     @Override
