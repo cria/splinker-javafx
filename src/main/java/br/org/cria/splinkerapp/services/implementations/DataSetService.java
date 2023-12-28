@@ -236,20 +236,18 @@ public class DataSetService extends BaseRepository {
         conn.close();
     }
 
-    public static void saveAccessDataSource(String token, String filePath, String userName, String password) throws Exception
+    public static void saveAccessDataSource(String token, String filePath, String password) throws Exception
     {
         var cmd = """
                     UPDATE DataSetConfiguration
-                    SET datasource_filepath = ?
-                    db_username = ?, db_password = ?
-                    WHERE token = ?;
+                    SET datasource_filepath = ?,
+                    db_password = ? WHERE token = ?;
                 """;
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var stm = conn.prepareStatement(cmd);
         stm.setString(1,filePath);
-        stm.setString(2, userName);
-        stm.setString(3, password);
-        stm.setString(4, token);
+        stm.setString(2, password);
+        stm.setString(3, token);
         
         stm.executeUpdate();
         stm.close();

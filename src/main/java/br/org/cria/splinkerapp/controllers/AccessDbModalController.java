@@ -17,8 +17,6 @@ public class AccessDbModalController extends AbstractController {
     @FXML
     Pane pane;
     @FXML
-    TextField accessUsernameField;
-    @FXML
     PasswordField accessPasswordField;
     @FXML
     TextField accessFilePathField;
@@ -37,12 +35,12 @@ public class AccessDbModalController extends AbstractController {
     {
         try
         {
-            token = System.getProperty("token");
+            token = System.getProperty("splinker_token");
             var path = file.getAbsolutePath();
-            var userName = accessUsernameField.getText();
+            
             var password = accessPasswordField.getText();
             var ds = DataSetService.getDataSet(token);
-            DataSetService.saveAccessDataSource(token, path, userName, password);
+            DataSetService.saveAccessDataSource(token, path, password);
             
             if(ds.getDataSetFilePath() == null && ds.isAccessDb())
             {
@@ -84,7 +82,6 @@ public class AccessDbModalController extends AbstractController {
             {
                 file = new File(ds.getDataSetFilePath());
                 accessFilePathField.setText(ds.getDataSetFilePath());
-                accessUsernameField.setText(ds.getDbUser());
                 accessPasswordField.setText(ds.getDbPassword());
             }
             else
