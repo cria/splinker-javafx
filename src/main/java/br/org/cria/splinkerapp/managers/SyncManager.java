@@ -11,12 +11,12 @@ public class SyncManager {
         var ds = DataSetService.getDataSet(token);
         if (ds != null) 
         {
-            if(ds.isFile())
+            if(ds.isFile() || ds.isAccessDb())
             {
                 transferService = FileSourceManager.processData(ds);
             }
             
-            if(ds.isAccessDb() || ds.isSQLDatabase())
+            if(ds.isSQLDatabase())
             {
                 transferService = DatabaseSourceManager.processData(ds);
             }            

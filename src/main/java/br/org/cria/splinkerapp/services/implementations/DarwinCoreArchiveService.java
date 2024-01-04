@@ -3,7 +3,6 @@ package br.org.cria.splinkerapp.services.implementations;
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
-import br.org.cria.splinkerapp.utils.StringStandards;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import java.io.*;
@@ -111,7 +110,7 @@ public class DarwinCoreArchiveService
 
     public DarwinCoreArchiveService readDataFromSource() throws Exception
     {
-        ClassLoader.load(ds.getType());
+        var loader = ClassLoader.load(ds.getType());
         var command = DataSetService.getSQLCommand(ds.getToken());
         var conn = ds.getDataSetConnection();
         var statement = conn.createStatement();

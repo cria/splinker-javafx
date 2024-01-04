@@ -144,9 +144,22 @@ public class DataSet {
         this.lastRowCount = lastRowCount;
     }
     
-    public boolean isFile() { return this.dataSourceFilePath != null && this.type != DataSourceType.Access; }
-    public boolean isAccessDb() { return this.dataSourceFilePath != null && this.type == DataSourceType.Access; }
-    public boolean isSQLDatabase() { return this.dataSourceFilePath == null; }
+    public boolean isFile() 
+    { 
+        return this.type.equals(DataSourceType.CSV) || 
+        this.type.equals(DataSourceType.Excel) || 
+        this.type.equals(DataSourceType.LibreOfficeCalc) || 
+        this.type.equals(DataSourceType.Numbers) || 
+        this.type.equals(DataSourceType.dBase); 
+    }
+    public boolean isAccessDb() { return this.type == DataSourceType.Access; }
+    public boolean isSQLDatabase() 
+    { 
+        return this.type.equals(DataSourceType.MySQL) || 
+        this.type.equals(DataSourceType.Oracle) || 
+        this.type.equals(DataSourceType.PostgreSQL) || 
+        this.type.equals(DataSourceType.SQLServer);
+    }
     public static DataSet factory(String token, DataSourceType type, String filePath, String host, 
                                         String databaseName, String tableName,
                                         String username, String password, String port, String datasetAcronym, String datasetName, int lastRowCount, int id) 
@@ -171,11 +184,8 @@ public class DataSet {
                     connectionString = "jdbc:%s://%s:%s;encrypt=true;trustServerCertificate=true;databaseName=%s;user=%s;password=%s"
                             .formatted(type.name().toLowerCase(), host, port, databaseName, username, password);
                     break;
-                case Access:
-                    connectionString = "jdbc:ucanaccess://%s;memory=false".formatted(filePath);
-                    break;
                 default:
-                    connectionString = "jdbc:sqlite:splinker.db";
+                    connectionString = System.getProperty("splinker.connection", "jdbc:sqlite:splinker.db");
                 break;
             } 
         }

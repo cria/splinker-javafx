@@ -21,9 +21,6 @@ public class ClassLoader {
             case SQLServer:
             name = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
             break;
-            case Access:
-            name = "net.ucanaccess.jdbc.UcanaccessDriver"; 
-            break;
             default:
                 name = "org.sqlite.JDBC"; 
                 break;

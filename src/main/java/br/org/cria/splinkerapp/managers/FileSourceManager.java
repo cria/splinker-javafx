@@ -1,6 +1,7 @@
 package br.org.cria.splinkerapp.managers;
 
 import br.org.cria.splinkerapp.models.DataSet;
+import br.org.cria.splinkerapp.parsers.AccessFileParser;
 import br.org.cria.splinkerapp.parsers.CsvFileParser;
 import br.org.cria.splinkerapp.parsers.DbfFileParser;
 import br.org.cria.splinkerapp.parsers.ExcelFileParser;
@@ -17,16 +18,21 @@ public class FileSourceManager {
         var filePath = ds.getDataSetFilePath().toLowerCase();
         FileParser fileParser = null;
         var dwcManager = new DarwinCoreArchiveService(ds);
+        var isAccessDb = filePath.endsWith("mdb");
         var isExcel = filePath.endsWith(".xlsx") ||filePath.endsWith(".xls");
         var isCsv = filePath.endsWith(".csv") || filePath.endsWith(".tsv") || filePath.endsWith(".txt");
         var isOds = filePath.endsWith(".ods");
         var isDbf = filePath.endsWith(".dbf");
         var isNumbers = filePath.endsWith(".numbers");
-        var unsupportedFileFormat = !(isExcel || isCsv || isOds || isDbf || isCsv || isNumbers);
+        var unsupportedFileFormat = !(isAccessDb || isExcel || isCsv || isOds || isDbf || isCsv || isNumbers);
 
         if(unsupportedFileFormat)
         {
             throw new Exception("Formato de arquivo não suportado");
+        }
+        if(isAccessDb)
+        {
+            fileParser = new AccessFileParser(filePath, ds.getDbPassword());
         }
         if(isExcel)
         {

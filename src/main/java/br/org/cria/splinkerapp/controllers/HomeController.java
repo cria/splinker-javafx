@@ -1,6 +1,7 @@
 package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
 import br.org.cria.splinkerapp.ApplicationLog;
@@ -11,9 +12,12 @@ import br.org.cria.splinkerapp.facade.ConfigFacade;
 import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.managers.SyncManager;
 import br.org.cria.splinkerapp.models.DataSet;
+import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.healthmarketscience.jackcess.RuntimeIOException;
+
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -54,6 +58,7 @@ public class HomeController extends AbstractController {
     void onSyncServerBtnClicked() throws Exception {
         try {
             var token = DataSetService.getCurrentToken();
+            showTransferModal("Transferindo");
             transferService = SyncManager.SyncCollectionData(token);
             if (transferService != null) 
             {
@@ -61,6 +66,7 @@ public class HomeController extends AbstractController {
                     var exception = transferService.getException();
                     modalStage.hide();
                     modalStage.close();
+                    ApplicationLog.error(exception.getLocalizedMessage());
                     showErrorModal(exception.getMessage());
                 });
                 transferService.setOnSucceeded(event -> {
@@ -68,10 +74,17 @@ public class HomeController extends AbstractController {
                     modalStage.close();
                     showAlert(AlertType.INFORMATION, "Transferência concluída", "Arquivo transferido com sucesso");
                 });
-                showTransferModal("Transferindo");
+                
                 transferService.start();
             }
-        } catch (IllegalStateException ex) {
+        }
+        catch(RuntimeIOException riox) 
+        {
+            ApplicationLog.error(riox.getLocalizedMessage());
+            riox.printStackTrace();
+            showErrorModal(riox.getLocalizedMessage());
+        } 
+        catch (IllegalStateException ex) {
             return;
         } catch (Exception ex) {
             ApplicationLog.error(ex.getLocalizedMessage());
@@ -144,8 +157,21 @@ public class HomeController extends AbstractController {
     void onSyncMetaDataMenuItemClick() {
         try 
         {
+            var map = new HashMap<String, String>();
             var token = DataSetService.getCurrentToken();
             var config = DataSetService.getConfigurationDataFromAPI(token);
+            var collName = config.get("dataset_name").toString();
+            var datasetAcronym = config.get("dataset_acronym").toString();
+            var id = (int)Double.parseDouble(config.get("dataset_id").toString());
+            DataSetService.setCurrentToken(token);
+            var dsType = DataSourceType.valueOf(config.get("data_source_type").toString());
+            map.put("token", token);
+            map.put("id", String.valueOf(id));
+            map.put("dataset_name", collName);
+            map.put("dataset_acronym", datasetAcronym);
+            map.put("datasource_type", dsType.name());
+            DataSetService.updateDataSource(map);
+                
             ConfigFacade.HandleBackendData(token, config);
         } catch (Exception e) 
         {
@@ -165,9 +191,10 @@ public class HomeController extends AbstractController {
 
         try 
         {
-            var token = cmbCollection.getValue();
-            if(token!=null)
+            var newToken = cmbCollection.getValue();
+            if(newToken!=null)
             {
+                token = newToken;
                 DataSetService.setCurrentToken(token);
                 var dataSet = DataSetService.getDataSet(token);
                 lblCollectionName.setText(dataSet.getDataSetName());
@@ -204,6 +231,7 @@ public class HomeController extends AbstractController {
             showErrorModal(e.getLocalizedMessage());
         }
     }
+    
     @Subscribe
     void reloadDatasetListAfterChange(String eventToken)
     {
@@ -238,6 +266,7 @@ public class HomeController extends AbstractController {
     {
             var sources = DataSetService.getAllDataSets().stream();
             addOptionsToDataset(sources);
+            sources.close();
     }
 
     private void addOptionsToDataset(Stream<DataSet> sources)
@@ -249,7 +278,6 @@ public class HomeController extends AbstractController {
         } catch (Exception e) {
             ApplicationLog.error(e.getLocalizedMessage());
         }
-        
     }
    
     @Override

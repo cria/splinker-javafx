@@ -8,7 +8,7 @@ import java.util.List;
 import br.org.cria.splinkerapp.utils.StringStandards;
 
 public abstract class FileParser {
-    protected final String CONNECTION_STRING = "jdbc:sqlite:splinker.db";
+    protected final String CONNECTION_STRING = System.getProperty("splinker.dbname", "jdbc:sqlite:splinker.db");
     protected FileParser() throws Exception
     {
         dropTable(null);
@@ -27,7 +27,6 @@ public abstract class FileParser {
     protected static String createTableCommand = "CREATE TABLE IF NOT EXISTS %s (%s)";
     protected static String insertIntoCommand = "INSERT INTO %s (%s) VALUES (%s);";
     protected Connection getConnection() throws SQLException { return DriverManager.getConnection(CONNECTION_STRING); }
-    //protected String getTableName(){ return "spLinker".formatted(getClass().getSimpleName().toLowerCase()).replace("fileparser", "");}
     protected String getTableName(){ return "spLinker";}
     public abstract void insertDataIntoTable() throws Exception;
     protected abstract List<String> getRowAsStringList(Object row, int numberOfColumns);
@@ -47,7 +46,6 @@ public abstract class FileParser {
         var result = statement.executeUpdate(command);
         statement.close();
         conn.close();
-        System.out.println(result);
     }
 
 

@@ -33,7 +33,7 @@ public class DatabaseSetup {
                                             .formatted(System.getProperty("user.dir"));
                                 var fullPath = Paths.get(file);
                                 var content = Files.readString(fullPath);
-                                var url = "jdbc:sqlite:splinker.db";
+                                var url = System.getProperty("splinker.connection","jdbc:sqlite:splinker.db");
                                 var conn = DriverManager.getConnection(url);
                                 var statement = conn.createStatement();
                                 var result = statement.executeUpdate(content);
