@@ -61,7 +61,6 @@ public class DbfFileParser extends FileParser
             statement.executeUpdate();
 			statement.close();    
 		}
-		System.out.println("inserted all data in the DB");
 		conn.close();
 	}
 	@Override

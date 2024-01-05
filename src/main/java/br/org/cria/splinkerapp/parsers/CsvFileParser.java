@@ -1,16 +1,18 @@
 package br.org.cria.splinkerapp.parsers;
+import java.io.File;
 import java.io.FileReader;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
-import java.io.IOException;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class CsvFileParser extends FileParser 
 {
     CsvParser parser;
     List<String> columns;
-    List<String[]> rows;
+    //Iterator<String[]> rows;
+    Iterator<String[]> iterator;
     String filePath;
     public CsvFileParser(String filePath) throws Exception
     {
@@ -19,9 +21,9 @@ public class CsvFileParser extends FileParser
         var settings = new CsvParserSettings();
         settings.setDelimiterDetectionEnabled(true);
         var parser = new CsvParser(settings);
-        var fileContent = parser.parseAll(new FileReader(filePath));
-        columns = normalizeAllColumns(Arrays.asList(fileContent.get(0)));
-        rows = fileContent.subList(1, fileContent.size());
+        iterator = parser.iterate(new File(filePath)).iterator();
+        columns = normalizeAllColumns(Arrays.asList(iterator.next()));
+      //  rows = fileContent.subList(1, fileContent.size()).iterator();
     }
 
     List<String> normalizeAllColumns(List<String> columnList)
@@ -29,24 +31,6 @@ public class CsvFileParser extends FileParser
         return columnList.stream().map((e)-> makeColumnName(e))
                 .filter(e -> e != null).toList();
     }
-    
-    String getCsvSeparator(String firstLine) throws IOException 
-    {
-        String result = null;
-        var searchList =List.of( ",", ";", "\t", "|", ":" );
-        int lowestIndex = Integer.MAX_VALUE;
-        for (String searchItem : searchList) 
-        {
-            int index = firstLine.indexOf(searchItem);
-            if (index != -1 && index < lowestIndex)
-            {
-                lowestIndex = index;
-                    result = searchItem;
-            }
-        }
-        return result;
-    }
-
     @Override
     public List<String> getRowAsStringList(Object row, int numberOfColumns) 
     {
@@ -65,24 +49,33 @@ public class CsvFileParser extends FileParser
     public void insertDataIntoTable() throws Exception 
     {
         var conn = getConnection();
+        conn.setAutoCommit(false);
         var tableName = getTableName();
         var valuesStr= makeValueString(columns.size());
         var columnNames = String.join(",", columns);
         var columnCount = columns.size();
-
-        for (var row: rows) 
+        var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
+                                        .replace(",)", ")");
+        var statement = conn.prepareStatement(command);
+        var index = 0;
+        while(iterator.hasNext())
+        {
+            var row = iterator.next();
+            for (int j = 0; j < columnCount; j++) 
             {
-                var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
-                                                    .replace(",)", ")");
-                var statement = conn.prepareStatement(command);
-                for (int j = 0; j < columnCount; j++) 
-                {
-                    var value = row[j];
-                    statement.setString(j + 1, value);
-                }
-                statement.executeUpdate();
-                statement.close();   
+                var value = row[j];
+                statement.setString(j + 1, value);
             }
+            statement.addBatch();
+            index++;
+            if (index % 10 == 0) 
+            {
+                    statement.executeBatch();
+                    conn.commit();
+                    statement.clearBatch();
+            }
+        }
+        conn.setAutoCommit(true);
         conn.close();
     }
 }

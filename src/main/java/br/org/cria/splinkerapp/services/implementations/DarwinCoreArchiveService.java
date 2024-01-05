@@ -146,9 +146,8 @@ public class DarwinCoreArchiveService
 
     static void sendFileUsingCommandLine(String[] cmd) throws Exception
     {
-        System.out.println(Instant.now() + " - Iniciando processo via linha de comando: " + String.join(" ",cmd));
+        
         //Cria o processo
-
         var proc = Runtime.getRuntime().exec(cmd);
         //Cria o leitor de buffer do resultado do processamento
         var reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));

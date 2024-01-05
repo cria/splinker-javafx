@@ -1,12 +1,13 @@
 package br.org.cria.splinkerapp.parsers;
 
 import java.io.FileInputStream;
-import java.time.Instant;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
@@ -20,8 +21,10 @@ public class ExcelFileParser extends FileParser {
 
     public ExcelFileParser(String fileSourcePath) throws Exception {
         this.fileSourcePath = fileSourcePath;
-        var isXLSX = fileSourcePath.endsWith(".xlsx");
-        workbook = isXLSX ? new XSSFWorkbook(fileSourcePath) : new HSSFWorkbook(new FileInputStream(fileSourcePath));
+        var isXLSX = fileSourcePath.endsWith(".xlsx"); 
+        workbook = isXLSX ? new XSSFWorkbook(OPCPackage.open(fileSourcePath)) : 
+        new HSSFWorkbook(new FileInputStream(fileSourcePath));
+       
     }
 
     @Override
@@ -66,13 +69,16 @@ public class ExcelFileParser extends FileParser {
     }
 
     @Override
-    public void insertDataIntoTable() throws Exception {
-        System.out.println("Começando processo às " + Instant.now());
+    public void insertDataIntoTable() throws Exception 
+    {
         CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> {
+        Connection conn;
           try 
           {
-            var conn = getConnection();
+            conn = getConnection();
+            conn.setAutoCommit(false);
             var woorkbookIterator = workbook.sheetIterator();
+            var formatter = new DataFormatter();
             while (woorkbookIterator.hasNext()) 
             {
                 var sheet = woorkbookIterator.next();
@@ -87,43 +93,51 @@ public class ExcelFileParser extends FileParser {
                     }
                 });
                 int numberOfColumns = headerRow.getLastCellNum();
-                int numberOfRows = sheet.getLastRowNum() + 1;
+                //int numberOfRows = sheet.getLastRowNum() + 1;
                 List<String> columns = getRowAsStringList(headerRow, numberOfColumns).stream()
                         .map((col) -> makeColumnName(col))
                         .toList();
                 var valuesStr = "?,".repeat(numberOfColumns);
                 var columnNames = String.join(",", columns);
-                for (int j = 1; j < numberOfRows; j++) 
-                {
-                    var row = sheet.getRow(j);
-                    if (row != null) 
-                    {
-                        var valuesList = getRowAsStringList(row, numberOfColumns);
-                        var listSize = valuesList.size();
-                        var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
+                var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
                                 .replace(",)", ")");
-                        var statement = conn.prepareStatement(command);
-                        for (int k = 0; k < listSize; k++) 
+                var statement = conn.prepareStatement(command);
+                var rowIndex = 0;
+                while (sheetIterator.hasNext()) 
+                {
+                    rowIndex++;
+                    var row = sheetIterator.next();
+                    if (row != null) 
+                    { 
+                        var cellIterator = row.cellIterator();
+                        while (cellIterator.hasNext()) 
                         {
-                            statement.setString(k + 1, valuesList.get(k));
+                            var cell = cellIterator.next();
+                            var index = cell.getColumnIndex() + 1;
+                            var value = formatter.formatCellValue(cell);
+                            statement.setString(index, value);
                         }
-                        statement.executeUpdate();
-                        statement.close();
+                        statement.addBatch();
                     }
-                    if (j % 1000 == 0) 
+                    if (rowIndex % 10 == 0) 
                     {
-                        System.gc();
+                        statement.executeBatch();
+                        conn.commit();
+                        statement.clearBatch();
                     }
                 }
+                statement.close();
             }
+            
+            conn.setAutoCommit(true);
             conn.close();
-          } catch (Exception e) 
+          }catch (Exception e) 
           {
-                e.printStackTrace();
-                throw new RuntimeException(e);
+            
+            e.printStackTrace();
+            throw new RuntimeException(e);
           }
         });
         completableFuture.get();
-        System.out.println("\nTerminando processo às " + Instant.now());
     }
 }

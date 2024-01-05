@@ -76,6 +76,7 @@ public class HomeController extends AbstractController {
                 });
                 
                 transferService.start();
+                System.gc();
             }
         }
         catch(RuntimeIOException riox) 

@@ -35,11 +35,13 @@ public class AccessFileParser extends FileParser {
     public void insertDataIntoTable() throws Exception 
     {
         var conn = getConnection();
+        conn.setAutoCommit(false);
         for(var name: tableNames)
         {
             try 
             {
                 var table = db.getTable(name);
+                
                 var finalTableName = StringStandards.normalizeString(name);
                 var headerRow = table.getColumns().stream().filter(e -> !StringUtils.isEmpty(e.getName())).toList();
                 int numberOfColumns = headerRow.size();
@@ -48,40 +50,43 @@ public class AccessFileParser extends FileParser {
                 var valuesStr = "?,".repeat(numberOfColumns);
                 var columnNames = String.join(",", columns);
                 var command = insertIntoCommand.formatted(finalTableName, columnNames, valuesStr).replace(",)", ")");
-                var rows = table.stream().toList();
-                for(var row: rows)
+                var statement = conn.prepareStatement(command);    
+                var rows = table.iterator();
+                while(rows.hasNext())
                 {
+                    var row = rows.next();
+                    var rowIndex = 0;
                     if (row != null) 
                     {
-                        var values = row.values().stream().map(e -> e == null? "": e.toString()).toList();
-                        var valuesList = getRowAsStringList(values, numberOfColumns);
-                        PreparedStatement statement;
-                        try 
+                        var cells = row.values().iterator();
+                        var cellIndex = 1;
+                        while (cells.hasNext()) 
                         {
-                            statement = conn.prepareStatement(command);    
-                            for (int k = 0; k < valuesList.size(); k++) 
-                            {
-                                statement.setString(k + 1, valuesList.get(k));
-                            }
-                            statement.executeUpdate();
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
+                            var value = cells.next();
+                            statement.setString(cellIndex, value == null? "": value.toString());
+                            cellIndex++;
                         }
+                        statement.addBatch();
+                        if (rowIndex % 10 == 0) 
+                        {
+                            statement.executeBatch();
+                            conn.commit();
+                            statement.clearBatch();
+                        }
+                        rowIndex++;
                     }
                 }
-                // table.stream().forEach(row ->
-                // {
-           
-                // });      
+                statement.close();
             }catch (FileNotFoundException fnfe) {
-                fnfe.printStackTrace();
-                throw fnfe;
+                continue;
             }
              catch (Exception e) {
                 e.printStackTrace();
                 ApplicationLog.error(e.getLocalizedMessage());
             }
         }
+        db.close();
+        conn.setAutoCommit(true);
         conn.close();
     }
 
@@ -112,7 +117,7 @@ public class AccessFileParser extends FileParser {
                     }
                 }    
             }catch (FileNotFoundException fnfe) {
-                fnfe.printStackTrace();
+                continue;
             }
              catch (Exception e) {
                 e.printStackTrace();

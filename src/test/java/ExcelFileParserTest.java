@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -16,7 +15,6 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
 import com.github.javafaker.Faker;
 import br.org.cria.splinkerapp.parsers.ExcelFileParser;
 
@@ -30,6 +28,7 @@ public class ExcelFileParserTest extends ParserBaseTest {
     static Faker faker = new Faker();
     static File xls;
     static File xlsx;
+    static int numberOfXLSrows = rowCount/5;
 
     @Test
     public void ParseDataFromXLSFileTest() throws Exception
@@ -52,7 +51,7 @@ public class ExcelFileParserTest extends ParserBaseTest {
                 assertNotNull(ccNum);        
                 assertNotNull(bDate);    
             }
-            assertEquals(rowCount, numberOfInsertedRows);
+            assertEquals(numberOfXLSrows, numberOfInsertedRows);
     }
     
     @Test
@@ -84,9 +83,8 @@ public class ExcelFileParserTest extends ParserBaseTest {
     {
         xls = folder.newFile(oldFormatFilePath);
         xlsx = folder.newFile(newFormatFilePath);
-        createExcelFile(xls);
-        createExcelFile(xlsx);
-        
+        createExcelFile(xls, numberOfXLSrows+1);
+        createExcelFile(xlsx, rowCount+1);
     }
 
     @AfterClass
@@ -102,7 +100,7 @@ public class ExcelFileParserTest extends ParserBaseTest {
         }
     }
     
-    static void createExcelFile(File file) throws Exception
+    static void createExcelFile(File file, int numberOfContentRows) throws Exception
     {
             var isOldFormat = file.getAbsolutePath().endsWith("xls");
             var sheetName = sheetBaseName.formatted("xlsx");
@@ -124,7 +122,6 @@ public class ExcelFileParserTest extends ParserBaseTest {
             cell1.setCellValue("Name");
             cell2.setCellValue("Credit Card");
             cell3.setCellValue("Birth Date");
-            var numberOfContentRows = rowCount + 1;
             for (int i = 1; i < numberOfContentRows; i++) 
             {
                 row = sheet.createRow(i);

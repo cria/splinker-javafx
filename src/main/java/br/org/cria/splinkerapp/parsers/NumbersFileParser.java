@@ -73,19 +73,16 @@ public class NumbersFileParser extends FileParser {
 
     @Override
     public void insertDataIntoTable() throws Exception {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'insertDataIntoTable'");
     }
 
     @Override
     protected List<String> getRowAsStringList(Object row, int numberOfColumns) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getRowAsStringList'");
     }
 
     @Override
     protected String buildCreateTableCommand() throws Exception {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'buildCreateTableCommand'");
     }
     

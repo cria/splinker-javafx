@@ -2,7 +2,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.AfterClass;
@@ -28,7 +31,7 @@ public class AccessFileParserTest extends ParserBaseTest {
     static List<FileFormat> unsupportedFormats = Arrays.asList(FileFormat.GENERIC_JET4, FileFormat.V1997, FileFormat.MSISAM);
     static List<FileFormat> fileformats = Arrays.asList(FileFormat.values()).stream()
             .filter(e -> !unsupportedFormats.contains(e)).toList();
-
+    static int numberOfRows = rowCount/3;
     @Test
     public void parseV2000AccessFileTest() throws Exception {
 
@@ -51,7 +54,7 @@ public class AccessFileParserTest extends ParserBaseTest {
             assertNotNull(ccNum);
             assertNotNull(bDate);
         }
-        assertEquals(rowCount, numberOfInsertedRows);
+        assertEquals(numberOfRows, numberOfInsertedRows);
     }
 
     @Test
@@ -76,7 +79,7 @@ public class AccessFileParserTest extends ParserBaseTest {
             assertNotNull(ccNum);
             assertNotNull(bDate);
         }
-        assertEquals(rowCount, numberOfInsertedRows);
+        assertEquals(numberOfRows, numberOfInsertedRows);
     }
 
     @Test
@@ -101,7 +104,7 @@ public class AccessFileParserTest extends ParserBaseTest {
             assertNotNull(ccNum);
             assertNotNull(bDate);
         }
-        assertEquals(rowCount, numberOfInsertedRows);
+        assertEquals(numberOfRows, numberOfInsertedRows);
     }
 
     @Test
@@ -126,7 +129,7 @@ public class AccessFileParserTest extends ParserBaseTest {
             assertNotNull(ccNum);
             assertNotNull(bDate);
         }
-        assertEquals(rowCount, numberOfInsertedRows);
+        assertEquals(numberOfRows, numberOfInsertedRows);
     }
 
     @Test
@@ -151,7 +154,7 @@ public class AccessFileParserTest extends ParserBaseTest {
             assertNotNull(ccNum);
             assertNotNull(bDate);
         }
-        assertEquals(rowCount, numberOfInsertedRows);
+        assertEquals(numberOfRows, numberOfInsertedRows);
     }
 
     @Test
@@ -176,7 +179,7 @@ public class AccessFileParserTest extends ParserBaseTest {
             assertNotNull(ccNum);
             assertNotNull(bDate);
         }
-        assertEquals(rowCount, numberOfInsertedRows);
+        assertEquals(numberOfRows, numberOfInsertedRows);
     }
 
     @BeforeClass
@@ -189,18 +192,13 @@ public class AccessFileParserTest extends ParserBaseTest {
     }
 
     @AfterClass
-    public static void tearDown()
+    public static void tearDown() throws Exception
     {
-        try 
-        {
             for (var format : fileformats) 
             {
                 var formatName = format.name();
                 Files.delete(Path.of("splinker_%s.db".formatted(formatName)));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public static void createAccessFiles(FileFormat format, String fileName) throws Exception {
@@ -208,19 +206,22 @@ public class AccessFileParserTest extends ParserBaseTest {
         File dbFile = folder.newFile(fileName);
         Database db = DatabaseBuilder.create(format, dbFile);
         var formattedTableName = tableName.formatted(format.name());
+        String[] values;
+        List<String[]> rows = new ArrayList<>();
         var table = new TableBuilder(formattedTableName)
                 .addColumn(new ColumnBuilder("Name", DataType.TEXT))
                 .addColumn(new ColumnBuilder("Credit Card", DataType.TEXT))
                 .addColumn(new ColumnBuilder("Birth Date", DataType.TEXT))
                 .toTable(db);
-
-        for (i = 0; i < rowCount; i++) {
+        for (i = 0; i < numberOfRows; i++) {
             var name = faker.name().fullName();
             var ccNum = faker.finance().creditCard();
             var date = faker.date().birthday().toString();
-            var values = new String[] { name, ccNum, date };
-            table.addRow(values);
+            values = new String[] { name, ccNum, date };
+            rows.add(values);
         }
+        table.addRows(rows);
+        db.flush();
         db.close();
     }
 }

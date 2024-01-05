@@ -2,6 +2,7 @@
 *.csv
 *.txt
 *.zip
+*.lock
 dwc_files/*
 target/
 scripts/sql/helpers/*

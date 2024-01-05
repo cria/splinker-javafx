@@ -20,6 +20,11 @@
   </repository>
 </repositories>
     <dependencies>
+        <dependency>
+            <groupId>io.github.palexdev</groupId>
+            <artifactId>materialfx</artifactId>
+            <version>11.17.0</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.healthmarketscience.jackcess/jackcess -->
         <dependency>
             <groupId>com.healthmarketscience.jackcess</groupId>
@@ -158,8 +163,8 @@
 				</dependency>
 			</dependencies>
 			<configuration>
-            <forkCount>3</forkCount>
-                <reuseForks>false</reuseForks>
+                <!-- <forkCount>5</forkCount>
+                <reuseForks>true</reuseForks> -->
                 <argLine>-Xmx9056m -XX:MaxMetaspaceSize=9056m</argLine>
                 <parallel>classes</parallel>
                 <threadCount>10</threadCount>
