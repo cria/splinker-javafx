@@ -2,18 +2,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
 import com.healthmarketscience.jackcess.ColumnBuilder;
 import com.healthmarketscience.jackcess.DataType;
 import com.healthmarketscience.jackcess.Database;
@@ -23,10 +18,8 @@ import br.org.cria.splinkerapp.parsers.AccessFileParser;
 import com.healthmarketscience.jackcess.Database.FileFormat;
 
 public class AccessFileParserTest extends ParserBaseTest {
-    @ClassRule
-    public static TemporaryFolder folder = new TemporaryFolder();
     
-    static String filePath = "testAccess_%s.mdb";
+    static String filePath = baseDir + "testAccess_%s.mdb";
     static String tableName = "TestData%s";
     static List<FileFormat> unsupportedFormats = Arrays.asList(FileFormat.GENERIC_JET4, FileFormat.V1997, FileFormat.MSISAM);
     static List<FileFormat> fileformats = Arrays.asList(FileFormat.values()).stream()
@@ -38,7 +31,7 @@ public class AccessFileParserTest extends ParserBaseTest {
         var format = FileFormat.V2000.name();
         var connString = baseConnectionString.formatted(format);
         System.setProperty("splinker.dbname", connString);
-        var fileName = "%s/%s".formatted(folder.getRoot().getAbsolutePath(), filePath.formatted(format));
+        var fileName = filePath.formatted(format);
         var formattedTableName = tableName.formatted(format);
         var parser = new AccessFileParser(fileName, "");
         parser.createTableBasedOnSheet();
@@ -63,7 +56,7 @@ public class AccessFileParserTest extends ParserBaseTest {
         var format = FileFormat.V2003.name();
         var connString = baseConnectionString.formatted(format);
         System.setProperty("splinker.dbname", connString);
-        var fileName = "%s/%s".formatted(folder.getRoot().getAbsolutePath(), filePath.formatted(format));
+        var fileName = filePath.formatted(format);
         var formattedTableName = tableName.formatted(format);
         var parser = new AccessFileParser(fileName, "");
         parser.createTableBasedOnSheet();
@@ -88,7 +81,7 @@ public class AccessFileParserTest extends ParserBaseTest {
         var format = FileFormat.V2007.name();
         var connString = baseConnectionString.formatted(format);
         System.setProperty("splinker.dbname", connString);
-        var fileName = "%s/%s".formatted(folder.getRoot().getAbsolutePath(), filePath.formatted(format));
+        var fileName = filePath.formatted(format);
         var formattedTableName = tableName.formatted(format);
         var parser = new AccessFileParser(fileName, "");
         parser.createTableBasedOnSheet();
@@ -113,7 +106,7 @@ public class AccessFileParserTest extends ParserBaseTest {
         var format = FileFormat.V2010.name();
         var connString = baseConnectionString.formatted(format);
         System.setProperty("splinker.dbname", connString);
-        var fileName = "%s/%s".formatted(folder.getRoot().getAbsolutePath(), filePath.formatted(format));
+        var fileName = filePath.formatted(format);
         var formattedTableName = tableName.formatted(format);
         var parser = new AccessFileParser(fileName, "");
         parser.createTableBasedOnSheet();
@@ -138,7 +131,7 @@ public class AccessFileParserTest extends ParserBaseTest {
         var format = FileFormat.V2016.name();
         var connString = baseConnectionString.formatted(format);
         System.setProperty("splinker.dbname", connString);
-        var fileName = "%s/%s".formatted(folder.getRoot().getAbsolutePath(), filePath.formatted(format));
+        var fileName = filePath.formatted(format);
         var formattedTableName = tableName.formatted(format);
         var parser = new AccessFileParser(fileName, "");
         parser.createTableBasedOnSheet();
@@ -163,7 +156,7 @@ public class AccessFileParserTest extends ParserBaseTest {
         var format = FileFormat.V2019.name();
         var connString = baseConnectionString.formatted(format);
         System.setProperty("splinker.dbname", connString);
-        var fileName = "%s/%s".formatted(folder.getRoot().getAbsolutePath(), filePath.formatted(format));
+        var fileName = filePath.formatted(format);
         var formattedTableName = tableName.formatted(format);
         var parser = new AccessFileParser(fileName, "");
         parser.createTableBasedOnSheet();
@@ -182,28 +175,29 @@ public class AccessFileParserTest extends ParserBaseTest {
         assertEquals(numberOfRows, numberOfInsertedRows);
     }
 
-    @BeforeClass
-    public static void setUp() throws Exception {
-        for (var format : fileformats) 
-        {
-            var fileName = filePath.formatted(format.name());
-            createAccessFiles(format, fileName);
-        }
-    }
+    // @BeforeClass
+    // public static void setUp() throws Exception {
+    //     for (var format : fileformats) 
+    //     {
+    //         var fileName = filePath.formatted(format.name());
+    //         createAccessFiles(format, fileName);
+    //     }
+    // }
 
     @AfterClass
     public static void tearDown() throws Exception
     {
             for (var format : fileformats) 
             {
-                var formatName = format.name();
-                Files.delete(Path.of("splinker_%s.db".formatted(formatName)));
+                var fileName = "splinker_%s.db".formatted(format.name());
+                Files.delete(Path.of(fileName));            
             }
     }
 
     public static void createAccessFiles(FileFormat format, String fileName) throws Exception {
+        System.out.println("Creating file %s...\n".formatted(fileName));
         int i;
-        File dbFile = folder.newFile(fileName);
+        File dbFile = new File(fileName);
         Database db = DatabaseBuilder.create(format, dbFile);
         var formattedTableName = tableName.formatted(format.name());
         String[] values;

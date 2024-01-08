@@ -1,17 +1,16 @@
+import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
-import java.time.ZoneId;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
+
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import com.univocity.parsers.csv.CsvFormat;
 import com.univocity.parsers.csv.CsvWriter;
@@ -23,9 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class CsvFileParserTest extends ParserBaseTest {
-    @ClassRule
-    public static TemporaryFolder folder = new TemporaryFolder();
-
+    
     FileWriter writer;
     static List<String[]> content = new ArrayList<String[]>();
 
@@ -36,7 +33,7 @@ public class CsvFileParserTest extends ParserBaseTest {
     public void parseCommaSeparatedCSVTest() throws Exception {
         var connString = baseConnectionString.formatted("csv");
         System.setProperty("splinker.dbname", connString);
-        var fileName = "%s/comma_separated.csv".formatted(folder.getRoot().getAbsolutePath());
+        var fileName = "%s/comma_separated.csv".formatted(baseDir);
         var parser = new CsvFileParser(fileName);
         parser.createTableBasedOnSheet();
         parser.insertDataIntoTable();
@@ -59,7 +56,7 @@ public class CsvFileParserTest extends ParserBaseTest {
     public void parseTabSeparatedTSVTest() throws Exception {
         var connString = baseConnectionString.formatted("tsv");
         System.setProperty("splinker.dbname", connString);
-        var fileName = "%s/tab_separated.tsv".formatted(folder.getRoot().getAbsolutePath());
+        var fileName = "%s/tab_separated.tsv".formatted(baseDir);
         var parser = new CsvFileParser(fileName);
         parser.createTableBasedOnSheet();
         parser.insertDataIntoTable();
@@ -81,7 +78,7 @@ public class CsvFileParserTest extends ParserBaseTest {
     public void parseSemiColonSeparatedTXTTest() throws Exception {
         var connString = baseConnectionString.formatted("txt");
         System.setProperty("splinker.dbname", connString);
-        var fileName = "%s/semicolon_separated.txt".formatted(folder.getRoot().getAbsolutePath());
+        var fileName = "%s/semicolon_separated.txt".formatted(baseDir);
         var parser = new CsvFileParser(fileName);
         parser.createTableBasedOnSheet();
         parser.insertDataIntoTable();
@@ -112,30 +109,31 @@ public class CsvFileParserTest extends ParserBaseTest {
         }
     }
 
-    @BeforeClass
-    public static void setUp() throws Exception
-    {
-        for(var element: separators.entrySet())
-        {
-            String extension = "csv";
-            switch (element.getKey()) {
-                case "tab":
-                    extension = "tsv";
-                    break;
-            case "semicolon":
-                    extension = "txt";
-                    break;
-                default:
-                    break;
-            }
-            var filename = "%s_separated.%s".formatted(element.getKey(), extension);
-            createCSVFiles(filename, element.getValue());
-        }
-    }
+    // @BeforeClass
+    // public static void setUp() throws Exception
+    // {
+
+    //     for(var element: separators.entrySet())
+    //     {
+    //         String extension = "csv";
+    //         switch (element.getKey()) {
+    //             case "tab":
+    //                 extension = "tsv";
+    //                 break;
+    //         case "semicolon":
+    //                 extension = "txt";
+    //                 break;
+    //             default:
+    //                 break;
+    //         }
+    //         var filename = "%s%s_separated.%s".formatted(baseDir, element.getKey(), extension);
+    //         createCSVFiles(filename, element.getValue());
+    //     }
+    // }
 
     static void createCSVFiles(String fileName, String separator) throws Exception 
     {
-        
+        System.out.println("Creating file %s...\n".formatted(fileName));
         String name;
         String ccNum;
         String [] values;
@@ -144,7 +142,7 @@ public class CsvFileParserTest extends ParserBaseTest {
         var formatter = new CsvFormat();
         formatter.setDelimiter(separator);
         settings.setFormat(formatter);
-        var csvWriter = new CsvWriter(folder.newFile(fileName), settings);
+        var csvWriter = new CsvWriter(new File(fileName), settings);
         var headers = Arrays.asList("Name", "Credit Card", "Birth Date");
         csvWriter.writeHeaders(headers);
         

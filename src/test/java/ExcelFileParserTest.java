@@ -12,18 +12,14 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import com.github.javafaker.Faker;
 import br.org.cria.splinkerapp.parsers.ExcelFileParser;
 
 public class ExcelFileParserTest extends ParserBaseTest {
-    @ClassRule
-    public static TemporaryFolder folder = new TemporaryFolder();
     
-    final static String oldFormatFilePath = "OldFormat2.xls";
-    final static String newFormatFilePath = "NewFormat2.xlsx";
+    final static String oldFormatFilePath = "%sOldFormat2.xls".formatted(baseDir);
+    final static String newFormatFilePath = "%sNewFormat2.xlsx".formatted(baseDir);
     final static String sheetBaseName = "Test Sheet %s";
     static Faker faker = new Faker();
     static File xls;
@@ -78,14 +74,14 @@ public class ExcelFileParserTest extends ParserBaseTest {
             assertEquals(rowCount, numberOfInsertedRows);
     }
 
-    @BeforeClass
-    public static void setUp() throws Exception
-    {
-        xls = folder.newFile(oldFormatFilePath);
-        xlsx = folder.newFile(newFormatFilePath);
-        createExcelFile(xls, numberOfXLSrows+1);
-        createExcelFile(xlsx, rowCount+1);
-    }
+    // @BeforeClass
+    // public static void setUp() throws Exception
+    // {
+    //     xls = new File(oldFormatFilePath);
+    //     xlsx = new File(newFormatFilePath);
+    //     createExcelFile(xls, numberOfXLSrows+1);
+    //     createExcelFile(xlsx, rowCount+1);
+    // }
 
     @AfterClass
     public static void tearDown() throws Exception
@@ -102,6 +98,7 @@ public class ExcelFileParserTest extends ParserBaseTest {
     
     static void createExcelFile(File file, int numberOfContentRows) throws Exception
     {
+            System.out.println("Creating file %s...\n".formatted(file.getAbsolutePath()));
             var isOldFormat = file.getAbsolutePath().endsWith("xls");
             var sheetName = sheetBaseName.formatted("xlsx");
             // Create a new HSSFWorkbook (for XLS format) or XSSFWorkBook (for XLSX format)
