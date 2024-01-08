@@ -1,0 +1,6 @@
+src/test/java/datasources/*.mdb filter=lfs diff=lfs merge=lfs -text
+src/test/java/datasources/*.csv filter=lfs diff=lfs merge=lfs -text
+src/test/java/datasources/*.tsv filter=lfs diff=lfs merge=lfs -text
+src/test/java/datasources/*.txt filter=lfs diff=lfs merge=lfs -text
+src/test/java/datasources/*.xls filter=lfs diff=lfs merge=lfs -text
+src/test/java/datasources/*.xlsx filter=lfs diff=lfs merge=lfs -text

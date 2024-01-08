@@ -166,8 +166,9 @@
                 <!-- <forkCount>5</forkCount>
                 <reuseForks>true</reuseForks> -->
                 <argLine>-Xmx9056m -XX:MaxMetaspaceSize=9056m</argLine>
-                <parallel>classes</parallel>
-                <threadCount>10</threadCount>
+                <parallel>all</parallel>
+                <useUnlimitedThreads>true</useUnlimitedThreads>
+                <!-- <threadCount>10</threadCount> -->
 				<includes>
 					<include>**/*Test.java</include>
 				</includes>

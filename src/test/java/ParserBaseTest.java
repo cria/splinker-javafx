@@ -9,7 +9,7 @@ public class ParserBaseTest {
     static Faker faker  = new Faker();
     static String baseConnectionString = "jdbc:sqlite:splinker_%s.db";
     static int rowCount = 300000;
-    static String baseDir = "src/test/java/datasources/";
+    static String baseDir = "./src/test/java/datasources/";
     protected List<Map<String, String>> getParsedDataFromTable(String tableName, String connString) throws Exception
     {
         var values = new ArrayList<Map<String, String>>();

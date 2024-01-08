@@ -26,8 +26,9 @@ public class FileSelectionController extends AbstractController {
     File file ;
     FileChooser fileChooser = new FileChooser();
     DataSet ds;
+    
     @Override
-    protected Pane getPane() {return pane;}
+    protected Pane getPane() {return this.pane;}
     
     @FXML
     void onButtonSelectFileClicked() throws Exception
@@ -46,7 +47,15 @@ public class FileSelectionController extends AbstractController {
         try 
         {
             DataSetService.saveSpreadsheetDataSource(token, filePath.getText());
-            navigateTo("home");
+            // if(token == null)
+            // {
+                navigateTo("home");
+            // }
+            // else
+            // {
+            //     this.getStage().close();
+            // }
+            
         } 
         catch (Exception e) 
         {
