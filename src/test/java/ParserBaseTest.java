@@ -3,18 +3,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import static java.util.Map.entry;
-
-import java.nio.file.Paths;
-
 import com.github.javafaker.Faker;
 import br.org.cria.splinkerapp.utils.StringStandards;
-
 public class ParserBaseTest {
     static Faker faker  = new Faker();
     static String baseConnectionString = "jdbc:sqlite:splinker_%s.db";
     static int rowCount = 300000;
-    static String baseDir = Paths.get(".").toAbsolutePath().normalize().toString() + "/src/test/java/datasources/";
-    
+    static String baseDir = "src/test/java/datasources/";
     protected List<Map<String, String>> getParsedDataFromTable(String tableName, String connString) throws Exception
     {
         var values = new ArrayList<Map<String, String>>();
