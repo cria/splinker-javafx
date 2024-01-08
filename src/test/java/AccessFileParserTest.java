@@ -185,13 +185,19 @@ public class AccessFileParserTest extends ParserBaseTest {
     // }
 
     @AfterClass
-    public static void tearDown() throws Exception
+    public static void tearDown()
     {
-            for (var format : fileformats) 
+        try 
+        {
+         for (var format : fileformats) 
             {
                 var fileName = "splinker_%s.db".formatted(format.name());
                 Files.delete(Path.of(fileName));            
-            }
+            }   
+        } catch (Exception e) 
+        {
+            e.printStackTrace();
+        }
     }
 
     public static void createAccessFiles(FileFormat format, String fileName) throws Exception {

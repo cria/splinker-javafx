@@ -11,7 +11,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import com.github.javafaker.Faker;
 import br.org.cria.splinkerapp.parsers.ExcelFileParser;
@@ -24,11 +23,12 @@ public class ExcelFileParserTest extends ParserBaseTest {
     static Faker faker = new Faker();
     static File xls;
     static File xlsx;
-    static int numberOfXLSrows = rowCount/5;
+    static int numberOfXLSrows = rowCount/5; //limite de arquivos XLS = 65535 linhas
 
     @Test
     public void ParseDataFromXLSFileTest() throws Exception
     {
+            xls = new File(oldFormatFilePath);
             var connString = baseConnectionString.formatted("xls");
             System.setProperty("splinker.dbname", connString);
             var tableName = "test_sheet_xls";
@@ -53,27 +53,27 @@ public class ExcelFileParserTest extends ParserBaseTest {
     @Test
     public void ParseDataFromXLSXFileTest() throws Exception
     {
-            var connString = baseConnectionString.formatted("xlsx");
-            System.setProperty("splinker.dbname", connString);
-            var tableName = "test_sheet_xlsx";
-            var path = xlsx.getAbsolutePath();
-            var parser = new ExcelFileParser(path);
-            parser.createTableBasedOnSheet();
-            parser.insertDataIntoTable();
-            var expected = getParsedDataFromTable(tableName, connString);
-            var numberOfInsertedRows = expected.size();
-            for (var map : expected) 
-            {
-                var name = map.get("name");
-                var ccNum = map.get("credit_card");
-                var bDate = map.get("birth_date");
-                assertNotNull(name);    
-                assertNotNull(ccNum);        
-                assertNotNull(bDate);
-            }
-            assertEquals(rowCount, numberOfInsertedRows);
+        xlsx = new File(newFormatFilePath);
+        var connString = baseConnectionString.formatted("xlsx");
+        System.setProperty("splinker.dbname", connString);
+        var tableName = "test_sheet_xlsx";
+        var path = xlsx.getAbsolutePath();
+        var parser = new ExcelFileParser(path);
+        parser.createTableBasedOnSheet();
+        parser.insertDataIntoTable();
+        var expected = getParsedDataFromTable(tableName, connString);
+        var numberOfInsertedRows = expected.size();
+        for (var map : expected) 
+        {
+            var name = map.get("name");
+            var ccNum = map.get("credit_card");
+            var bDate = map.get("birth_date");
+            assertNotNull(name);    
+            assertNotNull(ccNum);        
+            assertNotNull(bDate);
+        }
+        assertEquals(rowCount, numberOfInsertedRows);
     }
-
     // @BeforeClass
     // public static void setUp() throws Exception
     // {
@@ -84,7 +84,7 @@ public class ExcelFileParserTest extends ParserBaseTest {
     // }
 
     @AfterClass
-    public static void tearDown() throws Exception
+    public static void tearDown()
     {
          try 
         {
