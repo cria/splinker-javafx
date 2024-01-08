@@ -1,8 +1,10 @@
+*.db
 *.tsv
 *.csv
 *.txt
 *.zip
 *.lock
+*.db-journal
 dwc_files/*
 target/
 scripts/sql/helpers/*
@@ -45,6 +47,3 @@ build/
 
 ### Mac OS ###
 .DS_Store
-spLinker.key
-splinker.db
-spLinker.key.pub
