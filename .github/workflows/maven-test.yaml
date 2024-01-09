@@ -2,7 +2,7 @@ name: Maven Test
 on: [push]
 jobs:
   test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     env:
       CURRENT_DIR: ${{ github.workspace }}
       IS_GITHUB_FLOW: true
@@ -16,7 +16,7 @@ jobs:
           architecture: x64
           lfs: true
       - name: Instalar Git LFS
-        run: choco install git-lfs
+        run: apt-get install git-lfs
       - name: Configurar Git LFS
         run: git lfs install
       - name: Testes automatizados
