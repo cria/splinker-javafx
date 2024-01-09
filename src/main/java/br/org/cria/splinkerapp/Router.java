@@ -22,10 +22,11 @@ import javafx.stage.Stage;
 
     public void navigateTo(Stage stage, String routeName) throws Exception
     {
+            stage.close();
+            var newStage = new Stage();
             var scene  = loadScene(routeName);
-            stage.setScene(scene);
-            stage.show();
-        
+            newStage.setScene(scene);
+            newStage.show();
     }
 
     private Scene loadScene(String routeName) throws IOException 

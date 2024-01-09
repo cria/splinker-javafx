@@ -107,17 +107,17 @@ public class HomeController extends AbstractController {
             var ds = DataSetService.getDataSet(token);
             if(ds.isAccessDb())
             {    
-                openNewWindow("access-db-modal");
+                navigateTo(getStage(),"access-db-modal");
                 return;
             }
 
             if(ds.isFile())
             {
-                openNewWindow("file-selection");
+                navigateTo(getStage(),"file-selection");
                 return;
             }
 
-            openNewWindow("collection-database");
+            navigateTo(getStage(),"collection-database");
         } 
         catch (Exception e) 
         {
@@ -128,18 +128,33 @@ public class HomeController extends AbstractController {
 
     @FXML
     void onProxyConfigMenuOptionClick() {
-        openNewWindow("proxy-config");
+        try {
+            navigateTo(getStage(),"proxy-config");
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @FXML
     void onCentralServiceConfigMenuOptionClick() {
-        openNewWindow("central-service");
+        try {
+            navigateTo(getStage(),"central-service");
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @FXML
     void onDataSetAddMenuItemClick()
     {
-        openNewWindow("token-login");
+        try {
+            navigateTo(getStage(),"token-login");
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -184,7 +199,12 @@ public class HomeController extends AbstractController {
     @FXML
     void onDeleteDatasetButtonClick()
     {
-        openNewWindow("delete-dataset");
+        try {
+            navigateTo(getStage(),"delete-dataset");
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
     
     @FXML

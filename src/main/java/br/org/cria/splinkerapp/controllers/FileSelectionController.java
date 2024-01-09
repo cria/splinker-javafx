@@ -47,15 +47,7 @@ public class FileSelectionController extends AbstractController {
         try 
         {
             DataSetService.saveSpreadsheetDataSource(token, filePath.getText());
-            // if(token == null)
-            // {
-                navigateTo("home");
-            // }
-            // else
-            // {
-            //     this.getStage().close();
-            // }
-            
+            navigateTo(getStage(),"home");
         } 
         catch (Exception e) 
         {

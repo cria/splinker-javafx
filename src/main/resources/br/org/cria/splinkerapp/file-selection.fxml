@@ -5,7 +5,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="127.0" prefWidth="369.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FileSelectionController">
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="127.0" prefWidth="369.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FileSelectionController">
    <children>
       <TextField id="filePath" fx:id="filePath" disable="true" layoutX="14.0" layoutY="39.0" prefHeight="25.0" prefWidth="210.0" />
       <Button id="btnSave" fx:id="btnSave" layoutX="159.0" layoutY="77.0" mnemonicParsing="false" onMouseClicked="#onButtonSaveClicked" text="Salvar" />
