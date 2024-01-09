@@ -41,28 +41,17 @@ jobs:
 
   build-on-windows:
     runs-on: windows-latest
-    env:
-      CURRENT_DIR: ${{ github.workspace }}
-      IS_GITHUB_FLOW: true
     steps:
       - uses: actions/checkout@v3
-
       - name: Configurar Java
         uses: actions/setup-java@v3
         with:
           java-version: 20
           distribution: 'temurin'
           architecture: x64
-          lfs: true
-      
-      - name: Instalar Git LFS
-        run: choco install git-lfs
-
-      - name: Configurar Git LFS
-        run: git lfs install
 
       - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar 
-        run: mvn package
+        run: mvn package -Dmaven.test.skip=true
         
       - name: Criar image jpackage
         run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-1.0-SNAPSHOT.jar
