@@ -16,7 +16,7 @@ jobs:
           architecture: x64
           lfs: true
       - name: Instalar Git LFS
-        run: apt-get install git-lfs
+        run: sudo apt-get install git-lfs
       - name: Configurar Git LFS
         run: git lfs install
       - name: Testes automatizados
