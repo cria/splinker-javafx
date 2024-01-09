@@ -15,6 +15,9 @@ jobs:
           distribution: 'temurin'
           architecture: x64
           lfs: true
+      
+      - name: Print workspace path
+        run: echo $GITHUB_WORKSPACE && pwd && echo ${{github.ref}}
       - name: Instalar Git LFS
         run: sudo apt-get install git-lfs
       - name: Configurar Git LFS
