@@ -41,6 +41,9 @@ jobs:
 
   build-on-windows:
     runs-on: windows-latest
+    env:
+      CURRENT_DIR: ${{ github.workspace }}
+      IS_GITHUB_FLOW: true
     steps:
       - uses: actions/checkout@v3
 
@@ -51,8 +54,12 @@ jobs:
           distribution: 'temurin'
           architecture: x64
           lfs: true
-      # - name: Instalar Git LFS
-      #   run: apt-get install git-lfs 
+      
+      - name: Instalar Git LFS
+        run: choco install git-lfs
+
+      - name: Configurar Git LFS
+        run: git lfs install
 
       - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar 
         run: mvn package

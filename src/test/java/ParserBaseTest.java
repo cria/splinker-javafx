@@ -6,10 +6,11 @@ import static java.util.Map.entry;
 import com.github.javafaker.Faker;
 import br.org.cria.splinkerapp.utils.StringStandards;
 public class ParserBaseTest {
+    static boolean isRunningOnGithub = Boolean.valueOf(System.getProperty("IS_GITHUB_FLOW", "false"));
     static Faker faker  = new Faker();
     static String baseConnectionString = "jdbc:sqlite:splinker_%s.db";
     static int rowCount = 300000;
-    static String baseDir = System.getProperty("GITHUB_WORKSPACE","src/test/java/datasources/");
+    static String baseDir = System.getProperty("CURRENT_DIR","src/test/java/datasources/");
     protected List<Map<String, String>> getParsedDataFromTable(String tableName, String connString) throws Exception
     {
         var values = new ArrayList<Map<String, String>>();

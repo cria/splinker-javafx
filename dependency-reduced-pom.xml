@@ -18,9 +18,9 @@
           </dependency>
         </dependencies>
         <configuration>
-          <argLine>-Xmx9056m -XX:MaxMetaspaceSize=9056m</argLine>
-          <parallel>methods</parallel>
-          <threadCount>10</threadCount>
+          <argLine>-Xmx2G -XX:MaxMetaspaceSize=2048m</argLine>
+          <parallel>all</parallel>
+          <useUnlimitedThreads>true</useUnlimitedThreads>
           <includes>
             <include>**/*Test.java</include>
           </includes>

@@ -2,13 +2,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 
 import org.junit.Test;
 
@@ -99,13 +97,17 @@ public class CsvFileParserTest extends ParserBaseTest {
     @AfterClass
     public static void tearDown()
     {
-        try 
+        if(!isRunningOnGithub)
         {
-            Files.delete(Path.of("splinker_tsv.db"));
-            Files.delete(Path.of("splinker_csv.db"));
-            Files.delete(Path.of("splinker_txt.db"));
-        } catch (Exception e) {
-            e.printStackTrace();
+            try 
+            {
+                Files.delete(Path.of("splinker_tsv.db"));
+                Files.delete(Path.of("splinker_csv.db"));
+                Files.delete(Path.of("splinker_txt.db"));
+            } catch (Exception e) 
+            {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -86,13 +86,16 @@ public class ExcelFileParserTest extends ParserBaseTest {
     @AfterClass
     public static void tearDown()
     {
-         try 
+        if(!isRunningOnGithub)
         {
-            Files.delete(Path.of("splinker_xls.db"));
-            Files.delete(Path.of("splinker_xlsx.db"));
-            
-        } catch (Exception e) {
-            e.printStackTrace();
+            try 
+            {
+                Files.delete(Path.of("splinker_xls.db"));
+                Files.delete(Path.of("splinker_xlsx.db"));   
+            } catch (Exception e) 
+            {
+                e.printStackTrace();
+            }
         }
     }
     
