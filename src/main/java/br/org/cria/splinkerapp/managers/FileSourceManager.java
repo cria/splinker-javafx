@@ -8,16 +8,13 @@ import br.org.cria.splinkerapp.parsers.ExcelFileParser;
 import br.org.cria.splinkerapp.parsers.FileParser;
 import br.org.cria.splinkerapp.parsers.NumbersFileParser;
 import br.org.cria.splinkerapp.parsers.OdsFileParser;
-import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
-import javafx.concurrent.Service;
 
 public class FileSourceManager {
 
-    public static Service<Void> processData(DataSet ds) throws Exception
+    public static void importData(DataSet ds) throws Exception
     {
         var filePath = ds.getDataSetFilePath().toLowerCase();
         FileParser fileParser = null;
-        var dwcManager = new DarwinCoreArchiveService(ds);
         var isAccessDb = filePath.endsWith("mdb");
         var isExcel = filePath.endsWith(".xlsx") ||filePath.endsWith(".xls");
         var isCsv = filePath.endsWith(".csv") || filePath.endsWith(".tsv") || filePath.endsWith(".txt");
@@ -61,11 +58,6 @@ public class FileSourceManager {
             var finalFile = NumbersFileParser.numbersToXLSX(filePath);
             fp.parseFile(finalFile);
         }
-      
-        dwcManager.readDataFromSource()
-        .generateTXTFile()
-        .generateZIPFile();
-        return dwcManager.transferData();
     }
     
 }
