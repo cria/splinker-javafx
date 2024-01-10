@@ -1,6 +1,8 @@
 package br.org.cria.splinkerapp;
 
 import java.io.IOException;
+import org.apache.logging.log4j.LogManager;
+import br.org.cria.splinkerapp.config.LockFileManager;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -24,6 +26,10 @@ import javafx.stage.Stage;
     {
             stage.close();
             var newStage = new Stage();
+            newStage.setOnCloseRequest(event ->{
+                    LockFileManager.deleteLockfile();
+                    LogManager.shutdown();
+                });
             var scene  = loadScene(routeName);
             newStage.setScene(scene);
             newStage.show();
