@@ -9,6 +9,8 @@
    <children>
       <Button id="btnCancelTransfer" fx:id="btnCancelTransfer" layoutX="137.0" layoutY="108.0" mnemonicParsing="false" onMouseClicked="#onButtonCancelClicked" text="Cancelar" />
       <ProgressBar id="progressBar" fx:id="progressBar" layoutX="60.0" layoutY="64.0" prefHeight="20.0" prefWidth="220.0" progress="0.0" />
-      <Label fx:id="lblMessage" layoutX="148.0" layoutY="21.0" text="Aguarde" />
+      <Label fx:id="lblMessage" layoutX="14.0" prefHeight="57.0" prefWidth="330.0" text="A transmissão de dados pode demorar alguns minutos.&#10;Deseja continuar?" textAlignment="CENTER" />
+      <Button id="btnYes" fx:id="btnYes" layoutX="33.0" layoutY="96.0" mnemonicParsing="false" onMouseClicked="#onBtnYesClicked" text="Sim" />
+      <Button fx:id="btnNo" layoutX="253.0" layoutY="96.0" mnemonicParsing="false" onMouseClicked="#onBtnNoClicked" text="Não" />
    </children>
 </Pane>
