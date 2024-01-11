@@ -34,7 +34,7 @@ public class DarwinCoreArchiveService
         Files.createDirectories(Paths.get(userDir));
         //var normalizedNow = StringStandards.normalizeString(Instant.now().toString());
         this.zipFile = "%s/dwca.zip".formatted(userDir);
-        this.textFile = "%s/occurence.txt".formatted(userDir);
+        this.textFile = "%s/occurrence.txt".formatted(userDir);
     }
         
     public DarwinCoreArchiveService generateTXTFile() throws Exception
