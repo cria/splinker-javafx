@@ -1,6 +1,8 @@
 package br.org.cria.splinkerapp.services.implementations;
 
 import br.org.cria.splinkerapp.ApplicationLog;
+import br.org.cria.splinkerapp.enums.EventTypes;
+import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
 import java.io.*;
@@ -13,13 +15,21 @@ import java.time.ZoneId;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import com.google.common.eventbus.EventBus;
+
 public class DarwinCoreArchiveService
 {
+    int totalRowCount = 0;
     String zipFile;
     String textFile;
     DataSet ds;
     ResultSet data;
+    EventBus writeDataEventBus = EventBusManager.getEvent(EventTypes.WRITE_ROW.name());
 
+    public int getTotalRowCount()
+    {
+        return totalRowCount;
+    }
     private void logMessage(String message)
     {
         var now = Instant.now().atZone(ZoneId.systemDefault());
@@ -29,12 +39,14 @@ public class DarwinCoreArchiveService
 
     public DarwinCoreArchiveService (DataSet ds) throws Exception
     {
-        this.ds = ds;
         var userDir = System.getProperty("user.dir") + "/" + ds.getId();
-        Files.createDirectories(Paths.get(userDir));
+        this.ds = ds;
         //var normalizedNow = StringStandards.normalizeString(Instant.now().toString());
         this.zipFile = "%s/dwca.zip".formatted(userDir);
         this.textFile = "%s/occurrence.txt".formatted(userDir);
+        this.totalRowCount = ds.getLastRowCount();
+        Files.createDirectories(Paths.get(userDir));
+        
     }
         
     public DarwinCoreArchiveService generateTXTFile() throws Exception
@@ -71,6 +83,8 @@ public class DarwinCoreArchiveService
     private String getDataSetRows() throws Exception
     {
         var dataSourceRows = new StringBuilder();
+        var rowCount = 0;
+        
         while (data.next()) 
         {
             var resultSetMetaData = data.getMetaData();
@@ -80,8 +94,10 @@ public class DarwinCoreArchiveService
                 var content = "%s\t".formatted(data.getString(i));
                 dataSourceRows.append(content);
             }
-    
-             dataSourceRows.append("\n");
+
+            dataSourceRows.append("\n");
+            rowCount++;
+            writeDataEventBus.post(rowCount);
         }
         return dataSourceRows.toString();
     }
@@ -129,6 +145,7 @@ public class DarwinCoreArchiveService
         var command = DataSetService.getSQLCommand(ds.getToken());
         var conn = ds.getDataSetConnection();
         var statement = conn.createStatement();
+        
         this.data = statement.executeQuery(command);
         
         return this;
