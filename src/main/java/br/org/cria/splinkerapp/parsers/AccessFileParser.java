@@ -52,10 +52,13 @@ public class AccessFileParser extends FileParser {
                 var command = insertIntoCommand.formatted(finalTableName, columnNames, valuesStr).replace(",)", ")");
                 var statement = conn.prepareStatement(command);    
                 var rows = table.iterator();
+                
+                currentRow = 0;
+                totalRowCount = table.getRowCount();
                 while(rows.hasNext())
                 {
                     var row = rows.next();
-                    var rowIndex = 0;
+                    
                     if (row != null) 
                     {
                         var cells = row.values().iterator();
@@ -67,13 +70,14 @@ public class AccessFileParser extends FileParser {
                             cellIndex++;
                         }
                         statement.addBatch();
-                        if (rowIndex % 10 == 0) 
+                        if (currentRow % 10 == 0) 
                         {
                             statement.executeBatch();
                             conn.commit();
                             statement.clearBatch();
                         }
-                        rowIndex++;
+                        currentRow++;
+                        readRowEventBus.post(currentRow);
                     }
                 }
                 statement.close();

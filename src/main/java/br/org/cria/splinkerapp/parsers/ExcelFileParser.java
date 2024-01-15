@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -71,72 +70,71 @@ public class ExcelFileParser extends FileParser {
     @Override
     public void insertDataIntoTable() throws Exception 
     {
-        CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> {
         Connection conn;
-          try 
+        try 
+        {
+          conn = getConnection();
+          conn.setAutoCommit(false);
+          var woorkbookIterator = workbook.sheetIterator();
+          var formatter = new DataFormatter();
+          while (woorkbookIterator.hasNext()) 
           {
-            conn = getConnection();
-            conn.setAutoCommit(false);
-            var woorkbookIterator = workbook.sheetIterator();
-            var formatter = new DataFormatter();
-            while (woorkbookIterator.hasNext()) 
-            {
-                var sheet = woorkbookIterator.next();
-                var sheetIterator = sheet.iterator();
-                var headerRow = sheetIterator.next();
-                var tableName = StringStandards.normalizeString(sheet.getSheetName());
-                headerRow.forEach(e -> 
-                {
-                    if (StringUtils.isEmpty(e.getStringCellValue())) 
-                    {
-                        headerRow.removeCell(e);
-                    }
-                });
-                int numberOfColumns = headerRow.getLastCellNum();
-                //int numberOfRows = sheet.getLastRowNum() + 1;
-                List<String> columns = getRowAsStringList(headerRow, numberOfColumns).stream()
-                        .map((col) -> makeColumnName(col))
-                        .toList();
-                var valuesStr = "?,".repeat(numberOfColumns);
-                var columnNames = String.join(",", columns);
-                var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
-                                .replace(",)", ")");
-                var statement = conn.prepareStatement(command);
-                var rowIndex = 0;
-                while (sheetIterator.hasNext()) 
-                {
-                    rowIndex++;
-                    var row = sheetIterator.next();
-                    if (row != null) 
-                    { 
-                        var cellIterator = row.cellIterator();
-                        while (cellIterator.hasNext()) 
-                        {
-                            var cell = cellIterator.next();
-                            var index = cell.getColumnIndex() + 1;
-                            var value = formatter.formatCellValue(cell);
-                            statement.setString(index, value);
-                        }
-                        statement.addBatch();
-                    }
-                    if (rowIndex % 10 == 0) 
-                    {
-                        statement.executeBatch();
-                        conn.commit();
-                        statement.clearBatch();
-                    }
-                }
-                statement.close();
-            }
-            
-            conn.setAutoCommit(true);
-            conn.close();
-          }catch (Exception e) 
-          {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+              var sheet = woorkbookIterator.next();
+              totalRowCount = sheet.getLastRowNum();
+              var sheetIterator = sheet.iterator();
+              var headerRow = sheetIterator.next();
+              var tableName = StringStandards.normalizeString(sheet.getSheetName());
+
+              headerRow.forEach(e -> 
+              {
+                  if (StringUtils.isEmpty(e.getStringCellValue())) 
+                  {
+                      headerRow.removeCell(e);
+                  }
+              });
+              totalColumnCount = headerRow.getLastCellNum();
+              List<String> columns = getRowAsStringList(headerRow, totalColumnCount).stream()
+                      .map((col) -> makeColumnName(col))
+                      .toList();
+
+              var valuesStr = "?,".repeat(totalColumnCount);
+              var columnNames = String.join(",", columns);
+              var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
+                              .replace(",)", ")");
+              var statement = conn.prepareStatement(command);
+              while (sheetIterator.hasNext()) 
+              {
+                  var row = sheetIterator.next();
+                  if (row != null) 
+                  { 
+                      var cellIterator = row.cellIterator();
+                      while (cellIterator.hasNext()) 
+                      {
+                          var cell = cellIterator.next();
+                          var index = cell.getColumnIndex() + 1;
+                          var value = formatter.formatCellValue(cell);
+                          statement.setString(index, value);
+                      }
+                      statement.addBatch();
+                  }
+                  currentRow++;
+                  if (currentRow % 10 == 0) 
+                  {
+                      statement.executeBatch();
+                      conn.commit();
+                      statement.clearBatch();
+                      readRowEventBus.post(currentRow);
+                  }
+              }
+              statement.close();
           }
-        });
-        completableFuture.get();
+          
+          conn.setAutoCommit(true);
+          conn.close();
+        }catch (Exception e) 
+        {
+          e.printStackTrace();
+          throw new RuntimeException(e);
+        }
     }
 }

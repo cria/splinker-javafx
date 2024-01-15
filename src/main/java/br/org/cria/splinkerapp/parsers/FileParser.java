@@ -5,14 +5,32 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import com.google.common.eventbus.EventBus;
+import br.org.cria.splinkerapp.enums.EventTypes;
+import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.utils.StringStandards;
 
 public abstract class FileParser {
+    protected EventBus readRowEventBus;
+    protected int totalRowCount = 0;;
+    protected int currentRow = 0;
+    protected int totalColumnCount = 0;
     protected final String CONNECTION_STRING = System.getProperty("splinker.dbname", "jdbc:sqlite:splinker.db");
     protected FileParser() throws Exception
     {
-        dropTable(null);
+        readRowEventBus = EventBusManager.getEvent(EventTypes.READ_ROW.name());
     }
+
+    public int getTotalRowCount()
+    {
+        return totalRowCount;
+    }
+
+    public int getCurrentRow()
+    {
+        return currentRow;
+    }
+
     protected void dropTable(String tableName) throws Exception{
         if(tableName == null)
         {
@@ -47,7 +65,4 @@ public abstract class FileParser {
         statement.close();
         conn.close();
     }
-
-
-    
 }

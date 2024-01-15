@@ -57,7 +57,7 @@ public class CsvFileParser extends FileParser
         var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
                                         .replace(",)", ")");
         var statement = conn.prepareStatement(command);
-        var index = 0;
+        
         while(iterator.hasNext())
         {
             var row = iterator.next();
@@ -67,13 +67,15 @@ public class CsvFileParser extends FileParser
                 statement.setString(j + 1, value);
             }
             statement.addBatch();
-            index++;
-            if (index % 10 == 0) 
+            currentRow++;
+            
+            if (currentRow % 10 == 0) 
             {
                     statement.executeBatch();
                     conn.commit();
                     statement.clearBatch();
             }
+            readRowEventBus.post(currentRow);
         }
         conn.setAutoCommit(true);
         conn.close();

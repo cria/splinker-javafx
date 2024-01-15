@@ -47,10 +47,11 @@ public class DbfFileParser extends FileParser
 		var tableName = getTableName();
 		var valuesStr = "?,".repeat(numberOfColumns);
         var columnNames = String.join(",", columnNameList);
+		totalRowCount = reader.getRecordCount();
 		while ((rowObjects = reader.nextRecord()) != null) 
 		{
 			
-			var valuesList = getRowAsStringList(rowObjects, numberOfColumns).stream().map("'%s'"::formatted).toList();
+			var valuesList = getRowAsStringList(rowObjects, numberOfColumns).stream().toList();
             var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
             var statement = conn.prepareStatement(command);
                             
@@ -59,7 +60,9 @@ public class DbfFileParser extends FileParser
             	statement.setString(k+1, valuesList.get(k));    
             }
             statement.executeUpdate();
-			statement.close();    
+			statement.close();
+			currentRow++;
+			readRowEventBus.post(currentRow);    
 		}
 		conn.close();
 	}
