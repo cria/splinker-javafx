@@ -69,7 +69,7 @@ jobs:
         run: cp scripts\sql\create_tables.sql spLinker\scripts\sql 
 
       - name: Empacotar para Windows
-        run: jpackage --java-options="-Xms1G -Xmx4G" --name spLinker --app-image spLinker --type msi --dest dist --win-shortcut  --win-dir-chooser --win-per-user-install --icon app.ico
+        run: jpackage --name spLinker --app-image spLinker --type msi --dest dist --win-shortcut  --win-dir-chooser --win-per-user-install --icon app.ico
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
