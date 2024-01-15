@@ -94,6 +94,9 @@ public class FileTransferController extends AbstractController {
     {
         try 
         {
+            var generateDWCFileBus = EventBusManager.getEvent(EventTypes.GENERATE_DWC_FILES.name());
+            var generateDWCEvent = new GenerateDWCFileEvent(dwcService);
+                        
             if(!ds.isSQLDatabase())
             {
                 Task<Void> importDataTask = event.getTask();
@@ -106,8 +109,6 @@ public class FileTransferController extends AbstractController {
                     {
                         progressBar.progressProperty().unbind();
                         progressIndicator.progressProperty().unbind();
-                        var generateDWCFileBus = EventBusManager.getEvent(EventTypes.GENERATE_DWC_FILES.name());
-                        var generateDWCEvent = new GenerateDWCFileEvent(dwcService);
                         generateDWCFileBus.post(generateDWCEvent);
                     });
                 });
@@ -123,6 +124,10 @@ public class FileTransferController extends AbstractController {
                 var thread = new Thread(importDataTask);
                 thread.setDaemon(true);
                 executor.execute(thread);
+            }
+            else
+            {
+                generateDWCFileBus.post(generateDWCEvent);
             }
         } catch (Exception e)
         {
