@@ -18,7 +18,7 @@
           </dependency>
         </dependencies>
         <configuration>
-          <argLine>-Xmx2G -XX:MaxMetaspaceSize=2048m</argLine>
+          <argLine>-Xmx2G -XX:MaxMetaspaceSize=2048m -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90</argLine>
           <parallel>all</parallel>
           <useUnlimitedThreads>true</useUnlimitedThreads>
           <includes>

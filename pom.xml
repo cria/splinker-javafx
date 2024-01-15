@@ -20,11 +20,6 @@
   </repository>
 </repositories>
     <dependencies>
-        <dependency>
-            <groupId>io.github.palexdev</groupId>
-            <artifactId>materialfx</artifactId>
-            <version>11.17.0</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/com.healthmarketscience.jackcess/jackcess -->
         <dependency>
             <groupId>com.healthmarketscience.jackcess</groupId>
@@ -71,12 +66,14 @@
             <groupId>com.github.albfernandez</groupId>
             <artifactId>javadbf</artifactId>
             <version>1.14.0</version>
+            <scope>compile</scope>
         </dependency>
             <!-- https://mvnrepository.com/artifact/com.github.miachm.sods/SODS -->
             <dependency>
                 <groupId>com.github.miachm.sods</groupId>
                 <artifactId>SODS</artifactId>
                 <version>1.6.4</version>
+                <scope>compile</scope>
             </dependency>
             <dependency>
             <groupId>org.apache.poi</groupId>
@@ -165,7 +162,7 @@
 			<configuration>
                 <!-- <forkCount>5</forkCount>
                 <reuseForks>true</reuseForks> -->
-                <argLine>-Xmx2G -XX:MaxMetaspaceSize=2048m</argLine>
+                <argLine>-Xmx2G -XX:MaxMetaspaceSize=4096m -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90</argLine>
                 <parallel>all</parallel>
                 <useUnlimitedThreads>true</useUnlimitedThreads>
                 <!-- <threadCount>10</threadCount> -->

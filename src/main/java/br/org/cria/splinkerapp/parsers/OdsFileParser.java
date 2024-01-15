@@ -29,7 +29,7 @@ public class OdsFileParser extends FileParser{
         for (int i = 0; i < numberOfTabs; i++) 
         {
             var sheet = spreadSheet.getSheet(i);
-            var numberOfRows = sheet.getMaxRows();
+            totalRowCount = sheet.getMaxRows();
             var tableName = StringStandards.normalizeString(sheet.getName());
             var columns = new ArrayList<String>();
             var numberOfColumns = sheet.getMaxColumns();
@@ -48,13 +48,13 @@ public class OdsFileParser extends FileParser{
             
             var columnNames = String.join(",", columns);
   
-            for (int j = 1; j < numberOfRows; j++) 
+            for (int j = 1; j < totalRowCount; j++) 
             {
-                final int rowCount = j;
+                currentRow = j;
                 var sheetRow = new ArrayList<Range>();
-                IntStream.range(0, numberOfColumns).forEach(n -> sheetRow.add(sheet.getRange(rowCount, n)));
+                IntStream.range(0, numberOfColumns).forEach(n -> sheetRow.add(sheet.getRange(currentRow, n)));
                 var row = getRowAsStringList(sheetRow, numberOfColumns);
-                var valuesList = row.stream().map("'%s'"::formatted).toList();
+                var valuesList = row.stream().toList();
                 var commandBase = "INSERT INTO %s (%s) VALUES (%s);";
                 var command = commandBase.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
                 var statement = conn.prepareStatement(command);
@@ -64,7 +64,8 @@ public class OdsFileParser extends FileParser{
                     statement.setString(k+1, valuesList.get(k));    
                 }
                 statement.executeUpdate();
-                statement.close();                        
+                statement.close();  
+                readRowEventBus.post(currentRow);                      
             }
         }
         conn.close();

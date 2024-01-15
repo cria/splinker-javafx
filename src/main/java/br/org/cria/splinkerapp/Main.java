@@ -45,10 +45,9 @@ public class Main extends Application
                             ApplicationLog.error(e.getLocalizedMessage());
                              throw new RuntimeException(e);
                         }
-                        stage.show();
             
                 });
-                initDb.start();
+                initDb.run();
             }
           
         } 

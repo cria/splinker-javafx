@@ -18,7 +18,6 @@ import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.BaseRepository;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
-import br.org.cria.splinkerapp.utils.StringStandards;
 
 public class DataSetService extends BaseRepository {
 

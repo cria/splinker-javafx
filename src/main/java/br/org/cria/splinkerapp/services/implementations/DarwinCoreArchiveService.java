@@ -1,38 +1,59 @@
 package br.org.cria.splinkerapp.services.implementations;
 
 import br.org.cria.splinkerapp.ApplicationLog;
+import br.org.cria.splinkerapp.enums.EventTypes;
+import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import com.google.common.eventbus.EventBus;
+
 public class DarwinCoreArchiveService
 {
+    int totalRowCount = 0;
     String zipFile;
     String textFile;
     DataSet ds;
     ResultSet data;
+    EventBus writeDataEventBus = EventBusManager.getEvent(EventTypes.WRITE_ROW.name());
+
+    public int getTotalRowCount()
+    {
+        return totalRowCount;
+    }
+    private void logMessage(String message)
+    {
+        var now = Instant.now().atZone(ZoneId.systemDefault());
+        ApplicationLog.info(message);
+        System.out.println("%s - %s".formatted(now, message));
+    }
 
     public DarwinCoreArchiveService (DataSet ds) throws Exception
     {
-        this.ds = ds;
         var userDir = System.getProperty("user.dir") + "/" + ds.getId();
-        Files.createDirectories(Paths.get(userDir));
+        this.ds = ds;
         //var normalizedNow = StringStandards.normalizeString(Instant.now().toString());
         this.zipFile = "%s/dwca.zip".formatted(userDir);
-        this.textFile = "%s/occurence.txt".formatted(userDir);
+        this.textFile = "%s/occurrence.txt".formatted(userDir);
+        this.totalRowCount = ds.getLastRowCount();
+        Files.createDirectories(Paths.get(userDir));
+        
     }
         
     public DarwinCoreArchiveService generateTXTFile() throws Exception
     {   
+        var message =  "Iniciando a geração do arquivo DWC";
+        logMessage(message);
+
         var path = Path.of(this.textFile);
         var columnNames = getColumnNames();
         var rows = getDataSetRows();
@@ -62,6 +83,8 @@ public class DarwinCoreArchiveService
     private String getDataSetRows() throws Exception
     {
         var dataSourceRows = new StringBuilder();
+        var rowCount = 0;
+        
         while (data.next()) 
         {
             var resultSetMetaData = data.getMetaData();
@@ -71,8 +94,10 @@ public class DarwinCoreArchiveService
                 var content = "%s\t".formatted(data.getString(i));
                 dataSourceRows.append(content);
             }
-    
-             dataSourceRows.append("\n");
+
+            dataSourceRows.append("\n");
+            rowCount++;
+            writeDataEventBus.post(rowCount);
         }
         return dataSourceRows.toString();
     }
@@ -94,6 +119,9 @@ public class DarwinCoreArchiveService
 
     public DarwinCoreArchiveService generateZIPFile() throws Exception 
     {
+        var message =  "Iniciando a geração do arquivo ZIP";
+        logMessage(message);
+
         try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(this.zipFile))) 
         {
             File fileToZip = new File(this.textFile);
@@ -110,38 +138,31 @@ public class DarwinCoreArchiveService
 
     public DarwinCoreArchiveService readDataFromSource() throws Exception
     {
+        var message =  "Iniciando leitura de dados do banco SQL.";
+        logMessage(message);
+
         var loader = ClassLoader.load(ds.getType());
         var command = DataSetService.getSQLCommand(ds.getToken());
         var conn = ds.getDataSetConnection();
         var statement = conn.createStatement();
+        
         this.data = statement.executeQuery(command);
         
         return this;
     }
  
-    public Service<Void> transferData() throws Exception 
+    public void transferData() throws Exception 
     {
+        var message = "Iniciando a transferência do arquivo";
+        logMessage(message);
+
         var userDir = System.getProperty("user.dir");
         var rSyncConfig = TransferConfigRepository.getRSyncConfig();
         var port = rSyncConfig.getrSyncPort();
         var destination = "%s::%s".formatted(rSyncConfig.getrSyncDestination(), ds.getToken());
         var command = new String[] {"java", "-jar", "%s/libs/yajsync-app-0.9.0-SNAPSHOT-full.jar".formatted(userDir), 
                                     "client", "--port=%s".formatted(port), "-r", this.zipFile, destination };
-        return new Service<Void>() {
-            @Override
-            protected Task<Void> createTask() 
-            {
-                return new Task<>() {
-                    @Override
-                    protected Void call() throws Exception 
-                    {
-                        sendFileUsingCommandLine(command);
-                        return null;
-                    }
-                };
-            }
-        };
-
+        sendFileUsingCommandLine(command);
     }
 
     static void sendFileUsingCommandLine(String[] cmd) throws Exception
@@ -171,6 +192,6 @@ public class DarwinCoreArchiveService
         var exitCode = proc.waitFor();
 
         System.out.println("exitcode " + exitCode);
-        System.out.println("completed at " + Instant.now());
+        System.out.println("completed at " + Instant.now().atZone(ZoneId.systemDefault()));
     }  
 }

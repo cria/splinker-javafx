@@ -4,16 +4,20 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
+
+import org.apache.logging.log4j.LogManager;
+
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.config.DatabaseSetup;
+import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.facade.ConfigFacade;
 import br.org.cria.splinkerapp.managers.EventBusManager;
-import br.org.cria.splinkerapp.managers.SyncManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
+
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.healthmarketscience.jackcess.RuntimeIOException;
@@ -25,7 +29,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
 
 public class HomeController extends AbstractController {
@@ -55,53 +58,15 @@ public class HomeController extends AbstractController {
     Label lblCollectionName;
 
     @FXML
-    void onSyncServerBtnClicked() throws Exception {
-        try {
-            var token = DataSetService.getCurrentToken();
-            showTransferModal("Transferindo");
-            transferService = SyncManager.SyncCollectionData(token);
-            if (transferService != null) 
-            {
-                transferService.setOnFailed(event -> {
-                    var exception = transferService.getException();
-                    modalStage.hide();
-                    modalStage.close();
-                    ApplicationLog.error(exception.getLocalizedMessage());
-                    showErrorModal(exception.getMessage());
-                });
-                transferService.setOnSucceeded(event -> {
-                    modalStage.hide();
-                    modalStage.close();
-                    showAlert(AlertType.INFORMATION, "Transferência concluída", "Arquivo transferido com sucesso");
-                });
-                
-                transferService.start();
-                System.gc();
-            }
-        }
-        catch(RuntimeIOException riox) 
-        {
-            ApplicationLog.error(riox.getLocalizedMessage());
-            riox.printStackTrace();
-            showErrorModal(riox.getLocalizedMessage());
-        } 
-        catch (IllegalStateException ex) {
-            return;
-        } catch (Exception ex) {
-            ApplicationLog.error(ex.getLocalizedMessage());
-            showErrorModal(ex.toString());
-        }
+    void onSyncServerBtnClicked() throws Exception 
+    {
+            navigateTo("file-transfer");
     }
 
-    @FXML
-    void onCancelTransferButtonClicked() {
-        if (transferService != null) {
-            transferService.cancel();
-        }
-    }
 
     @FXML
-    void onDataSetConfigMenuItemClick() {
+    void onDataSetConfigMenuItemClick() 
+    {
         try 
         {
             var ds = DataSetService.getDataSet(token);
@@ -127,38 +92,26 @@ public class HomeController extends AbstractController {
     }
 
     @FXML
-    void onProxyConfigMenuOptionClick() {
-        try {
-            navigateTo(getStage(),"proxy-config");
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    void onProxyConfigMenuOptionClick() 
+    {
+        navigateTo(getStage(),"proxy-config");
     }
 
     @FXML
-    void onCentralServiceConfigMenuOptionClick() {
-        try {
-            navigateTo(getStage(),"central-service");
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    void onCentralServiceConfigMenuOptionClick() 
+    {
+        navigateTo(getStage(),"central-service");
     }
 
     @FXML
     void onDataSetAddMenuItemClick()
     {
-        try {
-            navigateTo(getStage(),"token-login");
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        navigateTo(getStage(),"token-login");
     }
 
     @FXML
-    void onDeleteLocalConfigMenuItemClick() {
+    void onDeleteLocalConfigMenuItemClick() 
+    {
         try 
         {
             DatabaseSetup.deleteLocalDatabase();
@@ -170,7 +123,8 @@ public class HomeController extends AbstractController {
     }
 
     @FXML
-    void onSyncMetaDataMenuItemClick() {
+    void onSyncMetaDataMenuItemClick() 
+    {
         try 
         {
             var map = new HashMap<String, String>();
@@ -199,12 +153,7 @@ public class HomeController extends AbstractController {
     @FXML
     void onDeleteDatasetButtonClick()
     {
-        try {
-            navigateTo(getStage(),"delete-dataset");
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        navigateTo(getStage(),"delete-dataset");
     }
     
     @FXML
@@ -247,6 +196,11 @@ public class HomeController extends AbstractController {
             populateDatasetCombo();
             var collName = DataSetService.getDataSet(token).getDataSetName();
             lblCollectionName.setText(collName);
+            getStage().setOnCloseRequest(event ->{
+                    LockFileManager.deleteLockfile();
+                    LogManager.shutdown();
+                });
+            
         } catch (Exception e) {
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
@@ -283,14 +237,15 @@ public class HomeController extends AbstractController {
         }
         
     }
-    private void populateDatasetCombo() throws Exception
+    
+    void populateDatasetCombo() throws Exception
     {
             var sources = DataSetService.getAllDataSets().stream();
             addOptionsToDataset(sources);
             sources.close();
     }
 
-    private void addOptionsToDataset(Stream<DataSet> sources)
+    void addOptionsToDataset(Stream<DataSet> sources)
     {
         try {
         var options = sources.map(e -> e.getToken()).toList();

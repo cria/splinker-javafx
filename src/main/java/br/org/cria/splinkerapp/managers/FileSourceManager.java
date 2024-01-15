@@ -1,6 +1,7 @@
 package br.org.cria.splinkerapp.managers;
 
 import br.org.cria.splinkerapp.models.DataSet;
+import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.parsers.AccessFileParser;
 import br.org.cria.splinkerapp.parsers.CsvFileParser;
 import br.org.cria.splinkerapp.parsers.DbfFileParser;
@@ -8,16 +9,26 @@ import br.org.cria.splinkerapp.parsers.ExcelFileParser;
 import br.org.cria.splinkerapp.parsers.FileParser;
 import br.org.cria.splinkerapp.parsers.NumbersFileParser;
 import br.org.cria.splinkerapp.parsers.OdsFileParser;
-import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
-import javafx.concurrent.Service;
+import br.org.cria.splinkerapp.services.implementations.DataSetService;
 
 public class FileSourceManager {
-
-    public static Service<Void> processData(DataSet ds) throws Exception
+    DataSet ds;
+    FileParser fileParser;
+    String filePath;
+    public FileSourceManager(DataSet ds) throws Exception
     {
-        var filePath = ds.getDataSetFilePath().toLowerCase();
-        FileParser fileParser = null;
-        var dwcManager = new DarwinCoreArchiveService(ds);
+        this.ds = ds;
+        this.filePath = ds.getDataSetFilePath().toLowerCase();
+        buildFileParser();
+    }
+
+    public FileParser getParser()
+    {
+        return this.fileParser;
+    }
+
+    void buildFileParser() throws Exception
+    {
         var isAccessDb = filePath.endsWith("mdb");
         var isExcel = filePath.endsWith(".xlsx") ||filePath.endsWith(".xls");
         var isCsv = filePath.endsWith(".csv") || filePath.endsWith(".tsv") || filePath.endsWith(".txt");
@@ -50,10 +61,20 @@ public class FileSourceManager {
         {
             fileParser = new DbfFileParser(filePath);
         }
-        if(!isNumbers)
+    }
+
+    public void importData() throws Exception
+    {
+        var isNotMacOsNumbersFile = ds.getType() != DataSourceType.Numbers;
+        if(isNotMacOsNumbersFile)
         {
             fileParser.createTableBasedOnSheet();
             fileParser.insertDataIntoTable();
+
+            var token = ds.getToken();
+            var totalRowCount = fileParser.getTotalRowCount();
+            DataSetService.updateRowcount(token, totalRowCount);
+
         }
         else
         {
@@ -61,11 +82,6 @@ public class FileSourceManager {
             var finalFile = NumbersFileParser.numbersToXLSX(filePath);
             fp.parseFile(finalFile);
         }
-      
-        dwcManager.readDataFromSource()
-        .generateTXTFile()
-        .generateZIPFile();
-        return dwcManager.transferData();
     }
     
 }
