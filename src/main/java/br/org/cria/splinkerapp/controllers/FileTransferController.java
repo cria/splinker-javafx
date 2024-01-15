@@ -4,10 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 import com.google.common.eventbus.Subscribe;
-
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.enums.WindowSizes;
@@ -18,17 +15,13 @@ import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
-import br.org.cria.splinkerapp.tasks.GenerateDarwinCoreArchiveTask;
-import br.org.cria.splinkerapp.tasks.ImportDataTask;
-import br.org.cria.splinkerapp.tasks.TransferFileTask;
-import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
 
@@ -54,7 +47,10 @@ public class FileTransferController extends AbstractController {
     @FXML
     ProgressBar progressBar;
 
-    ExecutorService executor = Executors.newFixedThreadPool(10);
+    @FXML
+    ProgressIndicator progressIndicator;
+
+    ExecutorService executor = Executors.newFixedThreadPool(8);
             
     @FXML
     void onBtnYesClicked()
@@ -66,33 +62,31 @@ public class FileTransferController extends AbstractController {
         btnNo.setVisible(false);
         btnCancelTransfer.setVisible(true);
         progressBar.setVisible(true);
-        importDataBus.post(importDataEvent); 
+        progressIndicator.setVisible(true);
+
+        Platform.runLater(()-> { 
+            try 
+            {
+                importDataBus.post(importDataEvent);     
+            } catch (Exception e) {
+                ApplicationLog.error(e.getLocalizedMessage());
+                showErrorModal(e.getLocalizedMessage());
+            }
+        }); 
     }
 
     @FXML
     void onBtnNoClicked()
     {
-        try {
             navigateTo("home");
-        } catch (Exception e) {
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
-        };
     }
 
     @FXML
     void onButtonCancelClicked()
     {
-        try 
-        {
-            executor.shutdownNow();
-            navigateTo("home");    
-        } catch (Exception e) 
-        {
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
-        }
-        
+        executor.shutdownNow();
+        System.gc();
+        navigateTo("home");            
     }
     
     @Subscribe
@@ -102,18 +96,33 @@ public class FileTransferController extends AbstractController {
         {
             if(!ds.isSQLDatabase())
             {
-                var importDataTask = event.getTask();
-                var generateDWCFileBus = EventBusManager.getEvent(EventTypes.GENERATE_DWC_FILES.name());
-                var generateDWCEvent = new GenerateDWCFileEvent(dwcService);
-       
-                importDataTask.setOnSucceeded((handler) -> {
-                    generateDWCFileBus.post(generateDWCEvent);
-                });
-                lblMessage.setText("Importando dados. Isso pode levar um tempo.");
-                progressBar.progressProperty().bind(importDataTask.progressProperty());
-                executor.execute(importDataTask);
-                executor.awaitTermination(360,TimeUnit.SECONDS);
+                Task<Void> importDataTask = event.getTask();
                 
+                lblMessage.setText("Importando dados. Isso pode levar um tempo.");
+                
+                importDataTask.setOnSucceeded((handler) -> {
+                    System.gc();
+                    Platform.runLater(()->
+                    {
+                        progressBar.progressProperty().unbind();
+                        progressIndicator.progressProperty().unbind();
+                        var generateDWCFileBus = EventBusManager.getEvent(EventTypes.GENERATE_DWC_FILES.name());
+                        var generateDWCEvent = new GenerateDWCFileEvent(dwcService);
+                        generateDWCFileBus.post(generateDWCEvent);
+                    });
+                });
+
+                importDataTask.setOnFailed((handler)->{
+                    var msg = importDataTask.getException().getLocalizedMessage();
+                    ApplicationLog.error(msg);
+                    showErrorModal(msg);
+                });
+
+                progressBar.progressProperty().bind(importDataTask.progressProperty());
+                progressIndicator.progressProperty().bind(importDataTask.progressProperty());
+                var thread = new Thread(importDataTask);
+                thread.setDaemon(true);
+                executor.execute(thread);
             }
         } catch (Exception e)
         {
@@ -127,17 +136,39 @@ public class FileTransferController extends AbstractController {
     {
         try 
         {
-            var generateDWCATask = event.getTask();
-            var transferDWCFileEvent = new TransferFileEvent(dwcService);
-            var transferDWCFileBus = EventBusManager.getEvent(EventTypes.TRANSFER_DATA.name());
-            
-            generateDWCATask.setOnSucceeded((handler) -> {
-                    transferDWCFileBus.post(transferDWCFileEvent);
-                });
+            Task<Void> generateDWCATask = event.getTask();
+            var thread = new Thread(generateDWCATask);
+
             lblMessage.setText("Gerando arquivo, por favor aguarde.");
+
+            generateDWCATask.setOnSucceeded((handler) -> {
+                System.gc();
+                Platform.runLater(()->
+                {
+                    progressBar.progressProperty().unbind();
+                    progressIndicator.progressProperty().unbind();
+                    var transferDWCFileEvent = new TransferFileEvent(dwcService);
+                    var transferDWCFileBus = EventBusManager.getEvent(EventTypes.TRANSFER_DATA.name());
+                    
+                    transferDWCFileBus.post(transferDWCFileEvent);
+                });        
+            });
+
+            generateDWCATask.setOnFailed((handler)->{
+                Platform.runLater(()->{
+                    var msg = generateDWCATask.getException().getLocalizedMessage();
+                    ApplicationLog.error(msg);
+                    showErrorModal(msg);
+                });
+            });
+
             progressBar.progressProperty().bind(generateDWCATask.progressProperty());
-            executor.execute(generateDWCATask);
-            executor.awaitTermination(360,TimeUnit.SECONDS);    
+            progressIndicator.progressProperty().bind(generateDWCATask.progressProperty());
+                
+            
+            thread.setDaemon(true);
+            executor.execute(thread);
+
         } catch (Exception e) 
         {
             ApplicationLog.error(e.getLocalizedMessage());
@@ -152,13 +183,35 @@ public class FileTransferController extends AbstractController {
         {
             var transferFileTask = event.getTask();
             lblMessage.setText("Transferindo arquivo, por favor não feche o spLinker.");
-            progressBar.progressProperty().bind(transferFileTask.progressProperty());
-            executor.execute(transferFileTask);
-            executor.awaitTermination(60,TimeUnit.SECONDS);
-            executor.shutdown();
-            System.gc();
-            showAlert(AlertType.INFORMATION, "Transferência Concluída", "transferido com sucesso!");
-            navigateTo("home");    
+            progressIndicator.setVisible(false);
+            transferFileTask.setOnSucceeded((handler)->
+            {
+                System.gc();
+                Platform.runLater(()-> {
+                    executor.shutdown();
+                    lblMessage.setText("Arquivo transferido.");
+                    this.dialog.setOnCloseRequest((closeRequestHandler) -> 
+                    {
+                        navigateTo("home");
+                    });
+                    showAlert(AlertType.INFORMATION, "Transferência Concluída",
+                                                     "transferido com sucesso!");
+                });
+            });
+            transferFileTask.setOnFailed((handler)->{
+                System.gc();
+                Platform.runLater(()->{
+                    executor.shutdown();
+                    var msg = transferFileTask.getException().getLocalizedMessage();
+                    ApplicationLog.error(msg);
+                    showErrorModal(msg);
+                });
+            });
+
+            var thread = new Thread(transferFileTask);
+            thread.setDaemon(true);
+            executor.execute(thread);
+            
         }  catch (Exception e) 
         {
             ApplicationLog.error(e.getLocalizedMessage());
@@ -171,21 +224,17 @@ public class FileTransferController extends AbstractController {
     {  
         btnCancelTransfer.setVisible(false);
         progressBar.setVisible(false);
+        progressIndicator.setVisible(false);
+
         try 
         {   
-            token = DataSetService.getCurrentToken();
-            ds = DataSetService.getDataSet(token);
-            dwcService = new DarwinCoreArchiveService(ds);
-            //var importDataEvent = new ImportDataEvent(ds);
-            // var generateDwcFileEvent = new GenerateDWCFileEvent(dwcService);
-            // var transferDWCFileEvent = new TransferFileEvent(dwcService);
-            // onImportDataEventTrigger(importDataEvent);
-            // onGenerateDWCFileEventTrigger(generateDwcFileEvent);
-            // onTransferFileEventTrigger(transferDWCFileEvent);
             var importDataBus = EventBusManager.getEvent(EventTypes.IMPORT_DATA.name());
             var generateDWCBus = EventBusManager.getEvent(EventTypes.GENERATE_DWC_FILES.name());
             var transferFileBus = EventBusManager.getEvent(EventTypes.TRANSFER_DATA.name());
-            
+            token = DataSetService.getCurrentToken();
+            ds = DataSetService.getDataSet(token);
+            dwcService = new DarwinCoreArchiveService(ds);
+
             generateDWCBus.register(this);
             transferFileBus.register(this);
             importDataBus.register(this);
