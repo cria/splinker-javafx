@@ -123,9 +123,14 @@ public class ExcelFileParser extends FileParser {
                       statement.executeBatch();
                       conn.commit();
                       statement.clearBatch();
-                      readRowEventBus.post(currentRow);
+                      
                   }
+                  readRowEventBus.post(currentRow);
               }
+
+              statement.executeBatch();
+              conn.commit();
+              statement.clearBatch();
               statement.close();
           }
           

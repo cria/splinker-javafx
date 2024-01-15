@@ -77,6 +77,10 @@ public class CsvFileParser extends FileParser
             }
             readRowEventBus.post(currentRow);
         }
+
+        statement.executeBatch();
+        conn.commit();
+        statement.clearBatch();
         conn.setAutoCommit(true);
         conn.close();
     }

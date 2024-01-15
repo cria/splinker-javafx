@@ -2,14 +2,11 @@ package br.org.cria.splinkerapp.parsers;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Set;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
-
 import com.microsoft.sqlserver.jdbc.StringUtils;
-
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.utils.StringStandards;
 
@@ -70,7 +67,7 @@ public class AccessFileParser extends FileParser {
                             cellIndex++;
                         }
                         statement.addBatch();
-                        if ((currentRow % 10 == 0) || (totalRowCount - currentRow < 10)) 
+                        if ((currentRow % 10 == 0)) 
                         {
                             statement.executeBatch();
                             conn.commit();
@@ -80,6 +77,9 @@ public class AccessFileParser extends FileParser {
                         readRowEventBus.post(currentRow);
                     }
                 }
+                statement.executeBatch();
+                conn.commit();
+                statement.clearBatch();
                 statement.close();
             }catch (FileNotFoundException fnfe) {
                 continue;
