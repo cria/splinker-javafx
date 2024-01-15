@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import com.healthmarketscience.jackcess.ColumnBuilder;
 import com.healthmarketscience.jackcess.DataType;
@@ -24,7 +23,7 @@ public class AccessFileParserTest extends ParserBaseTest {
     static List<FileFormat> unsupportedFormats = Arrays.asList(FileFormat.GENERIC_JET4, FileFormat.V1997, FileFormat.MSISAM);
     static List<FileFormat> fileformats = Arrays.asList(FileFormat.values()).stream()
             .filter(e -> !unsupportedFormats.contains(e)).toList();
-    static int numberOfRows = rowCount/3;
+    static int numberOfRows = (rowCount/3)+12;
     @Test
     public void parseV2000AccessFileTest() throws Exception {
 
