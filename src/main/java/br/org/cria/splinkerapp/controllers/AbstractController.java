@@ -5,7 +5,6 @@ import java.util.ResourceBundle;
 import com.google.common.eventbus.EventBus;
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.Router;
-import javafx.concurrent.Service;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -23,7 +22,6 @@ import javafx.stage.StageStyle;
 public abstract class AbstractController implements Initializable {
     protected EventBus bus;
     protected String token;
-    protected Service transferService;
     protected Stage modalStage = new Stage();
     Alert dialog = new Alert(AlertType.INFORMATION);
     protected abstract Pane getPane();
@@ -36,14 +34,29 @@ public abstract class AbstractController implements Initializable {
 
     protected abstract void setScreensize();
 
-    void navigateTo(String routeName) throws Exception
+    void navigateTo(String routeName)
     {
-        Router.getInstance().navigateTo(getStage(), routeName);
+        try 
+        {
+            Router.getInstance().navigateTo(getStage(), routeName);
+        } catch (Exception e) 
+        {
+            ApplicationLog.error(e.getLocalizedMessage());
+            showErrorModal(e.getLocalizedMessage());
+        }
+        
     }
     
-    void navigateTo(Stage stage, String routeName) throws Exception
+    void navigateTo(Stage stage, String routeName)
     {
-        Router.getInstance().navigateTo(stage, routeName);
+        try 
+        {
+            Router.getInstance().navigateTo(stage, routeName);
+        } catch (Exception e) 
+        {
+            ApplicationLog.error(e.getLocalizedMessage());
+            showErrorModal(e.getLocalizedMessage());
+        }
     }
 
     protected void showAlert(AlertType type, String title, String message)
@@ -56,6 +69,15 @@ public abstract class AbstractController implements Initializable {
         dialog.setTitle(title);
         dialog.setContentText(message);
         dialog.show();
+        dialog.onCloseRequestProperty().addListener((listener) -> { 
+        try 
+        {
+            navigateTo("home");     
+        } catch (Exception e) {
+            ApplicationLog.error(e.getLocalizedMessage());
+            showErrorModal(e.getLocalizedMessage());
+        }
+        });
     }
 
     protected Stage getStage()

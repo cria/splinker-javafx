@@ -4,8 +4,12 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
+
+import org.apache.logging.log4j.LogManager;
+
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.config.DatabaseSetup;
+import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.facade.ConfigFacade;
@@ -56,30 +60,9 @@ public class HomeController extends AbstractController {
     @FXML
     void onSyncServerBtnClicked() throws Exception 
     {
-        try {
             navigateTo("file-transfer");
-        }
-        catch(RuntimeIOException riox) 
-        {
-            ApplicationLog.error(riox.getLocalizedMessage());
-            riox.printStackTrace();
-            showErrorModal(riox.getLocalizedMessage());
-        } 
-        catch (IllegalStateException ex) {
-            return;
-        } catch (Exception ex) {
-            ApplicationLog.error(ex.getLocalizedMessage());
-            showErrorModal(ex.toString());
-        }
     }
 
-    @FXML
-    void onCancelTransferButtonClicked() 
-    {
-        if (transferService != null) {
-            transferService.cancel();
-        }
-    }
 
     @FXML
     void onDataSetConfigMenuItemClick() 
@@ -111,34 +94,19 @@ public class HomeController extends AbstractController {
     @FXML
     void onProxyConfigMenuOptionClick() 
     {
-        try {
-            navigateTo(getStage(),"proxy-config");
-        } catch (Exception e) {
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
-        }
+        navigateTo(getStage(),"proxy-config");
     }
 
     @FXML
     void onCentralServiceConfigMenuOptionClick() 
     {
-        try {
-            navigateTo(getStage(),"central-service");
-        } catch (Exception e) {
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
-        }
+        navigateTo(getStage(),"central-service");
     }
 
     @FXML
     void onDataSetAddMenuItemClick()
     {
-        try {
-            navigateTo(getStage(),"token-login");
-        } catch (Exception e) {
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
-        }
+        navigateTo(getStage(),"token-login");
     }
 
     @FXML
@@ -185,12 +153,7 @@ public class HomeController extends AbstractController {
     @FXML
     void onDeleteDatasetButtonClick()
     {
-        try {
-            navigateTo(getStage(),"delete-dataset");
-        } catch (Exception e) {
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
-        }
+        navigateTo(getStage(),"delete-dataset");
     }
     
     @FXML
@@ -233,6 +196,11 @@ public class HomeController extends AbstractController {
             populateDatasetCombo();
             var collName = DataSetService.getDataSet(token).getDataSetName();
             lblCollectionName.setText(collName);
+            getStage().setOnCloseRequest(event ->{
+                    LockFileManager.deleteLockfile();
+                    LogManager.shutdown();
+                });
+            
         } catch (Exception e) {
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
