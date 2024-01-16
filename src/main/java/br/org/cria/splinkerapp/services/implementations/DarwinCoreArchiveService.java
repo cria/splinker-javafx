@@ -91,7 +91,9 @@ public class DarwinCoreArchiveService
             var count = resultSetMetaData.getColumnCount();
             for (int i = 1; i <= count; i++) 
             {
-                var content = "%s\t".formatted(data.getString(i));
+                var value = data.getString(i);
+                var isNullValue = (value == null) || (value.toLowerCase() == "null");
+                var content = "%s\t".formatted( isNullValue? "":value);
                 dataSourceRows.append(content);
             }
 
