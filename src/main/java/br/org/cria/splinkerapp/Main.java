@@ -1,6 +1,7 @@
 package br.org.cria.splinkerapp;
 
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.stage.Stage;
 
 import org.apache.logging.log4j.LogManager;
@@ -17,7 +18,7 @@ public class Main extends Application
         try 
         {
             LockFileManager.verifyLockFile();
-            var initDb = DatabaseSetup.initDb();
+            Task<Void> initDb = DatabaseSetup.initDb();
             if (initDb != null) 
             {
                 stage.setOnCloseRequest(event ->{
@@ -29,7 +30,7 @@ public class Main extends Application
                     ApplicationLog.error(exception.getLocalizedMessage());
                 });
 
-                initDb.setOnSucceeded((event )-> {
+                initDb.setOnSucceeded(event -> {
                         stage.setTitle("spLinker");
                         stage.setResizable(false); 
                         try {
