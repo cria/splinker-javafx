@@ -17,8 +17,8 @@ public class DatabaseSetup {
         Files.delete(path);
     }
 
-    public static Task initDb() {
-        return new Task<>() {
+    public static Task<Void> initDb() {
+        return new Task<Void>() {
             @Override
             protected Void call() throws Exception 
             {
