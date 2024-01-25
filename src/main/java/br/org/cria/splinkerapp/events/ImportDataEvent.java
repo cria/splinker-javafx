@@ -13,7 +13,7 @@ public class ImportDataEvent  implements IBaseEvent{
     }
 
     @Override
-    public Task getTask() throws Exception{
+    public Task<Void> getTask() throws Exception{
         return new ImportDataTask(ds);
     }
     

@@ -99,10 +99,9 @@ public class FileTransferController extends AbstractController {
                         
             if(!ds.isSQLDatabase())
             {
-                Task<Void> importDataTask = event.getTask();
-                
                 lblMessage.setText("Importando dados. Isso pode levar um tempo.");
                 
+                Task<Void> importDataTask = event.getTask();
                 importDataTask.setOnSucceeded((handler) -> {
                     System.gc();
                     Platform.runLater(()->
@@ -114,9 +113,11 @@ public class FileTransferController extends AbstractController {
                 });
 
                 importDataTask.setOnFailed((handler)->{
+                    executor.shutdown();
                     var msg = importDataTask.getException().getLocalizedMessage();
                     ApplicationLog.error(msg);
                     showErrorModal(msg);
+                    
                 });
 
                 progressBar.progressProperty().bind(importDataTask.progressProperty());
@@ -161,6 +162,7 @@ public class FileTransferController extends AbstractController {
 
             generateDWCATask.setOnFailed((handler)->{
                 Platform.runLater(()->{
+                    executor.shutdown();
                     var msg = generateDWCATask.getException().getLocalizedMessage();
                     ApplicationLog.error(msg);
                     showErrorModal(msg);
