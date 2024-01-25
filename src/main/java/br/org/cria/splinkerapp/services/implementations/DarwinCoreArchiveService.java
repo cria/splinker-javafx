@@ -85,7 +85,6 @@ public class DarwinCoreArchiveService
         var dataSourceRows = new StringBuilder();
         var rowCount = 0;
         var baseStr ="%s\t";
-        var isNull = false;
         while (data.next()) 
         {
             var resultSetMetaData = data.getMetaData();
@@ -95,6 +94,7 @@ public class DarwinCoreArchiveService
             {
                 var value = data.getString(i);
                 var hasValue = value != null;
+                var isNull = false;
                 
                 if(hasValue)
                 {
