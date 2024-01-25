@@ -6,6 +6,7 @@ import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -62,10 +63,9 @@ public class NewConfigurationController extends AbstractController {
     {
         try 
         {
-            //var template = "%s.fxml".formatted(pageName);
             var template = basePath.formatted(pageName);
             loader = new FXMLLoader(getClass().getResource(template));
-            childNode = loader.load();
+            Node childNode = loader.load();
             var children = content.getChildren();
             children.clear();
             children.add(childNode);
