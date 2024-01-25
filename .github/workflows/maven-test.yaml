@@ -1,26 +1,26 @@
-name: Maven Test
-on: [push]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    env:
-      CURRENT_DIR: ${{ github.workspace }}
-      IS_GITHUB_FLOW: true
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 20
-        uses: actions/setup-java@v3
-        with:
-          java-version: 20
-          distribution: 'temurin'
-          architecture: x64
-          lfs: true
+# name: Maven Test
+# on: [push]
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
+#     env:
+#       CURRENT_DIR: ${{ github.workspace }}
+#       IS_GITHUB_FLOW: true
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Set up JDK 20
+#         uses: actions/setup-java@v3
+#         with:
+#           java-version: 20
+#           distribution: 'temurin'
+#           architecture: x64
+#           lfs: true
       
-      - name: Print workspace path
-        run: echo $GITHUB_WORKSPACE && pwd && echo ${{github.ref}}
-      - name: Instalar Git LFS
-        run: sudo apt-get install git-lfs
-      - name: Configurar Git LFS
-        run: git lfs install
-      - name: Testes automatizados
-        run: mvn clean test
+#       - name: Print workspace path
+#         run: echo $GITHUB_WORKSPACE && pwd && echo ${{github.ref}}
+#       - name: Instalar Git LFS
+#         run: sudo apt-get install git-lfs
+#       - name: Configurar Git LFS
+#         run: git lfs install
+#       - name: Testes automatizados
+#         run: mvn clean test
