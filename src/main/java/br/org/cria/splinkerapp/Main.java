@@ -36,7 +36,7 @@ public class Main extends Application
                         try {
                             if(DataSetService.hasConfiguration())
                         {
-                            Router.getInstance().navigateTo(stage, "home");
+                            Router.getInstance().navigateTo(stage, "new-home");
                         }
                         else
                         {

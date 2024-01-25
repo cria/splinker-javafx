@@ -17,11 +17,8 @@ import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
-
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.healthmarketscience.jackcess.RuntimeIOException;
-
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -175,6 +172,13 @@ public class HomeController extends AbstractController {
         }
     }
     
+    @FXML
+    void onConfigurationItemClick()
+    {
+        navigateTo(getStage(),"new-configuration");
+    }
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
