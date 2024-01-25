@@ -84,16 +84,24 @@ public class DarwinCoreArchiveService
     {
         var dataSourceRows = new StringBuilder();
         var rowCount = 0;
-        
+        var baseStr ="%s\t";
+        var isNull = false;
         while (data.next()) 
         {
             var resultSetMetaData = data.getMetaData();
             var count = resultSetMetaData.getColumnCount();
+            
             for (int i = 1; i <= count; i++) 
             {
                 var value = data.getString(i);
-                var isNullValue = (value == null) || (value.toLowerCase() == "null");
-                var content = "%s\t".formatted( isNullValue? "":value);
+                var hasValue = value != null;
+                
+                if(hasValue)
+                {
+                    isNull = value.toLowerCase() == "null";
+                }
+                
+                var content = baseStr.formatted( isNull? "" : value);
                 dataSourceRows.append(content);
             }
 
