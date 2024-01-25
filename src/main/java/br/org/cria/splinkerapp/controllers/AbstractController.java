@@ -11,17 +11,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 public abstract class AbstractController implements Initializable {
     protected EventBus bus;
     protected String token;
+    protected FXMLLoader loader;
     protected Stage modalStage = new Stage();
     Alert dialog = new Alert(AlertType.INFORMATION);
     protected abstract Pane getPane();
@@ -111,21 +108,6 @@ public abstract class AbstractController implements Initializable {
         return new Stage();
     }
 
-    protected void showTransferModal(String modalText)
-    {
-        modalStage.initOwner(getStage());
-        modalStage.initModality(Modality.WINDOW_MODAL);
-        modalStage.initStyle(StageStyle.TRANSPARENT);
-        Label label = new Label(modalText);
-        label.setStyle("-fx-font-size: 24;");
-        StackPane modalLayout = new StackPane(label);
-        modalLayout.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);"); 
-        Scene modalScene = new Scene(modalLayout, 300, 200, Color.TRANSPARENT);
-        modalStage.setScene(modalScene);
-        modalStage.show();
-
-    }
-
     protected void showErrorModal(String errorMessage) 
     {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -186,4 +168,5 @@ public abstract class AbstractController implements Initializable {
             ApplicationLog.error(e.getLocalizedMessage());
         }
     }
+
 }
