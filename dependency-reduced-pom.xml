@@ -8,6 +8,25 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>io.sentry</groupId>
+        <artifactId>sentry-maven-plugin</artifactId>
+        <version>0.0.6</version>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <goals>
+              <goal>uploadSourceBundle</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <debugSentryCli>true</debugSentryCli>
+          <org>cria-centro-de-referencia-em-i</org>
+          <project>java-log4j2</project>
+          <authToken>${env.SENTRY_AUTH_TOKEN}</authToken>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.22.0</version>
         <dependencies>
@@ -18,7 +37,7 @@
           </dependency>
         </dependencies>
         <configuration>
-          <argLine>-Xmx2G -XX:MaxMetaspaceSize=2048m -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90</argLine>
+          <argLine>-Xmx2G -XX:MaxMetaspaceSize=4096m -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90</argLine>
           <parallel>all</parallel>
           <useUnlimitedThreads>true</useUnlimitedThreads>
           <includes>

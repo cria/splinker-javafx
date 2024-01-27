@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" packages="org.apache.logging.log4j.core,io.sentry.log4j2">
+    <Appenders>
+      
+        <File name="LOGFILE" fileName="splinker.log">
+            <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n" />
+            <ThresholdFilter level="error" />
+        </File>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+        <!-- Setting minimumBreadcrumbLevel modifies the default minimum level to add breadcrumbs from INFO to DEBUG  -->
+        <!-- Setting minimumEventLevel the default minimum level to capture an event from ERROR to WARN  -->
+        <Sentry name="Sentry"
+                dsn="https://cf699813548043f5c734471240b2ec6c@o4506639520104448.ingest.sentry.io/4506639532032000"
+                minimumBreadcrumbLevel="DEBUG"
+                minimumEventLevel="WARN" />
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="LOGFILE" />
+            <AppenderRef ref="Sentry"/>
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

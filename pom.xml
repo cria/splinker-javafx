@@ -20,6 +20,11 @@
   </repository>
 </repositories>
     <dependencies>
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-log4j2</artifactId>
+            <version>7.2.0</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.healthmarketscience.jackcess/jackcess -->
         <dependency>
             <groupId>com.healthmarketscience.jackcess</groupId>
@@ -148,6 +153,39 @@
 
     <build>
         <plugins>
+         <plugin>
+      <groupId>io.sentry</groupId>
+      <artifactId>sentry-maven-plugin</artifactId>
+      <version>0.0.6</version>
+      <extensions>true</extensions>
+      <configuration>
+        <!-- for showing output of sentry-cli -->
+        <debugSentryCli>true</debugSentryCli>
+
+        <org>cria-centro-de-referencia-em-i</org>
+
+        <project>java-log4j2</project>
+
+        <!-- in case you're self hosting, provide the URL here -->
+        <!--<url>http://localhost:8000/</url>-->
+
+        <!-- provide your auth token via SENTRY_AUTH_TOKEN environment variable -->
+        <authToken>${env.SENTRY_AUTH_TOKEN}</authToken>
+      </configuration>
+      <executions>
+        <execution>
+            <?m2e execute onConfiguration,onIncremental?>
+          <goals>
+            <!--
+            Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
+            This enables source context, allowing you to see your source
+            code as part of your stack traces in Sentry.
+            -->
+            <goal>uploadSourceBundle</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
         <plugin>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-surefire-plugin</artifactId>
