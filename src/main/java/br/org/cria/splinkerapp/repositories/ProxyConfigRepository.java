@@ -11,6 +11,7 @@ import java.util.List;
 
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
+import io.sentry.Sentry;
 
 
 
@@ -67,6 +68,7 @@ public class ProxyConfigRepository extends BaseRepository{
                 hasProxy = addr != null;
             }
         } catch (Exception e) {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             e.printStackTrace();
         }

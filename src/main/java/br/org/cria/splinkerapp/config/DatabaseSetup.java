@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.DriverManager;
 import br.org.cria.splinkerapp.ApplicationLog;
+import io.sentry.Sentry;
 import javafx.concurrent.Task;
 
 public class DatabaseSetup {
@@ -38,6 +39,7 @@ public class DatabaseSetup {
                     } 
                     catch (Exception e) 
                     {
+                        Sentry.captureException(e);
                         ApplicationLog.error(e.getLocalizedMessage());
                         e.printStackTrace();
                         System.exit(1);

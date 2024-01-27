@@ -9,6 +9,7 @@ import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.microsoft.sqlserver.jdbc.StringUtils;
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.utils.StringStandards;
+import io.sentry.Sentry;
 
 public class AccessFileParser extends FileParser {
     Database db;
@@ -85,6 +86,7 @@ public class AccessFileParser extends FileParser {
                 continue;
             }
              catch (Exception e) {
+                Sentry.captureException(e);
                 e.printStackTrace();
                 ApplicationLog.error(e.getLocalizedMessage());
             }
@@ -124,6 +126,7 @@ public class AccessFileParser extends FileParser {
                 continue;
             }
              catch (Exception e) {
+                Sentry.captureException(e);
                 e.printStackTrace();
                 ApplicationLog.error(e.getLocalizedMessage());
             }

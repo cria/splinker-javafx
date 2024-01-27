@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 import com.google.common.eventbus.EventBus;
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.Router;
+import io.sentry.Sentry;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -38,6 +39,7 @@ public abstract class AbstractController implements Initializable {
             Router.getInstance().navigateTo(getStage(), routeName);
         } catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
@@ -51,6 +53,7 @@ public abstract class AbstractController implements Initializable {
             Router.getInstance().navigateTo(stage, routeName);
         } catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
@@ -71,6 +74,7 @@ public abstract class AbstractController implements Initializable {
         {
             navigateTo("home");     
         } catch (Exception e) {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
@@ -87,25 +91,12 @@ public abstract class AbstractController implements Initializable {
             stage.setResizable(false);
             return stage;    
         }
-        catch (IllegalStateException ex) {
+        catch (Exception ex) {
+            Sentry.captureException(ex);
             System.out.println("\nIllegalStateException\n");
             ex.printStackTrace();
             return null;
-        } 
-        catch (Exception e) 
-        {
-            final String windowMsg = "Cannot invoke \"javafx.scene.Scene.getWindow()\" because \"scene\" is null";
-            final String panelMsg = "Cannot invoke \"javafx.scene.layout.Pane.getScene()\" because \"pane\" is null";
-            var errorMsg = e.getMessage();
-            var isExpectedError = errorMsg.contains(windowMsg) || errorMsg.contains(panelMsg);
-            
-            if(!isExpectedError)
-            {
-                ApplicationLog.error(e.getLocalizedMessage());
-            }
-            
         }
-        return new Stage();
     }
 
     protected void showErrorModal(String errorMessage) 
@@ -142,11 +133,9 @@ public abstract class AbstractController implements Initializable {
             var scene  = new Scene(parent);
             stage.setScene(scene);
         }
-        catch (IllegalStateException ex) {
-                return null;
-        } 
         catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
         }
         return stage;
@@ -160,11 +149,9 @@ public abstract class AbstractController implements Initializable {
             var stage = createNewWindow(routeName);
             stage.show();    
         }
-        catch (IllegalStateException ex) {
-            return;
-        } 
         catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
         }
     }

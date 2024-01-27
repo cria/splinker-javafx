@@ -8,7 +8,9 @@ import org.apache.logging.log4j.LogManager;
 
 import br.org.cria.splinkerapp.config.DatabaseSetup;
 import br.org.cria.splinkerapp.config.LockFileManager;
+import br.org.cria.splinkerapp.config.SentryConfig;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
+import io.sentry.Sentry;
 
 public class Main extends Application 
 {
@@ -17,6 +19,7 @@ public class Main extends Application
     {
         try 
         {
+            SentryConfig.setUp();
             LockFileManager.verifyLockFile();
             Task<Void> initDb = DatabaseSetup.initDb();
             if (initDb != null) 
@@ -43,6 +46,7 @@ public class Main extends Application
                             Router.getInstance().navigateTo(stage, "first-config-dialog");
                         }
                         } catch (Exception e) {
+                            Sentry.captureException(e);
                             ApplicationLog.error(e.getLocalizedMessage());
                              throw new RuntimeException(e);
                         }
@@ -54,6 +58,7 @@ public class Main extends Application
         } 
         catch (Exception ex) 
         {
+            Sentry.captureException(ex);
             LockFileManager.deleteLockfile();
             ApplicationLog.error(ex.getLocalizedMessage());
             throw new RuntimeException(ex);

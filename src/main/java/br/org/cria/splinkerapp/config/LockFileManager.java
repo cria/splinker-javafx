@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import br.org.cria.splinkerapp.ApplicationLog;
+import io.sentry.Sentry;
 
 public final class LockFileManager {
    private static final String LOCK_FILE_NAME = "%s/spLinker.lock".formatted(System.getProperty("user.dir")) ;
@@ -32,6 +33,7 @@ public final class LockFileManager {
         } 
         catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
         }
    }

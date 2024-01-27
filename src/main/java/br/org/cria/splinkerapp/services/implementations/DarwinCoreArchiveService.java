@@ -5,6 +5,8 @@ import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
+import io.sentry.Sentry;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -141,6 +143,7 @@ public class DarwinCoreArchiveService
         } 
         catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             throw e;
         }

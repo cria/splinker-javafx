@@ -9,6 +9,7 @@ import br.org.cria.splinkerapp.facade.ConfigFacade;
 import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
+import io.sentry.Sentry;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -82,6 +83,7 @@ public class TokenLoginController extends AbstractController {
         } 
         catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getMessage());
         }

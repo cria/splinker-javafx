@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import br.org.cria.splinkerapp.utils.StringStandards;
+import io.sentry.Sentry;
 
 public class ExcelFileParser extends FileParser {
     String fileSourcePath;
@@ -138,8 +139,9 @@ public class ExcelFileParser extends FileParser {
           conn.close();
         }catch (Exception e) 
         {
-          e.printStackTrace();
-          throw new RuntimeException(e);
+            Sentry.captureException(e);
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

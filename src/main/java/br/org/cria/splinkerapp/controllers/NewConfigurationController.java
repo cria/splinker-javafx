@@ -4,10 +4,12 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.WindowSizes;
+import io.sentry.Sentry;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
@@ -31,6 +33,9 @@ public class NewConfigurationController extends AbstractController {
     @FXML
     Label dataLabel;
 
+    @FXML
+    ImageView imgBack;
+
     String basePath = "/br/org/cria/splinkerapp/%s.fxml";
 
     @Override
@@ -42,6 +47,7 @@ public class NewConfigurationController extends AbstractController {
         } 
         catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
@@ -71,9 +77,16 @@ public class NewConfigurationController extends AbstractController {
             children.add(childNode);
         } catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
+    }
+
+    @FXML
+    void onBackClicked()
+    {
+        navigateTo(getStage(), "new-home");
     }
 
     @FXML

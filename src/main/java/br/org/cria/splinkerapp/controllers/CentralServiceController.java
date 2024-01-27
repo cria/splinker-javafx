@@ -6,6 +6,7 @@ import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
+import io.sentry.Sentry;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -43,6 +44,7 @@ public class CentralServiceController extends AbstractController {
        } 
        catch (Exception e) 
        {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getMessage());
        }
@@ -62,6 +64,7 @@ public class CentralServiceController extends AbstractController {
         } 
         catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getMessage());
         }    

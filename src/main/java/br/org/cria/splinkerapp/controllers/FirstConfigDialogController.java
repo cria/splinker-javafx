@@ -5,6 +5,7 @@ import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
+import io.sentry.Sentry;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
@@ -32,6 +33,7 @@ public class FirstConfigDialogController extends AbstractController{
         } 
         catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
