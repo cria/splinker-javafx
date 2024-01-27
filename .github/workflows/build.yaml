@@ -41,6 +41,8 @@ jobs:
 
   build-on-windows:
     runs-on: windows-latest
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - name: Configurar Java
