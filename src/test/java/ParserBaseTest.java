@@ -9,12 +9,13 @@ public class ParserBaseTest {
     
     static boolean isRunningOnGithub = Boolean.valueOf(System.getenv("IS_GITHUB_FLOW"));
     //static boolean isRunningOnGithub = Boolean.valueOf(System.getProperty("IS_GITHUB_FLOW", "false"));
-    static String ghPath = isRunningOnGithub ? System.getenv("CURRENT_DIR"):".";
+    //static String ghPath = isRunningOnGithub ? System.getenv("CURRENT_DIR"):".";
+    static String ghPath = isRunningOnGithub ? ".":"./src";
     static Faker faker  = new Faker();
     static String baseConnectionString = "jdbc:sqlite:splinker_%s.db";
     static int rowCount = 300000;
     //static String baseDir = System.getProperty("github.workspace",System.getProperty("GITHUB_WORKSPACE","src/test/java/datasources/"));
-    static String baseDir = "%s/src/test/java/datasources/".formatted(ghPath);
+    static String baseDir = "%s/test/java/datasources/".formatted(ghPath);
     protected List<Map<String, String>> getParsedDataFromTable(String tableName, String connString) throws Exception
     {
         var values = new ArrayList<Map<String, String>>();
