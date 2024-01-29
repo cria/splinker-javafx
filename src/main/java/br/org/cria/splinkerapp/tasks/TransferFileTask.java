@@ -2,13 +2,7 @@ package br.org.cria.splinkerapp.tasks;
 
 import java.time.Instant;
 import java.time.ZoneId;
-
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-
 import br.org.cria.splinkerapp.ApplicationLog;
-import br.org.cria.splinkerapp.enums.EventTypes;
-import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
 import javafx.concurrent.Task;
 
