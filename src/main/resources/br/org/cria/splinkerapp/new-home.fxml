@@ -39,22 +39,22 @@
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="307.0" layoutY="277.0" text="Registros Enviados">
+      <Label layoutX="298.0" layoutY="264.0" text="Registros Enviados">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="320.0" layoutY="196.0" text="Última Atualização">
+      <Label layoutX="300.0" layoutY="196.0" text="Última Atualização">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="371.0" layoutY="231.0" text="19/11/1911">
+      <Label id="lblLastUpdate" fx:id="lblLastUpdate" layoutX="300.0" layoutY="231.0" prefHeight="23.0" prefWidth="140.0" text="                  -" textAlignment="CENTER">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="376.0" layoutY="308.0" text="999.999">
+      <Label id="lblRecordsSent" fx:id="lblRecordsSent" layoutX="298.0" layoutY="300.0" prefHeight="23.0" prefWidth="143.0" text="                   -" textAlignment="CENTER">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
