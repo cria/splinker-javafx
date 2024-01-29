@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.WindowSizes;
+import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import io.sentry.Sentry;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -43,6 +44,7 @@ public class NewConfigurationController extends AbstractController {
     {
         try 
         {
+            token = DataSetService.getCurrentToken();
             showCentralServiceConfiguration();
         } 
         catch (Exception e) 
@@ -113,8 +115,30 @@ public class NewConfigurationController extends AbstractController {
     @FXML
     void showDataSourceConfiguration()
     {
-        loadPage("file-selection");
-        dataLabel.setTextFill(Color.RED);
+          try 
+          {
+            var ds = DataSetService.getDataSet(token);  
+            var pageName = "collection-database";
+
+            if(ds.isAccessDb())
+            {    
+                pageName = "access-db-modal";
+            }
+
+            if(ds.isFile())
+            {
+                pageName = "file-selection";
+            }
+
+            loadPage(pageName);
+            dataLabel.setTextFill(Color.RED);
+          } 
+          catch (Exception e) 
+          {
+            ApplicationLog.error(e.getLocalizedMessage());
+            Sentry.captureException(e);
+            showErrorModal(e.getLocalizedMessage());
+          }
     }
 
     

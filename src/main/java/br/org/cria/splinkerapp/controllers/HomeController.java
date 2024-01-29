@@ -17,6 +17,8 @@ import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
+import io.sentry.Sentry;
+
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import javafx.collections.FXCollections;
@@ -55,57 +57,19 @@ public class HomeController extends AbstractController {
     Label lblCollectionName;
 
     @FXML
+    Label lblLastUpdate;
+
+
+    @FXML
+    Label lblRecordsSent;
+
+    @FXML
     void onSyncServerBtnClicked() throws Exception 
     {
             navigateTo("file-transfer");
     }
 
-
-    @FXML
-    void onDataSetConfigMenuItemClick() 
-    {
-        try 
-        {
-            var ds = DataSetService.getDataSet(token);
-            if(ds.isAccessDb())
-            {    
-                navigateTo(getStage(),"access-db-modal");
-                return;
-            }
-
-            if(ds.isFile())
-            {
-                navigateTo(getStage(),"file-selection");
-                return;
-            }
-
-            navigateTo(getStage(),"collection-database");
-        } 
-        catch (Exception e) 
-        {
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
-        }
-    }
-
-    @FXML
-    void onProxyConfigMenuOptionClick() 
-    {
-        navigateTo(getStage(),"proxy-config");
-    }
-
-    @FXML
-    void onCentralServiceConfigMenuOptionClick() 
-    {
-        navigateTo(getStage(),"central-service");
-    }
-
-    @FXML
-    void onDataSetAddMenuItemClick()
-    {
-        navigateTo(getStage(),"token-login");
-    }
-
+  
     @FXML
     void onDeleteLocalConfigMenuItemClick() 
     {
@@ -114,6 +78,7 @@ public class HomeController extends AbstractController {
             DatabaseSetup.deleteLocalDatabase();
             System.exit(0);
         } catch (Exception e) {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
@@ -142,6 +107,7 @@ public class HomeController extends AbstractController {
             ConfigFacade.HandleBackendData(token, config);
         } catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
@@ -162,11 +128,16 @@ public class HomeController extends AbstractController {
             if(newToken!=null)
             {
                 token = newToken;
-                DataSetService.setCurrentToken(token);
                 var dataSet = DataSetService.getDataSet(token);
+                var lastUdate = dataSet.getUpdatedAt() ==null? "-": dataSet.getUpdatedAt().toString();
+                var recordsSent = dataSet.getLastRowCount() > 0? String.valueOf(dataSet.getLastRowCount()): "-";
+                DataSetService.setCurrentToken(token);
                 lblCollectionName.setText(dataSet.getDataSetName());
+                lblLastUpdate.setText(lastUdate);
+                lblRecordsSent.setText(recordsSent);
             }
         } catch (Exception e) {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
@@ -194,6 +165,14 @@ public class HomeController extends AbstractController {
             // navigateTo(getStage(), "first-config-dialog", 330,150);
             // }
             token = DataSetService.getCurrentToken();
+            var ds = DataSetService.getDataSet(token);
+            var datasetWasUpdatedAtLeastOnce = ds.getUpdatedAt() != null;
+            if(datasetWasUpdatedAtLeastOnce)
+            {
+                lblLastUpdate.setText(ds.getUpdatedAt().toString());
+                lblRecordsSent.setText(String.valueOf(ds.getLastRowCount()));    
+            }
+            
             // this.pane.focusedProperty().addListener(
             //     (prop, oldNode, newNode) -> {
             //         });
@@ -206,6 +185,7 @@ public class HomeController extends AbstractController {
                 });
             
         } catch (Exception e) {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
@@ -236,6 +216,7 @@ public class HomeController extends AbstractController {
         } 
         catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
@@ -256,6 +237,7 @@ public class HomeController extends AbstractController {
         cmbCollection.setItems(FXCollections.observableArrayList(options));
         cmbCollection.setValue(token);    
         } catch (Exception e) {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
         }
     }
