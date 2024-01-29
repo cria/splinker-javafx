@@ -30,18 +30,13 @@ public class CentralServiceController extends AbstractController {
     {
        try 
        {
-            var hasConfig = DataSetService.hasConfiguration();
-            var systemVersion = CentralServiceRepository.getCurrentVersion();
-            CentralServiceRepository.saveCentralServiceData(urlField.getText(), systemVersion);
-            if(!hasConfig)
-            {
-                navigateTo(this.getStage(), "token-login");
-            }
-            else
-            {
-                getStage().close();
-            }
-       } 
+        var hasConfig = DataSetService.hasConfiguration();
+        var routeName = hasConfig ? "home":"token-login";
+        var systemVersion = CentralServiceRepository.getCurrentVersion();
+        
+        CentralServiceRepository.saveCentralServiceData(urlField.getText(), systemVersion);
+        navigateTo(this.getStage(), routeName);
+    } 
        catch (Exception e) 
        {
             Sentry.captureException(e);

@@ -76,20 +76,11 @@ public class CollectionLocalDatabaseController extends AbstractController {
             var hostName = hostAddressField.getText();
             var databaseName = dbNameField.getText();
             var port = portField.getText();
-            var ds = DataSetService.getDataSet(token);
-            DataSetService.saveSQLDataSource(token, hostName, port, databaseName, tableName, username, password);
-            var hasFilePath = ds.getDataSetFilePath() != null;
-            var hasUserAndPass = ds.getDbUser() != null && ds.getDbPassword() != null;
-            var hasConfig = hasFilePath || hasUserAndPass;
-            if(!hasConfig)
-            {
-                navigateTo(getStage(), "home");
-            }
-            else
-            {
-                var stage = getStage();
-                stage.close();
-            }
+            
+            DataSetService.saveSQLDataSource(token, hostName, port, databaseName, 
+                                                    tableName, username, password);
+            
+            navigateTo(getStage(), "home");
             
         } 
         catch (Exception e) 

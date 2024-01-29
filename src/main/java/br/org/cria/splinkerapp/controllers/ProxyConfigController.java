@@ -37,20 +37,11 @@ public class ProxyConfigController extends AbstractController
         try 
         {
             var hasConfig = DataSetService.hasConfiguration();
+            var routeName = hasConfig ? "home" : "central-service";
             var config = new ProxyConfiguration(proxyAddress.getText(), proxyPassword.getText(), 
                                         proxyPort.getText(), proxyUsername.getText());
             ProxyConfigRepository.saveProxyConfig(config);
-            if(!hasConfig)
-            {
-                var routeName = "central-service";
-                var width = 320;
-                var height = 240;
-                navigateTo(getStage(), routeName);
-            }
-            else
-            {
-                getStage().close();
-            }
+            navigateTo(getStage(), routeName);
             
         } 
         catch (Exception e) 

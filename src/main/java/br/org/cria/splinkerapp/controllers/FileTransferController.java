@@ -1,6 +1,8 @@
 package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,6 +17,7 @@ import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
+import io.sentry.Sentry;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -27,6 +30,7 @@ import javafx.scene.layout.Pane;
 
 public class FileTransferController extends AbstractController {
 
+    Double rowCount;
     DataSet ds;
     DarwinCoreArchiveService dwcService;
 
@@ -69,6 +73,7 @@ public class FileTransferController extends AbstractController {
             {
                 importDataBus.post(importDataEvent);     
             } catch (Exception e) {
+                Sentry.captureException(e);
                 ApplicationLog.error(e.getLocalizedMessage());
                 showErrorModal(e.getLocalizedMessage());
             }
@@ -102,6 +107,7 @@ public class FileTransferController extends AbstractController {
                 lblMessage.setText("Importando dados. Isso pode levar um tempo.");
                 
                 Task<Void> importDataTask = event.getTask();
+                importDataTask.setOnCancelled((handler) -> executor.shutdownNow());
                 importDataTask.setOnSucceeded((handler) -> {
                     System.gc();
                     Platform.runLater(()->
@@ -132,6 +138,7 @@ public class FileTransferController extends AbstractController {
             }
         } catch (Exception e)
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
@@ -146,7 +153,7 @@ public class FileTransferController extends AbstractController {
             var thread = new Thread(generateDWCATask);
 
             lblMessage.setText("Gerando arquivo, por favor aguarde.");
-
+            generateDWCATask.setOnCancelled((handler) -> executor.shutdownNow());
             generateDWCATask.setOnSucceeded((handler) -> {
                 System.gc();
                 Platform.runLater(()->
@@ -155,7 +162,7 @@ public class FileTransferController extends AbstractController {
                     progressIndicator.progressProperty().unbind();
                     var transferDWCFileEvent = new TransferFileEvent(dwcService);
                     var transferDWCFileBus = EventBusManager.getEvent(EventTypes.TRANSFER_DATA.name());
-                    
+                    rowCount = generateDWCATask.getTotalWork();
                     transferDWCFileBus.post(transferDWCFileEvent);
                 });        
             });
@@ -163,6 +170,7 @@ public class FileTransferController extends AbstractController {
             generateDWCATask.setOnFailed((handler)->{
                 Platform.runLater(()->{
                     executor.shutdown();
+                    generateDWCATask.getTotalWork();
                     var msg = generateDWCATask.getException().getLocalizedMessage();
                     ApplicationLog.error(msg);
                     showErrorModal(msg);
@@ -178,6 +186,7 @@ public class FileTransferController extends AbstractController {
 
         } catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
@@ -191,12 +200,25 @@ public class FileTransferController extends AbstractController {
             var transferFileTask = event.getTask();
             lblMessage.setText("Transferindo arquivo, por favor não feche o spLinker.");
             progressIndicator.setVisible(false);
+            transferFileTask.setOnCancelled((handler) -> executor.shutdownNow());
             transferFileTask.setOnSucceeded((handler)->
             {
                 System.gc();
                 Platform.runLater(()-> {
-                    executor.shutdown();
                     lblMessage.setText("Arquivo transferido.");
+                    btnCancelTransfer.setVisible(false);
+                    
+                    try 
+                    {
+                        executor.shutdown();
+                        var newData = new HashMap<String, String>(){{put("last_rowcount", String.valueOf(rowCount));
+                                                                    put("updated_at", LocalDate.now().toString());}};
+                        DataSetService.updateDataSource(newData);   
+                    } catch (Exception e) {
+                        Sentry.captureException(e);
+                        ApplicationLog.error(e.getLocalizedMessage());
+                        showErrorModal(e.getLocalizedMessage());
+                    }
                     this.dialog.setOnCloseRequest((closeRequestHandler) -> 
                     {
                         navigateTo("home");
@@ -221,6 +243,7 @@ public class FileTransferController extends AbstractController {
             
         }  catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
@@ -249,6 +272,7 @@ public class FileTransferController extends AbstractController {
         } 
         catch (Exception e) 
         {
+            Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }

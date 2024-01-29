@@ -36,22 +36,12 @@ public class AccessDbModalController extends AbstractController {
     {
         try
         {
-            token = System.getProperty("splinker_token");
             var path = file.getAbsolutePath();
-            
             var password = accessPasswordField.getText();
-            var ds = DataSetService.getDataSet(token);
-            DataSetService.saveAccessDataSource(token, path, password);
+            token = System.getProperty("splinker_token");
             
-            if(ds.getDataSetFilePath() == null && ds.isAccessDb())
-            {
-                navigateTo(getStage(),"home");
-            }
-            else
-            {
-                var stage = getStage();
-                stage.close();
-            }
+            DataSetService.saveAccessDataSource(token, path, password);
+            navigateTo(getStage(),"home");
         } 
         catch(Exception ex)
         {
