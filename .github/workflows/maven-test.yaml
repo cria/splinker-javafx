@@ -24,5 +24,7 @@ jobs:
         run: sudo apt-get install git-lfs
       - name: Configurar Git LFS
         run: git lfs install
+      - name: Print path
+        run: ls
       - name: Testes automatizados
         run: mvn clean test
