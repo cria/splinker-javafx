@@ -6,6 +6,7 @@ import com.google.common.eventbus.EventBus;
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.Router;
 import io.sentry.Sentry;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -17,17 +18,22 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public abstract class AbstractController implements Initializable {
+    
+    @FXML
+    Pane pane;
+    
     protected EventBus bus;
     protected String token;
     protected FXMLLoader loader;
     protected Stage modalStage = new Stage();
     Alert dialog = new Alert(AlertType.INFORMATION);
-    protected abstract Pane getPane();
+    
 
     @Override
     public void initialize(URL location, ResourceBundle resources) 
     {
-        this.setScreensize();
+
+        //throw new NotImplementedException("Not implemented");
     }
 
     protected abstract void setScreensize();
@@ -36,7 +42,7 @@ public abstract class AbstractController implements Initializable {
     {
         try 
         {
-            Router.getInstance().navigateTo(getStage(), routeName);
+            Router.navigateTo(getStage(), routeName);
         } catch (Exception e) 
         {
             Sentry.captureException(e);
@@ -50,7 +56,7 @@ public abstract class AbstractController implements Initializable {
     {
         try 
         {
-            Router.getInstance().navigateTo(stage, routeName);
+            Router.navigateTo(stage, routeName);
         } catch (Exception e) 
         {
             Sentry.captureException(e);
@@ -69,23 +75,12 @@ public abstract class AbstractController implements Initializable {
         dialog.setTitle(title);
         dialog.setContentText(message);
         dialog.show();
-        dialog.onCloseRequestProperty().addListener((listener) -> { 
-        try 
-        {
-            navigateTo("home");     
-        } catch (Exception e) {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
-        }
-        });
     }
 
     protected Stage getStage()
     {
         try 
         {
-            var pane = getPane();
             var scene = pane.getScene();
             var stage = (Stage)scene.getWindow();
             stage.setResizable(false);
