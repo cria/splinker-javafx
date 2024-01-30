@@ -1,6 +1,5 @@
 package br.org.cria.splinkerapp.parsers;
 import java.io.File;
-import java.io.FileReader;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import java.util.Arrays;
