@@ -25,6 +25,6 @@ jobs:
       - name: Configurar Git LFS
         run: git lfs install
       - name: Print path
-        run: ls
+        run: ls ./src
       - name: Testes automatizados
         run: mvn clean test
