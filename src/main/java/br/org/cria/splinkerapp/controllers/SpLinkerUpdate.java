@@ -5,12 +5,8 @@ import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.layout.Pane;
-
 public class SpLinkerUpdate  extends AbstractController{
 
-    @FXML
-    Pane pane;
     @FXML
     Button btnYes;
     @FXML
@@ -19,11 +15,6 @@ public class SpLinkerUpdate  extends AbstractController{
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
-    }
-
-    @Override
-    protected Pane getPane() {
-        return pane;
     }
 
     @FXML

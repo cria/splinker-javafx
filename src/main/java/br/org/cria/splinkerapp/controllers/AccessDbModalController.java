@@ -11,12 +11,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 
 public class AccessDbModalController extends AbstractController {
-    @FXML
-    Pane pane;
     @FXML
     PasswordField accessPasswordField;
     @FXML
@@ -27,10 +24,7 @@ public class AccessDbModalController extends AbstractController {
     Button btnSelectFile;
     File file;
     FileChooser fileChooser = new FileChooser();
-    @Override
-    protected Pane getPane() {
-        return pane;
-    }
+   
     @FXML
     void onBtnSaveClicked()
     {
@@ -63,10 +57,9 @@ public class AccessDbModalController extends AbstractController {
     @Override
     public void initialize(URL location, ResourceBundle resources) 
     {
-        super.initialize(location, resources);
-        accessFilePathField.setDisable(true);
         try 
         {
+            accessFilePathField.setDisable(true);
             token = DataSetService.getCurrentToken();
             var ds = DataSetService.getDataSet(token);
             if(ds.getDataSetFilePath() != null && ds.isAccessDb())
@@ -79,6 +72,7 @@ public class AccessDbModalController extends AbstractController {
             {
                 btnSave.setDisable(true);
             }
+            super.initialize(location, resources);
         } 
         catch (Exception e) 
         {

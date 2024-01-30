@@ -26,8 +26,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.layout.Pane;
-
 public class FileTransferController extends AbstractController {
 
     Double rowCount;
@@ -39,9 +37,7 @@ public class FileTransferController extends AbstractController {
 
     @FXML
     Button btnNo;
-    @FXML
-    Pane pane;
-
+    
     @FXML
     Label lblMessage;
     
@@ -276,11 +272,6 @@ public class FileTransferController extends AbstractController {
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
-    }
-
-    @Override
-    protected Pane getPane() {
-        return this.pane;
     }
 
     @Override

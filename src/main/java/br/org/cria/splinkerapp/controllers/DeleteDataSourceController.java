@@ -12,12 +12,7 @@ import io.sentry.Sentry;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
-
 public class DeleteDataSourceController extends AbstractController {
-    @FXML
-    Pane pane;
-    
     @FXML
     Button btnYes;
     
@@ -68,12 +63,6 @@ public class DeleteDataSourceController extends AbstractController {
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getLocalizedMessage());
         }
-    }
-
-    @Override
-    protected Pane getPane() 
-    {
-        return this.pane;
     }
 
     @Override

@@ -9,15 +9,14 @@ import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import io.sentry.Sentry;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
+import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 
 public class FileSelectionController extends AbstractController {
 
-    @FXML
-    Pane pane;
     @FXML
     TextField filePath;
     @FXML
@@ -27,10 +26,7 @@ public class FileSelectionController extends AbstractController {
     File file ;
     FileChooser fileChooser = new FileChooser();
     DataSet ds;
-    
-    @Override
-    protected Pane getPane() {return this.pane;}
-    
+ 
     @FXML
     void onButtonSelectFileClicked() throws Exception
     {
@@ -63,6 +59,12 @@ public class FileSelectionController extends AbstractController {
     {
         try 
         {
+            var img = new ImageView("images/select-file.png");
+            img.setFitHeight(30);
+            img.setFitWidth(30);
+            btnSelectFile.setGraphic(img);
+            btnSelectFile.setPadding(Insets.EMPTY);
+            
             super.initialize(location, resources);
             token = DataSetService.getCurrentToken();
             filePath.setEditable(false);

@@ -4,12 +4,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
-
-import org.apache.logging.log4j.LogManager;
-
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.config.DatabaseSetup;
-import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.facade.ConfigFacade;
@@ -28,16 +24,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
-import javafx.scene.layout.Pane;
 
 public class HomeController extends AbstractController {
 
     EventBus addDatasetBus;
-    @Override
-    protected Pane getPane() { return this.pane; }
-    @FXML
-    Pane pane;
-
+    
     @FXML
     MenuBar menuBar;
 
@@ -152,7 +143,7 @@ public class HomeController extends AbstractController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        super.initialize(location, resources);
+        
         
         try {
             addDatasetBus = EventBusManager.getEvent(EventTypes.ADD_DATASET.name());
@@ -160,10 +151,6 @@ public class HomeController extends AbstractController {
             
             addDatasetBus.register(this);
             bus.register(this);
-            // if(!DataSetService.hasConfiguration())
-            // {
-            // navigateTo(getStage(), "first-config-dialog", 330,150);
-            // }
             token = DataSetService.getCurrentToken();
             var ds = DataSetService.getDataSet(token);
             var datasetWasUpdatedAtLeastOnce = ds.getUpdatedAt() != null;
@@ -173,16 +160,10 @@ public class HomeController extends AbstractController {
                 lblRecordsSent.setText(String.valueOf(ds.getLastRowCount()));    
             }
             
-            // this.pane.focusedProperty().addListener(
-            //     (prop, oldNode, newNode) -> {
-            //         });
             populateDatasetCombo();
             var collName = DataSetService.getDataSet(token).getDataSetName();
             lblCollectionName.setText(collName);
-            getStage().setOnCloseRequest(event ->{
-                    LockFileManager.deleteLockfile();
-                    LogManager.shutdown();
-                });
+            super.initialize(location, resources);
             
         } catch (Exception e) {
             Sentry.captureException(e);

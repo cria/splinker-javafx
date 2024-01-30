@@ -13,13 +13,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
-
 public class ProxyConfigController extends AbstractController
 {
 
-    @FXML
-    Pane pane;
     @FXML
     TextField proxyUsername;
     @FXML
@@ -50,11 +46,6 @@ public class ProxyConfigController extends AbstractController
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getMessage());
         }
-    }
-
-    @Override
-    protected Pane getPane() {
-        return this.pane;
     }
 
     @Override

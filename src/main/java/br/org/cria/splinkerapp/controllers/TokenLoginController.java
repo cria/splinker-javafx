@@ -12,14 +12,10 @@ import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import io.sentry.Sentry;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.control.Button;
 
 public class TokenLoginController extends AbstractController {
 
-    @FXML
-    AnchorPane pane;
     @FXML
     Button btnAddToken;
     @FXML
@@ -87,11 +83,6 @@ public class TokenLoginController extends AbstractController {
             ApplicationLog.error(e.getLocalizedMessage());
             showErrorModal(e.getMessage());
         }
-    }
-
-    @Override
-    protected Pane getPane() {
-        return this.pane;
     }
 
     @Override

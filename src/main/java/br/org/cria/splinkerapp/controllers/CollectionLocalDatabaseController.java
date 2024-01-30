@@ -11,15 +11,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 /*
  * Classe responsável pelo formulário de configuração de banco de dados
  */
 public class CollectionLocalDatabaseController extends AbstractController {
 
-    @FXML
-    AnchorPane pane;
     @FXML
     TextField usernameField;
     @FXML
@@ -90,9 +86,6 @@ public class CollectionLocalDatabaseController extends AbstractController {
             showErrorModal(e.getMessage());
         }
     }
-
-    @Override
-    protected Pane getPane() { return this.pane; }
 
     @Override
     protected void setScreensize() {

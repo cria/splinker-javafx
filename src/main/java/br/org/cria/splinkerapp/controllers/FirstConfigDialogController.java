@@ -8,11 +8,7 @@ import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
 import io.sentry.Sentry;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.layout.Pane;
-
 public class FirstConfigDialogController extends AbstractController{
-    @FXML
-    Pane pane;
 
     @FXML
     Button btnNo;
@@ -43,11 +39,6 @@ public class FirstConfigDialogController extends AbstractController{
     void onNoButtonClicked(){
         LockFileManager.deleteLockfile();
         System.exit(0);
-    }
-
-    @Override
-    protected Pane getPane() {
-        return this.pane;
     }
 
     @Override

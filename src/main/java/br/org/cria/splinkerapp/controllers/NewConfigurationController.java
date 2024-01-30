@@ -15,10 +15,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 public class NewConfigurationController extends AbstractController {
-    
-    @FXML
-    Pane pane;
-    
+        
     @FXML
     Pane content;
     
@@ -56,11 +53,6 @@ public class NewConfigurationController extends AbstractController {
     }
 
     @Override
-    protected Pane getPane() {
-        return this.pane;
-    }
-
-    @Override
     protected void setScreensize() {
         var stage = getStage();
         stage.setWidth(WindowSizes.LARGE_RECTANGULAR_SCREEN_WIDTH);
@@ -88,7 +80,7 @@ public class NewConfigurationController extends AbstractController {
     @FXML
     void onBackClicked()
     {
-        navigateTo(getStage(), "new-home");
+        navigateTo(getStage(), "home");
     }
 
     @FXML
