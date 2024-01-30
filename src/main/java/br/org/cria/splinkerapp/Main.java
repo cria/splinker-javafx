@@ -11,6 +11,7 @@ import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.config.SentryConfig;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import io.sentry.Sentry;
+import javafx.application.Platform;
 
 public class Main extends Application 
 {
@@ -31,30 +32,31 @@ public class Main extends Application
                 initDb.setOnFailed(event -> {
                     var exception = initDb.getException();
                     ApplicationLog.error(exception.getLocalizedMessage());
+                    Sentry.captureException(exception);
                 });
 
                 initDb.setOnSucceeded(event -> {
+                    Platform.runLater(() ->
+                    {
                         stage.setTitle("spLinker");
                         stage.setResizable(false); 
-                        try {
-                            if(DataSetService.hasConfiguration())
+                        try 
                         {
-                            Router.getInstance().navigateTo(stage, "new-home");
-                        }
-                        else
+                            var hasConfig = DataSetService.hasConfiguration();
+                            var routeName = hasConfig ? "home" :  "first-config-dialog";
+                            Router.navigateTo(stage, routeName);
+                        } 
+                        catch (Exception e) 
                         {
-                            Router.getInstance().navigateTo(stage, "first-config-dialog");
-                        }
-                        } catch (Exception e) {
                             Sentry.captureException(e);
                             ApplicationLog.error(e.getLocalizedMessage());
-                             throw new RuntimeException(e);
+                            throw new RuntimeException(e);
                         }
-            
+                    });
+                        
                 });
                 initDb.run();
             }
-          
         } 
         catch (Exception ex) 
         {
