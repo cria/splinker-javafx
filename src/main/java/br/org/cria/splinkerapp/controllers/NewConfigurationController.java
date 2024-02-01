@@ -73,7 +73,7 @@ public class NewConfigurationController extends AbstractController {
             var children = content.getChildren();
             children.clear();
             children.add(childNode);
-        } catch (Exception e) 
+        } catch (Exception e)
         {
             Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());

@@ -43,7 +43,8 @@ public class FileSelectionController extends AbstractController {
     {
         try 
         {
-            DataSetService.saveSpreadsheetDataSource(token, filePath.getText());
+            var datasourcePath = filePath.getText(); 
+            DataSetService.saveSpreadsheetDataSource(token,datasourcePath);
             navigateTo(getStage(),"home");
         } 
         catch (Exception e) 
@@ -59,7 +60,8 @@ public class FileSelectionController extends AbstractController {
     {
         try 
         {
-            var img = new ImageView("images/select-file.png");
+            
+            var img = new ImageView("/images/select-file.png");
             img.setFitHeight(30);
             img.setFitWidth(30);
             btnSelectFile.setGraphic(img);
