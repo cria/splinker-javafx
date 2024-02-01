@@ -72,7 +72,7 @@ public class TokenLoginController extends AbstractController {
                 }
                 else
                 {
-                    getStage().close();
+                    navigateTo(getStage(), "home");
                 }
             }
              
