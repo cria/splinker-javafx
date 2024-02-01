@@ -88,7 +88,6 @@ public abstract class AbstractController implements Initializable {
         }
         catch (Exception ex) {
             Sentry.captureException(ex);
-            System.out.println("\nIllegalStateException\n");
             ex.printStackTrace();
             return null;
         }
