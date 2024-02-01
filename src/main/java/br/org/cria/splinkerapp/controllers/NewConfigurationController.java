@@ -41,8 +41,11 @@ public class NewConfigurationController extends AbstractController {
     {
         try 
         {
+            loadPage("central-service");
+            serverLabel.setTextFill(Color.RED);
+            
             token = DataSetService.getCurrentToken();
-            showCentralServiceConfiguration();
+            
         } 
         catch (Exception e) 
         {
@@ -63,6 +66,7 @@ public class NewConfigurationController extends AbstractController {
     {
         try 
         {
+            
             var template = basePath.formatted(pageName);
             loader = new FXMLLoader(getClass().getResource(template));
             Node childNode = loader.load();
@@ -77,31 +81,41 @@ public class NewConfigurationController extends AbstractController {
         }
     }
 
+
+    void paintItRed(String lblName)
+    {
+        var lbls = pane.getScene().getRoot().lookupAll(".label");
+        lbls.forEach((lbl) ->{ 
+            var id =  lbl.getId();
+            var paintItBlack = !lblName.equals(id);
+            ((Label)lbl).setTextFill(paintItBlack? Color.BLACK : Color.RED);
+        });
+    }
     @FXML
     void onBackClicked()
     {
-        navigateTo(getStage(), "home");
+         navigateTo(getStage(), "home");
     }
 
     @FXML
     void showCentralServiceConfiguration()
     {
         loadPage("central-service");
-        serverLabel.setTextFill(Color.RED);
+        paintItRed("serverLabel");
     }
 
     @FXML
     void showProxyConfiguration()
     {
         loadPage("proxy-config");
-        proxyLabel.setTextFill(Color.RED);
+        paintItRed("proxyLabel");
     }
 
     @FXML
     void showTokenConfiguration()
     {
         loadPage("token-login");
-        tokenLabel.setTextFill(Color.RED);
+        paintItRed("tokenLabel");
     }
 
     @FXML
@@ -123,7 +137,7 @@ public class NewConfigurationController extends AbstractController {
             }
 
             loadPage(pageName);
-            dataLabel.setTextFill(Color.RED);
+            paintItRed("dataLabel");
           } 
           catch (Exception e) 
           {
