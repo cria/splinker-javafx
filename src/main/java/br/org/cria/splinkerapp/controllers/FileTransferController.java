@@ -201,26 +201,24 @@ public class FileTransferController extends AbstractController {
             {
                 System.gc();
                 Platform.runLater(()-> {
-                    lblMessage.setText("Arquivo transferido.");
-                    btnCancelTransfer.setVisible(false);
                     
                     try 
                     {
                         executor.shutdown();
                         var newData = new HashMap<String, String>(){{put("last_rowcount", String.valueOf(rowCount));
-                                                                    put("updated_at", LocalDate.now().toString());}};
+                                                                    put("updated_at", LocalDate.now().toString());
+                                                                    put("token", token);}};
                         DataSetService.updateDataSource(newData);   
                     } catch (Exception e) {
                         Sentry.captureException(e);
                         ApplicationLog.error(e.getLocalizedMessage());
                         showErrorModal(e.getLocalizedMessage());
                     }
-                    this.dialog.setOnCloseRequest((closeRequestHandler) -> 
-                    {
-                        navigateTo("home");
-                    });
-                    showAlert(AlertType.INFORMATION, "Transferência Concluída",
-                                                     "transferido com sucesso!");
+                    
+                    showAlert(AlertType.INFORMATION, "Transferência Concluída","transferido com sucesso!");
+                    navigateTo("home");
+
+                    
                 });
             });
             transferFileTask.setOnFailed((handler)->{
