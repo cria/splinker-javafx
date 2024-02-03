@@ -12,6 +12,8 @@ import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.utils.StringStandards;
 import io.sentry.Sentry;
 
@@ -22,8 +24,10 @@ public class ExcelFileParser extends FileParser {
     public ExcelFileParser(String fileSourcePath) throws Exception {
         this.fileSourcePath = fileSourcePath;
         var isXLSX = fileSourcePath.endsWith(".xlsx"); 
+        ApplicationLog.info("Abrindo arquivo Excel");
         workbook = isXLSX ? new XSSFWorkbook(OPCPackage.open(fileSourcePath)) : 
         new HSSFWorkbook(new FileInputStream(fileSourcePath));
+        ApplicationLog.info("Arquivo Excel carregado");
        
     }
 
@@ -31,7 +35,9 @@ public class ExcelFileParser extends FileParser {
     protected String buildCreateTableCommand() throws Exception {
         int numberOfTabs = workbook.getNumberOfSheets();
         var builder = new StringBuilder();
-        for (int i = 0; i < numberOfTabs; i++) {
+        ApplicationLog.info("Construindo comando Create Table");
+        for (int i = 0; i < numberOfTabs; i++) 
+        {
             var sheet = workbook.getSheetAt(i);
             Row headerRow = sheet.getRow(0);
             var tableName = StringStandards.normalizeString(sheet.getSheetName());
@@ -49,6 +55,7 @@ public class ExcelFileParser extends FileParser {
             builder.append(");");
         }
         var command = builder.toString().replace(",);", ");");
+        ApplicationLog.info("Comando Create Table criado");
         return command;
     }
 
@@ -74,12 +81,14 @@ public class ExcelFileParser extends FileParser {
         Connection conn;
         try 
         {
+            ApplicationLog.info("Iniciando inserção de dados no BD");
           conn = getConnection();
           conn.setAutoCommit(false);
           var woorkbookIterator = workbook.sheetIterator();
           var formatter = new DataFormatter();
           while (woorkbookIterator.hasNext()) 
           {
+            ApplicationLog.info("Lendo Workbook");
               var sheet = woorkbookIterator.next();
               totalRowCount = sheet.getLastRowNum();
               var sheetIterator = sheet.iterator();
@@ -105,12 +114,14 @@ public class ExcelFileParser extends FileParser {
               var statement = conn.prepareStatement(command);
               while (sheetIterator.hasNext()) 
               {
+                ApplicationLog.info("Lendo Row");
                   var row = sheetIterator.next();
                   if (row != null) 
                   { 
                       var cellIterator = row.cellIterator();
                       while (cellIterator.hasNext()) 
                       {
+                        ApplicationLog.info("Lendo Cell");
                           var cell = cellIterator.next();
                           var index = cell.getColumnIndex() + 1;
                           var value = formatter.formatCellValue(cell);
@@ -137,6 +148,7 @@ public class ExcelFileParser extends FileParser {
           
           conn.setAutoCommit(true);
           conn.close();
+          ApplicationLog.info("Inserção no BD completa.");
         }catch (Exception e) 
         {
             Sentry.captureException(e);
