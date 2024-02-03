@@ -267,6 +267,7 @@ public class FileTransferController extends AbstractController {
     @Override
     public void initialize(URL location, ResourceBundle bundle)
     {  
+        ApplicationLog.info("Tela de envio aberta");
         btnCancelTransfer.setVisible(false);
         progressBar.setVisible(false);
         progressIndicator.setVisible(false);
