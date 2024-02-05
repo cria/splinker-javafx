@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import br.org.cria.splinkerapp.ApplicationLog;
@@ -25,7 +26,8 @@ public class ExcelFileParser extends FileParser {
         this.fileSourcePath = fileSourcePath;
         var isXLSX = fileSourcePath.endsWith(".xlsx"); 
         ApplicationLog.info("Abrindo arquivo Excel");
-        workbook = isXLSX ? new XSSFWorkbook(OPCPackage.open(fileSourcePath)) : 
+        workbook = isXLSX ? new SXSSFWorkbook(new XSSFWorkbook(fileSourcePath)): 
+        //workbook = isXLSX ? new XSSFWorkbook(OPCPackage.open(fileSourcePath)) : 
         new HSSFWorkbook(new FileInputStream(fileSourcePath));
         ApplicationLog.info("Arquivo Excel carregado");
        
