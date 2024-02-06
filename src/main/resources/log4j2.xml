@@ -4,7 +4,7 @@
       
         <File name="LOGFILE" fileName="splinker.log">
             <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n" />
-            <ThresholdFilter level="error" />
+            <ThresholdFilter level="INFO" />
         </File>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
@@ -13,7 +13,7 @@
         <!-- Setting minimumEventLevel the default minimum level to capture an event from ERROR to WARN  -->
         <Sentry name="Sentry"
                 dsn="https://cf699813548043f5c734471240b2ec6c@o4506639520104448.ingest.sentry.io/4506639532032000"
-                minimumBreadcrumbLevel="DEBUG"
+                minimumBreadcrumbLevel="INFO"
                 minimumEventLevel="WARN" />
     </Appenders>
     <Loggers>

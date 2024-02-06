@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import com.google.common.eventbus.Subscribe;
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.EventTypes;
@@ -51,12 +52,29 @@ public class FileTransferController extends AbstractController {
     ProgressIndicator progressIndicator;
 
     ExecutorService executor;
-            
+    Future taskRunner;
+    Task<Void> importDataTask;
+    Task<Void> generateDWCATask;
+    Task<Void> transferFileTask;
+    
+         
+    void submitTask(Task task)
+    {
+        //taskRunner = executor.submit(Thread.ofPlatform().start(task));
+        taskRunner = executor.submit(task);
+    }
+    void unbindProgress()
+    {
+        progressBar.progressProperty().unbind();
+        progressIndicator.progressProperty().unbind();
+    }
+
     @FXML
     void onBtnYesClicked()
     {
         ApplicationLog.info("Botão Sim clickado. Iniciando eventos");
-        executor = Executors.newFixedThreadPool(8);
+        //executor = Executors.newFixedThreadPool(8);
+        executor = Executors.newSingleThreadExecutor();
         var importDataEvent = new ImportDataEvent(ds);
         var importDataBus = EventBusManager.getEvent(EventTypes.IMPORT_DATA.name());
 
@@ -88,7 +106,22 @@ public class FileTransferController extends AbstractController {
     @FXML
     void onButtonCancelClicked()
     {
+        taskRunner.cancel(true);
+        if(importDataTask != null && importDataTask.isRunning())
+        {
+            importDataTask.cancel();
+        }
+        if(generateDWCATask != null && generateDWCATask.isRunning())
+        {
+            generateDWCATask.cancel();
+        }
+        if(transferFileTask != null && transferFileTask.isRunning())
+        {
+            transferFileTask.cancel();
+        }
+        executor.shutdown();
         executor.shutdownNow();
+        executor.close();
         System.gc();
         navigateTo("home");            
     }
@@ -97,7 +130,7 @@ public class FileTransferController extends AbstractController {
     void onImportDataEventTrigger(ImportDataEvent event)
     {
         try 
-        {
+        { 
             var generateDWCFileBus = EventBusManager.getEvent(EventTypes.GENERATE_DWC_FILES.name());
             var generateDWCEvent = new GenerateDWCFileEvent(dwcService);
                         
@@ -105,7 +138,7 @@ public class FileTransferController extends AbstractController {
             {
                 lblMessage.setText("Importando dados. Isso pode levar um tempo.");
                 
-                Task<Void> importDataTask = event.getTask();
+                importDataTask = event.getTask();
                 importDataTask.setOnCancelled((handler) -> {
                     executor.shutdownNow(); 
                     ApplicationLog.info("Import data cancelled.");
@@ -133,9 +166,10 @@ public class FileTransferController extends AbstractController {
                 progressBar.progressProperty().bind(importDataTask.progressProperty());
                 progressIndicator.progressProperty().bind(importDataTask.progressProperty());
                 ApplicationLog.info("Starting import data thread");
-                var thread = new Thread(importDataTask);
-                thread.setDaemon(true);
-                executor.execute(thread);
+                // var thread = new Thread(importDataTask);
+                // thread.setDaemon(true);
+                // executor.execute(thread);
+                submitTask(importDataTask);
             }
             else
             {
@@ -155,7 +189,7 @@ public class FileTransferController extends AbstractController {
     {
         try 
         {
-            Task<Void> generateDWCATask = event.getTask();
+            generateDWCATask = event.getTask();
             var thread = new Thread(generateDWCATask);
 
             lblMessage.setText("Gerando arquivo, por favor aguarde.");
@@ -192,8 +226,9 @@ public class FileTransferController extends AbstractController {
             progressIndicator.progressProperty().bind(generateDWCATask.progressProperty());
                 
             ApplicationLog.info("Starting Generate DWC file thread");
-            thread.setDaemon(true);
-            executor.execute(thread);
+            // thread.setDaemon(true);
+            // executor.execute(thread);
+            submitTask(generateDWCATask);
 
         } catch (Exception e) 
         {
@@ -208,7 +243,7 @@ public class FileTransferController extends AbstractController {
     {
         try 
         {
-            var transferFileTask = event.getTask();
+            transferFileTask = event.getTask();
             lblMessage.setText("Transferindo arquivo, por favor não feche o spLinker.");
             progressIndicator.setVisible(false);
             transferFileTask.setOnCancelled((handler) -> {
@@ -252,9 +287,10 @@ public class FileTransferController extends AbstractController {
             });
 
             ApplicationLog.info("Starting send file thread");
-            var thread = new Thread(transferFileTask);
-            thread.setDaemon(true);
-            executor.execute(thread);
+            // var thread = new Thread(transferFileTask);
+            // thread.setDaemon(true);
+            // executor.execute(thread);
+            submitTask(transferFileTask);
             
         }  catch (Exception e) 
         {
