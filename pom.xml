@@ -200,7 +200,7 @@
 			<configuration>
                 <!-- <forkCount>5</forkCount>
                 <reuseForks>true</reuseForks> -->
-                <argLine>-Xmx2G -XX:MaxMetaspaceSize=4096m -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90</argLine>
+                <argLine>-Xmx8G -XX:MaxMetaspaceSize=8G -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90</argLine>
                 <parallel>all</parallel>
                 <useUnlimitedThreads>true</useUnlimitedThreads>
                 <!-- <threadCount>10</threadCount> -->
