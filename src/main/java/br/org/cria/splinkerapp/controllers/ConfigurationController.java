@@ -14,7 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
-public class NewConfigurationController extends AbstractController {
+public class ConfigurationController extends AbstractController {
         
     @FXML
     Pane content;
@@ -30,9 +30,6 @@ public class NewConfigurationController extends AbstractController {
     
     @FXML
     Label dataLabel;
-
-    @FXML
-    ImageView imgBack;
 
     String basePath = "/br/org/cria/splinkerapp/%s.fxml";
 
@@ -90,11 +87,6 @@ public class NewConfigurationController extends AbstractController {
             var paintItBlack = !lblName.equals(id);
             ((Label)lbl).setTextFill(paintItBlack? Color.BLACK : Color.RED);
         });
-    }
-    @FXML
-    void onBackClicked()
-    {
-         navigateTo(getStage(), "home");
     }
 
     @FXML
