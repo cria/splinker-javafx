@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="327.0" prefWidth="471.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.PrincipalController">
+   <children>
+      <ComboBox id="cmbCollection" fx:id="cmbCollection" layoutX="20.0" layoutY="29.0" onAction="#onCmbCollectionChange" prefWidth="150.0" />
+      <Button id="syncServerBtn" fx:id="syncServerBtn" layoutX="20.0" layoutY="74.0" mnemonicParsing="false" onMouseClicked="#onSyncServerBtnClicked" prefHeight="113.0" prefWidth="150.0" text="Enviar">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Button>
+      <Label id="lblCollectionName" fx:id="lblCollectionName" layoutX="208.0" layoutY="7.0" prefHeight="144.0" prefWidth="256.0" text="Nome da Coleção">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="317.0" layoutY="227.0" text="Registros Enviados">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="319.0" layoutY="159.0" text="Última Atualização">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label id="lblLastUpdate" fx:id="lblLastUpdate" layoutX="319.0" layoutY="194.0" prefHeight="23.0" prefWidth="140.0" text="                  -" textAlignment="RIGHT">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label id="lblRecordsSent" fx:id="lblRecordsSent" layoutX="317.0" layoutY="263.0" prefHeight="23.0" prefWidth="143.0" text="                   -" textAlignment="RIGHT">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="20.0" layoutY="289.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../images/cria-logo.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="36.0" fitWidth="96.0" layoutX="363.0" layoutY="286.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../images/splink-logo.gif" />
+         </image>
+      </ImageView>
+      <Line endX="-1.0" endY="286.0" layoutX="203.0" layoutY="30.0" startX="-1.0" startY="-15.0" />
+   </children>
+</Pane>

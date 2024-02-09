@@ -1,143 +1,71 @@
 package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
-import java.util.HashMap;
 import java.util.ResourceBundle;
-import java.util.stream.Stream;
 import br.org.cria.splinkerapp.ApplicationLog;
-import br.org.cria.splinkerapp.config.DatabaseSetup;
-import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.enums.WindowSizes;
-import br.org.cria.splinkerapp.facade.ConfigFacade;
-import br.org.cria.splinkerapp.managers.EventBusManager;
-import br.org.cria.splinkerapp.models.DataSet;
-import br.org.cria.splinkerapp.models.DataSourceType;
-import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import io.sentry.Sentry;
-
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 
 public class HomeController extends AbstractController {
 
-    EventBus addDatasetBus;
     
     @FXML
     MenuBar menuBar;
-
     @FXML
-    Button syncServerBtn;
-
+    Pane content;
     @FXML
-    Button syncMetaDataBtn;
-
+    ImageView principalImg;
     @FXML
-    Button btnDeleteDataset;
-
+    ImageView settingsImg;
     @FXML
-    ComboBox<String> cmbCollection;
+    ImageView helpImg;
 
-    @FXML
-    Label lblCollectionName;
+    String basePath = "/br/org/cria/splinkerapp/%s.fxml";
 
-    @FXML
-    Label lblLastUpdate;
-
-
-    @FXML
-    Label lblRecordsSent;
-
-    @FXML
-    void onSyncServerBtnClicked() throws Exception 
-    {
-            navigateTo("file-transfer");
-    }
-
-  
-    @FXML
-    void onDeleteLocalConfigMenuItemClick() 
-    {
-        try 
-        {
-            DatabaseSetup.deleteLocalDatabase();
-            System.exit(0);
-        } catch (Exception e) {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
-        }
-    }
-
-    @FXML
-    void onSyncMetaDataMenuItemClick() 
-    {
-        try 
-        {
-            var map = new HashMap<String, String>();
-            var token = DataSetService.getCurrentToken();
-            var config = DataSetService.getConfigurationDataFromAPI(token);
-            var collName = config.get("dataset_name").toString();
-            var datasetAcronym = config.get("dataset_acronym").toString();
-            var id = (int)Double.parseDouble(config.get("dataset_id").toString());
-            DataSetService.setCurrentToken(token);
-            var dsType = DataSourceType.valueOf(config.get("data_source_type").toString());
-            map.put("token", token);
-            map.put("id", String.valueOf(id));
-            map.put("dataset_name", collName);
-            map.put("dataset_acronym", datasetAcronym);
-            map.put("datasource_type", dsType.name());
-            DataSetService.updateDataSource(map);
-                
-            ConfigFacade.HandleBackendData(token, config);
-        } catch (Exception e) 
-        {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
-        }
-    }
-    
-    @FXML
-    void onDeleteDatasetButtonClick()
-    {
-        navigateTo(getStage(),"delete-dataset");
-    }
-    
-    @FXML
-    void onCmbCollectionChange(ActionEvent event) {
-
-        try 
-        {
-            var newToken = cmbCollection.getValue();
-            if(newToken!=null)
-            {
-                token = newToken;
-                var dataSet = DataSetService.getDataSet(token);
-                var lastUdate = dataSet.getUpdatedAt() ==null? "-": dataSet.getUpdatedAt().toString();
-                var recordsSent = dataSet.getLastRowCount() > 0? String.valueOf(dataSet.getLastRowCount()): "-";
-                DataSetService.setCurrentToken(token);
-                lblCollectionName.setText(dataSet.getDataSetName());
-                lblLastUpdate.setText(lastUdate);
-                lblRecordsSent.setText(recordsSent);
-            }
-        } catch (Exception e) {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
-        }
-    }
     
     @FXML
     void onConfigurationItemClick()
     {
-        navigateTo(getStage(),"new-configuration");
+        loadPage("configuration");
+    }
+
+    @FXML
+    void onPrincipalItemClick()
+    {
+        loadPage("principal");    
+    }
+
+    @FXML
+    void onHelpItemClick()
+    {
+        //  loadPage("help");
+    }
+
+
+    protected void loadPage(String pageName)
+    {
+        try     
+        {
+            var template = basePath.formatted(pageName);
+            loader = new FXMLLoader(getClass().getResource(template));
+            Node childNode = loader.load();
+            var children = content.getChildren();
+            children.clear();
+            children.add(childNode);
+        } catch (Exception e)
+        {
+            Sentry.captureException(e);
+            ApplicationLog.error(e.getLocalizedMessage());
+            showErrorModal(e.getLocalizedMessage());
+        }
     }
 
 
@@ -146,83 +74,28 @@ public class HomeController extends AbstractController {
         
         
         try {
-            addDatasetBus = EventBusManager.getEvent(EventTypes.ADD_DATASET.name());
-            bus = EventBusManager.getEvent(EventTypes.DELETE_DATASET.name());
-            
-            addDatasetBus.register(this);
-            bus.register(this);
-            token = DataSetService.getCurrentToken();
-            var ds = DataSetService.getDataSet(token);
-            var datasetWasUpdatedAtLeastOnce = ds.getUpdatedAt() != null;
-            if(datasetWasUpdatedAtLeastOnce)
-            {
-                lblLastUpdate.setText(ds.getUpdatedAt().toString());
-                lblRecordsSent.setText(String.valueOf(ds.getLastRowCount()));    
-            }
-            
-            populateDatasetCombo();
-            var collName = DataSetService.getDataSet(token).getDataSetName();
-            lblCollectionName.setText(collName);
+            loadPage("principal");
             super.initialize(location, resources);
-            
-        } catch (Exception e) {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
-        }
-    }
-    
-    @Subscribe
-    void reloadDatasetListAfterChange(String eventToken)
-    {
-        try 
-        {
-            var ds = DataSetService.getDataSet(eventToken);
-            var datasetWasDeleted = ds.getId() <= 0;
-            if(datasetWasDeleted)
+            Platform.runLater(() ->
             {
-                cmbCollection.getItems().remove(eventToken);
-                var size = cmbCollection.getItems().size();
-                var newToken = cmbCollection.getItems().get(size-1);
-                DataSetService.setCurrentToken(newToken);
-                cmbCollection.setValue(newToken);
-            }
-            else
-            {
-                populateDatasetCombo();
-                cmbCollection.setValue(eventToken);
-            }
-            
-            
-        } 
-        catch (Exception e) 
-        {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
-        }
-        
-    }
-    
-    void populateDatasetCombo() throws Exception
-    {
-            var sources = DataSetService.getAllDataSets().stream();
-            addOptionsToDataset(sources);
-            sources.close();
-    }
 
-    void addOptionsToDataset(Stream<DataSet> sources)
-    {
-        try {
-        var options = sources.map(e -> e.getToken()).toList();
-        cmbCollection.setItems(FXCollections.observableArrayList(options));
-        cmbCollection.setValue(token);    
+                Tooltip.install(principalImg, new Tooltip("Principal")); // Doesn't work
+                // Tooltip.install(principalImg.getParent(), new Tooltip("Tooltip")); // Works
+
+                //Tooltip.install(settingsImg, new Tooltip("Configurações")); // Doesn't work
+                Tooltip.install(settingsImg.getParent(), new Tooltip("Tooltip")); // Works
+                Tooltip.install(helpImg, new Tooltip("Ajuda")); // Doesn't work
+                // Tooltip.install(helpImg.getParent(), new Tooltip("Tooltip")); // Works
+
+            });
         } catch (Exception e) {
             Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
+            showErrorModal(e.getLocalizedMessage());
         }
     }
-   
+    
+
     @Override
     protected void setScreensize() 
     {
