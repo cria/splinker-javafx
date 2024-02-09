@@ -29,7 +29,8 @@ public class DataSetService extends BaseRepository {
             var cmd = "SELECT token FROM DataSetConfiguration LIMIT 1;";
             var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
             var result = runQuery(cmd, conn);
-            token = result.getString("token");
+            var hasToken = result.getString("token") != null;
+            token = hasToken? result.getString("token") : "";
             result.close();
             conn.close();
             setCurrentToken(token);
@@ -40,7 +41,7 @@ public class DataSetService extends BaseRepository {
    
     public static void setCurrentToken(String token)
     {
-        System.setProperty("splinker_token", token);
+        System.setProperty("splinker_token", token);    
     }
     
     public static void updateRowcount(String token, int rowCount) throws Exception
