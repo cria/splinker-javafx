@@ -19,9 +19,34 @@ public class TokenLoginController extends AbstractController {
     @FXML
     Button btnAddToken;
     @FXML
+    Button btnDeleteToken;
+
+    @FXML
     TextField tokenField;
 
-
+    @FXML
+    void onButtonDeleteTokenClicked()
+    {
+        try 
+        {
+            var token = tokenField.getText();
+            var hasToken = (token != null) && (token != "");
+            if(hasToken)
+            {
+                DataSetService.deleteDataSet(token);
+                navigateTo(getStage(), "home");
+            }
+            else
+            {
+                showErrorModal("Token inválido");
+            }
+            
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            ApplicationLog.error(e.getLocalizedMessage());
+            showErrorModal(e.getLocalizedMessage());
+        }
+    }
     
     @FXML
     void onButtonAddTokenClicked() 
@@ -33,9 +58,7 @@ public class TokenLoginController extends AbstractController {
             var apiConfig = DataSetService.getConfigurationDataFromAPI(token);
             if(apiConfig != null)
             {
-                // var version = apiConfig.get("version").toString();
-                // var currentVersion = DataSetService.getCurrentVersion();
-                // var hasNewVersion = Double.parseDouble(version) > Double.parseDouble(currentVersion);
+                var routeName = "collection-database";
                 var collName = apiConfig.get("dataset_name").toString();
                 var datasetAcronym = apiConfig.get("dataset_acronym").toString();
                 var id = (int)Double.parseDouble(apiConfig.get("dataset_id").toString());
@@ -44,11 +67,6 @@ public class TokenLoginController extends AbstractController {
                 DataSetService.saveDataSet(token, dsType, datasetAcronym, collName, id);
                 ConfigFacade.HandleBackendData(token, apiConfig);
                 bus.post(token);
-                // if(hasNewVersion)
-                // {
-                //     navigateOrOpenNewWindowOnExistingDataSource("splinker-update", 260, 150, true);
-                // }
-                var routeName = "collection-database";
                 switch(dsType)
                 {
                     case Access:
@@ -87,10 +105,30 @@ public class TokenLoginController extends AbstractController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        
         super.initialize(location, resources);
         bus = EventBusManager.getEvent(EventTypes.ADD_DATASET.name());
-        bus.register(this);
-
+        btnDeleteToken.setVisible(false);
+        // bus.register(this);
+        try 
+        {
+            token = DataSetService.getCurrentToken();
+            var hasToken = token != "";    
+            if(hasToken)
+            {
+                btnDeleteToken.setVisible(true);
+                
+                btnAddToken.setLayoutX(56);
+                return;
+            }
+            //centro da tela
+            btnAddToken.setLayoutX(126);
+            
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            ApplicationLog.error(e.getLocalizedMessage());
+            showErrorModal(e.getLocalizedMessage());    
+        }
      }
 
     @Override
