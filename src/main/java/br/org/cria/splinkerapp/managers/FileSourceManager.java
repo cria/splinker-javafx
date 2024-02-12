@@ -5,7 +5,8 @@ import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.parsers.AccessFileParser;
 import br.org.cria.splinkerapp.parsers.CsvFileParser;
 import br.org.cria.splinkerapp.parsers.DbfFileParser;
-import br.org.cria.splinkerapp.parsers.ExcelFileParser;
+import br.org.cria.splinkerapp.parsers.XLSFileParser;
+import br.org.cria.splinkerapp.parsers.XLSXFileParser;
 import br.org.cria.splinkerapp.parsers.FileParser;
 import br.org.cria.splinkerapp.parsers.NumbersFileParser;
 import br.org.cria.splinkerapp.parsers.OdsFileParser;
@@ -30,12 +31,13 @@ public class FileSourceManager {
     void buildFileParser() throws Exception
     {
         var isAccessDb = filePath.endsWith("mdb");
-        var isExcel = filePath.endsWith(".xlsx") ||filePath.endsWith(".xls");
+        var isXLS = filePath.endsWith(".xls");
+        var isXLSX = filePath.endsWith(".xlsx"); 
         var isCsv = filePath.endsWith(".csv") || filePath.endsWith(".tsv") || filePath.endsWith(".txt");
         var isOds = filePath.endsWith(".ods");
         var isDbf = filePath.endsWith(".dbf");
         var isNumbers = filePath.endsWith(".numbers");
-        var unsupportedFileFormat = !(isAccessDb || isExcel || isCsv || isOds || isDbf || isCsv || isNumbers);
+        var unsupportedFileFormat = !(isAccessDb || isXLS|| isXLSX || isCsv || isOds || isDbf || isCsv || isNumbers);
 
         if(unsupportedFileFormat)
         {
@@ -45,9 +47,13 @@ public class FileSourceManager {
         {
             fileParser = new AccessFileParser(filePath, ds.getDbPassword());
         }
-        if(isExcel)
+        if(isXLS)
         {
-            fileParser = new ExcelFileParser(filePath);
+            fileParser = new XLSFileParser(filePath);
+        }
+        if(isXLSX)
+        {
+            fileParser = new XLSXFileParser(filePath);
         }
         if(isCsv)
         {

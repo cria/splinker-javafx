@@ -35,7 +35,6 @@ public class XLSXFileParser extends FileParser {
 
         //long numberOfTabs = sheets.count();
         var builder = new StringBuilder();
-        ApplicationLog.info("Construindo comando Create Table");
         sheets.forEach((sheet) -> {
             try {
                 var tableName = sheet.getName();
@@ -58,7 +57,7 @@ public class XLSXFileParser extends FileParser {
         });
 
         var command = builder.toString().replace(",);", ");");
-        ApplicationLog.info("Comando Create Table criado");
+        
         return command;
     }
 
@@ -80,6 +79,7 @@ public class XLSXFileParser extends FileParser {
     @Override
     public void insertDataIntoTable() throws Exception 
     {
+        ApplicationLog.info("Lendo Workbook XLSX - Iniciando inserção no BD");
         Connection conn;
         try 
         {
@@ -90,7 +90,7 @@ public class XLSXFileParser extends FileParser {
          
           while (woorkbookIterator.hasNext()) 
           {
-            ApplicationLog.info("Lendo Workbook");
+            
               var sheet = woorkbookIterator.next();
               var rows = sheet.read();
               totalRowCount = rows.size() -1;
@@ -141,34 +141,6 @@ public class XLSXFileParser extends FileParser {
                 throw new RuntimeException(e);
                }
               });
-            //   while (sheetIterator.hasNext()) 
-            //   {
-            //     ApplicationLog.info("Lendo Row");
-            //       var row = sheetIterator.next();
-            //       if (row != null) 
-            //       { 
-            //           var cellIterator = row.cellIterator();
-            //           while (cellIterator.hasNext()) 
-            //           {
-            //             ApplicationLog.info("Lendo Cell");
-            //               var cell = cellIterator.next();
-            //               var index = cell.getColumnIndex() + 1;
-            //               var value = formatter.formatCellValue(cell);
-            //               statement.setString(index, value);
-            //           }
-            //           statement.addBatch();
-            //       }
-            //       currentRow++;
-            //       if (currentRow % 10 == 0) 
-            //       {
-            //           statement.executeBatch();
-            //           conn.commit();
-            //           statement.clearBatch();
-                      
-            //       }
-            //       readRowEventBus.post(currentRow);
-            //   }
-
               statement.executeBatch();
               conn.commit();
               statement.clearBatch();
