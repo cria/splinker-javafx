@@ -13,9 +13,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.AfterClass;
 import org.junit.Test;
 import com.github.javafaker.Faker;
-import br.org.cria.splinkerapp.parsers.ExcelFileParser;
+import br.org.cria.splinkerapp.parsers.XLSFileParser;
 
-public class ExcelFileParserTest extends ParserBaseTest {
+public class XLSFileParserTest extends ParserBaseTest {
     
     final static String oldFormatFilePath = "%sOldFormat2.xls".formatted(baseDir);
     final static String newFormatFilePath = "%sNewFormat2.xlsx".formatted(baseDir);
@@ -33,7 +33,7 @@ public class ExcelFileParserTest extends ParserBaseTest {
             System.setProperty("splinker.dbname", connString);
             var tableName = "test_sheet_xls";
             var path = xls.getAbsolutePath();
-            var parser = new ExcelFileParser(path);
+            var parser = new XLSFileParser(path);
             parser.createTableBasedOnSheet();
             parser.insertDataIntoTable();
             var expected = getParsedDataFromTable(tableName, connString);
@@ -58,7 +58,7 @@ public class ExcelFileParserTest extends ParserBaseTest {
         System.setProperty("splinker.dbname", connString);
         var tableName = "test_sheet_xlsx";
         var path = xlsx.getAbsolutePath();
-        var parser = new ExcelFileParser(path);
+        var parser = new XLSFileParser(path);
         parser.createTableBasedOnSheet();
         parser.insertDataIntoTable();
         var expected = getParsedDataFromTable(tableName, connString);
