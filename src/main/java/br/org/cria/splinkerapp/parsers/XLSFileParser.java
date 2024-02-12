@@ -1,34 +1,30 @@
 package br.org.cria.splinkerapp.parsers;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.utils.StringStandards;
 import io.sentry.Sentry;
 
-public class ExcelFileParser extends FileParser {
+public class XLSFileParser extends FileParser {
     String fileSourcePath;
     Workbook workbook;
-
-    public ExcelFileParser(String fileSourcePath) throws Exception {
+    
+    public XLSFileParser(String fileSourcePath) throws Exception {
         this.fileSourcePath = fileSourcePath;
-        var isXLSX = fileSourcePath.endsWith(".xlsx"); 
-        ApplicationLog.info("Abrindo arquivo Excel");
-        workbook = isXLSX ? new XSSFWorkbook(OPCPackage.open(fileSourcePath)) : 
-        new HSSFWorkbook(new FileInputStream(fileSourcePath));
+        var excelFile = new File(fileSourcePath);
+        var stream = new FileInputStream(excelFile);
+        workbook = new HSSFWorkbook(stream);
         ApplicationLog.info("Arquivo Excel carregado");
-       
     }
 
     @Override
