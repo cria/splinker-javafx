@@ -1,6 +1,7 @@
 package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
@@ -107,13 +108,9 @@ public class PrincipalController extends AbstractController {
             {
                 token = newToken;
                 ds = DataSetService.getDataSet(token);
-                var lastUdate = ds.getUpdatedAt() ==null? "-": ds.getUpdatedAt().toString();
-                var recordsSent = ds.getLastRowCount() > 0? String.valueOf(ds.getLastRowCount()): "-";
                 DataSetService.setCurrentToken(token);
                 syncMetaData();
-                lblCollectionName.setText(ds.getDataSetName());
-                lblLastUpdate.setText(lastUdate);
-                lblRecordsSent.setText(recordsSent);
+                updateDisplayedData();
             }
         } catch (Exception e) {
             Sentry.captureException(e);
@@ -172,6 +169,16 @@ public class PrincipalController extends AbstractController {
             ApplicationLog.error(e.getLocalizedMessage());
         }
     }
+
+    void updateDisplayedData()
+    {
+        var lastUdate = ds.getUpdatedAt() == null? "-": ds.getUpdatedAt()
+                                            .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        var recordsSent = ds.getLastRowCount() > 0? String.valueOf(ds.getLastRowCount()): "-";
+        lblCollectionName.setText(ds.getDataSetName());
+        lblLastUpdate.setText(lastUdate);
+        lblRecordsSent.setText(recordsSent);
+    }
    
 
    @Override
@@ -187,8 +194,7 @@ public class PrincipalController extends AbstractController {
             var datasetWasUpdatedAtLeastOnce = ds.getUpdatedAt() != null;
             if(datasetWasUpdatedAtLeastOnce)
             {
-                lblLastUpdate.setText(ds.getUpdatedAt().toString());
-                lblRecordsSent.setText(String.valueOf(ds.getLastRowCount()));    
+                updateDisplayedData();
             }
             syncMetaData();
             populateDatasetCombo();
