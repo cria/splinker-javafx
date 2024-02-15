@@ -123,7 +123,8 @@ public class DataSet {
         this.datasetAcronym = datasetAcronym;
     }
     private DataSet(String token, DataSourceType type, String filePath, String host, String databaseName, String tableName,
-                     String username, String password, String port, String connectionString, String datasetAcronym, String datasetName, int lastRowCount, int id)
+                     String username, String password, String port, String connectionString, String datasetAcronym, 
+                     String datasetName, int lastRowCount, int id, LocalDate updatedAt)
     {
         this.id = id;
         this.token = token;
@@ -142,6 +143,7 @@ public class DataSet {
         this.datasetAcronym = datasetAcronym;
         this.datasetName = datasetName;
         this.lastRowCount = lastRowCount;
+        this.updatedAt = updatedAt;
     }
     
     public boolean isFile() 
@@ -162,7 +164,7 @@ public class DataSet {
     }
     public static DataSet factory(String token, DataSourceType type, String filePath, String host, 
                                         String databaseName, String tableName,
-                                        String username, String password, String port, String datasetAcronym, String datasetName, int lastRowCount, int id) 
+                                        String username, String password, String port, String datasetAcronym, String datasetName, int lastRowCount, int id, LocalDate updated_at) 
     {
         DataSet ds;
         String connectionString = null;
@@ -190,7 +192,8 @@ public class DataSet {
             } 
         }
         ds = new DataSet(token, type, filePath, host, databaseName, tableName, 
-                            username, password, port, connectionString, datasetAcronym, datasetName, lastRowCount, id);
+                        username, password, port, connectionString, datasetAcronym, 
+                        datasetName, lastRowCount, id, updated_at);
         return ds;
     }
     public Connection getDataSetConnection() throws Exception

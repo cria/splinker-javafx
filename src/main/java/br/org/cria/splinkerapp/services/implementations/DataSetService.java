@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.BufferedReader;
@@ -21,16 +23,14 @@ import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
 
 public class DataSetService extends BaseRepository {
 
-    public static String getCurrentToken() throws Exception
-    {
+    public static String getCurrentToken() throws Exception {
         var token = System.getProperty("splinker_token");
-        if(token == null)
-        {
+        if (token == null) {
             var cmd = "SELECT token FROM DataSetConfiguration LIMIT 1;";
             var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
             var result = runQuery(cmd, conn);
             var hasToken = result.getString("token") != null;
-            token = hasToken? result.getString("token") : "";
+            token = hasToken ? result.getString("token") : "";
             result.close();
             conn.close();
             setCurrentToken(token);
@@ -38,14 +38,12 @@ public class DataSetService extends BaseRepository {
         return token;
 
     }
-   
-    public static void setCurrentToken(String token)
-    {
-        System.setProperty("splinker_token", token);    
+
+    public static void setCurrentToken(String token) {
+        System.setProperty("splinker_token", token);
     }
-    
-    public static void updateRowcount(String token, int rowCount) throws Exception
-    {
+
+    public static void updateRowcount(String token, int rowCount) throws Exception {
         var cmd = "UPDATE DataSetConfiguration SET last_rowcount = ? WHERE token = ?;";
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var stm = conn.prepareStatement(cmd);
@@ -55,9 +53,8 @@ public class DataSetService extends BaseRepository {
         stm.close();
         conn.close();
     }
-   
-    public static void deleteDataSet(String token) throws Exception
-    {
+
+    public static void deleteDataSet(String token) throws Exception {
         var cmd = "DELETE FROM DataSetConfiguration WHERE token = ?;";
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var stm = conn.prepareStatement(cmd);
@@ -67,9 +64,8 @@ public class DataSetService extends BaseRepository {
         conn.close();
     }
 
-    public static Map<String, Object> getConfigurationDataFromAPI(String token) throws Exception
-    {
-     
+    public static Map<String, Object> getConfigurationDataFromAPI(String token) throws Exception {
+
         String line;
         var config = CentralServiceRepository.getCentralServiceData();
         var url = "%s?version=%s&token=%s".formatted(config.getCentralServiceUrl(), config.getSystemVersion(), token);
@@ -78,31 +74,28 @@ public class DataSetService extends BaseRepository {
         var connection = (HttpURLConnection) urlConn.openConnection();
         connection.setRequestMethod("GET");
         var reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        
-        while ((line = reader.readLine()) != null) 
-        {
+
+        while ((line = reader.readLine()) != null) {
             response.append(line);
         }
-        
+
         reader.close();
         connection.disconnect();
         HashMap<String, Object> json = new Gson().fromJson(response.toString(), HashMap.class);
         return json;
     }
 
-    public static boolean hasConfiguration() throws Exception
-    {
+    public static boolean hasConfiguration() throws Exception {
         var cmd = "SELECT COUNT(token) AS TOKEN_COUNT FROM  DataSetConfiguration;";
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var result = runQuery(cmd, conn);
-        var hasConfig =  result.getInt("TOKEN_COUNT") > 0;
+        var hasConfig = result.getInt("TOKEN_COUNT") > 0;
         result.close();
         conn.close();
         return hasConfig;
     }
-    
-    public static boolean checkIfRecordsHaveDecreased(String token, int newRowCount) throws Exception
-    {
+
+    public static boolean checkIfRecordsHaveDecreased(String token, int newRowCount) throws Exception {
         var cmd = """
                 SELECT last_rowcount FROM  DataSetConfiguration
                 WHERE token = ?
@@ -113,38 +106,34 @@ public class DataSetService extends BaseRepository {
         stm.setString(1, token);
         var result = stm.executeQuery();
         int lastRowCount = 0;
-        while (result.next()) 
-        {
-            lastRowCount = result.getInt("last_rowcount");    
+        while (result.next()) {
+            lastRowCount = result.getInt("last_rowcount");
         }
         var hasLessRowsThanBefore = lastRowCount > newRowCount;
-        
+
         return hasLessRowsThanBefore;
-        
+
     }
 
-    public static List<DataSet> getAllDataSets() throws Exception
-    {
+    public static List<DataSet> getAllDataSets() throws Exception {
         var sources = new ArrayList<DataSet>();
         var cmd = """
                     SELECT * FROM  DataSetConfiguration;
                 """;
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var results = runQuery(cmd, conn);
-        while (results.next()) 
-        {
+        while (results.next()) {
             var ds = buildFromResultSet(results);
-            sources.add(ds);    
+            sources.add(ds);
         }
         results.close();
         conn.close();
         return sources;
     }
 
-    public static DataSet getDataSetBy(String field, String value) throws Exception
-    {
+    public static DataSet getDataSetBy(String field, String value) throws Exception {
         var cmd = "SELECT * FROM  DataSetConfiguration WHERE %s = ? LIMIT 1;"
-        .formatted(field);
+                .formatted(field);
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var stm = conn.prepareStatement(cmd);
         stm.setString(1, value);
@@ -155,50 +144,48 @@ public class DataSetService extends BaseRepository {
         return ds;
     }
 
-    private static DataSet buildFromResultSet(ResultSet result) throws Exception
-    {
-                var id =  result.getInt("id");
-                var token = result.getString("token");
-                var host = result.getString("db_host");
-                var port = result.getString("db_port");
-                var dbName = result.getString("db_name");
-                var table = result.getString("db_tablename");
-                var user = result.getString("db_username");
-                var pwd = result.getString("db_password");
-                var filePath = result.getString("datasource_filepath");
-                var acronym =  result.getString("dataset_acronym");
-                var name =  result.getString("dataset_name");
-                var lastRowCount =  result.getInt("last_rowcount");
-                var type =result.getString("datasource_type") == null? null:
-                 DataSourceType.valueOf(result.getString("datasource_type"));
-                
-                var ds = DataSet.factory(token, type, filePath, host,dbName, table,user, pwd, port, acronym, name, lastRowCount, id);
-                return ds;
+    private static DataSet buildFromResultSet(ResultSet result) throws Exception {
+        var id = result.getInt("id");
+        var token = result.getString("token");
+        var host = result.getString("db_host");
+        var port = result.getString("db_port");
+        var dbName = result.getString("db_name");
+        var table = result.getString("db_tablename");
+        var user = result.getString("db_username");
+        var pwd = result.getString("db_password");
+        var filePath = result.getString("datasource_filepath");
+        var acronym = result.getString("dataset_acronym");
+        var name = result.getString("dataset_name");
+        var lastRowCount = result.getInt("last_rowcount");
+        var type = result.getString("datasource_type") == null ? null
+                : DataSourceType.valueOf(result.getString("datasource_type"));
+        var updatedAt = LocalDate.parse(result.getString("updated_at"),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        var ds = DataSet.factory(token, type, filePath, host, dbName, table, user, pwd, port,
+                acronym, name, lastRowCount, id, updatedAt);
+        return ds;
     }
 
-    public static DataSet getDataSet(String token) throws Exception
-    {
+    public static DataSet getDataSet(String token) throws Exception {
 
-        return getDataSetBy("token",token);
+        return getDataSetBy("token", token);
     }
 
-    public static void saveSQLCommand(String token, List<Double> cmd) throws Exception
-    {
+    public static void saveSQLCommand(String token, List<Double> cmd) throws Exception {
         var ds = getDataSet(token);
         var id = ds.getId();
         var fileName = "%s/%s.sql".formatted(System.getProperty("user.dir"), id);
         var sqlCmd = byteArrayToString(cmd);
         Path path = Paths.get(fileName);
         byte[] strToBytes = sqlCmd.getBytes();
-        if(Files.exists(path))
-        {
+        if (Files.exists(path)) {
             Files.delete(path);
         }
         Files.write(path, strToBytes);
     }
 
-    public static String getSQLCommand(String token) throws Exception 
-    {
+    public static String getSQLCommand(String token) throws Exception {
         var ds = getDataSet(token);
         var id = ds.getId();
         var fileName = "%s/%s.sql".formatted(System.getProperty("user.dir"), id);
@@ -209,14 +196,15 @@ public class DataSetService extends BaseRepository {
 
     /**
      * Salva os dados da coleção.
-     * @param token - token da coleção
-     * @param type - Tipo de fonte de dados
+     * 
+     * @param token   - token da coleção
+     * @param type    - Tipo de fonte de dados
      * @param acronym - acrônimo da coleção
-     * @param name - nome da coleção
+     * @param name    - nome da coleção
      */
-    public static void saveDataSet(String token, DataSourceType type, String acronym, String name, int id) throws Exception
-    {
- 
+    public static void saveDataSet(String token, DataSourceType type, String acronym, String name, int id)
+            throws Exception {
+
         var cmd = """
                     INSERT INTO DataSetConfiguration
                     (token, datasource_type,
@@ -226,7 +214,7 @@ public class DataSetService extends BaseRepository {
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var stm = conn.prepareStatement(cmd);
         stm.setString(1, token);
-        stm.setString(2,  type.name());
+        stm.setString(2, type.name());
         stm.setString(3, acronym);
         stm.setString(4, name);
         stm.setInt(5, 0);
@@ -236,8 +224,7 @@ public class DataSetService extends BaseRepository {
         conn.close();
     }
 
-    public static void saveAccessDataSource(String token, String filePath, String password) throws Exception
-    {
+    public static void saveAccessDataSource(String token, String filePath, String password) throws Exception {
         var cmd = """
                     UPDATE DataSetConfiguration
                     SET datasource_filepath = ?,
@@ -245,20 +232,19 @@ public class DataSetService extends BaseRepository {
                 """;
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var stm = conn.prepareStatement(cmd);
-        stm.setString(1,filePath);
+        stm.setString(1, filePath);
         stm.setString(2, password);
         stm.setString(3, token);
-        
+
         stm.executeUpdate();
         stm.close();
         conn.close();
 
     }
 
-    public static void saveSQLDataSource(String token, String host, String port, 
-                            String dbName, String tableName, String userName, String password) throws Exception
-    {
-         var cmd = """
+    public static void saveSQLDataSource(String token, String host, String port,
+            String dbName, String tableName, String userName, String password) throws Exception {
+        var cmd = """
                     UPDATE DataSetConfiguration
                     SET db_name = ?,
                     db_username = ?, db_password = ?
@@ -281,8 +267,7 @@ public class DataSetService extends BaseRepository {
 
     }
 
-    public static void saveSpreadsheetDataSource(String token, String filePath) throws Exception
-    {
+    public static void saveSpreadsheetDataSource(String token, String filePath) throws Exception {
         var cmd = """
                     UPDATE DataSetConfiguration
                     SET datasource_filepath = ?
@@ -292,24 +277,23 @@ public class DataSetService extends BaseRepository {
         var stm = conn.prepareStatement(cmd);
         stm.setString(1, filePath);
         stm.setString(2, token);
-        
+
         stm.executeUpdate();
         stm.close();
         conn.close();
     }
-  
-    public static void updateDataSource(HashMap<String, String> args) throws Exception
-    {
+
+    public static void updateDataSource(HashMap<String, String> args) throws Exception {
 
         var token = args.get("token");
-        var sqlFieldList = args.keySet().stream().filter(e -> e!= "token").map(elem -> "%s = ?".formatted(elem)).toList();
+        var sqlFieldList = args.keySet().stream().filter(e -> e != "token").map(elem -> "%s = ?".formatted(elem))
+                .toList();
         var fields = String.join(",", sqlFieldList);
         var cmd = "UPDATE  DataSetConfiguration SET %s WHERE token = ?;".formatted(fields);
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var stm = conn.prepareStatement(cmd);
         var i = 1;
-        for (String field : sqlFieldList) 
-        {
+        for (String field : sqlFieldList) {
             var arg = field.split(" ")[0];
             var value = args.get(arg);
             stm.setString(i, value);
