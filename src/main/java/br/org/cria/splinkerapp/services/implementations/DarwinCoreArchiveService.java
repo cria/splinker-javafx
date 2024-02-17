@@ -59,26 +59,15 @@ public class DarwinCoreArchiveService
         var path = Path.of(this.textFile);
         var columnNames = getColumnNames();
         var rows = getDataSetRows();
-        var rowCount = rows.length();
         if(Files.exists(path))
-        {
-            var dataSourceLineCount = rowCount + 1;
-            var fileLineCount = Files.lines(path).count();
-            if(rowCount > 0 && fileLineCount > dataSourceLineCount)
-            {
-                    throw new Exception("Não é possível apagar registros!");
-            }
-            else
-            {
-                Files.delete(path);
-            }
+        {   
+            Files.delete(path);
         }
-                var writer = new BufferedWriter(new FileWriter(this.textFile));
-                writer.write(columnNames);        
-                writer.write(rows);
-                writer.flush();
-                writer.close();
-            
+        var writer = new BufferedWriter(new FileWriter(this.textFile));    
+        writer.write(columnNames);        
+        writer.write(rows);
+        writer.flush();
+        writer.close();
         return this;
     }
 
