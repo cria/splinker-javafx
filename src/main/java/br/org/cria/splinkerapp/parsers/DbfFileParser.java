@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.parsers;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -16,12 +17,18 @@ public class DbfFileParser extends FileParser
     String fileSourcePath;
 	List<String> columnNameList = new ArrayList<String>();
     DBFReader reader = null;
+	String fileName;
     public DbfFileParser(String fileSourcePath) throws Exception
 	{
         this.fileSourcePath = fileSourcePath;
 		try 
 		{
-			reader = new DBFReader(new FileInputStream(fileSourcePath));
+			var file = new File(fileSourcePath);
+			var name = file.getName();
+			var stream = new FileInputStream(file);
+			
+			reader = new DBFReader(stream);
+			this.fileName = name.substring(0, name.lastIndexOf("."));
 		} 
 		catch (DBFException e) 
 		{
@@ -33,10 +40,6 @@ public class DbfFileParser extends FileParser
 			ApplicationLog.error(e.getLocalizedMessage());
 			e.printStackTrace();
 		}
-		// finally 
-		// {
-		// 	DBFUtils.close(reader);
-		// }
     }
 	@Override
 	public void insertDataIntoTable() throws SQLException 
@@ -65,19 +68,23 @@ public class DbfFileParser extends FileParser
 			readRowEventBus.post(currentRow);    
 		}
 		conn.close();
+		reader.close();
 	}
 	@Override
-	public String buildCreateTableCommand() 
+	public String buildCreateTableCommand() throws Exception
 	{
         
 			int numberOfFields = reader.getFieldCount();
+			
         	var builder = new StringBuilder();
 			var tableName = getTableName();
 			builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
-			
+			dropTable(tableName);
 			for (int i = 0; i < numberOfFields; i++) 
 			{
-				String columnName = "`%s`".formatted(StringStandards.normalizeString(reader.getField(i).getName()));
+				var field = reader.getField(i);
+				var fieldName = field.getName();
+				String columnName = "`%s`".formatted(StringStandards.normalizeString(fieldName));
 				columnNameList.add(columnName);
                 builder.append("%s VARCHAR(1),".formatted(columnName));
 					
@@ -94,14 +101,20 @@ public class DbfFileParser extends FileParser
 		var fullRow = (Object[]) row;
         var list = new ArrayList<String>();
         
-        for (int colNum = 0; colNum < numberOfColumns; colNum++) {
+        for (int colNum = 0; colNum < numberOfColumns; colNum++) 
+		{
             var value = fullRow[colNum];
             list.add(value == null? "": value.toString());
-
         }
 
         return list;
 
     }
+
+	@Override
+	protected String getTableName()
+	{
+		return this.fileName;
+	}
 
 }
