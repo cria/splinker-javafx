@@ -27,8 +27,8 @@ public class CsvFileParser extends FileParser
 
     List<String> normalizeAllColumns(List<String> columnList)
     {
-        return columnList.stream().map((e)-> makeColumnName(e))
-                .filter(e -> e != null).toList();
+        return columnList.stream().filter(e -> e != null)
+                    .map((e)-> makeColumnName(e)).toList();
     }
     @Override
     public List<String> getRowAsStringList(Object row, int numberOfColumns) 
