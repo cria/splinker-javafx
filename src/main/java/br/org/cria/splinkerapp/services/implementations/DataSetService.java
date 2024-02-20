@@ -6,7 +6,8 @@ import java.nio.file.Paths;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.BufferedReader;
@@ -23,6 +24,7 @@ import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
 
 public class DataSetService extends BaseRepository {
 
+    
     public static String getCurrentToken() throws Exception {
         var token = System.getProperty("splinker_token");
         if (token == null) {
@@ -145,6 +147,17 @@ public class DataSetService extends BaseRepository {
     }
 
     private static DataSet buildFromResultSet(ResultSet result) throws Exception {
+        var fmt = new DateTimeFormatterBuilder()
+        .appendPattern("yyyy-MM-dd")
+        .optionalStart()
+        .appendPattern(" HH:mm:ss")
+        .optionalEnd()
+        .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+        .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+        .toFormatter();
+
+
+
         var id = result.getInt("id");
         var token = result.getString("token");
         var host = result.getString("db_host");
@@ -159,8 +172,7 @@ public class DataSetService extends BaseRepository {
         var lastRowCount = result.getInt("last_rowcount");
         var type = result.getString("datasource_type") == null ? null
                 : DataSourceType.valueOf(result.getString("datasource_type"));
-        var updatedAt = LocalDate.parse(result.getString("updated_at"),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        var updatedAt = LocalDate.parse(result.getString("updated_at"), fmt);
 
         var ds = DataSet.factory(token, type, filePath, host, dbName, table, user, pwd, port,
                 acronym, name, lastRowCount, id, updatedAt);
