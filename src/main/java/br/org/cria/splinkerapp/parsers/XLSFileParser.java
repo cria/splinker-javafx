@@ -24,14 +24,12 @@ public class XLSFileParser extends FileParser {
         var excelFile = new File(fileSourcePath);
         var stream = new FileInputStream(excelFile);
         workbook = new HSSFWorkbook(stream);
-        ApplicationLog.info("Arquivo Excel carregado");
     }
 
     @Override
     protected String buildCreateTableCommand() throws Exception {
         int numberOfTabs = workbook.getNumberOfSheets();
         var builder = new StringBuilder();
-        ApplicationLog.info("Construindo comando Create Table");
         for (int i = 0; i < numberOfTabs; i++) 
         {
             var sheet = workbook.getSheetAt(i);
@@ -51,7 +49,6 @@ public class XLSFileParser extends FileParser {
             builder.append(");");
         }
         var command = builder.toString().replace(",);", ");");
-        ApplicationLog.info("Comando Create Table criado");
         return command;
     }
 
@@ -77,14 +74,12 @@ public class XLSFileParser extends FileParser {
         Connection conn;
         try 
         {
-            ApplicationLog.info("Iniciando inserção de dados no BD");
           conn = getConnection();
           conn.setAutoCommit(false);
           var woorkbookIterator = workbook.sheetIterator();
           var formatter = new DataFormatter();
           while (woorkbookIterator.hasNext()) 
           {
-            ApplicationLog.info("Lendo Workbook");
               var sheet = woorkbookIterator.next();
               totalRowCount = sheet.getLastRowNum();
               var sheetIterator = sheet.iterator();
@@ -110,14 +105,12 @@ public class XLSFileParser extends FileParser {
               var statement = conn.prepareStatement(command);
               while (sheetIterator.hasNext()) 
               {
-                ApplicationLog.info("Lendo Row");
                   var row = sheetIterator.next();
                   if (row != null) 
                   { 
                       var cellIterator = row.cellIterator();
                       while (cellIterator.hasNext()) 
                       {
-                        ApplicationLog.info("Lendo Cell");
                           var cell = cellIterator.next();
                           var index = cell.getColumnIndex() + 1;
                           var value = formatter.formatCellValue(cell);
@@ -144,7 +137,6 @@ public class XLSFileParser extends FileParser {
           
           conn.setAutoCommit(true);
           conn.close();
-          ApplicationLog.info("Inserção no BD completa.");
         }catch (Exception e) 
         {
             Sentry.captureException(e);

@@ -79,7 +79,6 @@ public class XLSXFileParser extends FileParser {
     @Override
     public void insertDataIntoTable() throws Exception 
     {
-        ApplicationLog.info("Lendo Workbook XLSX - Iniciando inserção no BD");
         Connection conn;
         try 
         {
@@ -149,7 +148,6 @@ public class XLSXFileParser extends FileParser {
           
           conn.setAutoCommit(true);
           conn.close();
-          ApplicationLog.info("Inserção no BD completa.");
         }catch (Exception e) 
         {
             Sentry.captureException(e);
