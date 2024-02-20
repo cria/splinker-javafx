@@ -61,7 +61,7 @@ public abstract class FileParser {
         var command = buildCreateTableCommand();
         var conn = getConnection();
         var statement = conn.createStatement();
-        var result = statement.executeUpdate(command);
+        statement.executeUpdate(command);
         statement.close();
         conn.close();
     }
