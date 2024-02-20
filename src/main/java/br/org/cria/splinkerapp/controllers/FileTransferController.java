@@ -4,6 +4,8 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.models.DataSet;
@@ -45,6 +47,7 @@ public class FileTransferController extends AbstractController {
     @FXML
     ProgressIndicator progressIndicator;
 
+    ExecutorService executor = Executors.newSingleThreadExecutor();
     ImportDataTask importDataTask;
     GenerateDarwinCoreArchiveTask generateDWCATask;
     TransferFileTask transferFileTask;
@@ -72,7 +75,7 @@ public class FileTransferController extends AbstractController {
                 {
                     unbindProgress();
                     configureGenerateDWCTask();
-                    new Thread(generateDWCATask).start();
+                    executor.execute(generateDWCATask);
                 });
             });
 
@@ -100,7 +103,7 @@ public class FileTransferController extends AbstractController {
                     unbindProgress();
                     rowCount = generateDWCATask.getTotalWork();
                     configureSendFileTask();
-                    new Thread(transferFileTask).start();
+                    executor.execute(transferFileTask);
                 });        
             });
 
@@ -187,7 +190,7 @@ public class FileTransferController extends AbstractController {
                 transferFileTask = new TransferFileTask(dwcService);
 
                 configureImportDataTask();
-                new Thread(importDataTask).start();
+                executor.execute(importDataTask);
             } catch (Exception e) {
                 Sentry.captureException(e);
                 ApplicationLog.error(e.getLocalizedMessage());
@@ -219,7 +222,7 @@ public class FileTransferController extends AbstractController {
         {
             transferFileTask.cancel();
         }
-
+        executor.shutdownNow();
         System.gc();
         navigateTo("home");            
     }
