@@ -32,12 +32,6 @@ public class DarwinCoreArchiveService
     {
         return totalRowCount;
     }
-    private void logMessage(String message)
-    {
-        var now = Instant.now().atZone(ZoneId.systemDefault());
-        ApplicationLog.info(message);
-        System.out.println("%s - %s".formatted(now, message));
-    }
 
     public DarwinCoreArchiveService (DataSet ds) throws Exception
     {
@@ -54,7 +48,7 @@ public class DarwinCoreArchiveService
     public DarwinCoreArchiveService generateTXTFile() throws Exception
     {   
         var message =  "Iniciando a geração do arquivo DWC";
-        logMessage(message);
+        ApplicationLog.info(message);
 
         var path = Path.of(this.textFile);
         var columnNames = getColumnNames();
@@ -121,7 +115,7 @@ public class DarwinCoreArchiveService
     public DarwinCoreArchiveService generateZIPFile() throws Exception 
     {
         var message =  "Iniciando a geração do arquivo ZIP";
-        logMessage(message);
+        ApplicationLog.info(message);
 
         try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(this.zipFile))) 
         {
@@ -141,7 +135,7 @@ public class DarwinCoreArchiveService
     public DarwinCoreArchiveService readDataFromSource() throws Exception
     {
         var message =  "Iniciando leitura de dados do banco SQL.";
-        logMessage(message);
+        ApplicationLog.info(message);
 
         var loader = ClassLoader.load(ds.getType());
         var command = DataSetService.getSQLCommand(ds.getToken());
@@ -156,7 +150,7 @@ public class DarwinCoreArchiveService
     public void transferData() throws Exception 
     {
         var message = "Iniciando a transferência do arquivo";
-        logMessage(message);
+        ApplicationLog.info(message);
 
         var userDir = System.getProperty("user.dir");
         var rSyncConfig = TransferConfigRepository.getRSyncConfig();
