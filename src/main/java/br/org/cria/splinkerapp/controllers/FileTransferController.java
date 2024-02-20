@@ -54,7 +54,7 @@ public class FileTransferController extends AbstractController {
         progressBar.progressProperty().bind(prop);
         progressIndicator.progressProperty().bind(prop);
     }
-    
+
     void unbindProgress()
     {
         progressBar.progressProperty().unbind();
@@ -66,11 +66,7 @@ public class FileTransferController extends AbstractController {
         if(!ds.isSQLDatabase())
         {
             lblMessage.setText("Importando dados. Isso pode levar um tempo.");
-            importDataTask.setOnCancelled((handler) -> {
-                ApplicationLog.info("Import data cancelled.");
-            });
             importDataTask.setOnSucceeded((handler) -> {
-                ApplicationLog.info("Import data successfully");
                 System.gc();
                 Platform.runLater(()->
                 {
@@ -81,28 +77,24 @@ public class FileTransferController extends AbstractController {
             });
 
             importDataTask.setOnFailed((handler)->{
-                ApplicationLog.info("Import data failed");
                 var ex = importDataTask.getException();
                 var msg = ex.getLocalizedMessage();
                 ApplicationLog.error(msg);
+                Sentry.captureException(ex);
                 showErrorModal(msg);
             });
 
             bindProgress(importDataTask.progressProperty());
-            ApplicationLog.info("Starting import data thread");
         }
     }
+
     void configureGenerateDWCTask()
     {
         try 
         {
             lblMessage.setText("Gerando arquivo, por favor aguarde.");
-            generateDWCATask.setOnCancelled((handler) ->{
-                ApplicationLog.info("Generate file task cancelled.");
-        });
             generateDWCATask.setOnSucceeded((handler) -> {
                 System.gc();
-                ApplicationLog.info("Generate file successfully.");
                 Platform.runLater(()->
                 {
                     unbindProgress();
@@ -113,18 +105,16 @@ public class FileTransferController extends AbstractController {
             });
 
             generateDWCATask.setOnFailed((handler)->{
-                ApplicationLog.info("Generate file task failed.");
                 Platform.runLater(()->{
                     var ex = generateDWCATask.getException();
                     var msg = ex.getLocalizedMessage();
                     ApplicationLog.error(msg);
+                    Sentry.captureException(ex);
                     showErrorModal(msg);
                 });
             });
 
             bindProgress(generateDWCATask.progressProperty());
-                
-            ApplicationLog.info("Starting Generate DWC file thread");
         } catch (Exception e) {
             Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
@@ -132,19 +122,16 @@ public class FileTransferController extends AbstractController {
         }
         
     }
+    
     void configureSendFileTask()
     {
         try 
         {
             lblMessage.setText("Transferindo arquivo, por favor não feche o spLinker.");
             progressIndicator.setVisible(false);
-            transferFileTask.setOnCancelled((handler) -> {
-                ApplicationLog.info("Transfer file task cancelled.");
-            });
             transferFileTask.setOnSucceeded((handler)->
             {
                 System.gc();
-                ApplicationLog.info("Transfer file successfully.");
                 Platform.runLater(()-> {
                     try 
                     {
@@ -163,16 +150,16 @@ public class FileTransferController extends AbstractController {
                 });
             });
             transferFileTask.setOnFailed((handler)->{
-                ApplicationLog.info("Transfer file task failed.");
                 System.gc();
                 Platform.runLater(()->{
-                    var msg = transferFileTask.getException().getLocalizedMessage();
+                    var ex = transferFileTask.getException();
+                    var msg = ex.getLocalizedMessage();
                     ApplicationLog.error(msg);
+                    Sentry.captureException(ex);
                     showErrorModal(msg);
                 });
             });
 
-            ApplicationLog.info("Starting send file thread");
             bindProgress(transferFileTask.progressProperty());
             
         }  catch (Exception e) 
@@ -186,7 +173,6 @@ public class FileTransferController extends AbstractController {
     @FXML
     void onBtnYesClicked()
     {
-        ApplicationLog.info("Botão Sim clickado. Iniciando eventos para o token %s".formatted(ds.getToken()));
         btnYes.setVisible(false);
         btnNo.setVisible(false);
         btnCancelTransfer.setVisible(true);
@@ -202,9 +188,6 @@ public class FileTransferController extends AbstractController {
 
                 configureImportDataTask();
                 new Thread(importDataTask).start();
-                ApplicationLog.info("Starting tasks");
-                
-                
             } catch (Exception e) {
                 Sentry.captureException(e);
                 ApplicationLog.error(e.getLocalizedMessage());
@@ -224,21 +207,19 @@ public class FileTransferController extends AbstractController {
     {
         progressBar.progressProperty().unbind();
         progressIndicator.progressProperty().unbind();
-        if(importDataTask != null && importDataTask.isRunning())
+        if(importDataTask.isRunning())
         {
             importDataTask.cancel();
         }
-        if(generateDWCATask != null && generateDWCATask.isRunning())
+        if(generateDWCATask.isRunning())
         {
             generateDWCATask.cancel();
         }
-        if(transferFileTask != null && transferFileTask.isRunning())
+        if(transferFileTask.isRunning())
         {
             transferFileTask.cancel();
         }
-        //executor.shutdownNow();
-        //executor.close();
-        
+
         System.gc();
         navigateTo("home");            
     }
@@ -246,7 +227,6 @@ public class FileTransferController extends AbstractController {
     @Override
     public void initialize(URL location, ResourceBundle bundle)
     {  
-        ApplicationLog.info("Tela de envio aberta");
         btnCancelTransfer.setVisible(false);
         progressBar.setVisible(false);
         progressIndicator.setVisible(false);
