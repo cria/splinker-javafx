@@ -33,10 +33,6 @@ public class ImportDataTask extends Task<Void> {
     @Override
     protected Void call() throws Exception 
     {
-        var now = Instant.now().atZone(ZoneId.systemDefault());
-        var message = "%s - Iniciando a importação do arquivo".formatted(now.toLocalDateTime());
-        ApplicationLog.info(message);
-        System.out.println(message);
         manager.importData();
         return null;
     }

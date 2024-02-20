@@ -33,11 +33,6 @@ public class GenerateDarwinCoreArchiveTask extends Task<DarwinCoreArchiveService
 
     @Override
     protected DarwinCoreArchiveService call() throws Exception {
-        var now = Instant.now().atZone(ZoneId.systemDefault());
-        var message = now.toLocalDateTime() + " - Iniciando a criação do arquivo DWC";
-        
-        ApplicationLog.info(message);
-        
         return service.readDataFromSource()
                       .generateTXTFile()
                       .generateZIPFile();
