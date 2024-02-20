@@ -16,9 +16,6 @@ public class TransferFileTask extends Task<Void> {
 
     @Override
     protected Void call() throws Exception {
-        var now = Instant.now().atZone(ZoneId.systemDefault());
-        var message = now.toLocalDateTime() + " - Iniciando a transmissão";
-        ApplicationLog.info(message);
         service.transferData();
         return null;
     }
