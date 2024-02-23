@@ -29,16 +29,20 @@ public class TokenLoginController extends AbstractController {
     {
         try 
         {
-            var token = tokenField.getText();
-            var hasToken = (token != null) && (token != "");
-            if(hasToken)
+            var tokenToBeDeleted = tokenField.getText();
+            var tokenIsNotEmpty = (tokenToBeDeleted != null) && (tokenToBeDeleted != "");
+            var tokenExists = DataSetService.getDataSet(tokenToBeDeleted) != null;
+            if(tokenIsNotEmpty && tokenExists)
             {
-                DataSetService.deleteDataSet(token);
+                DataSetService.deleteDataSet(tokenToBeDeleted);
+                var datasets = DataSetService.getAllDataSets();
+                token = datasets.get(0).getToken();
+                DataSetService.setCurrentToken(token);
                 navigateTo(getStage(), "home");
             }
             else
             {
-                showErrorModal("Token inválido");
+                showErrorModal("Token inválido ou inexistente!");
             }
             
         } catch (Exception e) {
@@ -53,7 +57,19 @@ public class TokenLoginController extends AbstractController {
     {
         try 
         {
-            var token = tokenField.getText();
+            
+            var newToken = tokenField.getText();
+            if(newToken == null || newToken == "")
+            {
+                showErrorModal("Token não pode ser vazio!");
+                return;
+            }
+            var tokenExists = DataSetService.getDataSet(newToken) != null;
+            if(tokenExists)
+            {
+                showErrorModal("Token já existente!");
+                return;
+            }
             var hasConfig = DataSetService.hasConfiguration();
             var apiConfig = DataSetService.getConfigurationDataFromAPI(token);
             if(apiConfig != null)
@@ -62,11 +78,11 @@ public class TokenLoginController extends AbstractController {
                 var collName = apiConfig.get("dataset_name").toString();
                 var datasetAcronym = apiConfig.get("dataset_acronym").toString();
                 var id = (int)Double.parseDouble(apiConfig.get("dataset_id").toString());
-                DataSetService.setCurrentToken(token);
+                DataSetService.setCurrentToken(newToken);
                 var dsType = DataSourceType.valueOf(apiConfig.get("data_source_type").toString());
-                DataSetService.saveDataSet(token, dsType, datasetAcronym, collName, id);
-                ConfigFacade.HandleBackendData(token, apiConfig);
-                bus.post(token);
+                DataSetService.saveDataSet(newToken, dsType, datasetAcronym, collName, id);
+                ConfigFacade.HandleBackendData(newToken, apiConfig);
+                bus.post(newToken);
                 switch(dsType)
                 {
                     case Access:
