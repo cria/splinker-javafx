@@ -2,11 +2,8 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
-import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
-import io.sentry.Sentry;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
@@ -52,9 +49,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
         } 
         catch (Exception e) 
         {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getMessage());
+            handleErrors(e);
         }
     }
 
@@ -77,9 +72,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
         } 
         catch (Exception e) 
         {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getMessage());
+            handleErrors(e);
         }
     }
 

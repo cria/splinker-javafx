@@ -2,14 +2,12 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.facade.ConfigFacade;
 import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
-import io.sentry.Sentry;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
@@ -46,9 +44,7 @@ public class TokenLoginController extends AbstractController {
             }
             
         } catch (Exception e) {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
+            handleErrors(e);
         }
     }
     
@@ -113,9 +109,7 @@ public class TokenLoginController extends AbstractController {
         } 
         catch (Exception e) 
         {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getMessage());
+            handleErrors(e);
         }
     }
 
@@ -125,7 +119,6 @@ public class TokenLoginController extends AbstractController {
         super.initialize(location, resources);
         bus = EventBusManager.getEvent(EventTypes.ADD_DATASET.name());
         btnDeleteToken.setVisible(false);
-        // bus.register(this);
         try 
         {
             token = DataSetService.getCurrentToken();
@@ -141,9 +134,7 @@ public class TokenLoginController extends AbstractController {
             btnAddToken.setLayoutX(126);
             
         } catch (Exception e) {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());    
+            handleErrors(e);
         }
      }
 

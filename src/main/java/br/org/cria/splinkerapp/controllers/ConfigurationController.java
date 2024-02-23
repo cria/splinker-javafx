@@ -2,15 +2,12 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
-import io.sentry.Sentry;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
@@ -46,9 +43,7 @@ public class ConfigurationController extends AbstractController {
         } 
         catch (Exception e) 
         {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
+            handleErrors(e);
         }
     }
 
@@ -72,9 +67,7 @@ public class ConfigurationController extends AbstractController {
             children.add(childNode);
         } catch (Exception e)
         {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
+            handleErrors(e);
         }
     }
 
@@ -133,9 +126,7 @@ public class ConfigurationController extends AbstractController {
           } 
           catch (Exception e) 
           {
-            ApplicationLog.error(e.getLocalizedMessage());
-            Sentry.captureException(e);
-            showErrorModal(e.getLocalizedMessage());
+            handleErrors(e);
           }
     }
 

@@ -3,10 +3,8 @@ package br.org.cria.splinkerapp.controllers;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
-import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
-import io.sentry.Sentry;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -41,8 +39,7 @@ public class AccessDbController extends AbstractController {
         } 
         catch(Exception ex)
         {
-            ApplicationLog.error(ex.getLocalizedMessage());
-            showErrorModal(ex.getMessage());
+            handleErrors(ex);
         }
     }
 
@@ -84,9 +81,7 @@ public class AccessDbController extends AbstractController {
         } 
         catch (Exception e) 
         {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getMessage());
+            handleErrors(e);
         }
     }
     @Override

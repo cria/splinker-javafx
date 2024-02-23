@@ -2,13 +2,11 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
-import io.sentry.Sentry;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -35,9 +33,7 @@ public class DeleteDataSourceController extends AbstractController {
             bus.post(token);;
             getStage().close();
         } catch (Exception e) {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
+            handleErrors(e);
         }
         
     }
@@ -59,9 +55,7 @@ public class DeleteDataSourceController extends AbstractController {
             var msg = lblMsg.getText() + "\n %s (%s)".formatted(ds.getDataSetAcronym(), ds.getDataSetName()) + "?";
             lblMsg.setText(msg);
         } catch (Exception e) {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
+            handleErrors(e);
         }
     }
 
