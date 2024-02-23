@@ -147,6 +147,8 @@ public class DataSetService extends BaseRepository {
     }
 
     private static DataSet buildFromResultSet(ResultSet result) throws Exception {
+
+        
         var fmt = new DateTimeFormatterBuilder()
         .appendPattern("yyyy-MM-dd")
         .optionalStart()
@@ -158,8 +160,12 @@ public class DataSetService extends BaseRepository {
 
 
 
-        var id = result.getInt("id");
         var token = result.getString("token");
+        if(token == null)
+        {
+            return null;
+        }
+        var id = result.getInt("id");
         var host = result.getString("db_host");
         var port = result.getString("db_port");
         var dbName = result.getString("db_name");
