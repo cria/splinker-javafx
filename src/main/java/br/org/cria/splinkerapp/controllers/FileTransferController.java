@@ -51,6 +51,7 @@ public class FileTransferController extends AbstractController {
     ImportDataTask importDataTask;
     GenerateDarwinCoreArchiveTask generateDWCATask;
     TransferFileTask transferFileTask;
+    String errMsg = "Erro na %s. Contate o administrador do spLinker: Error ID %s";
     
     void bindProgress(ReadOnlyDoubleProperty prop)
     {
@@ -81,9 +82,11 @@ public class FileTransferController extends AbstractController {
 
             importDataTask.setOnFailed((handler)->{
                 var ex = importDataTask.getException();
-                var msg = ex.getLocalizedMessage();
-                ApplicationLog.error(msg);
-                Sentry.captureException(ex);
+                var errId = Sentry.captureException(ex);
+                var task = "importação dos dados";
+                var msg = errMsg.formatted(task, errId);
+                ApplicationLog.error(ex.getMessage());
+                               
                 showErrorModal(msg);
             });
 
@@ -110,9 +113,11 @@ public class FileTransferController extends AbstractController {
             generateDWCATask.setOnFailed((handler)->{
                 Platform.runLater(()->{
                     var ex = generateDWCATask.getException();
-                    var msg = ex.getLocalizedMessage();
-                    ApplicationLog.error(msg);
-                    Sentry.captureException(ex);
+                    var errId = Sentry.captureException(ex);
+                    var task = "geração do arquivo";
+                    var msg = errMsg.formatted(task, errId);
+                    ApplicationLog.error(ex.getMessage());
+                                   
                     showErrorModal(msg);
                 });
             });
@@ -143,9 +148,7 @@ public class FileTransferController extends AbstractController {
                                                                     put("token", token);}};
                         DataSetService.updateDataSource(newData);   
                     } catch (Exception e) {
-                        Sentry.captureException(e);
-                        ApplicationLog.error(e.getLocalizedMessage());
-                        showErrorModal(e.getLocalizedMessage());
+                     handleErrors(e);
                     }
                     
                     showAlert(AlertType.INFORMATION, "Transferência Concluída","transferido com sucesso!");
@@ -155,11 +158,13 @@ public class FileTransferController extends AbstractController {
             transferFileTask.setOnFailed((handler)->{
                 System.gc();
                 Platform.runLater(()->{
-                    var ex = transferFileTask.getException();
-                    var msg = ex.getLocalizedMessage();
-                    ApplicationLog.error(msg);
-                    Sentry.captureException(ex);
-                    showErrorModal(msg);
+                var ex = transferFileTask.getException();
+                var errId = Sentry.captureException(ex);
+                var task = "transferência do arquivo";
+                var msg = errMsg.formatted(task, errId);
+                ApplicationLog.error(ex.getMessage());
+                               
+                showErrorModal(msg);
                 });
             });
 
@@ -167,9 +172,7 @@ public class FileTransferController extends AbstractController {
             
         }  catch (Exception e) 
         {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
+            handleErrors(e);
         }
     }
 
@@ -200,9 +203,7 @@ public class FileTransferController extends AbstractController {
                     executor.execute(generateDWCATask);
                 }
             } catch (Exception e) {
-                Sentry.captureException(e);
-                ApplicationLog.error(e.getLocalizedMessage());
-                showErrorModal(e.getLocalizedMessage());
+                handleErrors(e);
             }
         }); 
     }
@@ -251,9 +252,7 @@ public class FileTransferController extends AbstractController {
         } 
         catch (Exception e) 
         {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
+           handleErrors(e);
         }
     }
 
