@@ -5,11 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
-
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-
-import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.config.DatabaseSetup;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.enums.WindowSizes;
@@ -18,7 +15,6 @@ import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
-import io.sentry.Sentry;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -58,9 +54,7 @@ public class PrincipalController extends AbstractController {
             DatabaseSetup.deleteLocalDatabase();
             System.exit(0);
         } catch (Exception e) {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
+            handleErrors(e);
         }
     }
 
@@ -86,9 +80,7 @@ public class PrincipalController extends AbstractController {
             ConfigFacade.HandleBackendData(token, config);
         } catch (Exception e) 
         {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
+            handleErrors(e);
         }
     }
     
@@ -103,19 +95,17 @@ public class PrincipalController extends AbstractController {
 
         try 
         {
-            var newToken = cmbCollection.getValue();
-            if(newToken!=null)
+            var acronym = cmbCollection.getValue();
+            if(acronym !=null)
             {
-                token = newToken;
-                ds = DataSetService.getDataSet(token);
+                ds = DataSetService.getDataSetBy("dataset_acronym", acronym);
+                token = ds.getToken();
                 DataSetService.setCurrentToken(token);
                 syncMetaData();
                 updateDisplayedData();
             }
         } catch (Exception e) {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
+            handleErrors(e);
         }
     }
 
@@ -124,29 +114,27 @@ public class PrincipalController extends AbstractController {
     {
         try 
         {
-            var ds = DataSetService.getDataSet(eventToken);
-            var datasetWasDeleted = ds.getId() <= 0;
+            var currentDataset = DataSetService.getDataSet(eventToken);
+            var datasetWasDeleted = currentDataset.getId() <= 0;
             if(datasetWasDeleted)
             {
-                cmbCollection.getItems().remove(eventToken);
+                cmbCollection.getItems().remove(currentDataset.getDataSetAcronym());
                 var size = cmbCollection.getItems().size();
-                var newToken = cmbCollection.getItems().get(size-1);
+                var acronym = cmbCollection.getItems().get(size-1);
+                ds = DataSetService.getDataSetBy("dataset_acronym", acronym);
+                var newToken = ds.getToken();//cmbCollection.getItems().get(size-1);
                 DataSetService.setCurrentToken(newToken);
-                cmbCollection.setValue(newToken);
+                cmbCollection.setValue(acronym);
             }
             else
             {
                 populateDatasetCombo();
-                cmbCollection.setValue(eventToken);
+                cmbCollection.setValue(currentDataset.getDataSetAcronym());
             }
-            
-            
         } 
         catch (Exception e) 
         {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
+            handleErrors(e);
         }
         
     }
@@ -161,12 +149,12 @@ public class PrincipalController extends AbstractController {
     void addOptionsToDataset(Stream<DataSet> sources)
     {
         try {
-        var options = sources.map(e -> e.getToken()).toList();
+        
+        var options = sources.map(e -> e.getDataSetAcronym()).toList();
         cmbCollection.setItems(FXCollections.observableArrayList(options));
-        cmbCollection.setValue(token);    
+        cmbCollection.setValue(ds.getDataSetAcronym());    
         } catch (Exception e) {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
+            handleErrors(e);
         }
     }
 
@@ -191,7 +179,8 @@ public class PrincipalController extends AbstractController {
             bus.register(this);
             token = DataSetService.getCurrentToken();
             ds = DataSetService.getDataSet(token);
-            var datasetWasUpdatedAtLeastOnce = ds.getUpdatedAt() != null;
+            var isDatasetNull = ds == null;
+            var datasetWasUpdatedAtLeastOnce = !isDatasetNull && ds.getUpdatedAt() != null;;
             if(datasetWasUpdatedAtLeastOnce)
             {
                 updateDisplayedData();
@@ -205,9 +194,7 @@ public class PrincipalController extends AbstractController {
             lblCollectionName.setTextOverrun(OverrunStyle.CLIP);
             lblCollectionName.setEllipsisString("");
         } catch (Exception e) {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
+            handleErrors(e);
         }
     }
 
