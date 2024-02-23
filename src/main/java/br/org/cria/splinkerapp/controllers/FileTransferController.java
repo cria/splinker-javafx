@@ -185,12 +185,20 @@ public class FileTransferController extends AbstractController {
         Platform.runLater(()-> { 
             try 
             {
-                importDataTask = new ImportDataTask(ds);
                 generateDWCATask = new GenerateDarwinCoreArchiveTask(dwcService);
                 transferFileTask = new TransferFileTask(dwcService);
+                if(ds.isFile())
+                {
 
-                configureImportDataTask();
-                executor.execute(importDataTask);
+                    importDataTask = new ImportDataTask(ds);
+                    configureImportDataTask();
+                    executor.execute(importDataTask);
+                }
+                else
+                {
+                    configureGenerateDWCTask();
+                    executor.execute(generateDWCATask);
+                }
             } catch (Exception e) {
                 Sentry.captureException(e);
                 ApplicationLog.error(e.getLocalizedMessage());
