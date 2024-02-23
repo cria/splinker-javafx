@@ -9,8 +9,6 @@ import io.sentry.Sentry;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
@@ -103,51 +101,11 @@ public abstract class AbstractController implements Initializable {
         alert.showAndWait();
     }
 
-    protected void navigateOrOpenNewWindowOnExistingDataSource(String routeName, boolean newWindow) throws Exception
+    protected void handleErrors(Exception ex)
     {
-        if(newWindow)
-        {
-            openNewWindow(routeName);
-        }
-        else
-        {
-            navigateTo(routeName);
-        }
+        var sentryId = Sentry.captureException(ex);
+        var msg = "Ocorreu um erro. Contate o administrador do spLinker - Error ID %s".formatted(sentryId.toString());
+        ApplicationLog.error(ex.getLocalizedMessage());
+        showErrorModal(msg);
     }
-
-    protected Stage createNewWindow(String routeName)
-    {
-        var stage = new Stage();
-        try 
-        {
-            var route = "/br/org/cria/splinkerapp/%s.fxml".formatted(routeName);
-            var resource = getClass().getResource(route);
-            var fxmlLoader = new FXMLLoader(resource);
-            var parent = (Parent) fxmlLoader.load();
-            var scene  = new Scene(parent);
-            stage.setScene(scene);
-        }
-        catch (Exception e) 
-        {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-        }
-        return stage;
-    }
-
-    protected void openNewWindow(String routeName)
-    {
-
-        try 
-        {
-            var stage = createNewWindow(routeName);
-            stage.show();    
-        }
-        catch (Exception e) 
-        {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-        }
-    }
-
 }
