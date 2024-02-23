@@ -20,8 +20,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
     TextField usernameField;
     @FXML
     PasswordField passwordField;
-    @FXML
-    TextField tablenameField;
+    
     @FXML
     TextField portField;
     @FXML
@@ -45,7 +44,6 @@ public class CollectionLocalDatabaseController extends AbstractController {
             {
                 usernameField.setText(ds.getDbUser());
                 passwordField.setText(ds.getDbPassword());
-                tablenameField.setText(ds.getDbTableName());
                 hostAddressField.setText(ds.getDbHost());
                 dbNameField.setText(ds.getDbName());
                 portField.setText(ds.getDbPort());
@@ -68,13 +66,11 @@ public class CollectionLocalDatabaseController extends AbstractController {
         {
             var username = usernameField.getText();
             var password = passwordField.getText();
-            var tableName = tablenameField.getText();
             var hostName = hostAddressField.getText();
             var databaseName = dbNameField.getText();
             var port = portField.getText();
             
-            DataSetService.saveSQLDataSource(token, hostName, port, databaseName, 
-                                                    tableName, username, password);
+            DataSetService.saveSQLDataSource(token, hostName, port, databaseName, username, password);
             
             navigateTo(getStage(), "home");
             
