@@ -67,7 +67,7 @@ public class TokenLoginController extends AbstractController {
                 return;
             }
             var hasConfig = DataSetService.hasConfiguration();
-            var apiConfig = DataSetService.getConfigurationDataFromAPI(token);
+            var apiConfig = DataSetService.getConfigurationDataFromAPI(newToken);
             if(apiConfig != null)
             {
                 var routeName = "collection-database";
