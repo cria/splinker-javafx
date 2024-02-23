@@ -163,7 +163,6 @@ public class DataSetService extends BaseRepository {
         var host = result.getString("db_host");
         var port = result.getString("db_port");
         var dbName = result.getString("db_name");
-        var table = result.getString("db_tablename");
         var user = result.getString("db_username");
         var pwd = result.getString("db_password");
         var filePath = result.getString("datasource_filepath");
@@ -174,7 +173,7 @@ public class DataSetService extends BaseRepository {
                 : DataSourceType.valueOf(result.getString("datasource_type"));
         var updatedAt = LocalDate.parse(result.getString("updated_at"), fmt);
 
-        var ds = DataSet.factory(token, type, filePath, host, dbName, table, user, pwd, port,
+        var ds = DataSet.factory(token, type, filePath, host, dbName, user, pwd, port,
                 acronym, name, lastRowCount, id, updatedAt);
         return ds;
     }
@@ -255,13 +254,12 @@ public class DataSetService extends BaseRepository {
     }
 
     public static void saveSQLDataSource(String token, String host, String port,
-            String dbName, String tableName, String userName, String password) throws Exception {
+            String dbName, String userName, String password) throws Exception {
         var cmd = """
                     UPDATE DataSetConfiguration
                     SET db_name = ?,
-                    db_username = ?, db_password = ?
-                    db_host = ?, db_port = ?,
-                    db_tablename = ?
+                    db_username = ?, db_password = ?,
+                    db_host = ?, db_port = ?
                     WHERE token = ?;
                 """;
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
@@ -271,8 +269,7 @@ public class DataSetService extends BaseRepository {
         stm.setString(3, password);
         stm.setString(4, host);
         stm.setString(5, port);
-        stm.setString(6, tableName);
-        stm.setString(7, token);
+        stm.setString(6, token);
         stm.executeUpdate();
         stm.close();
         conn.close();

@@ -47,14 +47,6 @@ public class DataSet {
         this.dbName = dbName;
     }
 
-    private String dbTableName;
-    public String getDbTableName() {
-        return dbTableName;
-    }
-    public void setDbTableName(String dbTableName) {
-        this.dbTableName = dbTableName;
-    }
-
     private String dbUser;
     public String getDbUser() {
         return dbUser;
@@ -122,7 +114,7 @@ public class DataSet {
     public void setDataSetAcronym(String datasetAcronym) {
         this.datasetAcronym = datasetAcronym;
     }
-    private DataSet(String token, DataSourceType type, String filePath, String host, String databaseName, String tableName,
+    private DataSet(String token, DataSourceType type, String filePath, String host, String databaseName,
                      String username, String password, String port, String connectionString, String datasetAcronym, 
                      String datasetName, int lastRowCount, int id, LocalDate updatedAt)
     {
@@ -134,7 +126,6 @@ public class DataSet {
         this.type = type;
         this.dbHost = host;
         this.dbName = databaseName;
-        this.dbTableName = tableName;
         this.dbUser = username;
         this.dbPassword = password;
         this.dbPort = port;
@@ -163,8 +154,9 @@ public class DataSet {
         this.type.equals(DataSourceType.SQLServer);
     }
     public static DataSet factory(String token, DataSourceType type, String filePath, String host, 
-                                        String databaseName, String tableName,
-                                        String username, String password, String port, String datasetAcronym, String datasetName, int lastRowCount, int id, LocalDate updated_at) 
+                                        String databaseName, String username, String password, 
+                                        String port, String datasetAcronym, String datasetName, 
+                                        int lastRowCount, int id, LocalDate updated_at) 
     {
         DataSet ds;
         String connectionString = null;
@@ -191,7 +183,7 @@ public class DataSet {
                 break;
             } 
         }
-        ds = new DataSet(token, type, filePath, host, databaseName, tableName, 
+        ds = new DataSet(token, type, filePath, host, databaseName,
                         username, password, port, connectionString, datasetAcronym, 
                         datasetName, lastRowCount, id, updated_at);
         return ds;
