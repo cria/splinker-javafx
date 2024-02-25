@@ -166,6 +166,9 @@ public class DataSet {
             switch (type) 
             {
                 case MySQL:
+                connectionString = "jdbc:%s://%s/%s?user=%s&password=%s?allowPublicKeyRetrieval=true&useSSL=false"
+                                .formatted(type.name().toLowerCase(),host, databaseName, username, password);
+                    break;
                 case PostgreSQL:
                     connectionString = "jdbc:%s://%s/%s?user=%s&password=%s"
                                 .formatted(type.name().toLowerCase(),host, databaseName, username, password);
@@ -186,6 +189,7 @@ public class DataSet {
         ds = new DataSet(token, type, filePath, host, databaseName,
                         username, password, port, connectionString, datasetAcronym, 
                         datasetName, lastRowCount, id, updated_at);
+        System.out.println("connstring is %s".formatted(connectionString));
         return ds;
     }
     public Connection getDataSetConnection() throws Exception
