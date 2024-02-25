@@ -64,7 +64,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
             var hostName = hostAddressField.getText();
             var databaseName = dbNameField.getText();
             var port = portField.getText();
-            
+            token = DataSetService.getCurrentToken();
             DataSetService.saveSQLDataSource(token, hostName, port, databaseName, username, password);
             
             navigateTo(getStage(), "home");
