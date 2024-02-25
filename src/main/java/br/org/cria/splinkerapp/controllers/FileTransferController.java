@@ -219,7 +219,7 @@ public class FileTransferController extends AbstractController {
     {
         progressBar.progressProperty().unbind();
         progressIndicator.progressProperty().unbind();
-        if(importDataTask.isRunning())
+        if(importDataTask != null && importDataTask.isRunning())
         {
             importDataTask.cancel();
         }
