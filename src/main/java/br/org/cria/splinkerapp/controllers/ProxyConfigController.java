@@ -2,6 +2,7 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import org.apache.poi.util.StringUtil;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
 import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
@@ -29,6 +30,12 @@ public class ProxyConfigController extends AbstractController
     {
         try 
         {
+            var dataIsValid = validateData();
+            if(!dataIsValid)
+            {
+                showErrorModal("Todos os campos são obrigatórios");
+                return;
+            }
             var hasConfig = DataSetService.hasConfiguration();
             var routeName = hasConfig ? "home" : "central-service";
             var config = new ProxyConfiguration(proxyAddress.getText(), proxyPassword.getText(), 
@@ -41,6 +48,17 @@ public class ProxyConfigController extends AbstractController
         {
             handleErrors(e);
         }
+    }
+
+    boolean validateData()
+    {
+        var hasAddress = StringUtil.isNotBlank(proxyAddress.getText());
+        var hasPassword = StringUtil.isNotBlank(proxyPassword.getText());
+        var hasUsername = StringUtil.isNotBlank(proxyUsername.getText());
+        var hasPort = StringUtil.isNotBlank(proxyPort.getText());
+        var isValid = hasAddress && hasPort && hasUsername && hasPassword;
+        return isValid;
+        
     }
 
     @Override

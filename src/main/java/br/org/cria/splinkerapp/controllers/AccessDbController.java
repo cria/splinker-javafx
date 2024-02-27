@@ -31,6 +31,12 @@ public class AccessDbController extends AbstractController {
         try
         {
             var path = file.getAbsolutePath();
+            var pathIsNull = (path == null) || (path == "");
+            if(pathIsNull)
+            {
+                showErrorModal("Caminho do arquivo não pode ser vazio");
+                return;
+            }
             var password = accessPasswordField.getText();
             token = System.getProperty("splinker_token");
             

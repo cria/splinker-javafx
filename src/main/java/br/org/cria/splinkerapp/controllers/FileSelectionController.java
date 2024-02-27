@@ -42,6 +42,11 @@ public class FileSelectionController extends AbstractController {
         try 
         {
             var datasourcePath = filePath.getText(); 
+            var hasPath = datasourcePath != null && datasourcePath != "";
+            if(!hasPath)
+            {
+                showErrorModal("Campo obrigatório");
+            }
             DataSetService.saveSpreadsheetDataSource(token,datasourcePath);
             navigateTo(getStage(),"home");
         } 

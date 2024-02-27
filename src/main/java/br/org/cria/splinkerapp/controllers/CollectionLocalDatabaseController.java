@@ -2,6 +2,7 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import org.apache.poi.util.StringUtil;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
@@ -35,7 +36,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
         try 
         {
             super.initialize(location, resources);
-            var token = DataSetService.getCurrentToken();
+            token = DataSetService.getCurrentToken();
             var ds = DataSetService.getDataSet(token);
             if(ds != null)
             {
@@ -59,12 +60,20 @@ public class CollectionLocalDatabaseController extends AbstractController {
     {
         try 
         {
+            
+            var dataIsComplete = validateFields();
+            if(!dataIsComplete)
+            {
+                showErrorModal("Todos os campos são obrigatórios");
+                return;
+            }
+            
             var username = usernameField.getText();
             var password = passwordField.getText();
             var hostName = hostAddressField.getText();
             var databaseName = dbNameField.getText();
             var port = portField.getText();
-            token = DataSetService.getCurrentToken();
+            
             DataSetService.saveSQLDataSource(token, hostName, port, databaseName, username, password);
             
             navigateTo(getStage(), "home");
@@ -76,6 +85,17 @@ public class CollectionLocalDatabaseController extends AbstractController {
         }
     }
 
+    boolean validateFields()
+    {
+        var hasUserName = StringUtil.isNotBlank(usernameField.getText());
+        var hasPassword = StringUtil.isNotBlank(passwordField.getText());
+        var hasHostName = StringUtil.isNotBlank(hostAddressField.getText());
+        var hasDBName = StringUtil.isNotBlank(dbNameField.getText());
+        var hasPort = StringUtil.isNotBlank(portField.getText());
+
+        var dataIsValid = hasUserName && hasPassword && hasHostName && hasDBName && hasPort;
+        return dataIsValid;
+    }
     @Override
     protected void setScreensize() {
         var stage = getStage();

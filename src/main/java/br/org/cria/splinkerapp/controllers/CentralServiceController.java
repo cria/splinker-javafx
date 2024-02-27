@@ -20,11 +20,18 @@ public class CentralServiceController extends AbstractController {
     {
        try 
        {
+        var centralServiceURL = urlField.getText();
+        var isUrlEmpty = (centralServiceURL == null) || (centralServiceURL == "");
+        if(isUrlEmpty)
+        {
+            showErrorModal("URL do serviço central não pode ser vazia");
+            return;
+        }
         var hasConfig = DataSetService.hasConfiguration();
         var routeName = hasConfig ? "home":"token-login";
         var systemVersion = CentralServiceRepository.getCurrentVersion();
         
-        CentralServiceRepository.saveCentralServiceData(urlField.getText(), systemVersion);
+        CentralServiceRepository.saveCentralServiceData(centralServiceURL, systemVersion);
         navigateTo(this.getStage(), routeName);
     } 
        catch (Exception e) 
