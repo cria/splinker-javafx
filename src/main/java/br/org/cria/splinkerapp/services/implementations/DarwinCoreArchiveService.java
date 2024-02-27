@@ -28,9 +28,19 @@ public class DarwinCoreArchiveService
     ResultSet data;
     EventBus writeDataEventBus = EventBusManager.getEvent(EventTypes.WRITE_ROW.name());
 
+    public DataSet getDataSet()
+    {
+        return this.ds;
+    }
+
     public int getTotalRowCount()
     {
         return totalRowCount;
+    }
+
+    public String getTxtFilePath()
+    {
+        return this.textFile;
     }
 
     public DarwinCoreArchiveService (DataSet ds) throws Exception
@@ -94,6 +104,7 @@ public class DarwinCoreArchiveService
             rowCount++;
             writeDataEventBus.post(rowCount);
         }
+        totalRowCount = rowCount;
         return dataSourceRows.toString();
     }
 

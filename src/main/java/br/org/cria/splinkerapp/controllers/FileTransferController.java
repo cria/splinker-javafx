@@ -11,6 +11,7 @@ import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
+import br.org.cria.splinkerapp.tasks.CheckRecordCountTask;
 import br.org.cria.splinkerapp.tasks.GenerateDarwinCoreArchiveTask;
 import br.org.cria.splinkerapp.tasks.ImportDataTask;
 import br.org.cria.splinkerapp.tasks.TransferFileTask;
@@ -50,6 +51,7 @@ public class FileTransferController extends AbstractController {
     ExecutorService executor = Executors.newSingleThreadExecutor();
     ImportDataTask importDataTask;
     GenerateDarwinCoreArchiveTask generateDWCATask;
+    CheckRecordCountTask checkRecordCountTask;
     TransferFileTask transferFileTask;
     String errMsg = "Erro na %s. Contate o administrador do spLinker: Error ID %s";
     
@@ -88,6 +90,7 @@ public class FileTransferController extends AbstractController {
                 ApplicationLog.error(ex.getMessage());
                                
                 showErrorModal(msg);
+                navigateTo("home");
             });
 
             bindProgress(importDataTask.progressProperty());
@@ -105,13 +108,16 @@ public class FileTransferController extends AbstractController {
                 {
                     unbindProgress();
                     rowCount = generateDWCATask.getTotalWork();
-                    configureSendFileTask();
-                    executor.execute(transferFileTask);
+                    configureCheckRecordCountTask();
+                    executor.submit(checkRecordCountTask);
                 });        
             });
 
             generateDWCATask.setOnFailed((handler)->{
                 Platform.runLater(()->{
+                    var sentrytoken = System.getProperty("SENTRY_AUTH_TOKEN");
+                    showAlert(AlertType.INFORMATION, "Sentry Token","sentry token is %s".formatted(sentrytoken));
+        
                     var ex = generateDWCATask.getException();
                     var errId = Sentry.captureException(ex);
                     var task = "geração do arquivo";
@@ -119,19 +125,71 @@ public class FileTransferController extends AbstractController {
                     ApplicationLog.error(ex.getMessage());
                                    
                     showErrorModal(msg);
+                    navigateTo("home");
                 });
             });
 
             bindProgress(generateDWCATask.progressProperty());
         } catch (Exception e) {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
+           handleErrors(e);
         }
         
     }
     
-    void configureSendFileTask()
+    void configureCheckRecordCountTask()
+    {
+        var msgLbl = "Verificando integridade dos dados, por favor aguarde";
+        lblMessage.setText(msgLbl);
+        checkRecordCountTask.setOnFailed((handler)->{
+            Platform.runLater(()->{
+                var ex = generateDWCATask.getException();
+                var errId = Sentry.captureException(ex);
+                var task = "verificação de registros";
+                var msg = errMsg.formatted(task, errId);
+                ApplicationLog.error(ex.getMessage());
+                               
+                showErrorModal(msg);
+                navigateTo("home");
+            });
+        });
+
+        checkRecordCountTask.setOnSucceeded((handler) -> {
+            System.gc();
+            Platform.runLater(()->
+            {
+                try 
+                {
+                    var hasRecordCountDecreased = checkRecordCountTask.get();
+                    if(hasRecordCountDecreased)
+                    {
+                        var newMsg = "A quantidade de registros a ser enviados é menor do que a enviada anteriormente. Deseja continuar?";
+                        lblMessage.setText(newMsg);
+                        progressBar.setVisible(false);
+                        progressIndicator.setVisible(false);
+                        btnCancelTransfer.setVisible(false);
+                        btnYes.setVisible(true);
+                        btnNo.setVisible(true);
+                        btnNo.setOnMouseClicked((___) -> {navigateTo("home");});
+                        btnYes.setOnMouseClicked((____)->{
+                        
+                            progressBar.setVisible(true);
+                            progressIndicator.setVisible(true);
+                            btnCancelTransfer.setVisible(true);
+                            btnYes.setVisible(false);
+                            btnNo.setVisible(false);
+                            configureTransferFileTask();
+                            executor.execute(transferFileTask);
+                        });
+                    }
+                } catch (Exception e) 
+                {
+                    handleErrors(e);
+                }
+            });        
+        });
+    }
+
+    void configureTransferFileTask()
     {
         try 
         {
@@ -165,6 +223,7 @@ public class FileTransferController extends AbstractController {
                 ApplicationLog.error(ex.getMessage());
                                
                 showErrorModal(msg);
+                navigateTo("home");
                 });
             });
 
@@ -189,10 +248,10 @@ public class FileTransferController extends AbstractController {
             try 
             {
                 generateDWCATask = new GenerateDarwinCoreArchiveTask(dwcService);
+                checkRecordCountTask = new CheckRecordCountTask(dwcService);
                 transferFileTask = new TransferFileTask(dwcService);
                 if(ds.isFile())
                 {
-
                     importDataTask = new ImportDataTask(ds);
                     configureImportDataTask();
                     executor.execute(importDataTask);
@@ -226,6 +285,10 @@ public class FileTransferController extends AbstractController {
         if(generateDWCATask.isRunning())
         {
             generateDWCATask.cancel();
+        }
+        if(checkRecordCountTask.isRunning())
+        {
+            checkRecordCountTask.cancel();
         }
         if(transferFileTask.isRunning())
         {
