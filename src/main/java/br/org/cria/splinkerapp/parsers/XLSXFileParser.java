@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
@@ -64,16 +65,15 @@ public class XLSXFileParser extends FileParser {
     @Override
     protected List<String> getRowAsStringList(Object row, int numberOfColumns) {
         var fullRow = (Row) row;
-        var list = new ArrayList<String>();
+        var arr = new String[numberOfColumns];
         
         for (int colNum = 0; colNum < numberOfColumns; colNum++) {
             Cell cell = fullRow.getCell(colNum);
             var cellValue = cell.getRawValue();
-            list.add(cellValue);
+            arr[numberOfColumns] = cellValue == null? "": cellValue.toString();
         }
 
-        return list;
-
+        return Arrays.asList(arr);
     }
 
     @Override

@@ -3,6 +3,7 @@ package br.org.cria.splinkerapp.parsers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 import com.github.miachm.sods.Range;
@@ -26,13 +27,22 @@ public class OdsFileParser extends FileParser{
     {
         int numberOfTabs = spreadSheet.getSheets().size();
         var conn = getConnection();
+        var commandBase = "INSERT INTO %s (%s) VALUES (%s);";
+
+        conn.setAutoCommit(false);
+
         for (int i = 0; i < numberOfTabs; i++) 
         {
             var sheet = spreadSheet.getSheet(i);
-            totalRowCount = sheet.getMaxRows();
             var tableName = StringStandards.normalizeString(sheet.getName());
             var columns = new ArrayList<String>();
             var numberOfColumns = sheet.getMaxColumns();
+            var valuesStr = makeValueString(numberOfColumns);
+            var columnNames = String.join(",", columns);
+            var command = commandBase.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
+            var statement = conn.prepareStatement(command);
+            totalRowCount = sheet.getMaxRows();
+
             IntStream.range(0, numberOfColumns).forEach(n ->
             { 
                 var field = sheet.getRange(0, n);
@@ -44,10 +54,7 @@ public class OdsFileParser extends FileParser{
                 
             });
             numberOfColumns = columns.size(); // número real de colunas
-            var valuesStr = makeValueString(numberOfColumns);
             
-            var columnNames = String.join(",", columns);
-  
             for (int j = 1; j < totalRowCount; j++) 
             {
                 currentRow = j;
@@ -55,20 +62,28 @@ public class OdsFileParser extends FileParser{
                 IntStream.range(0, numberOfColumns).forEach(n -> sheetRow.add(sheet.getRange(currentRow, n)));
                 var row = getRowAsStringList(sheetRow, numberOfColumns);
                 var valuesList = row.stream().toList();
-                var commandBase = "INSERT INTO %s (%s) VALUES (%s);";
-                var command = commandBase.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
-                var statement = conn.prepareStatement(command);
-                    
+                
                 for (int k = 0; k < valuesList.size(); k++) 
                 {
                     statement.setString(k+1, valuesList.get(k));    
                 }
-                statement.executeUpdate();
-                statement.close();  
-                readRowEventBus.post(currentRow);                      
+                statement.addBatch();
+            
+                if (currentRow % 10_000 == 0) 
+                {
+                        statement.executeBatch();
+                        conn.commit();
+                        statement.clearBatch();
+                }
+                readRowEventBus.post(currentRow);                
             }
-        }
-        conn.close();
+        
+            statement.executeBatch();
+            conn.commit();
+            statement.clearBatch();
+            conn.setAutoCommit(true);
+            conn.close();
+        }        
     }
 
     @Override
@@ -76,15 +91,16 @@ public class OdsFileParser extends FileParser{
     {
         
         final var fullRow = (List<Range>) row;
-        var list = new ArrayList<String>();
+        var arr = new String[numberOfColumns];
+        
         for (int colNum = 0; colNum < numberOfColumns; colNum++) 
         {
             var column = fullRow.get(colNum);
             var value = column.getValue();
-            list.add(value == null? "": value.toString());
+            arr[colNum] = value == null? "": value.toString();
         }
 
-        return list;
+        return Arrays.asList(arr);
 
     }
     @Override

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.linuxense.javadbf.DBFException;
 import com.linuxense.javadbf.DBFReader;
@@ -50,24 +51,36 @@ public class DbfFileParser extends FileParser
 		var tableName = getTableName();
 		var valuesStr = "?,".repeat(numberOfColumns);
         var columnNames = String.join(",", columnNameList);
+		var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
+		var statement = conn.prepareStatement(command);
 		totalRowCount = reader.getRecordCount();
+		conn.setAutoCommit(false);
+		
 		while ((rowObjects = reader.nextRecord()) != null) 
 		{
 			
-			var valuesList = getRowAsStringList(rowObjects, numberOfColumns).stream().toList();
-            var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
-            var statement = conn.prepareStatement(command);
+			var valuesList = getRowAsStringList(rowObjects, numberOfColumns).stream().toList();            
                             
             for (int k = 0; k < valuesList.size(); k++) 
             {
             	statement.setString(k+1, valuesList.get(k));    
             }
-            statement.executeUpdate();
-			statement.close();
-			currentRow++;
-			readRowEventBus.post(currentRow);    
+			statement.addBatch();
+            currentRow++;
+            
+            if (currentRow % 10_000 == 0) 
+            {
+                    statement.executeBatch();
+                    conn.commit();
+                    statement.clearBatch();
+            }
+            readRowEventBus.post(currentRow);
 		}
-		conn.close();
+		statement.executeBatch();
+        conn.commit();
+        statement.clearBatch();
+        conn.setAutoCommit(true);
+        conn.close();
 		reader.close();
 	}
 	@Override
@@ -99,15 +112,14 @@ public class DbfFileParser extends FileParser
 	protected List<String> getRowAsStringList(Object row, int numberOfColumns) 
 	{
 		var fullRow = (Object[]) row;
-        var list = new ArrayList<String>();
-        
+        var arr = new String[numberOfColumns];
         for (int colNum = 0; colNum < numberOfColumns; colNum++) 
 		{
             var value = fullRow[colNum];
-            list.add(value == null? "": value.toString());
+			arr[colNum] = value == null? "": value.toString();
         }
 
-        return list;
+        return Arrays.asList(arr);
 
     }
 
