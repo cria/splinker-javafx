@@ -3,7 +3,6 @@ package br.org.cria.splinkerapp.parsers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -12,7 +11,6 @@ import org.dhatim.fastexcel.reader.Cell;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
-import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.utils.StringStandards;
 import io.sentry.Sentry;
 
@@ -34,11 +32,10 @@ public class XLSXFileParser extends FileParser {
     @Override
     protected String buildCreateTableCommand() throws Exception {
 
-        //long numberOfTabs = sheets.count();
         var builder = new StringBuilder();
         sheets.forEach((sheet) -> {
             try {
-                var tableName = sheet.getName();
+                var tableName = StringStandards.normalizeString(sheet.getName());
                 dropTable(tableName);
                 
                 var headerRow = sheet.openStream().findFirst().get();
@@ -70,7 +67,7 @@ public class XLSXFileParser extends FileParser {
         for (int colNum = 0; colNum < numberOfColumns; colNum++) {
             Cell cell = fullRow.getCell(colNum);
             var cellValue = cell.getRawValue();
-            arr[numberOfColumns] = cellValue == null? "": cellValue.toString();
+            arr[colNum] = cellValue == null? "": cellValue.toString();
         }
 
         return Arrays.asList(arr);
@@ -91,11 +88,12 @@ public class XLSXFileParser extends FileParser {
           {
             
               var sheet = woorkbookIterator.next();
-              var rows = sheet.read();
-              totalRowCount = rows.size() -1;
-              var headerRow = rows.get(0);
+              var lines = sheet.read();
+              var headerRow = lines.get(0);
               var tableName = StringStandards.normalizeString(sheet.getName());
               totalColumnCount = headerRow.getCellCount();
+              totalRowCount = lines.size() -1;
+              
               List<String> columns = getRowAsStringList(headerRow, totalColumnCount).stream()
                       .map((col) -> makeColumnName(col))
                       .toList();
@@ -105,8 +103,9 @@ public class XLSXFileParser extends FileParser {
               var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
                               .replace(",)", ")");
               var statement = conn.prepareStatement(command);
-              
-              rows.subList(1, rows.size()-1).forEach((row)->
+              //sublist exclui o elemento na posição toIndex;
+              var rows = lines.subList(1, lines.size());
+              rows.forEach((row)->
               {
                try {
                 if (row != null) 
