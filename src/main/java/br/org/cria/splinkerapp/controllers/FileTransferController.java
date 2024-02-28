@@ -115,9 +115,6 @@ public class FileTransferController extends AbstractController {
 
             generateDWCATask.setOnFailed((handler)->{
                 Platform.runLater(()->{
-                    var sentrytoken = System.getProperty("SENTRY_AUTH_TOKEN");
-                    showAlert(AlertType.INFORMATION, "Sentry Token","sentry token is %s".formatted(sentrytoken));
-        
                     var ex = generateDWCATask.getException();
                     var errId = Sentry.captureException(ex);
                     var task = "geração do arquivo";
