@@ -13,6 +13,8 @@ import java.util.List;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +23,7 @@ import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.BaseRepository;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
+import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
 
 public class DataSetService extends BaseRepository {
 
@@ -69,11 +72,27 @@ public class DataSetService extends BaseRepository {
     public static Map<String, Object> getConfigurationDataFromAPI(String token) throws Exception {
 
         String line;
+        HttpURLConnection connection;
         var config = CentralServiceRepository.getCentralServiceData();
         var url = "%s?version=%s&token=%s".formatted(config.getCentralServiceUrl(), config.getSystemVersion(), token);
         var urlConn = new URI(url).toURL();
         var response = new StringBuffer();
-        var connection = (HttpURLConnection) urlConn.openConnection();
+        var isBehindProxy = ProxyConfigRepository.isBehindProxyServer();
+        
+        if(isBehindProxy)
+        {
+            var proxyConfig = ProxyConfigRepository.getConfiguration();
+            var proxyHost = proxyConfig.getAddress();
+            var proxyPort = Integer.valueOf(proxyConfig.getPort());
+            var proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+            connection = (HttpURLConnection) urlConn.openConnection(proxy);
+            connection.setDoOutput(true);
+        }
+        else
+        {
+            connection = (HttpURLConnection) urlConn.openConnection();
+        }
+
         connection.setRequestMethod("GET");
         var reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
