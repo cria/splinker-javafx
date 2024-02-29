@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import com.linuxense.javadbf.DBFException;
 import com.linuxense.javadbf.DBFReader;
-
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.utils.StringStandards;
 
@@ -28,7 +27,7 @@ public class DbfFileParser extends FileParser
 			var name = file.getName();
 			var stream = new FileInputStream(file);
 			
-			reader = new DBFReader(stream);
+			this.reader = new DBFReader(stream);
 			this.fileName = name.substring(0, name.lastIndexOf("."));
 		} 
 		catch (DBFException e) 
