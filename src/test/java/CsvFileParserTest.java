@@ -1,29 +1,27 @@
 import java.io.File;
 import java.io.FileWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import org.junit.AfterClass;
-
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
-
+import org.junit.rules.TemporaryFolder;
 import com.univocity.parsers.csv.CsvFormat;
 import com.univocity.parsers.csv.CsvWriter;
 import com.univocity.parsers.csv.CsvWriterSettings;
-
 import br.org.cria.splinkerapp.parsers.CsvFileParser;
 import static java.util.Map.entry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class CsvFileParserTest extends ParserBaseTest {
+    @ClassRule
+    public static TemporaryFolder tempFolder = new TemporaryFolder();
     
     FileWriter writer;
-    static List<String[]> content = new ArrayList<String[]>();
-
+    
+    static Map<String, String> fileList = new HashMap<String, String>();
     static Map<String, String> separators = Map.ofEntries(entry("tab", "\t"),
             entry("comma", ","), entry("semicolon", ";"));
 
@@ -31,7 +29,7 @@ public class CsvFileParserTest extends ParserBaseTest {
     public void parseCommaSeparatedCSVTest() throws Exception {
         var connString = baseConnectionString.formatted("csv");
         System.setProperty("splinker.dbname", connString);
-        var fileName = "%s/comma_separated.csv".formatted(baseDir);
+        var fileName = fileList.get("csv");
         var parser = new CsvFileParser(fileName);
         parser.createTableBasedOnSheet();
         parser.insertDataIntoTable();
@@ -54,7 +52,7 @@ public class CsvFileParserTest extends ParserBaseTest {
     public void parseTabSeparatedTSVTest() throws Exception {
         var connString = baseConnectionString.formatted("tsv");
         System.setProperty("splinker.dbname", connString);
-        var fileName = "%s/tab_separated.tsv".formatted(baseDir);
+        var fileName = fileList.get("tsv");
         var parser = new CsvFileParser(fileName);
         parser.createTableBasedOnSheet();
         parser.insertDataIntoTable();
@@ -76,7 +74,7 @@ public class CsvFileParserTest extends ParserBaseTest {
     public void parseSemiColonSeparatedTXTTest() throws Exception {
         var connString = baseConnectionString.formatted("txt");
         System.setProperty("splinker.dbname", connString);
-        var fileName = "%s/semicolon_separated.txt".formatted(baseDir);
+        var fileName = fileList.get("txt");
         var parser = new CsvFileParser(fileName);
         parser.createTableBasedOnSheet();
         parser.insertDataIntoTable();
@@ -94,48 +92,33 @@ public class CsvFileParserTest extends ParserBaseTest {
         }
     }
 
-    @AfterClass
-    public static void tearDown()
+    @BeforeClass
+    public static void setUp() throws Exception
     {
-        if(!isRunningOnGithub)
+
+        for(var element: separators.entrySet())
         {
-            try 
-            {
-                Files.delete(Path.of("splinker_tsv.db"));
-                Files.delete(Path.of("splinker_csv.db"));
-                Files.delete(Path.of("splinker_txt.db"));
-            } catch (Exception e) 
-            {
-                e.printStackTrace();
+            String extension = "csv";
+            switch (element.getKey()) {
+                case "tab":
+                    extension = "tsv";
+                    break;
+            case "semicolon":
+                    extension = "txt";
+                    break;
+                default:
+                    break;
             }
+            var fileName = "%s_separated.%s".formatted(element.getKey(), extension);
+            var file = tempFolder.newFile(fileName);
+            
+            fileList.put(extension, file.getAbsolutePath());
+            createCSVFiles(file, element.getValue());
         }
     }
 
-    // @BeforeClass
-    // public static void setUp() throws Exception
-    // {
-
-    //     for(var element: separators.entrySet())
-    //     {
-    //         String extension = "csv";
-    //         switch (element.getKey()) {
-    //             case "tab":
-    //                 extension = "tsv";
-    //                 break;
-    //         case "semicolon":
-    //                 extension = "txt";
-    //                 break;
-    //             default:
-    //                 break;
-    //         }
-    //         var filename = "%s%s_separated.%s".formatted(baseDir, element.getKey(), extension);
-    //         createCSVFiles(filename, element.getValue());
-    //     }
-    // }
-
-    static void createCSVFiles(String fileName, String separator) throws Exception 
+    static void createCSVFiles(File file, String separator) throws Exception 
     {
-        System.out.println("Creating file %s...\n".formatted(fileName));
         String name;
         String ccNum;
         String [] values;
@@ -144,7 +127,8 @@ public class CsvFileParserTest extends ParserBaseTest {
         var formatter = new CsvFormat();
         formatter.setDelimiter(separator);
         settings.setFormat(formatter);
-        var csvWriter = new CsvWriter(new File(fileName), settings);
+        
+        var csvWriter = new CsvWriter(file, settings);
         var headers = Arrays.asList("Name", "Credit Card", "Birth Date");
         csvWriter.writeHeaders(headers);
         
@@ -154,7 +138,6 @@ public class CsvFileParserTest extends ParserBaseTest {
             ccNum = faker.finance().creditCard();
             var bDay = faker.date().birthday().toString();
             values = new String[] { name, ccNum, bDay };
-            content.add(values);
             csvWriter.writeRow(values);
         }
         
