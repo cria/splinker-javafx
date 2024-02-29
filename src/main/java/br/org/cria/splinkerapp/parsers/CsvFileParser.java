@@ -10,7 +10,7 @@ public class CsvFileParser extends FileParser
 {
     CsvParser parser;
     List<String> columns;
-    //Iterator<String[]> rows;
+    
     Iterator<String[]> iterator;
     String filePath;
     public CsvFileParser(String filePath) throws Exception
@@ -22,7 +22,6 @@ public class CsvFileParser extends FileParser
         var parser = new CsvParser(settings);
         iterator = parser.iterate(new File(filePath)).iterator();
         columns = normalizeAllColumns(Arrays.asList(iterator.next()));
-      //  rows = fileContent.subList(1, fileContent.size()).iterator();
     }
 
     List<String> normalizeAllColumns(List<String> columnList)
@@ -68,7 +67,7 @@ public class CsvFileParser extends FileParser
             statement.addBatch();
             currentRow++;
             
-            if (currentRow % 10 == 0) 
+            if (currentRow % 10_000 == 0) 
             {
                     statement.executeBatch();
                     conn.commit();

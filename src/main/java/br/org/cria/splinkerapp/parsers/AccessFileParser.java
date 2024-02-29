@@ -68,7 +68,7 @@ public class AccessFileParser extends FileParser {
                             cellIndex++;
                         }
                         statement.addBatch();
-                        if ((currentRow % 10 == 0)) 
+                        if ((currentRow % 10_000 == 0)) 
                         {
                             statement.executeBatch();
                             conn.commit();
