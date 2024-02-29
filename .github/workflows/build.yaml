@@ -32,6 +32,9 @@ jobs:
       - name: Copia arquivo SQL
         run: cp ./scripts/sql/create_tables.sql ./spLinker/scripts/sql
 
+      - name: Copia arquivo de configuração do Log4J/Sentry
+        run:  cp .\src\main\resources\log4j2.xml .\spLinker\
+
       - name: Empacotar para Linux
         run: jpackage --name spLinker --type deb --dest dist --linux-shortcut --app-image spLinker
 
@@ -71,6 +74,9 @@ jobs:
 
       - name: Copiar arquivo SQL
         run: cp scripts\sql\create_tables.sql spLinker\scripts\sql 
+
+      - name: Copia arquivo de configuração do Log4J/Sentry
+        run:  cp .\src\main\resources\log4j2.xml .\spLinker\
 
       - name: Empacotar para Windows
         run: jpackage --name spLinker --app-image spLinker --type msi --dest dist --win-shortcut  --win-dir-chooser --win-per-user-install
