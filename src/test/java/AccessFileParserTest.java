@@ -35,7 +35,7 @@ public class AccessFileParserTest extends ParserBaseTest {
     public void parseV2000AccessFileTest() throws Exception {
 
         var format = FileFormat.V2000.name();
-        var connString = baseConnectionString.formatted(format);
+        var connString = baseConnectionString.formatted(tempFolder.getRoot().getAbsolutePath(),format);
         System.setProperty("splinker.dbname", connString);
         //var fileName = fileList.get(format);
         var fileName = fileList.get(format);
@@ -61,7 +61,7 @@ public class AccessFileParserTest extends ParserBaseTest {
     public void parseV2003AccessFileTest() throws Exception
     {
         var format = FileFormat.V2003.name();
-        var connString = baseConnectionString.formatted(format);
+        var connString = baseConnectionString.formatted(tempFolder.getRoot().getAbsolutePath(),format);
         System.setProperty("splinker.dbname", connString);
         var fileName = fileList.get(format);
         var formattedTableName = tableName.formatted(format);
@@ -86,7 +86,7 @@ public class AccessFileParserTest extends ParserBaseTest {
     public void parseV2007AccessFileTest() throws Exception
     {
         var format = FileFormat.V2007.name();
-        var connString = baseConnectionString.formatted(format);
+        var connString = baseConnectionString.formatted(tempFolder.getRoot().getAbsolutePath(),format);
         System.setProperty("splinker.dbname", connString);
         var fileName = fileList.get(format);
         var formattedTableName = tableName.formatted(format);
@@ -111,7 +111,7 @@ public class AccessFileParserTest extends ParserBaseTest {
     public void parseV2010AccessFileTest() throws Exception
     {
         var format = FileFormat.V2010.name();
-        var connString = baseConnectionString.formatted(format);
+        var connString = baseConnectionString.formatted(tempFolder.getRoot().getAbsolutePath(),format);
         System.setProperty("splinker.dbname", connString);
         var fileName = fileList.get(format);
         var formattedTableName = tableName.formatted(format);
@@ -136,7 +136,7 @@ public class AccessFileParserTest extends ParserBaseTest {
     public void parseV2016AccessFileTest() throws Exception
     {
         var format = FileFormat.V2016.name();
-        var connString = baseConnectionString.formatted(format);
+        var connString = baseConnectionString.formatted(tempFolder.getRoot().getAbsolutePath(),format);
         System.setProperty("splinker.dbname", connString);
         var fileName = fileList.get(format);
         var formattedTableName = tableName.formatted(format);
@@ -161,7 +161,7 @@ public class AccessFileParserTest extends ParserBaseTest {
     public void parseV2019AccessFileTest() throws Exception
     {
         var format = FileFormat.V2019.name();
-        var connString = baseConnectionString.formatted(format);
+        var connString = baseConnectionString.formatted(tempFolder.getRoot().getAbsolutePath(),format);
         System.setProperty("splinker.dbname", connString);
         var fileName = fileList.get(format);
         var formattedTableName = tableName.formatted(format);

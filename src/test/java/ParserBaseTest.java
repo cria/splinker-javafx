@@ -8,7 +8,7 @@ import br.org.cria.splinkerapp.utils.StringStandards;
 public class ParserBaseTest {
     
     static Faker faker  = new Faker();
-    static String baseConnectionString = "jdbc:sqlite:splinker_%s.db";
+    static String baseConnectionString = "jdbc:sqlite:%s\\splinker_%s.db";
     static int rowCount = 300_000;
     protected List<Map<String, String>> getParsedDataFromTable(String tableName, String connString) throws Exception
     {

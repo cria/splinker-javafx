@@ -21,7 +21,7 @@ public class OdsFileParserTest  extends ParserBaseTest {
     @Test
     public void ParseDataFromOdsFileTest() throws Exception
     {
-        var connString = baseConnectionString.formatted("ods");
+        var connString = baseConnectionString.formatted(tempFolder.getRoot().getAbsolutePath(), "ods");
         System.setProperty("splinker.dbname", connString);
         var parser = new OdsFileParser(ods.getAbsolutePath());
         

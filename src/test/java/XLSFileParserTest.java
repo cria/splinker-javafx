@@ -27,7 +27,7 @@ public class XLSFileParserTest extends ParserBaseTest {
     public void ParseDataFromXLSFileTest() throws Exception
     {
             
-            var connString = baseConnectionString.formatted("xls");
+            var connString = baseConnectionString.formatted(tempFolder.getRoot().getAbsolutePath(),"xls");
             System.setProperty("splinker.dbname", connString);
             var tableName = "test_sheet_xls";
             var path = xls.getAbsolutePath();

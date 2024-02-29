@@ -27,7 +27,7 @@ public class XLSXFileParserTest extends ParserBaseTest {
     @Test
     public void ParseDataFromXLSXFileTest() throws Exception
     {
-        var connString = baseConnectionString.formatted("xlsx");
+        var connString = baseConnectionString.formatted(tempFolder.getRoot().getAbsolutePath(),"xlsx");
         System.setProperty("splinker.dbname", connString);
         var tableName = "test_sheet_xlsx";
         var path = xlsx.getAbsolutePath();
@@ -57,7 +57,6 @@ public class XLSXFileParserTest extends ParserBaseTest {
     
     static void createExcelFile(File file, int numberOfContentRows) throws Exception
     {
-            System.out.println("Creating file %s...\n".formatted(file.getAbsolutePath()));
             var sheetName = sheetBaseName.formatted("xlsx");
             // Create a new XSSFWorkBook (for XLSX format)
             Workbook workbook = new XSSFWorkbook();

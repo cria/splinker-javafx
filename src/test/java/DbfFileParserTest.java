@@ -31,7 +31,7 @@ public class DbfFileParserTest extends ParserBaseTest {
     @Test
     public void ParseDataFromDbfFileTest() throws Exception
     {
-        var connString = baseConnectionString.formatted("dbf");
+        var connString = baseConnectionString.formatted(tempFolder.getRoot().getAbsolutePath(),"dbf");
         System.setProperty("splinker.dbname", connString);
         var tableName = "test_dbf_data";
         var parser = new DbfFileParser(dbf.getAbsolutePath());

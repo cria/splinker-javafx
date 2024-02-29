@@ -27,7 +27,7 @@ public class CsvFileParserTest extends ParserBaseTest {
 
     @Test
     public void parseCommaSeparatedCSVTest() throws Exception {
-        var connString = baseConnectionString.formatted("csv");
+        var connString = baseConnectionString.formatted(tempFolder.getRoot().getAbsolutePath(),"csv");
         System.setProperty("splinker.dbname", connString);
         var fileName = fileList.get("csv");
         var parser = new CsvFileParser(fileName);
@@ -50,7 +50,7 @@ public class CsvFileParserTest extends ParserBaseTest {
 
     @Test
     public void parseTabSeparatedTSVTest() throws Exception {
-        var connString = baseConnectionString.formatted("tsv");
+        var connString = baseConnectionString.formatted(tempFolder.getRoot().getAbsolutePath(),"tsv");
         System.setProperty("splinker.dbname", connString);
         var fileName = fileList.get("tsv");
         var parser = new CsvFileParser(fileName);
@@ -72,7 +72,7 @@ public class CsvFileParserTest extends ParserBaseTest {
 
     @Test
     public void parseSemiColonSeparatedTXTTest() throws Exception {
-        var connString = baseConnectionString.formatted("txt");
+        var connString = baseConnectionString.formatted(tempFolder.getRoot().getAbsolutePath(),"txt");
         System.setProperty("splinker.dbname", connString);
         var fileName = fileList.get("txt");
         var parser = new CsvFileParser(fileName);
