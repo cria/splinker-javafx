@@ -9,7 +9,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="327.0" prefWidth="471.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.PrincipalController">
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="327.0" prefWidth="471.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.PrincipalController">
    <children>
       <ComboBox id="cmbCollection" fx:id="cmbCollection" layoutX="20.0" layoutY="29.0" onAction="#onCmbCollectionChange" prefWidth="150.0" />
       <Button id="syncServerBtn" fx:id="syncServerBtn" layoutX="20.0" layoutY="74.0" mnemonicParsing="false" onMouseClicked="#onSyncServerBtnClicked" prefHeight="113.0" prefWidth="150.0" text="Enviar">
@@ -17,27 +17,27 @@
             <Font name="System Bold" size="18.0" />
          </font>
       </Button>
-      <Label id="lblCollectionName" fx:id="lblCollectionName" layoutX="208.0" layoutY="7.0" prefHeight="144.0" prefWidth="256.0" text="Nome da Coleção">
+      <Label id="lblCollectionName" fx:id="lblCollectionName" layoutX="208.0" layoutY="7.0" prefHeight="95.0" prefWidth="230.0" text="Nome da Coleção" wrapText="true">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="317.0" layoutY="227.0" text="Registros Enviados">
+      <Label layoutX="213.0" layoutY="214.0" text="Registros Enviados">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="319.0" layoutY="159.0" text="Último Envio">
+      <Label layoutX="213.0" layoutY="150.0" text="Último Envio">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Label id="lblLastUpdate" fx:id="lblLastUpdate" layoutX="319.0" layoutY="194.0" prefHeight="23.0" prefWidth="140.0" text="                  -" textAlignment="RIGHT">
+      <Label id="lblLastUpdate" fx:id="lblLastUpdate" layoutX="213.0" layoutY="174.0" prefHeight="27.0" prefWidth="250.0" text="                  -" textAlignment="RIGHT">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Label id="lblRecordsSent" fx:id="lblRecordsSent" layoutX="317.0" layoutY="263.0" prefHeight="23.0" prefWidth="143.0" text="                   -" textAlignment="RIGHT">
+      <Label id="lblRecordsSent" fx:id="lblRecordsSent" layoutX="212.0" layoutY="241.0" prefHeight="27.0" prefWidth="250.0" text="                   -" textAlignment="RIGHT">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
