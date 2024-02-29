@@ -38,10 +38,6 @@ public class OdsFileParser extends FileParser{
             var columns = new ArrayList<String>();
             var numberOfColumns = sheet.getMaxColumns();
             var valuesStr = makeValueString(numberOfColumns);
-            var columnNames = String.join(",", columns);
-            var command = commandBase.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
-            var statement = conn.prepareStatement(command);
-            totalRowCount = sheet.getMaxRows();
 
             IntStream.range(0, numberOfColumns).forEach(n ->
             { 
@@ -53,6 +49,13 @@ public class OdsFileParser extends FileParser{
                 }
                 
             });
+            
+            var columnNames = String.join(",", columns);
+            var command = commandBase.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
+            var statement = conn.prepareStatement(command);
+            totalRowCount = sheet.getMaxRows();
+
+        
             numberOfColumns = columns.size(); // número real de colunas
             
             for (int j = 1; j < totalRowCount; j++) 
