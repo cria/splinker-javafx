@@ -9,10 +9,10 @@ jobs:
       SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 20
+      - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
-          java-version: 20
+          java-version: 21
           distribution: 'temurin'
           architecture: x64
           lfs: true
@@ -20,11 +20,6 @@ jobs:
       
       - name: Print workspace path
         run: echo $GITHUB_WORKSPACE && pwd && echo ${{github.ref}}
-      - name: Instalar Git LFS
-        run: sudo apt-get install git-lfs
-      - name: Configurar Git LFS
-        run: git lfs install
-      - name: Print path
-        run: ls ./src
+      
       - name: Testes automatizados
         run: mvn clean test
