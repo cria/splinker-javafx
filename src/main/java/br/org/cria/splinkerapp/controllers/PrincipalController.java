@@ -75,6 +75,7 @@ public class PrincipalController extends AbstractController {
             map.put("dataset_name", collName);
             map.put("dataset_acronym", datasetAcronym);
             map.put("datasource_type", dsType.name());
+            
             DataSetService.updateDataSource(map);
                 
             ConfigFacade.HandleBackendData(token, config);
@@ -160,8 +161,12 @@ public class PrincipalController extends AbstractController {
 
     void updateDisplayedData()
     {
-        var lastUdate = ds.getUpdatedAt() == null? "-": ds.getUpdatedAt()
-                                            .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        var lastUdate = "-";
+        if(ds.getUpdatedAt() != null)
+        {
+            lastUdate = ds.getUpdatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        }
+        
         var recordsSent = ds.getLastRowCount() > 0? String.valueOf(ds.getLastRowCount()): "-";
         lblCollectionName.setText(ds.getDataSetName());
         lblLastUpdate.setText(lastUdate);
