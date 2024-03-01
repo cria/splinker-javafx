@@ -31,7 +31,8 @@ public class ProxyConfigRepository extends BaseRepository{
             var username = rs.getString("proxy_username");
         
             proxyConfig = new ProxyConfiguration(address, password, port, username);            
-        } 
+        }
+        conn.close(); 
         return proxyConfig;
     }
 
@@ -53,6 +54,7 @@ public class ProxyConfigRepository extends BaseRepository{
         conn.close();
     }
 
+    @SuppressWarnings("finally")
     public static boolean isBehindProxyServer() 
     {
         boolean hasProxy = false;
