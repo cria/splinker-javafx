@@ -123,7 +123,7 @@ public class PrincipalController extends AbstractController {
                 var size = cmbCollection.getItems().size();
                 var acronym = cmbCollection.getItems().get(size-1);
                 ds = DataSetService.getDataSetBy("dataset_acronym", acronym);
-                var newToken = ds.getToken();//cmbCollection.getItems().get(size-1);
+                var newToken = ds.getToken();
                 DataSetService.setCurrentToken(newToken);
                 cmbCollection.setValue(acronym);
             }

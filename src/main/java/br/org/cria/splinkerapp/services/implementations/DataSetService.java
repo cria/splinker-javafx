@@ -115,26 +115,6 @@ public class DataSetService extends BaseRepository {
         return hasConfig;
     }
 
-    public static boolean checkIfRecordsHaveDecreased(String token, int newRowCount) throws Exception {
-        var cmd = """
-                SELECT last_rowcount FROM  DataSetConfiguration
-                WHERE token = ?
-                LIMIT 1;
-                """;
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var stm = conn.prepareStatement(cmd);
-        stm.setString(1, token);
-        var result = stm.executeQuery();
-        int lastRowCount = 0;
-        while (result.next()) {
-            lastRowCount = result.getInt("last_rowcount");
-        }
-        var hasLessRowsThanBefore = lastRowCount > newRowCount;
-
-        return hasLessRowsThanBefore;
-
-    }
-
     public static List<DataSet> getAllDataSets() throws Exception {
         var sources = new ArrayList<DataSet>();
         var cmd = """
@@ -163,7 +143,7 @@ public class DataSetService extends BaseRepository {
         conn.close();
         return ds;
     }
-
+   
     private static DataSet buildFromResultSet(ResultSet result) throws Exception {
 
         
@@ -188,8 +168,8 @@ public class DataSetService extends BaseRepository {
         var lastRowCount = result.getInt("last_rowcount");
         var type = result.getString("datasource_type") == null ? null
                 : DataSourceType.valueOf(result.getString("datasource_type"));
-        var strUpdatedAt = result.getString("updated_at");//.toLocalDate();
-        var updatedAt =  LocalDateTime.parse(strUpdatedAt, dateFormatter);
+        var strUpdatedAt = result.getString("updated_at");
+        var updatedAt = strUpdatedAt == null? null: LocalDateTime.parse(strUpdatedAt, dateFormatter);
         var ds = DataSet.factory(token, type, filePath, host, dbName, user, pwd, port,
                 acronym, name, lastRowCount, id, updatedAt);
                 
