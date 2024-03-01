@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS  DataSetConfiguration (
   -- CAMPOS ATUALIZADOS AUTOMATICAMENTE
   last_rowcount INTEGER, -- quantidade de linhas no último sync
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
+  updated_at DATETIME  CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS CentralServiceConfiguration (
