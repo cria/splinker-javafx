@@ -1,7 +1,8 @@
 package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -23,7 +24,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.Alert.AlertType;
 public class FileTransferController extends AbstractController {
 
     Double rowCount;
@@ -120,7 +120,6 @@ public class FileTransferController extends AbstractController {
                     var task = "geração do arquivo";
                     var msg = errMsg.formatted(task, errId);
                     ApplicationLog.error(ex.getMessage());
-                                   
                     showErrorModal(msg);
                     navigateTo("home");
                 });
@@ -130,13 +129,15 @@ public class FileTransferController extends AbstractController {
         } catch (Exception e) {
            handleErrors(e);
         }
-        
     }
     
     void configureCheckRecordCountTask()
     {
         var msgLbl = "Verificando integridade dos dados, por favor aguarde";
         lblMessage.setText(msgLbl);
+        progressBar.setVisible(false);
+        progressIndicator.setVisible(false);
+                        
         checkRecordCountTask.setOnFailed((handler)->{
             Platform.runLater(()->{
                 var ex = generateDWCATask.getException();
@@ -154,30 +155,34 @@ public class FileTransferController extends AbstractController {
             System.gc();
             Platform.runLater(()->
             {
+                progressBar.setVisible(false);
+                progressIndicator.setVisible(false);
                 try 
                 {
                     var hasRecordCountDecreased = checkRecordCountTask.get();
-                    if(hasRecordCountDecreased)
+                    if(!hasRecordCountDecreased)
                     {
-                        var newMsg = "A quantidade de registros a ser enviados é menor do que a enviada anteriormente. Deseja continuar?";
-                        lblMessage.setText(newMsg);
-                        progressBar.setVisible(false);
-                        progressIndicator.setVisible(false);
+                        progressBar.setVisible(true);
+                        configureTransferFileTask();
+                        executor.execute(transferFileTask);
+                        return;
+                    }
+                    
+                        var newMsg = "A quantidade de registros a ser enviados é menor do que no último envio. Deseja continuar?";
                         btnCancelTransfer.setVisible(false);
-                        btnYes.setVisible(true);
-                        btnNo.setVisible(true);
-                        btnNo.setOnMouseClicked((___) -> {navigateTo("home");});
-                        btnYes.setOnMouseClicked((____)->{
+                        lblMessage.setText(newMsg);
                         
+                        btnNo.setOnMouseClicked((__) -> {navigateTo("home");});
+                        btnYes.setOnMouseClicked((__)->{
                             progressBar.setVisible(true);
-                            progressIndicator.setVisible(true);
                             btnCancelTransfer.setVisible(true);
                             btnYes.setVisible(false);
                             btnNo.setVisible(false);
                             configureTransferFileTask();
-                            executor.execute(transferFileTask);
+                            executor.execute(transferFileTask);        
                         });
-                    }
+                        btnYes.setVisible(true);
+                        btnNo.setVisible(true);
                 } catch (Exception e) 
                 {
                     handleErrors(e);
@@ -191,23 +196,30 @@ public class FileTransferController extends AbstractController {
         try 
         {
             lblMessage.setText("Transferindo arquivo, por favor não feche o spLinker.");
-            progressIndicator.setVisible(false);
             transferFileTask.setOnSucceeded((handler)->
             {
                 System.gc();
                 Platform.runLater(()-> {
                     try 
                     {
+                        progressBar.setVisible(false);
+                        var fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                        var updatedAt =  LocalDateTime.now().format(fmt);
+                        lblMessage.setText("Arquivo transferido com sucesso.");
                         var newData = new HashMap<String, String>(){{put("last_rowcount", String.valueOf(rowCount));
-                                                                    put("updated_at", LocalDate.now().toString());
+                                                                    put("updated_at", updatedAt);
                                                                     put("token", token);}};
                         DataSetService.updateDataSource(newData);   
+                        executor.close();
+                        btnCancelTransfer.setText("OK");
+                        btnCancelTransfer.setOnMouseClicked((__)->
+                        {
+                            navigateTo("home"); 
+                        });
+                        
                     } catch (Exception e) {
                      handleErrors(e);
-                    }
-                    
-                    showAlert(AlertType.INFORMATION, "Transferência Concluída","transferido com sucesso!");
-                    navigateTo("home");        
+                    }       
                 });
             });
             transferFileTask.setOnFailed((handler)->{
@@ -235,33 +247,33 @@ public class FileTransferController extends AbstractController {
     @FXML
     void onBtnYesClicked()
     {
-        btnYes.setVisible(false);
-        btnNo.setVisible(false);
-        btnCancelTransfer.setVisible(true);
-        progressBar.setVisible(true);
-        progressIndicator.setVisible(true);
-
-        Platform.runLater(()-> { 
-            try 
+        try 
+        {
+            btnYes.setVisible(false);
+            btnNo.setVisible(false);
+            btnCancelTransfer.setVisible(true);
+            progressBar.setVisible(true);
+            progressIndicator.setVisible(true);
+        
+            generateDWCATask = new GenerateDarwinCoreArchiveTask(dwcService);
+            checkRecordCountTask = new CheckRecordCountTask(dwcService);
+            transferFileTask = new TransferFileTask(dwcService);
+            if(ds.isFile() || ds.isAccessDb())
             {
-                generateDWCATask = new GenerateDarwinCoreArchiveTask(dwcService);
-                checkRecordCountTask = new CheckRecordCountTask(dwcService);
-                transferFileTask = new TransferFileTask(dwcService);
-                if(ds.isFile())
-                {
-                    importDataTask = new ImportDataTask(ds);
-                    configureImportDataTask();
-                    executor.execute(importDataTask);
-                }
-                else
-                {
-                    configureGenerateDWCTask();
-                    executor.execute(generateDWCATask);
-                }
-            } catch (Exception e) {
-                handleErrors(e);
+                importDataTask = new ImportDataTask(ds);
+                configureImportDataTask();
+                executor.execute(importDataTask);
             }
-        }); 
+            else
+            {
+                configureGenerateDWCTask();
+                executor.execute(generateDWCATask);
+            }
+        } 
+        catch (Exception e) 
+        {
+                handleErrors(e);
+        }
     }
 
     @FXML
