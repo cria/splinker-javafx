@@ -1,7 +1,7 @@
 package br.org.cria.splinkerapp.tasks;
 
-import java.io.File;
-import com.univocity.parsers.csv.CsvRoutines;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
 import javafx.concurrent.Task;
 
@@ -18,10 +18,11 @@ public class CheckRecordCountTask extends Task<Boolean> {
     protected Boolean call() throws Exception 
     {
         
-        var path = service.getTxtFilePath();
-        var dimensions = new CsvRoutines().getInputDimension(new File(path));
+        var filePath = service.getTxtFilePath();
+        var path = Paths.get(filePath);
+        // -1 pois a contagem inclui o cabeçalho com o nome das colunas
+        var currentRowCount = Files.lines(path).count() -1;
         var lastRowCount = service.getDataSet().getLastRowCount();
-        var currentRowCount = dimensions.rowCount();
         var hasRecordCountDecreased = lastRowCount > currentRowCount;    
         
         return hasRecordCountDecreased;
