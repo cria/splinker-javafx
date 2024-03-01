@@ -5,14 +5,18 @@
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
 
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="147.0" prefWidth="342.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FileTransferController">
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="234.0" prefWidth="407.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FileTransferController">
    <children>
-      <Button id="btnCancelTransfer" fx:id="btnCancelTransfer" layoutX="137.0" layoutY="108.0" mnemonicParsing="false" onMouseClicked="#onButtonCancelClicked" text="Cancelar" />
-      <ProgressBar id="progressBar" fx:id="progressBar" layoutX="60.0" layoutY="84.0" prefHeight="20.0" prefWidth="220.0" progress="0.0" />
-      <Label fx:id="lblMessage" layoutX="14.0" prefHeight="57.0" prefWidth="330.0" text="A transmissão de dados pode demorar alguns minutos.&#10;Deseja continuar?" textAlignment="CENTER" />
-      <Button id="btnYes" fx:id="btnYes" layoutX="109.0" layoutY="53.0" mnemonicParsing="false" onMouseClicked="#onBtnYesClicked" text="Sim" />
-      <Button id="btnNo" fx:id="btnNo" layoutX="196.0" layoutY="53.0" mnemonicParsing="false" onMouseClicked="#onBtnNoClicked" text="Não" />
-      <ProgressIndicator id="progressIndicator" fx:id="progressIndicator" layoutX="291.0" layoutY="84.0" progress="0.0" />
+      <Button id="btnCancelTransfer" fx:id="btnCancelTransfer" layoutX="162.0" layoutY="159.0" mnemonicParsing="false" onMouseClicked="#onButtonCancelClicked" text="Cancelar" />
+      <ProgressBar id="progressBar" fx:id="progressBar" layoutX="85.0" layoutY="135.0" prefHeight="20.0" prefWidth="220.0" progress="0.0" />
+      <Label fx:id="lblMessage" layoutX="39.0" layoutY="22.0" prefHeight="57.0" prefWidth="330.0" text="A transmissão de dados pode demorar alguns minutos.&#10;Deseja continuar?" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></Label>
+      <Button id="btnYes" fx:id="btnYes" layoutX="134.0" layoutY="104.0" mnemonicParsing="false" onMouseClicked="#onBtnYesClicked" text="Sim" />
+      <Button id="btnNo" fx:id="btnNo" layoutX="221.0" layoutY="104.0" mnemonicParsing="false" onMouseClicked="#onBtnNoClicked" text="Não" />
+      <ProgressIndicator id="progressIndicator" fx:id="progressIndicator" layoutX="316.0" layoutY="135.0" progress="0.0" />
    </children>
 </Pane>
