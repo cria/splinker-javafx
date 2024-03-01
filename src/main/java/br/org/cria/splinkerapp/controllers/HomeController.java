@@ -20,11 +20,11 @@ public class HomeController extends AbstractController {
     @FXML
     Pane content;
     @FXML
-    ImageView principalImg;
+    ImageView principalImg = new ImageView();
     @FXML
-    ImageView settingsImg;
+    ImageView settingsImg = new ImageView();
     @FXML
-    ImageView helpImg;
+    ImageView helpImg = new ImageView();
 
     String basePath = "/br/org/cria/splinkerapp/%s.fxml";
 
@@ -69,19 +69,20 @@ public class HomeController extends AbstractController {
     public void initialize(URL location, ResourceBundle resources) {
         
         
-        try {
+        try 
+        {
             loadPage("principal");
             super.initialize(location, resources);
             Platform.runLater(() ->
             {
+                // TODO: Tooltips
+                // Tooltip.install(principalImg, new Tooltip("Principal")); // Doesn't work
+                // // Tooltip.install(principalImg.getParent(), new Tooltip("Tooltip")); // Works
 
-                Tooltip.install(principalImg, new Tooltip("Principal")); // Doesn't work
-                // Tooltip.install(principalImg.getParent(), new Tooltip("Tooltip")); // Works
-
-                //Tooltip.install(settingsImg, new Tooltip("Configurações")); // Doesn't work
-                Tooltip.install(settingsImg.getParent(), new Tooltip("Tooltip")); // Works
-                Tooltip.install(helpImg, new Tooltip("Ajuda")); // Doesn't work
-                // Tooltip.install(helpImg.getParent(), new Tooltip("Tooltip")); // Works
+                // //Tooltip.install(settingsImg, new Tooltip("Configurações")); // Doesn't work
+                // Tooltip.install(settingsImg.getParent(), new Tooltip("Tooltip")); // Works
+                // Tooltip.install(helpImg, new Tooltip("Ajuda")); // Doesn't work
+                // // Tooltip.install(helpImg.getParent(), new Tooltip("Tooltip")); // Works
 
             });
         } catch (Exception e) {
