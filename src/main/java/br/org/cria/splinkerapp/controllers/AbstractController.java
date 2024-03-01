@@ -43,9 +43,7 @@ public abstract class AbstractController implements Initializable {
             Router.navigateTo(getStage(), routeName);
         } catch (Exception e) 
         {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
+            handleErrors(e);
         }
         
     }
@@ -57,9 +55,7 @@ public abstract class AbstractController implements Initializable {
             Router.navigateTo(stage, routeName);
         } catch (Exception e) 
         {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal(e.getLocalizedMessage());
+            handleErrors(e);
         }
     }
 

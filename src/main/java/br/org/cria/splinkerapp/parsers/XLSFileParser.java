@@ -11,7 +11,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
-import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.utils.StringStandards;
 import io.sentry.Sentry;
 

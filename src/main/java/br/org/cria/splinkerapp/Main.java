@@ -31,8 +31,8 @@ public class Main extends Application
                 });
                 initDb.setOnFailed(event -> {
                     var exception = initDb.getException();
-                    ApplicationLog.error(exception.getLocalizedMessage());
                     Sentry.captureException(exception);
+                    ApplicationLog.error(exception.getLocalizedMessage());
                 });
 
                 initDb.setOnSucceeded(event -> {

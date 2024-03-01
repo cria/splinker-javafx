@@ -19,8 +19,8 @@ public final class LockFileManager {
             System.exit(0);
         }
         lockFile.createNewFile();
-        // your main application logic goes here
     } catch (IOException e) {
+        Sentry.captureException(e);
         ApplicationLog.error(e.getLocalizedMessage());
     }
    }
