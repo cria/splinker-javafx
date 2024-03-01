@@ -203,7 +203,7 @@ public class FileTransferController extends AbstractController {
                     try 
                     {
                         progressBar.setVisible(false);
-                        var fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                        var fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                         var updatedAt =  LocalDateTime.now().format(fmt);
                         lblMessage.setText("Arquivo transferido com sucesso.");
                         var newData = new HashMap<String, String>(){{put("last_rowcount", String.valueOf(rowCount));

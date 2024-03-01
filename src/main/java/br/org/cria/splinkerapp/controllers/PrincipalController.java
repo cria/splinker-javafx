@@ -161,15 +161,15 @@ public class PrincipalController extends AbstractController {
 
     void updateDisplayedData()
     {
-        var lastUdate = "-";
+        var lastUpdate = "-";
         if(ds.getUpdatedAt() != null)
         {
-            lastUdate = ds.getUpdatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+            lastUpdate = ds.getUpdatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
         }
         
         var recordsSent = ds.getLastRowCount() > 0? String.valueOf(ds.getLastRowCount()): "-";
         lblCollectionName.setText(ds.getDataSetName());
-        lblLastUpdate.setText(lastUdate);
+        lblLastUpdate.setText(lastUpdate);
         lblRecordsSent.setText(recordsSent);
     }
    

@@ -147,7 +147,7 @@ public class DataSetService extends BaseRepository {
     private static DataSet buildFromResultSet(ResultSet result) throws Exception {
 
         
-        var dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        var dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
 
