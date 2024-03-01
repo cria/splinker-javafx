@@ -24,8 +24,9 @@ public class DarwinCoreArchiveService
     int totalRowCount = 0;
     String zipFile;
     String textFile;
+    String columns;
+    String rows;
     DataSet ds;
-    ResultSet data;
     EventBus writeDataEventBus = EventBusManager.getEvent(EventTypes.WRITE_ROW.name());
 
     public DataSet getDataSet()
@@ -47,7 +48,6 @@ public class DarwinCoreArchiveService
     {
         var userDir = System.getProperty("user.dir") + "/" + ds.getId();
         this.ds = ds;
-        //var normalizedNow = StringStandards.normalizeString(Instant.now().toString());
         this.zipFile = "%s/dwca.zip".formatted(userDir);
         this.textFile = "%s/occurrence.txt".formatted(userDir);
         this.totalRowCount = ds.getLastRowCount();
@@ -61,21 +61,19 @@ public class DarwinCoreArchiveService
         ApplicationLog.info(message);
 
         var path = Path.of(this.textFile);
-        var columnNames = getColumnNames();
-        var rows = getDataSetRows();
         if(Files.exists(path))
         {   
             Files.delete(path);
         }
         var writer = new BufferedWriter(new FileWriter(this.textFile));    
-        writer.write(columnNames);        
+        writer.write(columns);        
         writer.write(rows);
         writer.flush();
         writer.close();
         return this;
     }
 
-    private String getDataSetRows() throws Exception
+    private String getDataSetRows(ResultSet data) throws Exception
     {
         var dataSourceRows = new StringBuilder();
         var rowCount = 0;
@@ -108,7 +106,7 @@ public class DarwinCoreArchiveService
         return dataSourceRows.toString();
     }
 
-    private String getColumnNames() throws Exception
+    private String getColumnNames(ResultSet data) throws Exception
     {
         var builder = new StringBuilder();
         var metaData = data.getMetaData();
@@ -153,8 +151,10 @@ public class DarwinCoreArchiveService
         var conn = ds.getDataSetConnection();
         var statement = conn.createStatement();
         
-        this.data = statement.executeQuery(command);
-        
+        var data = statement.executeQuery(command);
+        columns = getColumnNames(data);
+        rows = getDataSetRows(data);
+        conn.close();
         return this;
     }
  
