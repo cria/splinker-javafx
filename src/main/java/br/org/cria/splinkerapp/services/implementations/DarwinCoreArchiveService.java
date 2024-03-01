@@ -50,7 +50,6 @@ public class DarwinCoreArchiveService
         this.ds = ds;
         this.zipFile = "%s/dwca.zip".formatted(userDir);
         this.textFile = "%s/occurrence.txt".formatted(userDir);
-        this.totalRowCount = ds.getLastRowCount();
         Files.createDirectories(Paths.get(userDir));
         
     }

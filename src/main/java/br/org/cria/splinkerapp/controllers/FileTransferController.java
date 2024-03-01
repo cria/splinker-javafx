@@ -26,7 +26,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 public class FileTransferController extends AbstractController {
 
-    Double rowCount;
+    int rowCount;
     DataSet ds;
     DarwinCoreArchiveService dwcService;
 
@@ -107,7 +107,7 @@ public class FileTransferController extends AbstractController {
                 Platform.runLater(()->
                 {
                     unbindProgress();
-                    rowCount = generateDWCATask.getTotalWork();
+                    rowCount = dwcService.getTotalRowCount();
                     configureCheckRecordCountTask();
                     executor.submit(checkRecordCountTask);
                 });        
