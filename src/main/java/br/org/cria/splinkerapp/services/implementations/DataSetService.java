@@ -5,9 +5,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.BufferedReader;
@@ -168,14 +167,7 @@ public class DataSetService extends BaseRepository {
     private static DataSet buildFromResultSet(ResultSet result) throws Exception {
 
         
-        var fmt = new DateTimeFormatterBuilder()
-        .appendPattern("yyyy-MM-dd")
-        .optionalStart()
-        .appendPattern(" HH:mm:ss")
-        .optionalEnd()
-        .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-        .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-        .toFormatter();
+        var dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
 
 
@@ -196,10 +188,11 @@ public class DataSetService extends BaseRepository {
         var lastRowCount = result.getInt("last_rowcount");
         var type = result.getString("datasource_type") == null ? null
                 : DataSourceType.valueOf(result.getString("datasource_type"));
-        var updatedAt = LocalDate.parse(result.getString("updated_at"), fmt);
-
+        var strUpdatedAt = result.getString("updated_at");//.toLocalDate();
+        var updatedAt =  LocalDateTime.parse(strUpdatedAt, dateFormatter);
         var ds = DataSet.factory(token, type, filePath, host, dbName, user, pwd, port,
                 acronym, name, lastRowCount, id, updatedAt);
+                
         return ds;
     }
 
