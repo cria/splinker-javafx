@@ -2,7 +2,7 @@ package br.org.cria.splinkerapp.models;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class DataSet {
     private int id;
@@ -79,16 +79,16 @@ public class DataSet {
         this.dataSourceFilePath = dataSourceFilePath;
     }
 
-    private LocalDate updatedAt;
-    public LocalDate getUpdatedAt() {
+    private LocalDateTime updatedAt;
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-    public void setUpdatedAt(LocalDate updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    private LocalDate createdAt = LocalDate.now();
-    public LocalDate getCreatedAt() {
+    private LocalDateTime createdAt = LocalDateTime.now();
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
     
@@ -116,7 +116,7 @@ public class DataSet {
     }
     private DataSet(String token, DataSourceType type, String filePath, String host, String databaseName,
                      String username, String password, String port, String connectionString, String datasetAcronym, 
-                     String datasetName, int lastRowCount, int id, LocalDate updatedAt)
+                     String datasetName, int lastRowCount, int id, LocalDateTime updatedAt)
     {
         this.id = id;
         this.token = token;
@@ -143,8 +143,10 @@ public class DataSet {
         this.type.equals(DataSourceType.Excel) || 
         this.type.equals(DataSourceType.LibreOfficeCalc) || 
         this.type.equals(DataSourceType.Numbers) || 
-        this.type.equals(DataSourceType.dBase); 
+        this.type.equals(DataSourceType.dBase) ||
+        this.type.equals(DataSourceType.LibreOfficeCalc); 
     }
+    
     public boolean isAccessDb() { return this.type == DataSourceType.Access; }
     public boolean isSQLDatabase() 
     { 
@@ -156,7 +158,7 @@ public class DataSet {
     public static DataSet factory(String token, DataSourceType type, String filePath, String host, 
                                         String databaseName, String username, String password, 
                                         String port, String datasetAcronym, String datasetName, 
-                                        int lastRowCount, int id, LocalDate updated_at) 
+                                        int lastRowCount, int id, LocalDateTime updated_at) 
     {
         DataSet ds;
         String connectionString = null;
@@ -189,7 +191,6 @@ public class DataSet {
         ds = new DataSet(token, type, filePath, host, databaseName,
                         username, password, port, connectionString, datasetAcronym, 
                         datasetName, lastRowCount, id, updated_at);
-        System.out.println("connstring is %s".formatted(connectionString));
         return ds;
     }
     public Connection getDataSetConnection() throws Exception
