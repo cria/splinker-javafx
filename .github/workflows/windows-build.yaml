@@ -1,4 +1,4 @@
-name: Compilar e empacotar o spLinker para Windows e Linux
+name: Compilar e empacotar o spLinker para Windows
 
 on:
   push:
@@ -6,44 +6,6 @@ on:
       - master
 
 jobs:
-  build-on-linux:
-    runs-on: ubuntu-latest
-    env:
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Configurar Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: 21
-          distribution: 'temurin'
-          architecture: x64
-
-      - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar 
-        run: mvn package -DskipTests
-  
-      - name: Cria image jpackage
-        run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-1.0-SNAPSHOT.jar
-
-      - name: Cria pasta do arquivo SQL
-        run: mkdir ./spLinker/scripts; mkdir ./spLinker/scripts/sql;
-      
-      - name: Copia arquivo SQL
-        run: cp ./scripts/sql/create_tables.sql ./spLinker/scripts/sql
-
-      - name: Copia arquivo de configuração do Log4J/Sentry
-        run:  cp ./src/main/resources/log4j2.xml ./spLinker
-
-      - name: Empacotar para Linux
-        run: jpackage --name spLinker --type deb --dest dist --linux-shortcut --app-image spLinker
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: artifacts
-          path: dist
-
   build-on-windows:
     runs-on: windows-latest
     env:
