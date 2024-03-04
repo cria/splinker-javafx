@@ -27,10 +27,10 @@ jobs:
         run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-1.0-SNAPSHOT.jar
 
       - name: Cria pasta do arquivo SQL
-        run: mkdir ./spLinker/scripts; mkdir ./spLinker/scripts/sql;
-      
+        run: mkdir ./spLinker/bin/scripts; mkdir ./spLinker/bin/scripts/sql;
+
       - name: Copia arquivo SQL
-        run: cp ./scripts/sql/create_tables.sql ./spLinker/scripts/sql
+        run: cp ./scripts/sql/create_tables.sql ./spLinker/bin/scripts/sql
 
       - name: Copia arquivo de configuração do Log4J/Sentry
         run:  cp ./src/main/resources/log4j2.xml ./spLinker
