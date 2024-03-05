@@ -9,7 +9,7 @@
 <Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="127.0" prefWidth="369.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FileSelectionController">
    <children>
       <TextField id="filePath" fx:id="filePath" disable="true" layoutX="14.0" layoutY="39.0" prefHeight="31.0" prefWidth="282.0" />
-      <Button id="btnSave" fx:id="btnSave" layoutX="138.0" layoutY="75.0" mnemonicParsing="false" onMouseClicked="#onButtonSaveClicked" prefHeight="39.0" prefWidth="87.0" text="Salvar">
+      <Button id="btnSave" fx:id="btnSave" layoutX="107.0" layoutY="74.0" mnemonicParsing="false" onMouseClicked="#onButtonSaveClicked" prefHeight="39.0" prefWidth="96.0" text="Salvar">
          <font>
             <Font name="System Bold" size="18.0" />
          </font></Button>
