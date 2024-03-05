@@ -68,8 +68,9 @@ public class CollectionLocalDatabaseController extends AbstractController {
                 return;
             }
             
+            var hasPassword = StringUtil.isNotBlank(passwordField.getText());
             var username = usernameField.getText();
-            var password = passwordField.getText();
+            var password = hasPassword? passwordField.getText() : "";
             var hostName = hostAddressField.getText();
             var databaseName = dbNameField.getText();
             var port = portField.getText();
@@ -88,12 +89,11 @@ public class CollectionLocalDatabaseController extends AbstractController {
     boolean validateFields()
     {
         var hasUserName = StringUtil.isNotBlank(usernameField.getText());
-        var hasPassword = StringUtil.isNotBlank(passwordField.getText());
         var hasHostName = StringUtil.isNotBlank(hostAddressField.getText());
         var hasDBName = StringUtil.isNotBlank(dbNameField.getText());
         var hasPort = StringUtil.isNotBlank(portField.getText());
 
-        var dataIsValid = hasUserName && hasPassword && hasHostName && hasDBName && hasPort;
+        var dataIsValid = hasUserName && hasHostName && hasDBName && hasPort;
         return dataIsValid;
     }
     @Override
