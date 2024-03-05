@@ -47,6 +47,6 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: artifacts
+          name: splinker-windows
           path: dist
           retention-days: 3
