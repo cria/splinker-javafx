@@ -115,11 +115,14 @@ public class XLSXFileParser extends FileParser {
                     while (cellIterator.hasNext()) 
                     {
                         var cell = cellIterator.next();
+                        var isNullCell = cell == null;
                         var value = "";
-                        if(cell != null)
+                        if(!isNullCell)
                         {
-                            value = cell.getRawValue();
+                            var isNullValue = cell.getRawValue().toLowerCase() == "null";
+                            value = isNullValue? value: cell.getRawValue();
                         }
+                                                
                         statement.setString(index, value);
                         index++;
                     }

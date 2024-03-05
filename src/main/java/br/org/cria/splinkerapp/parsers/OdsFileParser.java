@@ -68,7 +68,9 @@ public class OdsFileParser extends FileParser{
                 
                 for (int k = 0; k < valuesList.size(); k++) 
                 {
-                    statement.setString(k+1, valuesList.get(k));    
+                    var value = valuesList.get(k);
+                    var isNullValue = value == null || value.toLowerCase() == "null";
+                    statement.setString(k+1, isNullValue? "": value );    
                 }
                 statement.addBatch();
             

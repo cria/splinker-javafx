@@ -62,7 +62,8 @@ public class CsvFileParser extends FileParser
             for (int j = 0; j < columnCount; j++) 
             {
                 var value = row[j];
-                statement.setString(j + 1, value);
+                var isNullValue = value == null || value.toLowerCase() == "null";
+                statement.setString(j + 1, isNullValue? "" : value);
             }
             statement.addBatch();
             currentRow++;

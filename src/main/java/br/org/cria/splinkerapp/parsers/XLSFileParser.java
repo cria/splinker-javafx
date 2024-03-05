@@ -113,7 +113,9 @@ public class XLSFileParser extends FileParser {
                           var cell = cellIterator.next();
                           var index = cell.getColumnIndex() + 1;
                           var value = formatter.formatCellValue(cell);
-                          statement.setString(index, value);
+                          var isNullValue = value == null || value.toLowerCase() == "null";
+                          
+                          statement.setString(index, isNullValue? "":value);
                       }
                       statement.addBatch();
                   }
