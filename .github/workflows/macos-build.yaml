@@ -24,7 +24,7 @@ jobs:
       - name: Cria image jpackage
         run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-1.0-SNAPSHOT.jar
 
-     - name: Criar pasta do yajsync
+      - name: Criar pasta do yajsync
         run: mkdir ./spLinker.app/Contents/libs
       
       - name: Copiar yajsync
