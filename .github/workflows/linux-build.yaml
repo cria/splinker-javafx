@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-
 jobs:
   build-on-linux:
     runs-on: ubuntu-latest
@@ -26,11 +25,17 @@ jobs:
       - name: Cria image jpackage
         run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-1.0-SNAPSHOT.jar
 
+     - name: Criar pasta do yajsync
+        run: mkdir ./spLinker/libs
+      
+      - name: Copiar yajsync
+        run: cp ./libs/yajsync-app-0.9.0-SNAPSHOT-full.jar ./spLinker/libs;
+
       - name: Cria pasta do arquivo SQL
-        run: mkdir ./spLinker/bin/scripts; mkdir ./spLinker/bin/scripts/sql;
+        run: mkdir ./spLinker/scripts; mkdir ./spLinker/scripts/sql;
 
       - name: Copia arquivo SQL
-        run: cp ./scripts/sql/create_tables.sql ./spLinker/bin/scripts/sql
+        run: cp ./scripts/sql/create_tables.sql ./spLinker.app/scripts/sql
 
       - name: Copia arquivo de configuração do Log4J/Sentry
         run:  cp ./src/main/resources/log4j2.xml ./spLinker
