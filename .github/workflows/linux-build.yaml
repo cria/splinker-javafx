@@ -35,7 +35,7 @@ jobs:
         run: mkdir ./spLinker/scripts; mkdir ./spLinker/scripts/sql;
 
       - name: Copia arquivo SQL
-        run: cp ./scripts/sql/create_tables.sql ./spLinker.app/scripts/sql
+        run: cp ./scripts/sql/create_tables.sql ./spLinker/scripts/sql
 
       - name: Copia arquivo de configuração do Log4J/Sentry
         run:  cp ./src/main/resources/log4j2.xml ./spLinker
