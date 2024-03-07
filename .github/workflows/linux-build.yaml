@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+
 jobs:
   build-on-linux:
     runs-on: ubuntu-latest
@@ -11,7 +12,6 @@ jobs:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v3
-
       - name: Configurar Java
         uses: actions/setup-java@v3
         with:
