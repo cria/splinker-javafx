@@ -1,49 +1,49 @@
-name: Compilar e empacotar o spLinker para MacOS
+# name: Compilar e empacotar o spLinker para MacOS
 
-on:
-  push:
-    branches:
-      - master
-jobs:
-  build-on-osx:
-    runs-on: macos
-    env:
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Configurar Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: 21
-          distribution: 'temurin'
-          architecture: x64
+# on:
+#   push:
+#     branches:
+#       - master
+# jobs:
+#   build-on-osx:
+#     runs-on: macos
+#     env:
+#       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Configurar Java
+#         uses: actions/setup-java@v3
+#         with:
+#           java-version: 21
+#           distribution: 'temurin'
+#           architecture: x64
 
-      - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar 
-        run: mvn package -DskipTests
+#       - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar 
+#         run: mvn package -DskipTests
   
-      - name: Cria image jpackage
-        run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-1.0-SNAPSHOT.jar
+#       - name: Cria image jpackage
+#         run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-1.0-SNAPSHOT.jar
 
-      - name: Criar pasta do yajsync
-        run: mkdir ./spLinker.app/Contents/libs
+#       - name: Criar pasta do yajsync
+#         run: mkdir ./spLinker.app/Contents/libs
       
-      - name: Copiar yajsync
-        run: cp ./libs/yajsync-app-0.9.0-SNAPSHOT-full.jar ./spLinker.app/Contents/libs;
+#       - name: Copiar yajsync
+#         run: cp ./libs/yajsync-app-0.9.0-SNAPSHOT-full.jar ./spLinker.app/Contents/libs;
 
-      - name: Cria pasta do arquivo SQL
-        run: mkdir ./spLinker.app/Contents/scripts; mkdir ./spLinker.app/Contents/scripts/sql;
+#       - name: Cria pasta do arquivo SQL
+#         run: mkdir ./spLinker.app/Contents/scripts; mkdir ./spLinker.app/Contents/scripts/sql;
 
-      - name: Copia arquivo SQL
-        run: cp ./scripts/sql/create_tables.sql ./spLinker.app/Contents/scripts/sql
+#       - name: Copia arquivo SQL
+#         run: cp ./scripts/sql/create_tables.sql ./spLinker.app/Contents/scripts/sql
 
-      - name: Copia arquivo de configuração do Log4J/Sentry
-        run:  cp ./src/main/resources/log4j2.xml ./spLinker.app/Contents
+#       - name: Copia arquivo de configuração do Log4J/Sentry
+#         run:  cp ./src/main/resources/log4j2.xml ./spLinker.app/Contents
 
-      - name: Empacotar para OSX
-        run: jpackage --name spLinker --type dmg --dest dist --app-image spLinker.app
+#       - name: Empacotar para OSX
+#         run: jpackage --name spLinker --type dmg --dest dist --app-image spLinker.app
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: splinker-macos
-          path: dist
+#       - name: Upload artifacts
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: splinker-macos
+#           path: dist
