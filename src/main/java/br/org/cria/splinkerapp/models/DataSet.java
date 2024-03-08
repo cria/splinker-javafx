@@ -168,7 +168,7 @@ public class DataSet {
             switch (type) 
             {
                 case MySQL:
-                connectionString = "jdbc:%s://%s/%s?user=%s&password=%s?allowPublicKeyRetrieval=true&useSSL=false"
+                connectionString = "jdbc:%s://%s/%s?user=%s&password=%s&allowPublicKeyRetrieval=true&useSSL=false"
                                 .formatted(type.name().toLowerCase(),host, databaseName, username, password);
                     break;
                 case PostgreSQL:
@@ -198,7 +198,10 @@ public class DataSet {
         if(this.connection == null)
         {
             var hasUserName = this.dbUser != null && this.dbUser.trim().length() > 0;
-            var hasPassword = this.dbPassword != null && this.dbPassword.trim().length() > 0;
+            var passwordIsNull = this.dbPassword != null;
+            var hasPassword = this.isAccessDb() ? passwordIsNull && this.dbPassword.trim().length() > 0 
+                             : true;
+            
             var hasUserNameAndPassword = hasUserName && hasPassword;
             this.connection = hasUserNameAndPassword ? 
                     DriverManager.getConnection(connectionString, this.dbUser, this.dbPassword) : 
