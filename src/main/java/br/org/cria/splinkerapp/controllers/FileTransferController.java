@@ -140,7 +140,7 @@ public class FileTransferController extends AbstractController {
                         
         checkRecordCountTask.setOnFailed((handler)->{
             Platform.runLater(()->{
-                var ex = generateDWCATask.getException();
+                var ex = checkRecordCountTask.getException();
                 var errId = Sentry.captureException(ex);
                 var task = "verificação de registros";
                 var msg = errMsg.formatted(task, errId);
