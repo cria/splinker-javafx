@@ -6,8 +6,8 @@
 <Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="405.0" prefWidth="520.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.HomeController">
    <children>
       <Pane id="content" fx:id="content" layoutX="5.0" layoutY="58.0" prefHeight="340.0" prefWidth="506.0" />
-      <Button id="btnPrincipal" fx:id="btnPrincipal" layoutX="25.0" layoutY="14.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="38.0" />
-      <Button id="btnSettings" fx:id="btnSettings" layoutX="79.0" layoutY="14.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="38.0" />
-      <Button id="btnHelp" fx:id="btnHelp" layoutX="127.0" layoutY="14.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="38.0" />
+      <Button id="btnPrincipal" fx:id="btnPrincipal" layoutX="25.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onPrincipalItemClick" prefHeight="38.0" prefWidth="38.0" />
+      <Button id="btnSettings" fx:id="btnSettings" layoutX="79.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onSettingsItemClick" prefHeight="38.0" prefWidth="38.0" />
+      <Button id="btnHelp" fx:id="btnHelp" layoutX="127.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onHelpItemClick" prefHeight="38.0" prefWidth="38.0" />
    </children>
 </Pane>

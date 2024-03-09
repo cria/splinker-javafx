@@ -35,7 +35,7 @@ public class HomeController extends AbstractController {
 
     
     @FXML
-    void onConfigurationItemClick()
+    void onSettingsItemClick()
     {
         loadPage("configuration");
     }
