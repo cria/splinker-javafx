@@ -21,7 +21,7 @@ public class FirstConfigDialogController extends AbstractController{
     {
         try 
         {
-            var routeName = computerHasProxyConfigured ? "proxy-config" : "central-service";
+            var routeName = computerHasProxyConfigured ? "proxy-config" : "token";
             var stage = getStage();
             navigateTo(stage, routeName);    
         } 
