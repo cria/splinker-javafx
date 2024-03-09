@@ -3,12 +3,12 @@ package br.org.cria.splinkerapp.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.enums.WindowSizes;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.MenuBar;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
@@ -16,15 +16,20 @@ public class HomeController extends AbstractController {
 
     
     @FXML
-    MenuBar menuBar;
-    @FXML
     Pane content;
+    
     @FXML
-    ImageView principalImg = new ImageView();
+    Button btnHelp;
+    
     @FXML
-    ImageView settingsImg = new ImageView();
+    Button btnSettings;
+    
     @FXML
-    ImageView helpImg = new ImageView();
+    Button btnPrincipal;
+    
+    ImageView principalImg;
+    ImageView settingsImg;
+    ImageView helpImg;
 
     String basePath = "/br/org/cria/splinkerapp/%s.fxml";
 
@@ -65,26 +70,44 @@ public class HomeController extends AbstractController {
     }
 
 
+    void configureButtons()
+    {
+        principalImg = new ImageView(new Image("images/home.png"));
+        principalImg.setFitHeight(28);
+        principalImg.setFitWidth(28);
+        
+        settingsImg = new ImageView(new Image("images/settings.png"));
+        settingsImg.setFitHeight(28);
+        settingsImg.setFitWidth(28);
+
+        helpImg = new ImageView(new Image("images/help.png"));
+        helpImg.setFitHeight(28);
+        helpImg.setFitWidth(28);
+
+        btnPrincipal.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
+        btnPrincipal.setGraphic(principalImg);
+        btnPrincipal.setTooltip(new Tooltip("Principal"));
+
+        btnSettings.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
+        btnSettings.setGraphic(settingsImg);
+        btnSettings.setTooltip(new Tooltip("Configurações"));
+
+        btnHelp.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
+        btnHelp.setGraphic(helpImg);
+        btnHelp.setTooltip(new Tooltip("Ajuda"));
+
+    
+    }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         
         
         try 
         {
+            configureButtons();
             loadPage("principal");
             super.initialize(location, resources);
-            Platform.runLater(() ->
-            {
-                // TODO: Tooltips
-                // Tooltip.install(principalImg, new Tooltip("Principal")); // Doesn't work
-                // // Tooltip.install(principalImg.getParent(), new Tooltip("Tooltip")); // Works
-
-                // //Tooltip.install(settingsImg, new Tooltip("Configurações")); // Doesn't work
-                // Tooltip.install(settingsImg.getParent(), new Tooltip("Tooltip")); // Works
-                // Tooltip.install(helpImg, new Tooltip("Ajuda")); // Doesn't work
-                // // Tooltip.install(helpImg.getParent(), new Tooltip("Tooltip")); // Works
-
-            });
+  
         } catch (Exception e) {
             handleErrors(e);
         }

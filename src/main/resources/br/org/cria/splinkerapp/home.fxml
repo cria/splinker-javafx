@@ -1,26 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="405.0" prefWidth="520.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.HomeController">
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="405.0" prefWidth="520.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.HomeController">
    <children>
-      <ImageView id="homeImg" fx:id="homeImg" fitHeight="23.0" fitWidth="35.0" layoutX="14.0" layoutY="14.0" onMouseClicked="#onPrincipalItemClick" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../home.png" />
-         </image>
-      </ImageView>
-      <ImageView id="settingImg" fx:id="settingImg" fitHeight="23.0" fitWidth="23.0" layoutX="61.0" layoutY="14.0" onMouseClicked="#onConfigurationItemClick" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../settings.png" />
-         </image>
-      </ImageView>
-      <ImageView id="helpImg" fx:id="helpImg" fitHeight="23.0" fitWidth="23.0" layoutX="108.0" layoutY="14.0" onMouseClicked="#onHelpItemClick" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../help.png" />
-         </image>
-      </ImageView>
-      <Pane id="content" fx:id="content" layoutX="10.0" layoutY="42.0" prefHeight="340.0" prefWidth="501.0" />
+      <Pane id="content" fx:id="content" layoutX="5.0" layoutY="58.0" prefHeight="340.0" prefWidth="506.0" />
+      <Button id="btnPrincipal" fx:id="btnPrincipal" layoutX="25.0" layoutY="14.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="38.0" />
+      <Button id="btnSettings" fx:id="btnSettings" layoutX="79.0" layoutY="14.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="38.0" />
+      <Button id="btnHelp" fx:id="btnHelp" layoutX="127.0" layoutY="14.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="38.0" />
    </children>
 </Pane>
