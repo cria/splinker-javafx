@@ -22,7 +22,7 @@ public class GenerateDarwinCoreArchiveTask extends Task<DarwinCoreArchiveService
     @Subscribe
     void onWriteRow(Integer rowCount)
     {
-        var totalRowCount = service.getTotalRowCount();
+        var totalRowCount = service.getCurrentRowCount();
         updateProgress(rowCount, totalRowCount);// manager.getParser().getTotalRowCount());
     }
 

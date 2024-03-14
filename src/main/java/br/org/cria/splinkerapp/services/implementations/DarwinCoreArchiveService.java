@@ -21,6 +21,7 @@ import com.google.common.eventbus.EventBus;
 
 public class DarwinCoreArchiveService
 {
+    int rowCount = 0;
     int totalRowCount = 0;
     String zipFile;
     String textFile;
@@ -32,6 +33,11 @@ public class DarwinCoreArchiveService
     public DataSet getDataSet()
     {
         return this.ds;
+    }
+
+    public int getCurrentRowCount()
+    {
+        return this.rowCount;
     }
 
     public int getTotalRowCount()
@@ -162,18 +168,16 @@ public class DarwinCoreArchiveService
         var message = "Iniciando a transferência do arquivo";
         ApplicationLog.info(message);
 
-        var userDir = System.getProperty("user.dir");
         var rSyncConfig = TransferConfigRepository.getRSyncConfig();
         var port = rSyncConfig.getrSyncPort();
         var destination = "%s::%s".formatted(rSyncConfig.getrSyncDestination(), ds.getToken());
-        var command = new String[] {"java", "-jar", "%s/libs/yajsync-app-0.9.0-SNAPSHOT-full.jar".formatted(userDir), 
+        var command = new String[] {"java", "-jar", "libs/yajsync-app-0.9.0-SNAPSHOT-full.jar", 
                                     "client", "--port=%s".formatted(port), "-r", this.zipFile, destination };
         sendFileUsingCommandLine(command);
     }
 
     static void sendFileUsingCommandLine(String[] cmd) throws Exception
-    {
-        
+    {   
         //Cria o processo
         var proc = Runtime.getRuntime().exec(cmd);
         //Cria o leitor de buffer do resultado do processamento
