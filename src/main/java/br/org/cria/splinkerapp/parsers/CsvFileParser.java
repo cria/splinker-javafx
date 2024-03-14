@@ -35,8 +35,9 @@ public class CsvFileParser extends FileParser
         return row == null? null : Arrays.asList((String[])row);
     }
     @Override
-    protected String buildCreateTableCommand() 
+    protected String buildCreateTableCommand() throws Exception
     {
+        dropTable("spLinker");
         var tableName = getTableName();
         var columnNames = String.join(",", columns.stream().map((e)-> "%s VARCHAR(1)".formatted(e)).toList());
         var command = createTableCommand.formatted(tableName,columnNames).replace(",)"," );");
