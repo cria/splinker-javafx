@@ -64,7 +64,8 @@ public class AccessFileParser extends FileParser {
                         while (cells.hasNext()) 
                         {
                             var cell = cells.next();
-                            var value = getCellValue(cell.toString());
+                            var isNullCell = cell == null;
+                            var value = getCellValue(isNullCell? null: cell.toString());
                             statement.setString(cellIndex, value);
                             cellIndex++;
                         }

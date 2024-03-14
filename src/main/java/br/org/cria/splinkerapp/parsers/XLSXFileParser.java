@@ -112,17 +112,11 @@ public class XLSXFileParser extends FileParser {
                 { 
                     var cellIterator = row.iterator();
                     var index = 1;
-                    //Não usa getCellValue porque Cell é um tipo composto da biblioteca
                     while (cellIterator.hasNext()) 
                     {
                         var cell = cellIterator.next();
                         var isNullCell = cell == null;
-                        var value = "";
-                        if(!isNullCell)
-                        {
-                            var isNullValue = cell.getRawValue().toLowerCase() == "null";
-                            value = isNullValue? value: cell.getRawValue();
-                        }
+                        var value = isNullCell? "": getCellValue(cell.getRawValue());
                                                 
                         statement.setString(index, value);
                         index++;
