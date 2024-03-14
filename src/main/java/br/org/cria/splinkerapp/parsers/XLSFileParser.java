@@ -112,10 +112,10 @@ public class XLSFileParser extends FileParser {
                       {
                           var cell = cellIterator.next();
                           var index = cell.getColumnIndex() + 1;
-                          var value = formatter.formatCellValue(cell);
-                          var isNullValue = value == null || value.toLowerCase() == "null";
+                          var formattedValue = formatter.formatCellValue(cell);
+                          var value = getCellValue(formattedValue);
                           
-                          statement.setString(index, isNullValue? "":value);
+                          statement.setString(index, value);
                       }
                       statement.addBatch();
                   }

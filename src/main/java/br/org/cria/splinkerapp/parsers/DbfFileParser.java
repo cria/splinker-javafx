@@ -65,9 +65,9 @@ public class DbfFileParser extends FileParser
                             
             for (int k = 0; k < valuesList.size(); k++) 
             {
-				var value = valuesList.get(k);
-				var isNullValue = value == null || value.toLowerCase() == "null";
-            	statement.setString(k+1, isNullValue? "": value);    
+				var currentItem = valuesList.get(k);
+				var value =  getCellValue(currentItem);
+            	statement.setString(k+1, value);    
             }
 			statement.addBatch();
             currentRow++;

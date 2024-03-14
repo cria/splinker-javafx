@@ -42,6 +42,15 @@ public abstract class FileParser {
         statement.close();
         conn.close();
     }
+
+    @SuppressWarnings("null")
+    protected String getCellValue(String cell)
+    {
+        var isNull = cell == null;
+        var hasNullValue = isNull? true : cell.toLowerCase() != "null";
+        var value = hasNullValue? "" : cell.replace("\r", " ").replace("\t", " ");
+        return value;
+    }
     protected static String createTableCommand = "CREATE TABLE IF NOT EXISTS %s (%s)";
     protected static String insertIntoCommand = "INSERT INTO %s (%s) VALUES (%s);";
     protected Connection getConnection() throws SQLException { return DriverManager.getConnection(CONNECTION_STRING); }

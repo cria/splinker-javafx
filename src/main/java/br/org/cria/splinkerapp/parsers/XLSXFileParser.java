@@ -112,6 +112,7 @@ public class XLSXFileParser extends FileParser {
                 { 
                     var cellIterator = row.iterator();
                     var index = 1;
+                    //Não usa getCellValue porque Cell é um tipo composto da biblioteca
                     while (cellIterator.hasNext()) 
                     {
                         var cell = cellIterator.next();
