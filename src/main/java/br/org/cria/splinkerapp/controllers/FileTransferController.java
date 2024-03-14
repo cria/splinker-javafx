@@ -107,7 +107,6 @@ public class FileTransferController extends AbstractController {
                 Platform.runLater(()->
                 {
                     unbindProgress();
-                    rowCount = dwcService.getTotalRowCount();
                     configureCheckRecordCountTask();
                     executor.submit(checkRecordCountTask);
                 });        
@@ -202,6 +201,7 @@ public class FileTransferController extends AbstractController {
                 Platform.runLater(()-> {
                     try 
                     {
+                        rowCount = dwcService.getTotalRowCount();
                         progressBar.setVisible(false);
                         var fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                         var updatedAt =  LocalDateTime.now().format(fmt);
