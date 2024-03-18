@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.enums.WindowSizes;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -71,7 +72,7 @@ public class AccessDbController extends AbstractController {
             btnSelectFile.setGraphic(img);
             btnSelectFile.setPadding(Insets.EMPTY);
             accessFilePathField.setDisable(true);
-            token = DataSetService.getCurrentToken();
+            token = TokenRepository.getCurrentToken();
             var ds = DataSetService.getDataSet(token);
             if(ds.getDataSetFilePath() != null && ds.isAccessDb())
             {

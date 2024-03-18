@@ -7,6 +7,7 @@ import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.facade.ConfigFacade;
 import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSourceType;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -35,7 +36,7 @@ public class TokenLoginController extends AbstractController {
                 DataSetService.deleteDataSet(tokenToBeDeleted);
                 var datasets = DataSetService.getAllDataSets();
                 token = datasets.get(0).getToken();
-                DataSetService.setCurrentToken(token);
+                TokenRepository.setCurrentToken(token);
                 navigateTo(getStage(), "home");
             }
             else
@@ -74,7 +75,7 @@ public class TokenLoginController extends AbstractController {
                 var collName = apiConfig.get("dataset_name").toString();
                 var datasetAcronym = apiConfig.get("dataset_acronym").toString();
                 var id = (int)Double.parseDouble(apiConfig.get("dataset_id").toString());
-                DataSetService.setCurrentToken(newToken);
+                TokenRepository.setCurrentToken(newToken);
                 var dsType = DataSourceType.valueOf(apiConfig.get("data_source_type").toString());
                 DataSetService.saveDataSet(newToken, dsType, datasetAcronym, collName, id);
                 ConfigFacade.HandleBackendData(newToken, apiConfig);
@@ -121,7 +122,7 @@ public class TokenLoginController extends AbstractController {
         btnDeleteToken.setVisible(false);
         try 
         {
-            token = DataSetService.getCurrentToken();
+            token = TokenRepository.getCurrentToken();
             var hasToken = token != "";    
             if(hasToken)
             {

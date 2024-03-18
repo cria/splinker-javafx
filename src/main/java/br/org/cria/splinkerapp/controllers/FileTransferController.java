@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.models.DataSet;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import br.org.cria.splinkerapp.tasks.CheckRecordCountTask;
@@ -317,7 +318,7 @@ public class FileTransferController extends AbstractController {
 
         try 
         {    
-            token = DataSetService.getCurrentToken();
+            token = TokenRepository.getCurrentToken();
             ds = DataSetService.getDataSet(token);
             dwcService = new DarwinCoreArchiveService(ds);
             

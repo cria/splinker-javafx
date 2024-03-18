@@ -3,6 +3,7 @@ package br.org.cria.splinkerapp.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.enums.WindowSizes;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -38,7 +39,7 @@ public class ConfigurationController extends AbstractController {
             loadPage("central-service");
             serverLabel.setTextFill(Color.RED);
             
-            token = DataSetService.getCurrentToken();
+            token = TokenRepository.getCurrentToken();
             
         } 
         catch (Exception e) 

@@ -14,7 +14,9 @@ import br.org.cria.splinkerapp.facade.ConfigFacade;
 import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
+//import br.org.cria.splinkerapp.services.implementations.SpLinkerUpdater;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -63,13 +65,15 @@ public class PrincipalController extends AbstractController {
         try 
         {
             var map = new HashMap<String, String>();
-            var token = DataSetService.getCurrentToken();
+            var token = TokenRepository.getCurrentToken();
             var config = DataSetService.getConfigurationDataFromAPI(token);
             var collName = config.get("dataset_name").toString();
             var datasetAcronym = config.get("dataset_acronym").toString();
             var id = (int)Double.parseDouble(config.get("dataset_id").toString());
-            DataSetService.setCurrentToken(token);
             var dsType = DataSourceType.valueOf(config.get("data_source_type").toString());
+            
+            TokenRepository.setCurrentToken(token);
+           
             map.put("token", token);
             map.put("id", String.valueOf(id));
             map.put("dataset_name", collName);
@@ -79,6 +83,10 @@ public class PrincipalController extends AbstractController {
             DataSetService.updateDataSource(map);
                 
             ConfigFacade.HandleBackendData(token, config);
+            // if(SpLinkerUpdater.hasNewVersion())
+            // {
+            //     navigateTo("splinker-update");
+            // }
         } catch (Exception e) 
         {
             handleErrors(e);
@@ -101,7 +109,7 @@ public class PrincipalController extends AbstractController {
             {
                 ds = DataSetService.getDataSetBy("dataset_acronym", acronym);
                 token = ds.getToken();
-                DataSetService.setCurrentToken(token);
+                TokenRepository.setCurrentToken(token);
                 syncMetaData();
                 updateDisplayedData();
             }
@@ -124,7 +132,7 @@ public class PrincipalController extends AbstractController {
                 var acronym = cmbCollection.getItems().get(size-1);
                 ds = DataSetService.getDataSetBy("dataset_acronym", acronym);
                 var newToken = ds.getToken();
-                DataSetService.setCurrentToken(newToken);
+                TokenRepository.setCurrentToken(newToken);
                 cmbCollection.setValue(acronym);
             }
             else
@@ -182,7 +190,7 @@ public class PrincipalController extends AbstractController {
             bus = EventBusManager.getEvent(EventTypes.DELETE_DATASET.name());
             addDatasetBus.register(this);
             bus.register(this);
-            token = DataSetService.getCurrentToken();
+            token = TokenRepository.getCurrentToken();
             ds = DataSetService.getDataSet(token);
             var isDatasetNull = ds == null;
             var datasetWasUpdatedAtLeastOnce = !isDatasetNull && ds.getUpdatedAt() != null;;

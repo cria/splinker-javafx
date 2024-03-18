@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import org.apache.poi.util.StringUtil;
 import br.org.cria.splinkerapp.enums.WindowSizes;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -36,7 +37,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
         try 
         {
             super.initialize(location, resources);
-            token = DataSetService.getCurrentToken();
+            token = TokenRepository.getCurrentToken();
             var ds = DataSetService.getDataSet(token);
             if(ds != null)
             {

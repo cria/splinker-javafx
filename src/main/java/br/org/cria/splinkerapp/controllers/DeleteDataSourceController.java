@@ -6,6 +6,7 @@ import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.managers.EventBusManager;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -50,7 +51,7 @@ public class DeleteDataSourceController extends AbstractController {
         try {
             super.initialize(location, resources);
             bus = EventBusManager.getEvent(EventTypes.DELETE_DATASET.name());
-            token = DataSetService.getCurrentToken();
+            token = TokenRepository.getCurrentToken();
             var ds = DataSetService.getDataSet(token);
             var msg = lblMsg.getText() + "\n %s (%s)".formatted(ds.getDataSetAcronym(), ds.getDataSetName()) + "?";
             lblMsg.setText(msg);

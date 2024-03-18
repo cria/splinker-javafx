@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.models.DataSet;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -69,7 +70,7 @@ public class FileSelectionController extends AbstractController {
             btnSelectFile.setPadding(Insets.EMPTY);
             
             super.initialize(location, resources);
-            token = DataSetService.getCurrentToken();
+            token = TokenRepository.getCurrentToken();
             filePath.setEditable(false);
             ds = DataSetService.getDataSet(token);
             if(ds.getDataSetFilePath() == null)
