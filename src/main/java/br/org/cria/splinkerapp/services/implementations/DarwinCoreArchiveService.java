@@ -91,15 +91,10 @@ public class DarwinCoreArchiveService
             for (int i = 1; i <= count; i++) 
             {
                 var value = data.getString(i);
-                var hasValue = value != null;
-                var isNull = false;
-                
-                if(hasValue)
-                {
-                    isNull = value.toLowerCase() == "null";
-                }
-                
-                var content = baseStr.formatted( isNull? "" : value);
+                var isNotNull = value != null && value.toLowerCase() != "null";
+                var isNotCRLF = isNotNull && value != "\r" && value != "\t";
+                var hasValue = isNotNull && isNotCRLF;
+                var content = baseStr.formatted( hasValue? value : "");
                 dataSourceRows.append(content);
             }
 
