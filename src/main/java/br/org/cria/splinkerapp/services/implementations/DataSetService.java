@@ -9,43 +9,43 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import com.google.gson.Gson;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.BaseRepository;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
-import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
 
 public class DataSetService extends BaseRepository {
 
-    
-    public static String getCurrentToken() throws Exception {
-        var token = System.getProperty("splinker_token");
-        if (token == null) {
-            var cmd = "SELECT token FROM DataSetConfiguration LIMIT 1;";
-            var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-            var result = runQuery(cmd, conn);
-            var hasToken = result.getString("token") != null;
-            token = hasToken ? result.getString("token") : "";
-            result.close();
-            conn.close();
-            setCurrentToken(token);
+
+    public static void cleanData() throws Exception
+    {
+        var cmd = """
+            SELECT name
+            FROM sqlite_master
+            WHERE type='table' AND name NOT IN 
+            ('DataSetConfiguration', 'CentralServiceConfiguration', 
+            'TransferConfiguration','ProxyConfiguration');
+            """;
+        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+        var result = runQuery(cmd, conn);
+        conn.setAutoCommit(false);
+        var statement = conn.createStatement();
+        while (result.next()) 
+        {
+            var tableName = result.getString("name");
+            var dropCommand ="DROP TABLE %s;".formatted(tableName);
+            statement.addBatch(dropCommand);
         }
-        return token;
-
+        statement.executeBatch();    
+        conn.commit();
+        statement.clearBatch();
+        statement.close();
+        result.close();
+        conn.close();
     }
-
-    public static void setCurrentToken(String token) {
-        System.setProperty("splinker_token", token);
-    }
+    
 
     public static void updateRowcount(String token, int rowCount) throws Exception {
         var cmd = "UPDATE DataSetConfiguration SET last_rowcount = ? WHERE token = ?;";
@@ -70,46 +70,26 @@ public class DataSetService extends BaseRepository {
 
     public static Map<String, Object> getConfigurationDataFromAPI(String token) throws Exception {
 
-        String line;
-        HttpURLConnection connection;
         var config = CentralServiceRepository.getCentralServiceData();
         var url = "%s?version=%s&token=%s".formatted(config.getCentralServiceUrl(), config.getSystemVersion(), token);
-        var urlConn = new URI(url).toURL();
-        var response = new StringBuffer();
-        var isBehindProxy = ProxyConfigRepository.isBehindProxyServer();
-        
-        if(isBehindProxy)
-        {
-            var proxyConfig = ProxyConfigRepository.getConfiguration();
-            var proxyHost = proxyConfig.getAddress();
-            var proxyPort = Integer.valueOf(proxyConfig.getPort());
-            var proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
-            connection = (HttpURLConnection) urlConn.openConnection(proxy);
-            connection.setDoOutput(true);
-        }
-        else
-        {
-            connection = (HttpURLConnection) urlConn.openConnection();
-        }
-
-        connection.setRequestMethod("GET");
-        var reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-        while ((line = reader.readLine()) != null) {
-            response.append(line);
-        }
-
-        reader.close();
-        connection.disconnect();
-        HashMap<String, Object> json = new Gson().fromJson(response.toString(), HashMap.class);
+        var json = HttpService.getJson(url);
         return json;
     }
 
     public static boolean hasConfiguration() throws Exception {
-        var cmd = "SELECT COUNT(token) AS TOKEN_COUNT FROM  DataSetConfiguration;";
+        
+        var cmd = """
+            SELECT COUNT(*) AS NOT_CONFIGURED_TOKENS
+            FROM DataSetConfiguration
+            WHERE TOKEN IS NOT NULL 
+            AND datasource_filepath IS NULL 
+            AND db_host IS NULL;
+            """;
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var result = runQuery(cmd, conn);
-        var hasConfig = result.getInt("TOKEN_COUNT") > 0;
+        var noConfigTokens = result.getInt("NOT_CONFIGURED_TOKENS");
+        var hasConfig = noConfigTokens < 1 ;
+        
         result.close();
         conn.close();
         return hasConfig;
