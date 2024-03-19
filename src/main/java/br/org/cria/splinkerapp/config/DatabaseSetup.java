@@ -1,6 +1,7 @@
 package br.org.cria.splinkerapp.config;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -31,19 +32,19 @@ public class DatabaseSetup {
                     var inputStream = getClass().getResourceAsStream(file);
                     var builder = new StringBuilder();
 
-                    if (inputStream != null) {
-                        // Read the content from the input stream
-                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-                            String line;
-                            while ((line = reader.readLine()) != null) 
-                            {
-                                builder.append("%s\n".formatted(line));
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace(); // Handle the IOException appropriately
+                    if (inputStream != null) 
+                    {
+                        var reader = new BufferedReader(new InputStreamReader(inputStream));
+                        String line;
+                        while ((line = reader.readLine()) != null) 
+                        {
+                            builder.append("%s\n".formatted(line));
                         }
-                    } else {
-                        System.err.println("File not found!");
+                    } 
+                    else 
+                    {
+                        System.err.println("SQL File not found!");
+                        throw new FileNotFoundException(file);
                     }
             
                     var content = builder.toString();

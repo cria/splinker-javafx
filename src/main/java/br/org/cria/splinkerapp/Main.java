@@ -30,6 +30,7 @@ public class Main extends Application
                     LogManager.shutdown();
                 });
                 initDb.setOnFailed(event -> {
+                    LockFileManager.deleteLockfile();
                     var exception = initDb.getException();
                     Sentry.captureException(exception);
                     ApplicationLog.error(exception.getLocalizedMessage());
