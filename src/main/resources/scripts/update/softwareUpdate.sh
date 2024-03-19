@@ -13,4 +13,4 @@ tar -xvf splinker_new_version.tar.gz
 cd splinker_new_version
 
 # Run GUI installer (replace 'installer.sh' with the actual installer script)
-dpkg -i spLinker.deb
+dpkg-deb -x spLinker.db $HOME

@@ -8,6 +8,7 @@ import java.util.List;
 import com.google.common.eventbus.EventBus;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.managers.EventBusManager;
+import br.org.cria.splinkerapp.managers.LocalDbManager;
 import br.org.cria.splinkerapp.utils.StringStandards;
 
 public abstract class FileParser {
@@ -15,7 +16,7 @@ public abstract class FileParser {
     protected int totalRowCount = 0;;
     protected int currentRow = 0;
     protected int totalColumnCount = 0;
-    protected final String CONNECTION_STRING = System.getProperty("splinker.dbname", "jdbc:sqlite:splinker.db");
+    protected final String CONNECTION_STRING = System.getProperty("splinker.dbname", LocalDbManager.getLocalDbConnectionString());
     protected FileParser() throws Exception
     {
         readRowEventBus = EventBusManager.getEvent(EventTypes.READ_ROW.name());

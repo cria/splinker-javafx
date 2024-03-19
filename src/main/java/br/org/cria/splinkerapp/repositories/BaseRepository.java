@@ -6,10 +6,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.List;
+import br.org.cria.splinkerapp.managers.LocalDbManager;
 
 public class BaseRepository 
 {
-    public static String LOCAL_DB_CONNECTION = System.getProperty("splinker.connection", "jdbc:sqlite:splinker.db");
+    protected static String LOCAL_DB_CONNECTION = System.getProperty("splinker.connection", LocalDbManager.getLocalDbConnectionString());
     
     protected static ResultSet runQuery(String sql, Connection conn) throws Exception
     {

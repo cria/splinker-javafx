@@ -8,16 +8,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.DriverManager;
 import br.org.cria.splinkerapp.ApplicationLog;
+import br.org.cria.splinkerapp.managers.LocalDbManager;
 import io.sentry.Sentry;
 import javafx.concurrent.Task;
 
 public class DatabaseSetup {
-    private static String userHome = System.getProperty("user.home");
-    private static String dbFilePath = "%s/splinker.db".formatted(userHome);
-    private static String connString =  "jdbc:sqlite:%s".formatted(dbFilePath);
-
-    public static void deleteLocalDatabase() throws IOException {
-        var path = Path.of(dbFilePath);
+    public static void deleteLocalDatabase() throws IOException 
+    {
+        var path = Path.of(LocalDbManager.getDbFilePath());
         Files.delete(path);
     }
 
@@ -29,13 +27,14 @@ public class DatabaseSetup {
                 try 
                 {
                     var file = "/scripts/sql/create_tables.sql";
-                    var inputStream = getClass().getResourceAsStream(file);
+                    var inputStream = Task.class.getResourceAsStream(file);
                     var builder = new StringBuilder();
 
                     if (inputStream != null) 
                     {
                         var reader = new BufferedReader(new InputStreamReader(inputStream));
                         String line;
+                        System.out.println("lendo arquivo SQL");
                         while ((line = reader.readLine()) != null) 
                         {
                             builder.append("%s\n".formatted(line));
@@ -48,13 +47,15 @@ public class DatabaseSetup {
                     }
             
                     var content = builder.toString();
-                    var url = System.getProperty("splinker.connection", connString);
+                    var url = System.getProperty("splinker.connection", LocalDbManager.getLocalDbConnectionString());
+                    System.out.println("criando BD SQLite");
                     var conn = DriverManager.getConnection(url);
                     var statement = conn.createStatement();
                     var result = statement.executeUpdate(content);
                     System.out.println(result);
                     statement.close();
                     conn.close();
+                    System.out.println("BD SQLite criado");
 
                 } 
                 catch (Exception e) 
@@ -62,7 +63,9 @@ public class DatabaseSetup {
                     Sentry.captureException(e);
                     ApplicationLog.error(e.getLocalizedMessage());
                     e.printStackTrace();
-                    System.exit(1);
+                    LockFileManager.deleteLockfile();
+                    throw new RuntimeException(e);
+                    //System.exit(1);
                 }
                 return null;
             }

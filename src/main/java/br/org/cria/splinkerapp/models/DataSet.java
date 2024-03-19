@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.time.LocalDateTime;
 
+import br.org.cria.splinkerapp.managers.LocalDbManager;
+
 public class DataSet {
     private int id;
     public int getId() {
@@ -168,7 +170,7 @@ public class DataSet {
             switch (type) 
             {
                 case MySQL:
-                connectionString = "jdbc:%s://%s/%s?user=%s&password=%s&allowPublicKeyRetrieval=true&useSSL=false"
+                connectionString = "jdbc:%s://%s/%s?user=%s&password=%s"//&allowPublicKeyRetrieval=true&useSSL=false"
                                 .formatted(type.name().toLowerCase(),host, databaseName, username, password);
                     break;
                 case PostgreSQL:
@@ -184,7 +186,7 @@ public class DataSet {
                             .formatted(type.name().toLowerCase(), host, port, databaseName, username, password);
                     break;
                 default:
-                    connectionString = System.getProperty("splinker.connection", "jdbc:sqlite:splinker.db");
+                    connectionString = System.getProperty("splinker.connection", LocalDbManager.getLocalDbConnectionString());
                 break;
             } 
         }
