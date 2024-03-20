@@ -44,8 +44,5 @@ CREATE TABLE IF NOT EXISTS ProxyConfiguration (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-INSERT INTO TransferConfiguration (rsync_port, rsync_server_destination)
-VALUES (10000, 'bruno@35.224.172.146');
-
 INSERT INTO CentralServiceConfiguration (central_service_url, last_system_version)
 VALUES ('https://specieslink.net/ws/1.0/splinker/login', "1.0");
