@@ -57,6 +57,7 @@ public class Main extends Application
                         
                 });
                 initDb.run();
+                initDb.get();
             }
         } 
         catch (Exception ex) 
