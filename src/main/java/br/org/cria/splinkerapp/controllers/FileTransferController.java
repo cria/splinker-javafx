@@ -210,7 +210,8 @@ public class FileTransferController extends AbstractController {
                         var newData = new HashMap<String, String>(){{put("last_rowcount", String.valueOf(rowCount));
                                                                     put("updated_at", updatedAt);
                                                                     put("token", token);}};
-                        DataSetService.updateDataSource(newData);   
+                        DataSetService.updateDataSource(newData);
+                        DataSetService.cleanData();
                         executor.close();
                         btnCancelTransfer.setText("OK");
                         btnCancelTransfer.setOnMouseClicked((__)->
