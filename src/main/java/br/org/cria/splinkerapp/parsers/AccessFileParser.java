@@ -84,6 +84,7 @@ public class AccessFileParser extends FileParser {
                 conn.commit();
                 statement.clearBatch();
                 statement.close();
+                totalColumnCount = currentRow;
             }catch (FileNotFoundException fnfe) {
                 continue;
             }
