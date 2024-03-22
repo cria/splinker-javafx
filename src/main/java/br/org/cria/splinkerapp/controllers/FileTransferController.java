@@ -211,7 +211,7 @@ public class FileTransferController extends AbstractController {
                                                                     put("updated_at", updatedAt);
                                                                     put("token", token);}};
                         DataSetService.updateDataSource(newData);
-                        DataSetService.cleanData();
+                        dwcService.cleanData();
                         executor.close();
                         btnCancelTransfer.setText("OK");
                         btnCancelTransfer.setOnMouseClicked((__)->

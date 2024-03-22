@@ -3,6 +3,7 @@ package br.org.cria.splinkerapp.services.implementations;
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.managers.EventBusManager;
+import br.org.cria.splinkerapp.managers.LocalDbManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
 import io.sentry.Sentry;
@@ -11,6 +12,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -158,7 +160,7 @@ public class DarwinCoreArchiveService
         return this;
     }
  
-    public void transferData() throws Exception 
+    public DarwinCoreArchiveService transferData() throws Exception 
     {
         var message = "Iniciando a transferência do arquivo";
         ApplicationLog.info(message);
@@ -169,6 +171,59 @@ public class DarwinCoreArchiveService
         var command = new String[] {"java", "-jar", "libs/yajsync-app-0.9.0-SNAPSHOT-full.jar", 
                                     "client", "--port=%s".formatted(port), "-r", this.zipFile, destination };
         sendFileUsingCommandLine(command);
+        return this;
+    }
+   
+    public void cleanData() throws Exception
+    {
+        dropDataTables();
+        deleteSentFiles();
+    }
+   
+    private void dropDataTables() throws Exception
+    {
+        var cmd = """
+            SELECT name
+            FROM sqlite_master
+            WHERE type='table' AND name NOT IN 
+            ('DataSetConfiguration', 'CentralServiceConfiguration', 
+            'TransferConfiguration','ProxyConfiguration');
+            """;
+        var connString = System.getProperty("splinker.connection", LocalDbManager.getLocalDbConnectionString());
+        var conn = DriverManager.getConnection(connString);
+        var result = conn.createStatement().executeQuery(cmd);
+        conn.setAutoCommit(false);
+        var statement = conn.createStatement();
+        while (result.next()) 
+        {
+            var tableName = result.getString("name");
+            var dropCommand ="DROP TABLE %s;".formatted(tableName);
+            statement.addBatch(dropCommand);
+        }
+        statement.executeBatch();    
+        conn.commit();
+        statement.clearBatch();
+        statement.close();
+        result.close();
+        conn.close();
+    }
+    
+    private void deleteSentFiles() throws Exception
+    {
+        var cmd = "SELECT id FROM DataSetConfiguration;";
+        var connString = LocalDbManager.getLocalDbConnectionString();
+        var conn = DriverManager.getConnection(connString);
+        var result = conn.createStatement().executeQuery(cmd);
+        
+        while (result.next()) 
+        {
+            var datasetId = result.getString("id");
+            var userDir ="%s/%s".formatted(System.getProperty("user.dir"),datasetId) ;
+            Files.delete(Path.of("%s/occurrence.txt".formatted(userDir)));    
+            Files.delete(Path.of("%s/dwca.zip".formatted(userDir)));
+            Files.delete(Path.of("%s.sql".formatted(userDir)));
+            Files.delete(Path.of("%s/".formatted(userDir)));    
+        }
     }
 
     static void sendFileUsingCommandLine(String[] cmd) throws Exception

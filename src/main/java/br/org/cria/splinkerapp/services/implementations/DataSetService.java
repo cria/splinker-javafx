@@ -15,37 +15,8 @@ import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.BaseRepository;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
-
 public class DataSetService extends BaseRepository {
 
-
-    public static void cleanData() throws Exception
-    {
-        var cmd = """
-            SELECT name
-            FROM sqlite_master
-            WHERE type='table' AND name NOT IN 
-            ('DataSetConfiguration', 'CentralServiceConfiguration', 
-            'TransferConfiguration','ProxyConfiguration');
-            """;
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var result = runQuery(cmd, conn);
-        conn.setAutoCommit(false);
-        var statement = conn.createStatement();
-        while (result.next()) 
-        {
-            var tableName = result.getString("name");
-            var dropCommand ="DROP TABLE %s;".formatted(tableName);
-            statement.addBatch(dropCommand);
-        }
-        statement.executeBatch();    
-        conn.commit();
-        statement.clearBatch();
-        statement.close();
-        result.close();
-        conn.close();
-    }
-    
 
     public static void updateRowcount(String token, int rowCount) throws Exception {
         var cmd = "UPDATE DataSetConfiguration SET last_rowcount = ? WHERE token = ?;";
@@ -89,7 +60,7 @@ public class DataSetService extends BaseRepository {
         
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var result = runQuery(cmd1, conn);
-        var hasTokens = result.getInt("TOKEN_COUNT") > 0;
+        var hasTokens = result.getInt("TOKEN_COUNT") > 0;        
         result = runQuery(cmd2, conn);
         var hasUnconfiguredTokens = result.getInt("NOT_CONFIGURED_TOKENS") > 0;
         var hasConfig = hasTokens && !hasUnconfiguredTokens;
