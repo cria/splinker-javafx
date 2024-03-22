@@ -30,7 +30,7 @@ public class BaseRepository
 
     }
 
-    protected static String byteArrayToString(List<Double> byteArr)
+    public static String byteArrayToString(List<Double> byteArr)
     {
         var out = new ByteArrayOutputStream();
         byteArr.forEach((e) -> out.write(e.byteValue()));
