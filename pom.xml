@@ -154,7 +154,7 @@
                 <configuration>
                     <skipTelemetry>true</skipTelemetry>        
                     <debugSentryCli>true</debugSentryCli>
-                    <org>cria-centro-de-referencia-em-i</org>
+                    <org>cria-specieslink</org>
                     <project>java-log4j2</project>
                     <authToken>${env.SENTRY_AUTH_TOKEN}</authToken>
                 </configuration>
