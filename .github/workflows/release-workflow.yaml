@@ -5,7 +5,7 @@ on:
     types:
       - completed
 jobs:
-  release:
+  release-job:
     needs: [build-on-linux, build-on-windows]
     runs-on: ubuntu-latest
     steps:
