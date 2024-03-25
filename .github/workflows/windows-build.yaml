@@ -7,6 +7,7 @@ on:
 
 jobs:
   build-on-windows:
+    needs: test
     runs-on: windows-latest
     env:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
