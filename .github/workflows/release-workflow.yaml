@@ -4,11 +4,10 @@ on:
     workflows: ["Compilar spLinker para Windows e Linux"]
     types:
       - completed
-
 jobs:
   release:
-    runs-on: ubuntu-latest
     needs: [build-on-linux, build-on-windows]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
