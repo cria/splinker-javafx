@@ -1,4 +1,4 @@
-name: Compilar e lançar versão do spLinker
+name: Compilar spLinker para Windows e Linux
 
 on:
   push:
@@ -63,7 +63,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: splinker-windows
-          path: dist
+          path: dist/windows
           retention-days: 3
 
   build-on-linux:
@@ -108,4 +108,4 @@ jobs:
           uses: actions/upload-artifact@v3
           with:
             name: splinker-linux
-            path: dist
+            path: dist/linux
