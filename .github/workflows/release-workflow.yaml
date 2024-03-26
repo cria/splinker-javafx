@@ -8,6 +8,7 @@ on:
       - completed
 jobs:
   my-release-job:
+    name: "Release Version"
     needs: [build-on-linux, build-on-windows]
     runs-on: ubuntu-latest
     steps:
