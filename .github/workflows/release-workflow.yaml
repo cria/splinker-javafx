@@ -3,13 +3,72 @@ name: Workflow de Release
 on:
   workflow_run:
     workflows: ["Compilar spLinker para Windows e Linux"]
-    branches: ['v*.*.*']
+    branches: ['v*']
     types:
       - completed
 jobs:
   steve:
-    name: "Steve Jobs"
+    name: "Release Version"
+    needs: [build-on-linux, build-on-windows]
     runs-on: ubuntu-latest
     steps:
-      - name: "Do something"
-        run: "echo 'hello mom!';"
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download de artefatos Linux
+        uses: actions/download-artifact@v2
+        with:
+          name: linux-artifacts
+          path: dist/linux
+
+      - name: Download de artefatos Windows
+        uses: actions/download-artifact@v2
+        with:
+          name: windows-artifacts
+          path: dist/windows
+
+      - name: Define versão
+        id: version
+        run: echo "v$(($(echo "${GITHUB_REF#refs/tags/v}") + 1))" >> version.txt
+
+      - name: Criar Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.stdout }}
+          release_name: Release ${{ steps.version.outputs.stdout }}
+          body: "Release created automatically by GitHub Actions."
+          draft: false
+          prerelease: false
+
+      - name: Upload Linux .rpm Artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/linux/splinker-1.0-1.x86_64.rpm
+          asset_name: splinker-1.0-1.x86_64.rpm
+          asset_content_type: application/x-rpm
+      
+      - name: Upload Linux .deb Artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/linux/splinker-1.0-1.x86_64.deb
+          asset_name: splinker-1.0-1.x86_64.deb
+          asset_content_type: application/x-deb
+
+      - name: Upload Windows Artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/windows/spLinker-1.0.msi
+          asset_name: spLinker-1.0.msi
+          asset_content_type: application/x-msdownload

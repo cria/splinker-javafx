@@ -67,6 +67,7 @@ jobs:
           retention-days: 3
 
   build-on-linux:
+      name: "Compilação para Linux (.deb e .rpm)"
       needs: test
       runs-on: ubuntu-latest
       env:
@@ -96,7 +97,7 @@ jobs:
           run:  cp ./src/main/resources/log4j2.xml ./spLinker
 
         - name: Empacotar para Deb
-          run: jpackage --name spLinker --type deb --dest dist --linux-shortcut --app-image spLinker
+          run: jpackage --name spLinker --type deb --dest dist/linux --linux-shortcut --app-image spLinker
 
         - name: Instalar empacotador RPM
           run: sudo apt-get install fakeroot
