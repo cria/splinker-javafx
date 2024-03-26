@@ -6,3 +6,10 @@ on:
     branches: ['v*.*.*']
     types:
       - completed
+jobs:
+  steve:
+    name: "Steve Jobs"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Do something"
+        run: "echo 'hello mom!';"
