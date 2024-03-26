@@ -1,4 +1,4 @@
-name: Release Workflow
+name: Workflow de Release 
 
 on:
   workflow_run:
@@ -7,7 +7,7 @@ on:
     types:
       - completed
 jobs:
-  release-job:
+  my-release-job:
     needs: [build-on-linux, build-on-windows]
     runs-on: ubuntu-latest
     steps:
