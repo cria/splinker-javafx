@@ -3,7 +3,9 @@ name: Workflow de Release
 on:
   workflow_run:
     workflows: ["Compilar spLinker para Windows e Linux"]
-    branches: ['v*']
+    branches: [master]
+    tags:
+      - v*
     types:
       - completed
 jobs:
