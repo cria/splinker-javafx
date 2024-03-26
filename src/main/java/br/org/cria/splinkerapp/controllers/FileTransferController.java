@@ -88,7 +88,7 @@ public class FileTransferController extends AbstractController {
                 var errId = Sentry.captureException(ex);
                 var task = "importação dos dados";
                 var msg = errMsg.formatted(task, errId);
-                ApplicationLog.error(ex.getMessage());
+                handleErrors(ex);
                                
                 showErrorModal(msg);
                 navigateTo("home");
@@ -119,7 +119,7 @@ public class FileTransferController extends AbstractController {
                     var errId = Sentry.captureException(ex);
                     var task = "geração do arquivo";
                     var msg = errMsg.formatted(task, errId);
-                    ApplicationLog.error(ex.getMessage());
+                    handleErrors(ex);
                     showErrorModal(msg);
                     navigateTo("home");
                 });
@@ -144,7 +144,7 @@ public class FileTransferController extends AbstractController {
                 var errId = Sentry.captureException(ex);
                 var task = "verificação de registros";
                 var msg = errMsg.formatted(task, errId);
-                ApplicationLog.error(ex.getMessage());
+                handleErrors(ex);
                                
                 showErrorModal(msg);
                 navigateTo("home");
@@ -227,14 +227,13 @@ public class FileTransferController extends AbstractController {
             transferFileTask.setOnFailed((handler)->{
                 System.gc();
                 Platform.runLater(()->{
-                var ex = transferFileTask.getException();
-                var errId = Sentry.captureException(ex);
-                var task = "transferência do arquivo";
-                var msg = errMsg.formatted(task, errId);
-                ApplicationLog.error(ex.getMessage());
-                               
-                showErrorModal(msg);
-                navigateTo("home");
+                    var ex = transferFileTask.getException();
+                    var errId = Sentry.captureException(ex);
+                    var task = "transferência do arquivo";
+                    var msg = errMsg.formatted(task, errId);
+                    handleErrors(ex);
+                    showErrorModal(msg);
+                    navigateTo("home");
                 });
             });
 

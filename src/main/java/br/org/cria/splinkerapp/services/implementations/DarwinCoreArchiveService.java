@@ -138,7 +138,6 @@ public class DarwinCoreArchiveService
         catch (Exception e) 
         {
             Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
             throw e;
         }
     }

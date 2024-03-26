@@ -34,13 +34,11 @@ public class DbfFileParser extends FileParser
 		catch (DBFException e) 
 		{
 			Sentry.captureException(e);
-			ApplicationLog.error(e.getLocalizedMessage());
 			e.printStackTrace();
 		} 
 		catch (IOException e) 
 		{
 			Sentry.captureException(e);
-			ApplicationLog.error(e.getLocalizedMessage());
 			e.printStackTrace();
 		}
     }

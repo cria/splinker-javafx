@@ -97,7 +97,7 @@ public abstract class AbstractController implements Initializable {
         alert.showAndWait();
     }
 
-    protected void handleErrors(Exception ex)
+    protected void handleErrors(Throwable ex)
     {
         var sentryId = Sentry.captureException(ex);
         var msg = "Ocorreu um erro. Contate o administrador do spLinker - Error ID %s".formatted(sentryId.toString());

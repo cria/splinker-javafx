@@ -33,8 +33,14 @@ public class FirstConfigDialogController extends AbstractController{
 
     @FXML
     void onNoButtonClicked(){
-        LockFileManager.deleteLockfile();
-        System.exit(0);
+        try {
+            LockFileManager.deleteLockfile();
+            System.exit(0);    
+        } catch (Exception e) {
+            handleErrors(e);
+            System.exit(1);
+        }
+        
     }
 
     @Override

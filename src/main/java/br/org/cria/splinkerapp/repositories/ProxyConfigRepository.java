@@ -71,7 +71,6 @@ public class ProxyConfigRepository extends BaseRepository{
             }
         } catch (Exception e) {
             Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
             e.printStackTrace();
         }
         finally

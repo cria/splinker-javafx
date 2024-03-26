@@ -91,7 +91,6 @@ public class AccessFileParser extends FileParser {
              catch (Exception e) {
                 Sentry.captureException(e);
                 e.printStackTrace();
-                ApplicationLog.error(e.getLocalizedMessage());
             }
         }
         db.close();
@@ -131,7 +130,6 @@ public class AccessFileParser extends FileParser {
              catch (Exception e) {
                 Sentry.captureException(e);
                 e.printStackTrace();
-                ApplicationLog.error(e.getLocalizedMessage());
             }
         }
         builder.append(");");
