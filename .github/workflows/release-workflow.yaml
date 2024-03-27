@@ -19,7 +19,6 @@ jobs:
       - name: Download de artefatos Linux
         uses: dawidd6/action-download-artifact@v3
         with:
-          workflow: build-workflow.yaml
           path: ./dist/linux
           search_artifacts: true
 
