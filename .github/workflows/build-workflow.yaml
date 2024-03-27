@@ -39,14 +39,18 @@ jobs:
           java-version: 21
           distribution: 'temurin'
           architecture: x64
+
+      - name: Define versão
+        run: $env:VERSION = Select-String -Path "pom.xml" -Pattern '(?<=<version>)[^<]+' | Select-Object -First 1 -ExpandProperty Matches | ForEach-Object { $_.Value }
+
       - name: Define nome do JAR
-        run: echo "SPLINKER_FILE="splinker-$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')".jar" >> $GITHUB_ENV
+        run: $env:SPLINKER_FILE = "splinker-${env:VERSION}.jar"
 
       - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar 
         run: mvn package -DskipTests
         
       - name: Criar image jpackage
-        run: jpackage --type app-image --name spLinker --input target/ --main-jar ${{ env.SPLINKER_FILE }}
+        run: jpackage --type app-image --name spLinker --input target/ --main-jar ${env:SPLINKER_FILE}
 
       - name: Criar pasta do yajsync
         run: mkdir spLinker\libs
