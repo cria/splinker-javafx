@@ -34,7 +34,6 @@ public class DatabaseSetup {
                     {
                         var reader = new BufferedReader(new InputStreamReader(inputStream));
                         String line;
-                        System.out.println("lendo arquivo SQL");
                         while ((line = reader.readLine()) != null) 
                         {
                             builder.append("%s\n".formatted(line));
@@ -48,20 +47,18 @@ public class DatabaseSetup {
             
                     var content = builder.toString();
                     var url = System.getProperty("splinker.connection", LocalDbManager.getLocalDbConnectionString());
-                    System.out.println("criando BD SQLite");
                     var conn = DriverManager.getConnection(url);
                     var statement = conn.createStatement();
                     var result = statement.executeUpdate(content);
+                    
                     System.out.println(result);
                     statement.close();
                     conn.close();
-                    System.out.println("BD SQLite criado");
 
                 } 
                 catch (Exception e) 
                 {
                     Sentry.captureException(e);
-                    ApplicationLog.error(e.getLocalizedMessage());
                     e.printStackTrace();
                     LockFileManager.deleteLockfile();
                     throw new RuntimeException(e);
