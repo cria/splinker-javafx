@@ -106,7 +106,7 @@ jobs:
           run: jpackage --name spLinker --type rpm --dest dist/linux --linux-shortcut --app-image spLinker
 
         - name: Upload artifacts
-          uses: actions/upload-artifact@v3
+          uses: actions/upload-artifact@v4
           with:
             name: splinker-linux
             path: dist/linux
