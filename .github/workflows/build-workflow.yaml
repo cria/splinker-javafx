@@ -112,11 +112,11 @@ jobs:
             path: dist/linux
   
   version-release:
-    name: "Release Version"
+    name: "Lançar nova versão"
     needs: [build-on-windows, build-on-linux]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout de código
         uses: actions/checkout@v2
 
       - name: Download de artefatos Linux
@@ -164,8 +164,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/linux/splinker-1.0-1.x86_64.deb
-          asset_name: splinker-1.0-1.x86_64.deb
+          asset_path: ./dist/linux/splinker_1.0_amd64.deb
+          asset_name: splinker_1.0_amd64.deb
           asset_content_type: application/x-deb
 
       - name: Upload Windows Artifacts
