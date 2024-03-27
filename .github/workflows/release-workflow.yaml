@@ -17,18 +17,18 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Download de artefatos Linux
-        uses: actions/download-artifact@v3
+        uses: dawidd6/action-download-artifact@v3
         with:
           workflow: build-workflow.yaml
-          name: splinker-linux
           path: dist/linux
+          search_artifacts: true
 
       - name: Download de artefatos Windows
         uses: actions/download-artifact@v3
         with:
           workflow: build-workflow.yaml
-          name: splinker-windows
           path: dist/windows
+          search_artifacts: true
 
       - name: Define versão
         id: version
