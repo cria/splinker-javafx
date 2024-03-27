@@ -15,12 +15,12 @@ public class HttpService {
 
     public static Map<String, Object> getJson(String url) throws Exception
     {
-         String line;
+        String line;
         HttpURLConnection connection;
         var urlConn = new URI(url).toURL();
         var response = new StringBuffer();
         var isBehindProxy = ProxyConfigRepository.isBehindProxyServer();
-        
+        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
         if(isBehindProxy)
         {
             var proxyConfig = ProxyConfigRepository.getConfiguration();
@@ -44,7 +44,11 @@ public class HttpService {
 
         reader.close();
         connection.disconnect();
-        HashMap<String, Object> json = new Gson().fromJson(response.toString(), HashMap.class);
+        var stringResponse = response.toString();
+        var isList = stringResponse.charAt(0) == '[';
+        var lastIndex = stringResponse.length() -1;
+        var content = isList ? stringResponse.substring(1, lastIndex) : stringResponse;
+        HashMap<String, Object> json = new Gson().fromJson(content, HashMap.class);
         return json;
     }
     
