@@ -44,7 +44,7 @@ jobs:
         run: mvn package -DskipTests
         
       - name: Criar image jpackage
-        run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-1.0-SNAPSHOT.jar
+        run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-final.jar
 
       - name: Criar pasta do yajsync
         run: mkdir spLinker\libs
@@ -85,7 +85,7 @@ jobs:
           run: mvn package -DskipTests
     
         - name: Criar image jpackage
-          run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-1.0-SNAPSHOT.jar
+          run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-final.jar
 
         - name: Criar pasta do yajsync
           run: mkdir ./spLinker/libs
