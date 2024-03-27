@@ -20,12 +20,14 @@ jobs:
         uses: dawidd6/action-download-artifact@v3
         with:
           workflow: build-workflow.yaml
+          path: ./dist/linux
           search_artifacts: true
 
       - name: Download de artefatos Windows
         uses: actions/download-artifact@v3
         with:
           workflow: build-workflow.yaml
+          path: ./dist/windows
           search_artifacts: true
 
       - name: Define versão
@@ -51,7 +53,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./dist/linux/splinker-1.0-1.x86_64.rpm
-          asset_name: splinker-1.0-1..x86_64.rpm
+          asset_name: splinker-1.0-1.x86_64.rpm
           asset_content_type: application/x-rpm
       
       - name: Upload Linux .deb Artifacts
