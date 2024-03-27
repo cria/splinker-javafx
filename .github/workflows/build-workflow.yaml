@@ -134,7 +134,7 @@ jobs:
 
       - name: Define versão
         id: version
-        run: echo "v$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')" >> version.txt
+        run: echo "SPLINKER_VERSION="v$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')"" >> $GITHUB_ENV
 
       - name: Criar Release
         id: create_release
@@ -142,8 +142,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.version.outputs.stdout }}
-          release_name: Release ${{ steps.version.outputs.stdout }}
+          tag_name: ${{ env.SPLINKER_VERSION }}
+          release_name: Release ${{ env.SPLINKER_VERSION }}
           body: "Release created automatically by GitHub Actions."
           draft: false
           prerelease: false
