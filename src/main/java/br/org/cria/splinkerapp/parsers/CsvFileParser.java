@@ -77,7 +77,7 @@ public class CsvFileParser extends FileParser
             }
             readRowEventBus.post(currentRow);
         }
-
+        totalRowCount = currentRow;
         statement.executeBatch();
         conn.commit();
         statement.clearBatch();
