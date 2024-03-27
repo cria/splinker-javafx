@@ -129,13 +129,12 @@ jobs:
       - name: Download de artefatos Windows
         uses: actions/download-artifact@v3
         with:
-          workflow: build-workflow.yaml
+          name: splinker-windows
           path: ./dist/windows
-          search_artifacts: true
 
       - name: Define versão
         id: version
-        run: echo "v$(($(echo "${GITHUB_REF#refs/tags/v}") + 1))" >> version.txt
+        run: echo "v$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')" >> version.txt
 
       - name: Criar Release
         id: create_release
