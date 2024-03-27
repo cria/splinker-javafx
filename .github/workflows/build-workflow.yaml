@@ -42,8 +42,8 @@ jobs:
 
       - name: Define versão
         run:  |
-        $VERSION = Select-String -Path "pom.xml" -Pattern '(?<=<version>)[^<]+' | Select-Object -First 1 -ExpandProperty Matches | ForEach-Object { $_.Value }
-        echo "VERSION=$VERSION" | Out-File -FilePath $env:GITHUB_ENV -Append
+        $VERSION = Select-String -Path "pom.xml" -Pattern '(?<=<version>)[^<]+' | Select-Object -First 1 -ExpandProperty Matches | ForEach-Object { $_.Value };
+        echo "VERSION=$VERSION" | Out-File -FilePath $env:GITHUB_ENV -Append;
         
 
       - name: Define nome do JAR
