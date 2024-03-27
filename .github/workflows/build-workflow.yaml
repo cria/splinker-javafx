@@ -41,10 +41,10 @@ jobs:
           architecture: x64
 
       - name: Define versão
-        run: $env:VERSION = Select-String -Path "pom.xml" -Pattern '(?<=<version>)[^<]+' | Select-Object -First 1 -ExpandProperty Matches | ForEach-Object { $_.Value }
+        run: echo ("VERSION=" + Select-String -Path "pom.xml" -Pattern '(?<=<version>)[^<]+' | Select-Object -First 1 -ExpandProperty Matches | ForEach-Object { $_.Value }) >> $env:GITHUB_ENV
 
       - name: Define nome do JAR
-        run: $env:SPLINKER_FILE = "splinker-${env:VERSION}.jar"
+        run:  echo ("SPLINKER_FILE=splinker-${env:VERSION}.jar") >> $env:GITHUB_ENV
 
       - name: exibe nome do jar
         run: echo $env:SPLINKER_FILE
@@ -146,7 +146,7 @@ jobs:
 
       - name: Define versão
         id: version
-        run: echo "SPLINKER_VERSION="v$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')"" >> $GITHUB_ENV
+        run: echo "SPLINKER_VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')" >> $GITHUB_ENV
 
       - name: Criar Release
         id: create_release
@@ -154,8 +154,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.SPLINKER_VERSION }}
-          release_name: Release ${{ env.SPLINKER_VERSION }}
+          tag_name: v${{ env.SPLINKER_VERSION }}
+          release_name: Release v${{ env.SPLINKER_VERSION }}
           body: "Release created automatically by GitHub Actions."
           draft: false
           prerelease: false
@@ -167,8 +167,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/linux/splinker-1.0-1.x86_64.rpm
-          asset_name: splinker-1.0-1.x86_64.rpm
+          asset_path: ./dist/linux/splinker-${{ env.SPLINKER_VERSION }}-1.x86_64.rpm
+          asset_name: splinker-${{ env.SPLINKER_VERSION }}-1.x86_64.rpm
           asset_content_type: application/x-rpm
       
       - name: Upload Linux .deb Artifacts
@@ -177,8 +177,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/linux/splinker_1.0_amd64.deb
-          asset_name: splinker_1.0_amd64.deb
+          asset_path: ./dist/linux/splinker_${{ env.SPLINKER_VERSION }}_amd64.deb
+          asset_name: splinker_${{ env.SPLINKER_VERSION }}_amd64.deb
           asset_content_type: application/x-deb
 
       - name: Upload Windows Artifacts
@@ -187,7 +187,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/windows/splinker-1.0.msi
-          asset_name: splinker-1.0.msi
+          asset_path: ./dist/windows/splinker-${{ env.SPLINKER_VERSION }}.msi
+          asset_name: splinker-${{ env.SPLINKER_VERSION }}.msi
           asset_content_type: application/x-msdownload
 
