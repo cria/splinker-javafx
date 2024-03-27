@@ -41,10 +41,7 @@ jobs:
           architecture: x64
 
       - name: Define versão
-        run:  |
-        $env:VERSION = Select-String -Path "pom.xml" -Pattern '(?<=<version>)[^<]+' | Select-Object -First 1 -ExpandProperty Matches | ForEach-Object { $_.Value };
-        echo "VERSION=${env:VERSION}" | Out-File -FilePath $env:GITHUB_ENV -Append;
-        
+        run:  $env:VERSION = Select-String -Path "pom.xml" -Pattern '(?<=<version>)[^<]+' | Select-Object -First 1 -ExpandProperty Matches | ForEach-Object { $_.Value };echo "VERSION=${env:VERSION}" | Out-File -FilePath $env:GITHUB_ENV -Append;
 
       - name: Define nome do JAR
         run:  echo "SPLINKER_FILE=splinker-${env:VERSION}.jar" | Out-File -FilePath $env:GITHUB_ENV -Append 
