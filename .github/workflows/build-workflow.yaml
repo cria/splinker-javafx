@@ -39,12 +39,14 @@ jobs:
           java-version: 21
           distribution: 'temurin'
           architecture: x64
+      - name: Define nome do JAR
+        run: echo "SPLINKER_FILE="splinker-$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')".jar" >> $GITHUB_ENV
 
       - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar 
         run: mvn package -DskipTests
         
       - name: Criar image jpackage
-        run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-final.jar
+        run: jpackage --type app-image --name spLinker --input target/ --main-jar ${{ env.SPLINKER_FILE }}
 
       - name: Criar pasta do yajsync
         run: mkdir spLinker\libs
@@ -80,12 +82,15 @@ jobs:
             java-version: 21
             distribution: 'temurin'
             architecture: x64
+        
+        - name: Define nome do JAR
+          run: echo "SPLINKER_FILE="splinker-$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')".jar" >> $GITHUB_ENV
 
         - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar 
           run: mvn package -DskipTests
     
         - name: Criar image jpackage
-          run: jpackage --type app-image --name spLinker --input target/ --main-jar splinker-final.jar
+          run: jpackage --type app-image --name spLinker --input target/ --main-jar ${{ env.SPLINKER_FILE }}
 
         - name: Criar pasta do yajsync
           run: mkdir ./spLinker/libs
@@ -147,6 +152,7 @@ jobs:
           body: "Release created automatically by GitHub Actions."
           draft: false
           prerelease: false
+          allowUpdates: true
 
       - name: Upload Linux .rpm Artifacts
         uses: actions/upload-release-asset@v1
