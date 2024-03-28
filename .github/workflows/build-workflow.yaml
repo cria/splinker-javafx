@@ -190,7 +190,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/windows/splinker-1.0.msi
-          asset_name: splinker-1.0.msi
+          asset_path: ./dist/windows/spLinker-1.0.msi
+          asset_name: spLinker-1.0.msi
           asset_content_type: application/x-msdownload
 
