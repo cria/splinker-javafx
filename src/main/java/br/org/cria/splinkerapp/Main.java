@@ -10,6 +10,7 @@ import br.org.cria.splinkerapp.config.DatabaseSetup;
 import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.config.SentryConfig;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
+import br.org.cria.splinkerapp.services.implementations.SpLinkerUpdateService;
 import io.sentry.Sentry;
 import javafx.application.Platform;
 
@@ -25,15 +26,28 @@ public class Main extends Application
             Task<Void> initDb = DatabaseSetup.initDb();
             if (initDb != null) 
             {
-                stage.setOnCloseRequest(event ->{
-                    LockFileManager.deleteLockfile();
-                    LogManager.shutdown();
+                stage.setOnCloseRequest(event -> {
+                    try 
+                    {
+                        LockFileManager.deleteLockfile();
+                        LogManager.shutdown();    
+                    } catch (Exception e) {
+                        Sentry.captureException(e);
+                        throw new RuntimeException(e);
+                    }
+                    
                 });
-                initDb.setOnFailed(event -> {
-                    LockFileManager.deleteLockfile();
-                    var exception = initDb.getException();
-                    Sentry.captureException(exception);
-                    ApplicationLog.error(exception.getLocalizedMessage());
+                initDb.setOnFailed(event -> 
+                {
+                    try 
+                    {
+                        LockFileManager.deleteLockfile();
+                        var exception = initDb.getException();
+                        Sentry.captureException(exception);
+                        throw new RuntimeException(exception);
+                    } catch (Exception e) {
+                        Sentry.captureException(e);
+                    }
                 });
 
                 initDb.setOnSucceeded(event -> {
@@ -43,6 +57,11 @@ public class Main extends Application
                         stage.setResizable(false); 
                         try 
                         {
+                            if(SpLinkerUpdateService.hasNewVersion())
+                            {
+                                Router.navigateTo(stage, "splinker-update");
+                            }
+                            
                             var hasConfig = DataSetService.hasConfiguration();
                             var routeName = hasConfig ? "home" :  "first-config-dialog";
                             Router.navigateTo(stage, routeName);
@@ -50,7 +69,6 @@ public class Main extends Application
                         catch (Exception e) 
                         {
                             Sentry.captureException(e);
-                            ApplicationLog.error(e.getLocalizedMessage());
                             throw new RuntimeException(e);
                         }
                     });
@@ -64,7 +82,6 @@ public class Main extends Application
         {
             Sentry.captureException(ex);
             LockFileManager.deleteLockfile();
-            ApplicationLog.error(ex.getLocalizedMessage());
             throw new RuntimeException(ex);
         }
     }
