@@ -161,9 +161,6 @@ jobs:
           prerelease: false
           allowUpdates: true
 
-      - name: Print content
-        run: ls ./dist/linux; ls ./dist/windows;
-
       - name: Upload Linux .rpm Artifacts
         uses: actions/upload-release-asset@v1
         env:
