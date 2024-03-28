@@ -170,8 +170,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/linux/splinker-${{ env.SPLINKER_VERSION }}.x86_64.rpm
-          asset_name: splinker-${{ env.SPLINKER_VERSION }}.x86_64.rpm
+          asset_path: ./dist/linux/rpm/splinker-1.0-1.x86_64.rpm
+          asset_name: splinker-1.0-1.x86_64.rpm
           asset_content_type: application/x-rpm
 
       - name: Upload Linux .deb Artifacts
@@ -180,8 +180,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/linux/splinker_${{ env.SPLINKER_VERSION }}_amd64.deb
-          asset_name: splinker_${{ env.SPLINKER_VERSION }}_amd64.deb
+          asset_path: ./dist/linux/deb/splinker_1.0_amd64.deb
+          asset_name: splinker_1.0_amd64.deb
           asset_content_type: application/x-deb
 
       - name: Upload Windows Artifacts
@@ -190,7 +190,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/windows/splinker-${{ env.SPLINKER_VERSION }}.msi
-          asset_name: splinker-${{ env.SPLINKER_VERSION }}.msi
+          asset_path: ./dist/windows/splinker-1.0.msi
+          asset_name: splinker-1.0.msi
           asset_content_type: application/x-msdownload
 
