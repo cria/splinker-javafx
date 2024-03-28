@@ -5,7 +5,7 @@ import java.util.ResourceBundle;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import br.org.cria.splinkerapp.services.implementations.SpLinkerUpdater;
+import br.org.cria.splinkerapp.services.implementations.SpLinkerUpdateService;
 public class SpLinkerUpdateController extends AbstractController{
 
     @FXML
@@ -21,8 +21,8 @@ public class SpLinkerUpdateController extends AbstractController{
     @FXML
     void onBtnYesClicked()
     {
-        SpLinkerUpdater.verifyOSVersion();
-        SpLinkerUpdater.runSoftwareUpdate();
+        SpLinkerUpdateService.verifyOSVersion();
+        SpLinkerUpdateService.runSoftwareUpdate();
     }
     
     @FXML
