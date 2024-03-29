@@ -57,9 +57,10 @@ public class Main extends Application
                         stage.setResizable(false); 
                         try 
                         {
-                            if(SpLinkerUpdateService.hasNewVersion())
+                            if(new SpLinkerUpdateService().hasNewVersion())
                             {
                                 Router.navigateTo(stage, "splinker-update");
+                                return;
                             }
                             
                             var hasConfig = DataSetService.hasConfiguration();
