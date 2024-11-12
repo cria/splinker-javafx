@@ -43,7 +43,7 @@ public class PrincipalController extends AbstractController {
     DataSet ds;
 
     @FXML
-    void onSyncServerBtnClicked() throws Exception 
+    void onSyncServerBtnClicked()
     {
             navigateTo("file-transfer");
     }
@@ -159,7 +159,7 @@ public class PrincipalController extends AbstractController {
     {
         try {
         
-        var options = sources.map(e -> e.getDataSetAcronym()).toList();
+        var options = sources.map(DataSet::getDataSetAcronym).toList();
         cmbCollection.setItems(FXCollections.observableArrayList(options));
         cmbCollection.setValue(ds.getDataSetAcronym());    
         } catch (Exception e) {
@@ -193,7 +193,7 @@ public class PrincipalController extends AbstractController {
             token = TokenRepository.getCurrentToken();
             ds = DataSetService.getDataSet(token);
             var isDatasetNull = ds == null;
-            var datasetWasUpdatedAtLeastOnce = !isDatasetNull && ds.getUpdatedAt() != null;;
+            var datasetWasUpdatedAtLeastOnce = !isDatasetNull && ds.getUpdatedAt() != null;
             if(datasetWasUpdatedAtLeastOnce)
             {
                 updateDisplayedData();

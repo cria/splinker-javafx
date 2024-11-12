@@ -31,7 +31,7 @@ public class DeleteDataSourceController extends AbstractController {
                 LockFileManager.deleteLockfile();
                 System.exit(0);
             }
-            bus.post(token);;
+            bus.post(token);
             getStage().close();
         } catch (Exception e) {
             handleErrors(e);

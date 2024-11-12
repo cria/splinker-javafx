@@ -27,7 +27,7 @@ public class FileSelectionController extends AbstractController {
     DataSet ds;
  
     @FXML
-    void onButtonSelectFileClicked() throws Exception
+    void onButtonSelectFileClicked()
     {
         file = fileChooser.showOpenDialog(getStage());
         if (file != null) 
@@ -43,7 +43,7 @@ public class FileSelectionController extends AbstractController {
         try 
         {
             var datasourcePath = filePath.getText(); 
-            var hasPath = datasourcePath != null && datasourcePath != "";
+            var hasPath = datasourcePath != null && datasourcePath.trim().isEmpty();
             if(!hasPath)
             {
                 showErrorModal("Campo obrigatório");

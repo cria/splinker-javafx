@@ -94,8 +94,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
         var hasDBName = StringUtil.isNotBlank(dbNameField.getText());
         var hasPort = StringUtil.isNotBlank(portField.getText());
 
-        var dataIsValid = hasUserName && hasHostName && hasDBName && hasPort;
-        return dataIsValid;
+        return hasUserName && hasHostName && hasDBName && hasPort;
     }
     @Override
     protected void setScreensize() {

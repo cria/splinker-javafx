@@ -29,13 +29,13 @@ public class TokenLoginController extends AbstractController {
         try 
         {
             var tokenToBeDeleted = tokenField.getText();
-            var tokenIsNotEmpty = (tokenToBeDeleted != null) && (tokenToBeDeleted != "");
+            var tokenIsNotEmpty = (tokenToBeDeleted != null) && (tokenToBeDeleted.trim().isEmpty());
             var tokenExists = DataSetService.getDataSet(tokenToBeDeleted) != null;
             if(tokenIsNotEmpty && tokenExists)
             {
                 DataSetService.deleteDataSet(tokenToBeDeleted);
                 var datasets = DataSetService.getAllDataSets();
-                token = datasets.get(0).getToken();
+                token = datasets.getFirst().getToken();
                 TokenRepository.setCurrentToken(token);
                 navigateTo(getStage(), "home");
             }
@@ -123,7 +123,7 @@ public class TokenLoginController extends AbstractController {
         try 
         {
             token = TokenRepository.getCurrentToken();
-            var hasToken = token != "";    
+            var hasToken = token.trim().isEmpty();
             if(hasToken)
             {
                 btnDeleteToken.setVisible(true);
