@@ -7,7 +7,7 @@ import com.google.common.eventbus.EventBus;
 
 public class EventBusManager {
 
-    private static Map<String, EventBus> events = new HashMap<String, EventBus>();
+    private static final Map<String, EventBus> events = new HashMap<>();
     
 
     public static EventBus getEvent(String eventName) {

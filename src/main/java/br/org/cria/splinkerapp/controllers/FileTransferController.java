@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
@@ -113,17 +112,15 @@ public class FileTransferController extends AbstractController {
                 });        
             });
 
-            generateDWCATask.setOnFailed((handler)->{
-                Platform.runLater(()->{
-                    var ex = generateDWCATask.getException();
-                    var errId = Sentry.captureException(ex);
-                    var task = "geração do arquivo";
-                    var msg = errMsg.formatted(task, errId);
-                    handleErrors(ex);
-                    showErrorModal(msg);
-                    navigateTo("home");
-                });
-            });
+            generateDWCATask.setOnFailed((handler)-> Platform.runLater(()->{
+                var ex = generateDWCATask.getException();
+                var errId = Sentry.captureException(ex);
+                var task = "geração do arquivo";
+                var msg = errMsg.formatted(task, errId);
+                handleErrors(ex);
+                showErrorModal(msg);
+                navigateTo("home");
+            }));
 
             bindProgress(generateDWCATask.progressProperty());
         } catch (Exception e) {
@@ -138,18 +135,16 @@ public class FileTransferController extends AbstractController {
         progressBar.setVisible(false);
         progressIndicator.setVisible(false);
                         
-        checkRecordCountTask.setOnFailed((handler)->{
-            Platform.runLater(()->{
-                var ex = checkRecordCountTask.getException();
-                var errId = Sentry.captureException(ex);
-                var task = "verificação de registros";
-                var msg = errMsg.formatted(task, errId);
-                handleErrors(ex);
-                               
-                showErrorModal(msg);
-                navigateTo("home");
-            });
-        });
+        checkRecordCountTask.setOnFailed((handler)-> Platform.runLater(()->{
+            var ex = checkRecordCountTask.getException();
+            var errId = Sentry.captureException(ex);
+            var task = "verificação de registros";
+            var msg = errMsg.formatted(task, errId);
+            handleErrors(ex);
+
+            showErrorModal(msg);
+            navigateTo("home");
+        }));
 
         checkRecordCountTask.setOnSucceeded((handler) -> {
             System.gc();
@@ -172,7 +167,7 @@ public class FileTransferController extends AbstractController {
                         btnCancelTransfer.setVisible(false);
                         lblMessage.setText(newMsg);
                         
-                        btnNo.setOnMouseClicked((__) -> {navigateTo("home");});
+                        btnNo.setOnMouseClicked((__) -> navigateTo("home"));
                         btnYes.setOnMouseClicked((__)->{
                             progressBar.setVisible(true);
                             btnCancelTransfer.setVisible(true);
@@ -215,9 +210,7 @@ public class FileTransferController extends AbstractController {
                         executor.close();
                         btnCancelTransfer.setText("OK");
                         btnCancelTransfer.setOnMouseClicked((__)->
-                        {
-                            navigateTo("home"); 
-                        });
+                                navigateTo("home"));
                         
                     } catch (Exception e) {
                      handleErrors(e);

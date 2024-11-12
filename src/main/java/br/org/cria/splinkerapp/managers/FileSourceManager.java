@@ -37,7 +37,7 @@ public class FileSourceManager {
         var isOds = filePath.endsWith(".ods");
         var isDbf = filePath.endsWith(".dbf");
         var isNumbers = filePath.endsWith(".numbers");
-        var unsupportedFileFormat = !(isAccessDb || isXLS|| isXLSX || isCsv || isOds || isDbf || isCsv || isNumbers);
+        var unsupportedFileFormat = !(isAccessDb || isXLS|| isXLSX || isOds || isDbf || isCsv || isNumbers);
 
         if(unsupportedFileFormat)
         {

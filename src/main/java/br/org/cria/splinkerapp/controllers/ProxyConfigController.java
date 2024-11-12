@@ -56,8 +56,7 @@ public class ProxyConfigController extends AbstractController
         var hasPassword = StringUtil.isNotBlank(proxyPassword.getText());
         var hasUsername = StringUtil.isNotBlank(proxyUsername.getText());
         var hasPort = StringUtil.isNotBlank(proxyPort.getText());
-        var isValid = hasAddress && hasPort && hasUsername && hasPassword;
-        return isValid;
+        return hasAddress && hasPort && hasUsername && hasPassword;
         
     }
 

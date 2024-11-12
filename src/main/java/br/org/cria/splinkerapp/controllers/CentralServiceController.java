@@ -21,7 +21,7 @@ public class CentralServiceController extends AbstractController {
        try 
        {
         var centralServiceURL = urlField.getText();
-        var isUrlEmpty = (centralServiceURL == null) || (centralServiceURL == "");
+        var isUrlEmpty = (centralServiceURL == null) || centralServiceURL.trim().isEmpty();
         if(isUrlEmpty)
         {
             showErrorModal("URL do serviço central não pode ser vazia");
@@ -47,10 +47,8 @@ public class CentralServiceController extends AbstractController {
         {
             super.initialize(location, resources);
             var centralServiceConfig = CentralServiceRepository.getCentralServiceData();
-            if(centralServiceConfig != null)
-            {
-                urlField.setText(centralServiceConfig.getCentralServiceUrl());
-            }    
+            urlField.setText(centralServiceConfig.getCentralServiceUrl());
+
         } 
         catch (Exception e) 
         {
