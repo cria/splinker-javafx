@@ -105,24 +105,21 @@ public class XLSXFileParser extends FileParser {
               var statement = conn.prepareStatement(command);
               //sublist exclui o elemento na posição toIndex;
               var rows = lines.subList(1, lines.size());
-              rows.forEach((row)->
+              rows.stream().filter(row -> row != null && row.getCellCount() != 0).forEach((row)->
               {
                try {
-                if (row != null) 
-                { 
-                    var cellIterator = row.iterator();
-                    var index = 1;
-                    while (cellIterator.hasNext()) 
-                    {
-                        var cell = cellIterator.next();
-                        var isNullCell = cell == null;
-                        var value = isNullCell? "": getCellValue(cell.getRawValue());
-                                                
-                        statement.setString(index, value);
-                        index++;
-                    }
-                    statement.addBatch();
+                var cellIterator = row.iterator();
+                var index = 1;
+                while (cellIterator.hasNext())
+                {
+                    var cell = cellIterator.next();
+                    var isNullCell = cell == null;
+                    var value = isNullCell? "": getCellValue(cell.getRawValue());
+
+                    statement.setString(index, value);
+                    index++;
                 }
+                statement.addBatch();
                 currentRow++;
                 if (currentRow % 10_000 == 0) 
                 {
