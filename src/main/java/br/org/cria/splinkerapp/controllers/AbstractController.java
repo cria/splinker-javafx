@@ -85,7 +85,7 @@ public abstract class AbstractController implements Initializable {
     protected void handleErrors(Throwable ex) {
         String msg;
         if (isConnectionError(ex)) {
-            msg = "Erro de conexão: Verifique sua internet ou tente novamente mais tarde.";
+            msg = "Ausência de conexão com a Internet. Este software precisa de uma conexão para funcionar. Verifique sua conexão e tente novamente.";
         } else {
             var sentryId = Sentry.captureException(ex);
             var sentryMsg = (sentryId != null) ? " - Error ID %s".formatted(sentryId.toString()) : "";

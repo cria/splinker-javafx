@@ -51,19 +51,19 @@ public class DataSetService extends BaseRepository {
         
         var cmd1 = "SELECT COUNT(TOKEN) as TOKEN_COUNT FROM DataSetConfiguration;";
         var cmd2 = """
-            SELECT COUNT(*) AS NOT_CONFIGURED_TOKENS
+            SELECT COUNT(*) AS HAS_CONFIGURED_TOKENS
             FROM DataSetConfiguration
             WHERE TOKEN IS NOT NULL 
-            AND datasource_filepath IS NULL 
-            AND db_host IS NULL;
+            AND (datasource_filepath IS NOT NULL 
+            OR db_host IS NOT NULL);
             """;
         
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var result = runQuery(cmd1, conn);
         var hasTokens = result.getInt("TOKEN_COUNT") > 0;        
         result = runQuery(cmd2, conn);
-        var hasUnconfiguredTokens = result.getInt("NOT_CONFIGURED_TOKENS") > 0;
-        var hasConfig = hasTokens && !hasUnconfiguredTokens;
+        var hasConfiguredTokens = result.getInt("HAS_CONFIGURED_TOKENS") > 0;
+        var hasConfig = hasTokens && hasConfiguredTokens;
         
         result.close();
         conn.close();
