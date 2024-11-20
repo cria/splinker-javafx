@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import br.org.cria.splinkerapp.ApplicationLog;
+import br.org.cria.splinkerapp.utils.ModalAlertUtil;
 import io.sentry.Sentry;
 
 public final class LockFileManager {
@@ -16,6 +17,7 @@ public final class LockFileManager {
     try {
         var fileAlreadyExists = lockFile.exists();
         if (fileAlreadyExists) {
+            ModalAlertUtil.show("Não é possível rodar mais de uma instãncia do splinker ao mesmo tempo. Feche a outra instância.");
             System.exit(0);
         }
         lockFile.createNewFile();
