@@ -62,12 +62,12 @@ public class TokenLoginController extends AbstractController {
                 return;
             }
             var tokenExists = DataSetService.getDataSet(newToken) != null;
-            if(tokenExists)
+            var hasConfig = DataSetService.hasConfiguration();
+            if(tokenExists && hasConfig)
             {
                 showErrorModal("Token já existente!");
                 return;
             }
-            var hasConfig = DataSetService.hasConfiguration();
             var apiConfig = DataSetService.getConfigurationDataFromAPI(newToken);
             if(apiConfig != null)
             {
@@ -76,8 +76,15 @@ public class TokenLoginController extends AbstractController {
                 var datasetAcronym = apiConfig.get("dataset_acronym").toString();
                 var id = (int)Double.parseDouble(apiConfig.get("dataset_id").toString());
                 TokenRepository.setCurrentToken(newToken);
-                var dsType = DataSourceType.valueOf(apiConfig.get("data_source_type").toString());
-                DataSetService.saveDataSet(newToken, dsType, datasetAcronym, collName, id);
+                if (apiConfig.get("data_source_type") == null) {
+                    showErrorModal("Esta coleção ainda não foi configurada no servidor. Favor entrar em contato com o CRIA.");
+                    return;
+                }
+                String datasouceType = apiConfig.get("data_source_type").toString();
+                var dsType = DataSourceType.valueOf(datasouceType);
+                if (!tokenExists) {
+                    DataSetService.saveDataSet(newToken, dsType, datasetAcronym, collName, id);
+                }
                 ConfigFacade.HandleBackendData(newToken, apiConfig);
                 bus.post(newToken);
                 switch(dsType)
