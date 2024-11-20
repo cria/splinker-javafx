@@ -9,9 +9,11 @@ import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
+import br.org.cria.splinkerapp.utils.ModalAlertUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
 
 public class TokenLoginController extends AbstractController {
 
@@ -41,7 +43,7 @@ public class TokenLoginController extends AbstractController {
             }
             else
             {
-                showErrorModal("Token inválido ou inexistente!");
+                ModalAlertUtil.show("Token inválido ou inexistente!");
             }
             
         } catch (Exception e) {
@@ -134,7 +136,7 @@ public class TokenLoginController extends AbstractController {
             if(hasToken)
             {
                 btnDeleteToken.setVisible(true);
-                
+
                 btnAddToken.setLayoutX(56);
                 return;
             }

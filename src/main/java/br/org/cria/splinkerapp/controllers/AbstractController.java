@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.Router;
+import br.org.cria.splinkerapp.utils.ModalAlertUtil;
 import com.google.common.eventbus.EventBus;
 import io.sentry.Sentry;
 import javafx.fxml.FXML;
@@ -74,12 +75,7 @@ public abstract class AbstractController implements Initializable {
     }
 
     protected void showErrorModal(String errorMessage) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.initModality(Modality.APPLICATION_MODAL);
-        alert.setTitle("Erro");
-        alert.setHeaderText(null);
-        alert.setContentText(errorMessage);
-        alert.showAndWait();
+        ModalAlertUtil.show(errorMessage);
     }
 
     protected void handleErrors(Throwable ex) {
