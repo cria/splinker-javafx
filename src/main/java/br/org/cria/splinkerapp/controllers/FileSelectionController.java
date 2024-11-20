@@ -43,7 +43,7 @@ public class FileSelectionController extends AbstractController {
         try 
         {
             var datasourcePath = filePath.getText(); 
-            var hasPath = datasourcePath != null && datasourcePath.trim().isEmpty();
+            var hasPath = datasourcePath != null && !datasourcePath.trim().isEmpty();
             if(!hasPath)
             {
                 showErrorModal("Campo obrigatório");
