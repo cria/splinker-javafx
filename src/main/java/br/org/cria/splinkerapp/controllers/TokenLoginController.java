@@ -57,7 +57,7 @@ public class TokenLoginController extends AbstractController {
         try 
         {
             
-            var newToken = tokenField.getText();
+            var newToken = tokenField.getText().trim();
             if(newToken == null || newToken.trim().isEmpty())
             {
                 showErrorModal("Token não pode ser vazio!");
