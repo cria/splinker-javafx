@@ -53,7 +53,6 @@ public class DatabaseSetup {
                     e.printStackTrace();
                     LockFileManager.deleteLockfile();
                     throw new RuntimeException(e);
-                    //System.exit(1);
                 }
                 return null;
             }
