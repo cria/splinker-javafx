@@ -2,6 +2,7 @@ package br.org.cria.splinkerapp;
 
 import javafx.application.Application;
 import javafx.concurrent.Task;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +14,8 @@ import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import br.org.cria.splinkerapp.services.implementations.SpLinkerUpdateService;
 import io.sentry.Sentry;
 import javafx.application.Platform;
+
+import java.util.Objects;
 
 public class Main extends Application 
 {
@@ -54,7 +57,8 @@ public class Main extends Application
                     Platform.runLater(() ->
                     {
                         stage.setTitle("spLinker");
-                        stage.setResizable(false); 
+                        stage.setResizable(false);
+                        stage.getIcons().add(new Image("images/cria-logo.png"));
                         try 
                         {
                             if(SpLinkerUpdateService.hasNewVersion())
