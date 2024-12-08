@@ -9,6 +9,7 @@ import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import br.org.cria.splinkerapp.utils.ModalAlertUtil;
+import com.google.common.eventbus.EventBus;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -28,11 +29,13 @@ public class TokenLoginController extends AbstractController {
     @FXML
     private VBox tokenBox;
 
+    private EventBus bus;
+
     @FXML
     void onButtonDeleteTokenClicked() {
         try {
-            var tokenToBeDeleted = tokenField.getText();
-            var tokenIsNotEmpty = (tokenToBeDeleted != null) && (tokenToBeDeleted.trim().isEmpty());
+            var tokenToBeDeleted = tokenField.getText().trim();
+            var tokenIsNotEmpty = (tokenToBeDeleted != null) && (!tokenToBeDeleted.isEmpty());
             var tokenExists = DataSetService.getDataSet(tokenToBeDeleted) != null;
             if (tokenIsNotEmpty && tokenExists) {
                 DataSetService.deleteDataSet(tokenToBeDeleted);
@@ -111,6 +114,9 @@ public class TokenLoginController extends AbstractController {
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
 
+        // Inicialize a variável bus
+        bus = new EventBus();
+
         Tooltip tooltip = new Tooltip("Token é um código único fornecido pelo CRIA para sua coleção poder enviar dados. Entre em contato com o CRIA se não tiver ainda recebido seu token.");
 
         tokenField.setOnMouseEntered(event -> {
@@ -118,6 +124,14 @@ public class TokenLoginController extends AbstractController {
         });
 
         tokenField.setOnMouseExited(event -> {
+            tooltip.hide();
+        });
+
+        tokenBox.setOnMouseEntered(event -> {
+            tooltip.show(tokenBox, event.getScreenX(), event.getScreenY() + 15);
+        });
+
+        tokenBox.setOnMouseExited(event -> {
             tooltip.hide();
         });
     }
