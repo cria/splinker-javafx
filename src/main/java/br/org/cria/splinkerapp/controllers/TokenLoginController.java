@@ -2,18 +2,19 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import br.org.cria.splinkerapp.enums.EventTypes;
+
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.facade.ConfigFacade;
-import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import br.org.cria.splinkerapp.utils.ModalAlertUtil;
+import com.google.common.eventbus.EventBus;
 import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.VBox;
 
 public class TokenLoginController extends AbstractController {
 
@@ -26,57 +27,51 @@ public class TokenLoginController extends AbstractController {
     TextField tokenField;
 
     @FXML
-    void onButtonDeleteTokenClicked()
-    {
-        try 
-        {
-            var tokenToBeDeleted = tokenField.getText();
-            var tokenIsNotEmpty = (tokenToBeDeleted != null) && (tokenToBeDeleted.trim().isEmpty());
+    private VBox tokenBox;
+
+    private EventBus bus;
+
+    @FXML
+    void onButtonDeleteTokenClicked() {
+        try {
+            var tokenToBeDeleted = tokenField.getText().trim();
+            var tokenIsNotEmpty = (tokenToBeDeleted != null) && (!tokenToBeDeleted.isEmpty());
             var tokenExists = DataSetService.getDataSet(tokenToBeDeleted) != null;
-            if(tokenIsNotEmpty && tokenExists)
-            {
+            if (tokenIsNotEmpty && tokenExists) {
                 DataSetService.deleteDataSet(tokenToBeDeleted);
                 var datasets = DataSetService.getAllDataSets();
                 token = datasets.getFirst().getToken();
                 TokenRepository.setCurrentToken(token);
                 navigateTo(getStage(), "home");
-            }
-            else
-            {
+            } else {
                 ModalAlertUtil.show("Token inválido ou inexistente!");
             }
-            
         } catch (Exception e) {
             handleErrors(e);
         }
     }
-    
+
     @FXML
-    void onButtonAddTokenClicked() 
-    {
-        try 
-        {
-            
+    void onButtonAddTokenClicked() {
+        try {
+
             var newToken = tokenField.getText().trim();
-            if(newToken == null || newToken.trim().isEmpty())
-            {
+            if (newToken == null || newToken.trim().isEmpty()) {
                 showErrorModal("Token não pode ser vazio!");
                 return;
             }
             var tokenExists = DataSetService.getDataSet(newToken) != null;
             var hasConfig = DataSetService.hasConfiguration();
-            if(tokenExists && hasConfig)
-            {
+            if (tokenExists && hasConfig) {
                 showErrorModal("Token já existente!");
                 return;
             }
             var apiConfig = DataSetService.getConfigurationDataFromAPI(newToken);
-            if(apiConfig != null)
-            {
+            if (apiConfig != null) {
                 var routeName = "collection-database";
                 var collName = apiConfig.get("dataset_name").toString();
                 var datasetAcronym = apiConfig.get("dataset_acronym").toString();
-                var id = (int)Double.parseDouble(apiConfig.get("dataset_id").toString());
+                var id = (int) Double.parseDouble(apiConfig.get("dataset_id").toString());
                 TokenRepository.setCurrentToken(newToken);
                 if (apiConfig.get("data_source_type") == null) {
                     showErrorModal("Esta coleção ainda não foi configurada no servidor. Favor entrar em contato com o CRIA.");
@@ -89,8 +84,7 @@ public class TokenLoginController extends AbstractController {
                 }
                 ConfigFacade.HandleBackendData(newToken, apiConfig);
                 bus.post(newToken);
-                switch(dsType)
-                {
+                switch (dsType) {
                     case Access:
                         routeName = "access-db-modal";
                         break;
@@ -104,49 +98,43 @@ public class TokenLoginController extends AbstractController {
                     default:
                         break;
                 }
-            
-                
-                if(!hasConfig)
-                {
-                    navigateTo(getStage(), routeName); 
-                }
-                else
-                {
+
+                if (!hasConfig) {
+                    navigateTo(getStage(), routeName);
+                } else {
                     navigateTo(getStage(), "home");
                 }
             }
-             
-        } 
-        catch (Exception e) 
-        {
+        } catch (Exception e) {
             handleErrors(e);
         }
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        
         super.initialize(location, resources);
-        bus = EventBusManager.getEvent(EventTypes.ADD_DATASET.name());
-        btnDeleteToken.setVisible(false);
-        try 
-        {
-            token = TokenRepository.getCurrentToken();
-            var hasToken = token.trim().isEmpty();
-            if(hasToken)
-            {
-                btnDeleteToken.setVisible(true);
 
-                btnAddToken.setLayoutX(56);
-                return;
-            }
-            //centro da tela
-            btnAddToken.setLayoutX(126);
-            
-        } catch (Exception e) {
-            handleErrors(e);
-        }
-     }
+        // Inicialize a variável bus
+        bus = new EventBus();
+
+        Tooltip tooltip = new Tooltip("Token é um código único fornecido pelo CRIA para sua coleção poder enviar dados. Entre em contato com o CRIA se não tiver ainda recebido seu token.");
+
+        tokenField.setOnMouseEntered(event -> {
+            tooltip.show(tokenField, event.getScreenX(), event.getScreenY() + 15);
+        });
+
+        tokenField.setOnMouseExited(event -> {
+            tooltip.hide();
+        });
+
+        tokenBox.setOnMouseEntered(event -> {
+            tooltip.show(tokenBox, event.getScreenX(), event.getScreenY() + 15);
+        });
+
+        tokenBox.setOnMouseExited(event -> {
+            tooltip.hide();
+        });
+    }
 
     @Override
     protected void setScreensize() {
