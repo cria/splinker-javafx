@@ -6,6 +6,7 @@ import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.managers.LocalDbManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
+import com.github.perlundq.yajsync.ui.YajsyncClient;
 import io.sentry.Sentry;
 
 import java.io.*;
@@ -16,6 +17,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -167,9 +169,10 @@ public class DarwinCoreArchiveService
         var rSyncConfig = TransferConfigRepository.getRSyncConfig();
         var port = rSyncConfig.getrSyncPort();
         var destination = "%s::%s".formatted(rSyncConfig.getrSyncDestination(), ds.getToken());
-        var command = new String[] {"java", "-jar", "libs/yajsync-app-0.9.0-SNAPSHOT-full.jar", 
-                                    "client", "--port=%s".formatted(port), "-r", this.zipFile, destination };
-        sendFileUsingCommandLine(command);
+
+        var args = new String[] {"client", "--port=%s".formatted(port), "-r", this.zipFile, destination };
+        String[] arrayArgs = Arrays.copyOfRange(args, 1, args.length);
+        new YajsyncClient().start(arrayArgs);
         return this;
     }
    
