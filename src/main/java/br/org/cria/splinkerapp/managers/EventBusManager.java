@@ -8,22 +8,22 @@ import com.google.common.eventbus.EventBus;
 public class EventBusManager {
 
     private static final Map<String, EventBus> events = new HashMap<>();
-    
+
 
     public static EventBus getEvent(String eventName) {
         var event = events.get(eventName);
-        if (event == null) 
-        {
+        if (event == null) {
             addEvent(eventName);
             event = getEvent(eventName);
         }
         return event;
     }
-    public static void addEvent(String eventName)
-    {
+
+    public static void addEvent(String eventName) {
         events.put(eventName, new EventBus(eventName));
     }
 
-    private EventBusManager() {} // Prevent instantiation
+    private EventBusManager() {
+    } // Prevent instantiation
 }
 

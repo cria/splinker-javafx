@@ -11,10 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.BaseRepository;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
+
 public class DataSetService extends BaseRepository {
 
 
@@ -48,23 +50,23 @@ public class DataSetService extends BaseRepository {
     }
 
     public static boolean hasConfiguration() throws Exception {
-        
+
         var cmd1 = "SELECT COUNT(TOKEN) as TOKEN_COUNT FROM DataSetConfiguration;";
         var cmd2 = """
-            SELECT COUNT(*) AS HAS_CONFIGURED_TOKENS
-            FROM DataSetConfiguration
-            WHERE TOKEN IS NOT NULL 
-            AND (datasource_filepath IS NOT NULL 
-            OR db_host IS NOT NULL);
-            """;
-        
+                SELECT COUNT(*) AS HAS_CONFIGURED_TOKENS
+                FROM DataSetConfiguration
+                WHERE TOKEN IS NOT NULL 
+                AND (datasource_filepath IS NOT NULL 
+                OR db_host IS NOT NULL);
+                """;
+
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var result = runQuery(cmd1, conn);
-        var hasTokens = result.getInt("TOKEN_COUNT") > 0;        
+        var hasTokens = result.getInt("TOKEN_COUNT") > 0;
         result = runQuery(cmd2, conn);
         var hasConfiguredTokens = result.getInt("HAS_CONFIGURED_TOKENS") > 0;
         var hasConfig = hasTokens && hasConfiguredTokens;
-        
+
         result.close();
         conn.close();
         return hasConfig;
@@ -96,17 +98,15 @@ public class DataSetService extends BaseRepository {
         conn.close();
         return ds;
     }
-   
+
     private static DataSet buildFromResultSet(ResultSet result) throws Exception {
 
-        
+
         var dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
-
         var token = result.getString("token");
-        if(token == null)
-        {
+        if (token == null) {
             return null;
         }
         var id = result.getInt("id");
@@ -122,10 +122,10 @@ public class DataSetService extends BaseRepository {
         var type = result.getString("datasource_type") == null ? null
                 : DataSourceType.valueOf(result.getString("datasource_type"));
         var strUpdatedAt = result.getString("updated_at");
-        var updatedAt = strUpdatedAt == null? null: LocalDateTime.parse(strUpdatedAt, dateFormatter);
+        var updatedAt = strUpdatedAt == null ? null : LocalDateTime.parse(strUpdatedAt, dateFormatter);
         var ds = DataSet.factory(token, type, filePath, host, dbName, user, pwd, port,
                 acronym, name, lastRowCount, id, updatedAt);
-                
+
         return ds;
     }
 
@@ -158,7 +158,7 @@ public class DataSetService extends BaseRepository {
 
     /**
      * Salva os dados da coleção.
-     * 
+     *
      * @param token   - token da coleção
      * @param type    - Tipo de fonte de dados
      * @param acronym - acrônimo da coleção
@@ -205,7 +205,7 @@ public class DataSetService extends BaseRepository {
     }
 
     public static void saveSQLDataSource(String token, String host, String port,
-            String dbName, String userName, String password) throws Exception {
+                                         String dbName, String userName, String password) throws Exception {
         var cmd = """
                     UPDATE DataSetConfiguration
                     SET db_name = ?,

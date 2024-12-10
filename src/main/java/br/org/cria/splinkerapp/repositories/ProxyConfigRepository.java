@@ -14,31 +14,27 @@ import br.org.cria.splinkerapp.models.ProxyConfiguration;
 import io.sentry.Sentry;
 
 
+public class ProxyConfigRepository extends BaseRepository {
 
-public class ProxyConfigRepository extends BaseRepository{
-
-    public static ProxyConfiguration getConfiguration() throws Exception
-    {
-        ProxyConfiguration proxyConfig = null;    
+    public static ProxyConfiguration getConfiguration() throws Exception {
+        ProxyConfiguration proxyConfig = null;
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         String sql = "SELECT * FROM ProxyConfiguration LIMIT 1;";
-        ResultSet rs = runQuery(sql,conn);
-        while(rs.next())
-        {
+        ResultSet rs = runQuery(sql, conn);
+        while (rs.next()) {
             var address = rs.getString("proxy_address");
             var password = rs.getString("proxy_password");
             var port = rs.getString("proxy_port");
             var username = rs.getString("proxy_username");
-        
-            proxyConfig = new ProxyConfiguration(address, password, port, username);            
+
+            proxyConfig = new ProxyConfiguration(address, password, port, username);
         }
-        conn.close(); 
+        conn.close();
         return proxyConfig;
     }
 
-    
-    public static void saveProxyConfig(ProxyConfiguration proxyConfig) throws Exception
-    {
+
+    public static void saveProxyConfig(ProxyConfiguration proxyConfig) throws Exception {
         cleanTable("ProxyConfiguration");
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var sql = """
@@ -55,31 +51,26 @@ public class ProxyConfigRepository extends BaseRepository{
     }
 
     @SuppressWarnings("finally")
-    public static boolean isBehindProxyServer() 
-    {
+    public static boolean isBehindProxyServer() {
         boolean hasProxy = false;
         try {
-            System.setProperty("java.net.useSystemProxies","true");
+            System.setProperty("java.net.useSystemProxies", "true");
             List<Proxy> proxies = ProxySelector.getDefault().select(
-                        new URI("https://www.cria.org.br/"));
-    
+                    new URI("https://www.cria.org.br/"));
+
             for (Iterator<Proxy> iter = proxies.iterator(); iter.hasNext(); ) {
-    
+
                 var proxy = iter.next();
-                var addr = (InetSocketAddress)proxy.address();
+                var addr = (InetSocketAddress) proxy.address();
                 hasProxy = addr != null;
             }
         } catch (Exception e) {
             Sentry.captureException(e);
             e.printStackTrace();
-        }
-        finally
-        {
+        } finally {
             return hasProxy;
         }
     }
-    
-    
-    
-  
+
+
 }

@@ -7,13 +7,13 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.DriverManager;
+
 import br.org.cria.splinkerapp.managers.LocalDbManager;
 import io.sentry.Sentry;
 import javafx.concurrent.Task;
 
 public class DatabaseSetup {
-    public static void deleteLocalDatabase() throws IOException 
-    {
+    public static void deleteLocalDatabase() throws IOException {
         var path = Path.of(LocalDbManager.getDbFilePath());
         Files.delete(path);
     }

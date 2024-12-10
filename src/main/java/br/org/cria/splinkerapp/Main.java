@@ -17,33 +17,27 @@ import javafx.application.Platform;
 
 import java.util.Objects;
 
-public class Main extends Application 
-{
+public class Main extends Application {
     @Override
-    public void start(Stage stage) throws Exception
-    {
-        try 
-        {
+    public void start(Stage stage) throws Exception {
+        try {
             SentryConfig.setUp();
             LockFileManager.verifyLockFile();
             Task<Void> initDb = DatabaseSetup.initDb();
-            if (initDb != null) 
-            {
+            if (initDb != null) {
                 stage.setOnCloseRequest(event -> {
-                    try 
-                    {
+                    try {
                         LockFileManager.deleteLockfile();
-                        LogManager.shutdown();    
+                        LogManager.shutdown();
                     } catch (Exception e) {
                         Sentry.captureException(e);
                         throw new RuntimeException(e);
                     }
-                    
+
                 });
-                initDb.setOnFailed(event -> 
+                initDb.setOnFailed(event ->
                 {
-                    try 
-                    {
+                    try {
                         LockFileManager.deleteLockfile();
                         var exception = initDb.getException();
                         Sentry.captureException(exception);
@@ -59,39 +53,32 @@ public class Main extends Application
                         stage.setTitle("spLinker");
                         stage.setResizable(false);
                         stage.getIcons().add(new Image("images/cria-logo.png"));
-                        try 
-                        {
-                            if(SpLinkerUpdateService.hasNewVersion())
-                            {
+                        try {
+                            if (SpLinkerUpdateService.hasNewVersion()) {
                                 Router.navigateTo(stage, "splinker-update");
                             }
-                            
+
                             var hasConfig = DataSetService.hasConfiguration();
-                            var routeName = hasConfig ? "home" :  "first-config-dialog";
+                            var routeName = hasConfig ? "home" : "first-config-dialog";
                             Router.navigateTo(stage, routeName);
-                        } 
-                        catch (Exception e) 
-                        {
+                        } catch (Exception e) {
                             Sentry.captureException(e);
                             throw new RuntimeException(e);
                         }
                     });
-                        
+
                 });
                 initDb.run();
                 initDb.get();
             }
-        } 
-        catch (Exception ex) 
-        {
+        } catch (Exception ex) {
             Sentry.captureException(ex);
             LockFileManager.deleteLockfile();
             throw new RuntimeException(ex);
         }
     }
 
-    public static void main(String[] args) 
-    {
+    public static void main(String[] args) {
         launch(args);
     }
 }

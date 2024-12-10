@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
+
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import br.org.cria.splinkerapp.config.DatabaseSetup;
@@ -24,7 +25,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
-    
+
 
 public class PrincipalController extends AbstractController {
 
@@ -39,20 +40,17 @@ public class PrincipalController extends AbstractController {
     @FXML
     Label lblRecordsSent;
     EventBus addDatasetBus;
-    
+
     DataSet ds;
 
     @FXML
-    void onSyncServerBtnClicked()
-    {
-            navigateTo("file-transfer");
+    void onSyncServerBtnClicked() {
+        navigateTo("file-transfer");
     }
-  
+
     @FXML
-    void onDeleteLocalConfigMenuItemClick() 
-    {
-        try 
-        {
+    void onDeleteLocalConfigMenuItemClick() {
+        try {
             DatabaseSetup.deleteLocalDatabase();
             System.exit(0);
         } catch (Exception e) {
@@ -60,53 +58,47 @@ public class PrincipalController extends AbstractController {
         }
     }
 
-    void syncMetaData() 
-    {
-        try 
-        {
+    void syncMetaData() {
+        try {
             var map = new HashMap<String, String>();
             var token = TokenRepository.getCurrentToken();
             var config = DataSetService.getConfigurationDataFromAPI(token);
             var collName = config.get("dataset_name").toString();
             var datasetAcronym = config.get("dataset_acronym").toString();
-            var id = (int)Double.parseDouble(config.get("dataset_id").toString());
+            var id = (int) Double.parseDouble(config.get("dataset_id").toString());
             var dsType = DataSourceType.valueOf(config.get("data_source_type").toString());
-            
+
             TokenRepository.setCurrentToken(token);
-           
+
             map.put("token", token);
             map.put("id", String.valueOf(id));
             map.put("dataset_name", collName);
             map.put("dataset_acronym", datasetAcronym);
             map.put("datasource_type", dsType.name());
-            
+
             DataSetService.updateDataSource(map);
-                
+
             ConfigFacade.HandleBackendData(token, config);
             // if(SpLinkerUpdater.hasNewVersion())
             // {
             //     navigateTo("splinker-update");
             // }
-        } catch (Exception e) 
-        {
+        } catch (Exception e) {
             handleErrors(e);
         }
     }
-    
+
     @FXML
-    void onDeleteDatasetButtonClick()
-    {
-        navigateTo(getStage(),"delete-dataset");
+    void onDeleteDatasetButtonClick() {
+        navigateTo(getStage(), "delete-dataset");
     }
-    
+
     @FXML
     void onCmbCollectionChange(ActionEvent event) {
 
-        try 
-        {
+        try {
             var acronym = cmbCollection.getValue();
-            if(acronym !=null)
-            {
+            if (acronym != null) {
                 ds = DataSetService.getDataSetBy("dataset_acronym", acronym);
                 token = ds.getToken();
                 TokenRepository.setCurrentToken(token);
@@ -119,72 +111,61 @@ public class PrincipalController extends AbstractController {
     }
 
     @Subscribe
-    void reloadDatasetListAfterChange(String eventToken)
-    {
-        try 
-        {
+    void reloadDatasetListAfterChange(String eventToken) {
+        try {
             var currentDataset = DataSetService.getDataSet(eventToken);
             var datasetWasDeleted = currentDataset.getId() <= 0;
-            if(datasetWasDeleted)
-            {
+            if (datasetWasDeleted) {
                 cmbCollection.getItems().remove(currentDataset.getDataSetAcronym());
                 var size = cmbCollection.getItems().size();
-                var acronym = cmbCollection.getItems().get(size-1);
+                var acronym = cmbCollection.getItems().get(size - 1);
                 ds = DataSetService.getDataSetBy("dataset_acronym", acronym);
                 var newToken = ds.getToken();
                 TokenRepository.setCurrentToken(newToken);
                 cmbCollection.setValue(acronym);
-            }
-            else
-            {
+            } else {
                 populateDatasetCombo();
                 cmbCollection.setValue(currentDataset.getDataSetAcronym());
             }
-        } 
-        catch (Exception e) 
-        {
+        } catch (Exception e) {
             handleErrors(e);
         }
-        
-    }
-    
-    void populateDatasetCombo() throws Exception
-    {
-            var sources = DataSetService.getAllDataSets().stream();
-            addOptionsToDataset(sources);
-            sources.close();
+
     }
 
-    void addOptionsToDataset(Stream<DataSet> sources)
-    {
+    void populateDatasetCombo() throws Exception {
+        var sources = DataSetService.getAllDataSets().stream();
+        addOptionsToDataset(sources);
+        sources.close();
+    }
+
+    void addOptionsToDataset(Stream<DataSet> sources) {
         try {
-        
-        var options = sources.map(DataSet::getDataSetAcronym).toList();
-        cmbCollection.setItems(FXCollections.observableArrayList(options));
-        cmbCollection.setValue(ds.getDataSetAcronym());    
+
+            var options = sources.map(DataSet::getDataSetAcronym).toList();
+            cmbCollection.setItems(FXCollections.observableArrayList(options));
+            cmbCollection.setValue(ds.getDataSetAcronym());
         } catch (Exception e) {
             handleErrors(e);
         }
     }
 
-    void updateDisplayedData()
-    {
+    void updateDisplayedData() {
         var lastUpdate = "-";
-        if(ds.getUpdatedAt() != null)
-        {
+        if (ds.getUpdatedAt() != null) {
             lastUpdate = ds.getUpdatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
         }
-        
-        var recordsSent = ds.getLastRowCount() > 0? String.valueOf(ds.getLastRowCount()): "-";
+
+        var recordsSent = ds.getLastRowCount() > 0 ? String.valueOf(ds.getLastRowCount()) : "-";
         lblCollectionName.setText(ds.getDataSetName());
         lblLastUpdate.setText(lastUpdate);
         lblRecordsSent.setText(recordsSent);
     }
-   
 
-   @Override
+
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
-        
+
         try {
             addDatasetBus = EventBusManager.getEvent(EventTypes.ADD_DATASET.name());
             bus = EventBusManager.getEvent(EventTypes.DELETE_DATASET.name());
@@ -194,8 +175,7 @@ public class PrincipalController extends AbstractController {
             ds = DataSetService.getDataSet(token);
             var isDatasetNull = ds == null;
             var datasetWasUpdatedAtLeastOnce = !isDatasetNull && ds.getUpdatedAt() != null;
-            if(datasetWasUpdatedAtLeastOnce)
-            {
+            if (datasetWasUpdatedAtLeastOnce) {
                 updateDisplayedData();
             }
             syncMetaData();
@@ -212,8 +192,7 @@ public class PrincipalController extends AbstractController {
     }
 
     @Override
-    protected void setScreensize() 
-    {
+    protected void setScreensize() {
         var stage = getStage();
         stage.setWidth(WindowSizes.LARGE_RECTANGULAR_SCREEN_WIDTH);
         stage.setHeight(WindowSizes.LARGE_RECTANGULAR_SCREEN_HEIGHT);
