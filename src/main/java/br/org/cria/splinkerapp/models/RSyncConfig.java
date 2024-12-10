@@ -8,22 +8,21 @@ public class RSyncConfig {
         this.rSyncPort = rSyncPort;
         this.rSyncDestination = rSyncDestination;
     }
-    public int getrSyncPort() 
-    {
+
+    public int getrSyncPort() {
         return rSyncPort;
     }
-    public void setrSyncPort(int rSyncPort) 
-    {
+
+    public void setrSyncPort(int rSyncPort) {
         this.rSyncPort = rSyncPort;
     }
-    
-    public String getrSyncDestination() 
-    {
+
+    public String getrSyncDestination() {
         return rSyncDestination;
     }
-    public void setrSyncDestination(String rSyncDestination) 
-    {
+
+    public void setrSyncDestination(String rSyncDestination) {
         this.rSyncDestination = rSyncDestination;
     }
-    
+
 }

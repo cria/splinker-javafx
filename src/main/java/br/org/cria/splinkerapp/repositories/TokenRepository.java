@@ -4,11 +4,9 @@ import java.sql.DriverManager;
 
 public class TokenRepository extends BaseRepository {
 
-    public static String getCurrentToken() throws Exception 
-    {
+    public static String getCurrentToken() throws Exception {
         var token = System.getProperty("splinker_token");
-        if (token == null) 
-        {
+        if (token == null) {
             var cmd = "SELECT token FROM DataSetConfiguration LIMIT 1;";
             var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
             var result = runQuery(cmd, conn);

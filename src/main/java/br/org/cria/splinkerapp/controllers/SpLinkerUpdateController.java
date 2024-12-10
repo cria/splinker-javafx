@@ -2,11 +2,13 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import br.org.cria.splinkerapp.services.implementations.SpLinkerUpdateService;
-public class SpLinkerUpdateController extends AbstractController{
+
+public class SpLinkerUpdateController extends AbstractController {
 
     @FXML
     Button btnYes;
@@ -19,15 +21,13 @@ public class SpLinkerUpdateController extends AbstractController{
     }
 
     @FXML
-    void onBtnYesClicked()
-    {
+    void onBtnYesClicked() {
         SpLinkerUpdateService.verifyOSVersion();
         SpLinkerUpdateService.runSoftwareUpdate();
     }
-    
+
     @FXML
-    void onBtnNoClicked()
-    {
+    void onBtnNoClicked() {
         this.getStage().close();
     }
 
@@ -37,5 +37,5 @@ public class SpLinkerUpdateController extends AbstractController{
         stage.setWidth(WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH);
         stage.setHeight(WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT);
     }
-    
+
 }

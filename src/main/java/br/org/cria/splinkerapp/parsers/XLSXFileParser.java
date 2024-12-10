@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+
 import org.apache.commons.lang3.StringUtils;
 import org.dhatim.fastexcel.reader.Cell;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
@@ -37,7 +38,7 @@ public class XLSXFileParser extends FileParser {
             try {
                 var tableName = StringStandards.normalizeString(sheet.getName());
                 dropTable(tableName);
-                
+
                 var headerRow = sheet.openStream().findFirst().get();
                 builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
                 var fieldCount = headerRow.getCellCount();
@@ -55,7 +56,7 @@ public class XLSXFileParser extends FileParser {
         });
 
         var command = builder.toString().replace(",);", ");");
-        
+
         return command;
     }
 
@@ -63,87 +64,81 @@ public class XLSXFileParser extends FileParser {
     protected List<String> getRowAsStringList(Object row, int numberOfColumns) {
         var fullRow = (Row) row;
         var arr = new String[numberOfColumns];
-        
+
         for (int colNum = 0; colNum < numberOfColumns; colNum++) {
             Cell cell = fullRow.getCell(colNum);
             var cellValue = cell.getRawValue();
-            arr[colNum] = cellValue == null? "": cellValue.toString();
+            arr[colNum] = cellValue == null ? "" : cellValue.toString();
         }
 
         return Arrays.asList(arr);
     }
 
     @Override
-    public void insertDataIntoTable() throws Exception 
-    {
+    public void insertDataIntoTable() throws Exception {
         Connection conn;
-        try 
-        {
+        try {
             sheets = wb.getSheets();
             conn = getConnection();
             conn.setAutoCommit(false);
             var woorkbookIterator = sheets.iterator();
-         
-          while (woorkbookIterator.hasNext()) 
-          {
-            
-              var sheet = woorkbookIterator.next();
-              var lines = sheet.read();
-              var headerRow = lines.get(0);
-              var tableName = StringStandards.normalizeString(sheet.getName());
-              totalColumnCount = headerRow.getCellCount();
-              totalRowCount = lines.size() -1;
-              
-              List<String> columns = getRowAsStringList(headerRow, totalColumnCount).stream()
-                      .map((col) -> makeColumnName(col))
-                      .toList();
 
-              var valuesStr = "?,".repeat(totalColumnCount);
-              var columnNames = String.join(",", columns);
-              var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
-                              .replace(",)", ")");
-              var statement = conn.prepareStatement(command);
-              //sublist exclui o elemento na posição toIndex;
-              var rows = lines.subList(1, lines.size());
-              rows.stream().filter(row -> row != null && row.getCellCount() != 0).forEach((row)->
-              {
-               try {
-                var cellIterator = row.iterator();
-                var index = 1;
-                while (cellIterator.hasNext())
-                {
-                    var cell = cellIterator.next();
-                    var isNullCell = cell == null;
-                    var value = isNullCell? "": getCellValue(cell.getRawValue());
+            while (woorkbookIterator.hasNext()) {
 
-                    statement.setString(index, value);
-                    index++;
-                }
-                statement.addBatch();
-                currentRow++;
-                if (currentRow % 10_000 == 0) 
+                var sheet = woorkbookIterator.next();
+                var lines = sheet.read();
+                var headerRow = lines.get(0);
+                var tableName = StringStandards.normalizeString(sheet.getName());
+                totalColumnCount = headerRow.getCellCount();
+                totalRowCount = lines.size() - 1;
+
+                List<String> columns = getRowAsStringList(headerRow, totalColumnCount).stream()
+                        .map((col) -> makeColumnName(col))
+                        .toList();
+
+                var valuesStr = "?,".repeat(totalColumnCount);
+                var columnNames = String.join(",", columns);
+                var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
+                        .replace(",)", ")");
+                var statement = conn.prepareStatement(command);
+                //sublist exclui o elemento na posição toIndex;
+                var rows = lines.subList(1, lines.size());
+                rows.stream().filter(row -> row != null && row.getCellCount() != 0).forEach((row) ->
                 {
-                    statement.executeBatch();
-                    conn.commit();
-                    statement.clearBatch();
-                    
-                }
-                readRowEventBus.post(currentRow);
-                
-               } catch (Exception e) {
-                throw new RuntimeException(e);
-               }
-              });
-              statement.executeBatch();
-              conn.commit();
-              statement.clearBatch();
-              statement.close();
-          }
-          
-          conn.setAutoCommit(true);
-          conn.close();
-        }catch (Exception e) 
-        {
+                    try {
+                        var cellIterator = row.iterator();
+                        var index = 1;
+                        while (cellIterator.hasNext()) {
+                            var cell = cellIterator.next();
+                            var isNullCell = cell == null;
+                            var value = isNullCell ? "" : getCellValue(cell.getRawValue());
+
+                            statement.setString(index, value);
+                            index++;
+                        }
+                        statement.addBatch();
+                        currentRow++;
+                        if (currentRow % 10_000 == 0) {
+                            statement.executeBatch();
+                            conn.commit();
+                            statement.clearBatch();
+
+                        }
+                        readRowEventBus.post(currentRow);
+
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                statement.executeBatch();
+                conn.commit();
+                statement.clearBatch();
+                statement.close();
+            }
+
+            conn.setAutoCommit(true);
+            conn.close();
+        } catch (Exception e) {
             Sentry.captureException(e);
             e.printStackTrace();
             throw new RuntimeException(e);

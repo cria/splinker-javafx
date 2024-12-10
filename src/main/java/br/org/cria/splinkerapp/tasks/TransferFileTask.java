@@ -6,8 +6,8 @@ import javafx.concurrent.Task;
 public class TransferFileTask extends Task<Void> {
 
     DarwinCoreArchiveService service;
-    public TransferFileTask(DarwinCoreArchiveService service)
-    {
+
+    public TransferFileTask(DarwinCoreArchiveService service) {
         this.service = service;
     }
 
@@ -16,5 +16,5 @@ public class TransferFileTask extends Task<Void> {
         service.transferData();
         return null;
     }
-    
+
 }

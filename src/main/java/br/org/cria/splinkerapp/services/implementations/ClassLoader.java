@@ -4,30 +4,28 @@ import br.org.cria.splinkerapp.models.DataSourceType;
 
 public class ClassLoader {
 
-    static Class load(DataSourceType type) throws Exception
-    {
+    static Class load(DataSourceType type) throws Exception {
         String name = null;
-        switch(type)
-        {
+        switch (type) {
             case MySQL:
                 name = "com.mysql.cj.jdbc.Driver";
-            break;
+                break;
             case PostgreSQL:
-                 name = "org.postgresql.Driver";
-            break;
+                name = "org.postgresql.Driver";
+                break;
             case Oracle:
                 name = "oracle.jdbc.OracleDriver";
-            break;
+                break;
             case SQLServer:
-            name = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-            break;
+                name = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+                break;
             default:
-                name = "org.sqlite.JDBC"; 
+                name = "org.sqlite.JDBC";
                 break;
 
         }
         return Class.forName(name);
-        
+
     }
-    
+
 }

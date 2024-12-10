@@ -12,24 +12,21 @@ public class ImportDataTask extends Task<Void> {
     DataSet ds;
     EventBus readRowEventBus = EventBusManager.getEvent(EventTypes.READ_ROW.name());
     FileSourceManager manager;
-    
-    public ImportDataTask(DataSet ds) throws Exception
-    {
+
+    public ImportDataTask(DataSet ds) throws Exception {
         this.ds = ds;
         manager = new FileSourceManager(ds);
         readRowEventBus.register(this);
     }
 
     @Subscribe
-    void onRowCountUpdate(Integer rowCount)
-    {
+    void onRowCountUpdate(Integer rowCount) {
         var totalRowCount = manager.getParser().getTotalRowCount();
         updateProgress(rowCount, totalRowCount);
     }
 
     @Override
-    protected Void call() throws Exception 
-    {
+    protected Void call() throws Exception {
         manager.importData();
         return null;
     }

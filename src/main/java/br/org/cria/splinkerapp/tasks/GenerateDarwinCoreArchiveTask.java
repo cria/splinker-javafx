@@ -12,16 +12,14 @@ public class GenerateDarwinCoreArchiveTask extends Task<DarwinCoreArchiveService
     DarwinCoreArchiveService service;
     EventBus writeRowEventBus;
 
-    public GenerateDarwinCoreArchiveTask(DarwinCoreArchiveService service)
-    {
+    public GenerateDarwinCoreArchiveTask(DarwinCoreArchiveService service) {
         this.service = service;
         writeRowEventBus = EventBusManager.getEvent(EventTypes.WRITE_ROW.name());
         writeRowEventBus.register(this);
     }
 
     @Subscribe
-    void onWriteRow(Integer rowCount)
-    {
+    void onWriteRow(Integer rowCount) {
         var totalRowCount = service.getCurrentRowCount();
         updateProgress(rowCount, totalRowCount);// manager.getParser().getTotalRowCount());
     }
@@ -30,8 +28,8 @@ public class GenerateDarwinCoreArchiveTask extends Task<DarwinCoreArchiveService
     @Override
     protected DarwinCoreArchiveService call() throws Exception {
         return service.readDataFromSource()
-                      .generateTXTFile()
-                      .generateZIPFile();
+                .generateTXTFile()
+                .generateZIPFile();
     }
-    
+
 }
