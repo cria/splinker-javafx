@@ -1,10 +1,12 @@
 package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.facade.ConfigFacade;
+import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
@@ -37,7 +39,13 @@ public class TokenLoginController extends AbstractController {
             var tokenToBeDeleted = tokenField.getText().trim();
             var tokenIsNotEmpty = (tokenToBeDeleted != null) && (!tokenToBeDeleted.isEmpty());
             var tokenExists = DataSetService.getDataSet(tokenToBeDeleted) != null;
+            var currentToken = TokenRepository.getCurrentToken();
+
             if (tokenIsNotEmpty && tokenExists) {
+                if (tokenToBeDeleted.equals(currentToken)) {
+                    ModalAlertUtil.show("Você não pode excluir o token que está logado!");
+                    return;
+                }
                 DataSetService.deleteDataSet(tokenToBeDeleted);
                 var datasets = DataSetService.getAllDataSets();
                 token = datasets.getFirst().getToken();
@@ -114,7 +122,6 @@ public class TokenLoginController extends AbstractController {
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
 
-        // Inicialize a variável bus
         bus = new EventBus();
 
         Tooltip tooltip = new Tooltip("Token é um código único fornecido pelo CRIA para sua coleção poder enviar dados. Entre em contato com o CRIA se não tiver ainda recebido seu token.");
@@ -134,6 +141,20 @@ public class TokenLoginController extends AbstractController {
         tokenBox.setOnMouseExited(event -> {
             tooltip.hide();
         });
+
+        List<DataSet> tokens = null;
+        try {
+            tokens = DataSetService.getAllDataSets();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        if (tokens.isEmpty()) {
+            btnDeleteToken.setVisible(false);
+        } else {
+            btnDeleteToken.setVisible(true);
+        }
+
+        btnAddToken.setLayoutX(126);
     }
 
     @Override
