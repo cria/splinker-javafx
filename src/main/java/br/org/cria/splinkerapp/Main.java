@@ -4,7 +4,9 @@ import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+
 import org.apache.logging.log4j.LogManager;
+
 import br.org.cria.splinkerapp.config.DatabaseSetup;
 import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.config.SentryConfig;
@@ -12,6 +14,7 @@ import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import br.org.cria.splinkerapp.services.implementations.SpLinkerUpdateService;
 import io.sentry.Sentry;
 import javafx.application.Platform;
+
 import java.util.Objects;
 
 public class Main extends Application {
@@ -47,12 +50,11 @@ public class Main extends Application {
                         stage.setTitle("spLinker");
                         stage.setResizable(false);
 
+                        // Verificar o sistema operacional e definir o ícone correto
                         String os = System.getProperty("os.name").toLowerCase();
                         if (os.contains("win")) {
                             stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png"))));
                         } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
-                            stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png"))));
-                        } else {
                             stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png"))));
                         }
 
