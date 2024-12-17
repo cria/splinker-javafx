@@ -47,7 +47,6 @@ public class Main extends Application {
                         stage.setTitle("spLinker");
                         stage.setResizable(false);
 
-                        // Determine o SO e defina o ícone de acordo
                         String os = System.getProperty("os.name").toLowerCase();
                         if (os.contains("win")) {
                             stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png"))));
