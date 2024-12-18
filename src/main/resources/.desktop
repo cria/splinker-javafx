@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=spLinker
+Comment=Ferramenta para ajudar pesquisadores
+Exec=/usr/bin/splinker
+Icon=/usr/share/icons/hicolor/48x48/apps/splinker.png
+Terminal=false
+Categories=Utility;Science;
