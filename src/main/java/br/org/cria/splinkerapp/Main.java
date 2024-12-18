@@ -33,10 +33,8 @@ public class Main extends Application {
                         Sentry.captureException(e);
                         throw new RuntimeException(e);
                     }
-
                 });
-                initDb.setOnFailed(event ->
-                {
+                initDb.setOnFailed(event -> {
                     try {
                         LockFileManager.deleteLockfile();
                         var exception = initDb.getException();
@@ -48,11 +46,18 @@ public class Main extends Application {
                 });
 
                 initDb.setOnSucceeded(event -> {
-                    Platform.runLater(() ->
-                    {
+                    Platform.runLater(() -> {
                         stage.setTitle("spLinker");
                         stage.setResizable(false);
-                        stage.getIcons().add(new Image("images/cria-logo.png"));
+
+                        // Verificar o sistema operacional e definir o ícone correto
+                        String os = System.getProperty("os.name").toLowerCase();
+                        if (os.contains("win")) {
+                            stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png"))));
+                        } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+                            stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png"))));
+                        }
+
                         try {
                             if (SpLinkerUpdateService.hasNewVersion()) {
                                 Router.navigateTo(stage, "splinker-update");
@@ -66,7 +71,6 @@ public class Main extends Application {
                             throw new RuntimeException(e);
                         }
                     });
-
                 });
                 initDb.run();
                 initDb.get();
