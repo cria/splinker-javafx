@@ -39,8 +39,10 @@ jobs:
           mkdir -p package/DEBIAN
 
           cp ./dist/linux/splinker package/usr/bin/splinker
+
           cp resources/desktop/splinker.desktop package/usr/share/applications/splinker.desktop
           cp resources/icons/cria-logo.png package/usr/share/icons/hicolor/48x48/apps/splinker.png
+
 
           cat <<EOF > package/DEBIAN/control
           Package: splinker
