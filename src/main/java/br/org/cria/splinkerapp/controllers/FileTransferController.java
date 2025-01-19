@@ -85,8 +85,12 @@ public class FileTransferController extends AbstractController {
                 var errId = Sentry.captureException(ex);
                 var task = "importação dos dados";
                 var msg = errMsg.formatted(task, errId);
-                handleErrors(ex);
-
+                    if (ex.getMessage() != null && ex.getMessage().contains("return value of \"org.dhatim.fastexcel.reader.Row.getCell(int)\" is null")) {
+                         msg = "Erro ao processar o arquivo Excel. Uma célula obrigatória está vazia ou ausente. "
+                                + "Por favor, verifique o arquivo e preencha todas as células necessárias.";
+                    } else {
+                        handleErrors(ex);
+                    }
                 showErrorModal(msg);
                 navigateTo("home");
             });
