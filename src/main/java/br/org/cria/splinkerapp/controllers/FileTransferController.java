@@ -88,7 +88,6 @@ public class FileTransferController extends AbstractController {
                     if (ex.getMessage() != null && ex.getMessage().contains("return value of \"org.dhatim.fastexcel.reader.Row.getCell(int)\" is null")) {
                          msg = "Erro ao processar o arquivo Excel. Uma célula obrigatória está vazia ou ausente. "
                                 + "Por favor, verifique o arquivo e preencha todas as células necessárias.";
-                        System.err.println(msg);
                     } else {
                         handleErrors(ex);
                     }
