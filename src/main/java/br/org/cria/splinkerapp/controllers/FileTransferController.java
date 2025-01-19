@@ -119,7 +119,7 @@ public class FileTransferController extends AbstractController {
                 var msg = errMsg.formatted(task, errId);
                 if(ex.getMessage().contains("no such table")) {
                     String tableName = ex.getMessage().split(":")[1].replace(")", "").trim();
-                    msg = "Erro na configuração da query Sql da coleção. A query está configurada para a tabela (" + tableName + ") que não está configurada no data source.";
+                    msg = "A query está configurada para a tabela (" + tableName + ") que não está configurada no data source.";
                 } else {
                     handleErrors(ex);
                 }
