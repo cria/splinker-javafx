@@ -156,6 +156,12 @@ public class DataSetService extends BaseRepository {
         return read;
     }
 
+    public static String getSQLCommandFromApi(String token) throws Exception {
+        Map config = DataSetService.getConfigurationDataFromAPI(token);
+        var cmd = (List<Double>) config.get("sql_command");
+        return BaseRepository.byteArrayToString(cmd);
+    }
+
     /**
      * Salva os dados da coleção.
      *

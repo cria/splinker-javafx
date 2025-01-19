@@ -21,7 +21,7 @@ public class ConfigFacade {
 
         System.setProperty("SENTRY_AUTH_TOKEN", sentryToken);
         var systemVersion = 1.1;
-        DataSetService.saveSQLCommand(token, cmd);
+        //DataSetService.saveSQLCommand(token, cmd);
         TransferConfigRepository.saveRSyncConfig(rsyncPort.intValue(), rsyncDestination);
         CentralServiceRepository.saveCentralServiceData(centralServiceUrl, String.valueOf(systemVersion));
     }

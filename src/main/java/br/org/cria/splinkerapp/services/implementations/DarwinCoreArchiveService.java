@@ -131,7 +131,7 @@ public class DarwinCoreArchiveService {
         ApplicationLog.info(message);
 
         var loader = ClassLoader.load(ds.getType());
-        var command = DataSetService.getSQLCommand(ds.getToken());
+        var command = DataSetService.getSQLCommandFromApi(ds.getToken());
         var conn = ds.getDataSetConnection();
         var statement = conn.createStatement();
 
@@ -198,7 +198,7 @@ public class DarwinCoreArchiveService {
             var userDir = "%s/%s".formatted(System.getProperty("user.dir"), datasetId);
             Files.delete(Path.of("%s/occurrence.txt".formatted(userDir)));
             Files.delete(Path.of("%s/dwca.zip".formatted(userDir)));
-            Files.delete(Path.of("%s.sql".formatted(userDir)));
+           // Files.delete(Path.of("%s.sql".formatted(userDir)));
             Files.delete(Path.of("%s/".formatted(userDir)));
         }
     }
