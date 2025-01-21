@@ -88,7 +88,7 @@ public abstract class AbstractController implements Initializable {
             msg = "Ocorreu um erro. Contate o administrador do spLinker%s".formatted(sentryMsg);
         }
         ApplicationLog.error(ex.getLocalizedMessage());
-        showErrorModal(msg);
+        showErrorModal(ex.getLocalizedMessage());
     }
 
     private boolean isConnectionError(Throwable ex) {
