@@ -83,7 +83,8 @@ public class FileTransferController extends AbstractController {
             importDataTask.setOnFailed((handler) -> {
                 var ex = importDataTask.getException();
                 var task = "importação dos dados";
-                var msg = errMsg.formatted(task,ex.getMessage());
+                var msg = errMsg.formatted(task,ex.getMessage());  
+                handleErrors(ex);
                 showErrorModal(msg);
                 navigateTo("home");
             });
@@ -109,6 +110,8 @@ public class FileTransferController extends AbstractController {
                 var ex = generateDWCATask.getException();
                 var task = "geração do arquivo";
                 var msg = errMsg.formatted(task, ex.getMessage());
+                var msg = errMsg.formatted(task, errId);
+                handleErrors(ex);
                 showErrorModal(msg);
                 navigateTo("home");
             }));

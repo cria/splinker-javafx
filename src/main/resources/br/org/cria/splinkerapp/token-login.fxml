@@ -18,7 +18,7 @@
                 <Font size="18.0" />
             </font>
         </Label>
-        <Button id="btnDeleteToken" fx:id="btnDeleteToken" layoutX="203.0" layoutY="101.0" mnemonicParsing="false" onMouseClicked="#onButtonDeleteTokenClicked" prefHeight="34.0" prefWidth="85.0" text="Excluir" />
+        <Button id="btnDeleteToken" fx:id="btnDeleteToken" layoutX="220.0" layoutY="101.0" mnemonicParsing="false" onMouseClicked="#onButtonDeleteTokenClicked" prefHeight="34.0" prefWidth="85.0" text="Excluir" />
 
         <!-- Configurando a posição do VBox -->
         <VBox fx:id="tokenBox" alignment="CENTER" layoutX="14.0" layoutY="150.0" prefWidth="325.0" spacing="10">

@@ -61,9 +61,6 @@ jobs:
       - name: Copiar yajsync
         run: cp libs\yajsync-app-0.9.0-SNAPSHOT-full.jar spLinker\libs;
 
-      - name: Copiar yajsyncProd
-        run: cp libs\yajsync.jar spLinker\libs;
-
       - name: Copia arquivo de configuração do Log4J/Sentry
         run:  cp .\src\main\resources\log4j2.xml .\spLinker\
 
@@ -107,9 +104,6 @@ jobs:
         
         - name: Copiar yajsync
           run: cp ./libs/yajsync-app-0.9.0-SNAPSHOT-full.jar ./spLinker/libs;
-
-        - name: Copiar yajsync Prod
-          run: cp ./libs/yajsync.jar ./spLinker/libs;
 
         - name: Copiar arquivo de configuração do Log4J/Sentry
           run:  cp ./src/main/resources/log4j2.xml ./spLinker
