@@ -82,15 +82,8 @@ public class FileTransferController extends AbstractController {
 
             importDataTask.setOnFailed((handler) -> {
                 var ex = importDataTask.getException();
-                var errId = Sentry.captureException(ex);
                 var task = "importação dos dados";
-                var msg = errMsg.formatted(task, errId);
-                    if (ex.getMessage() != null && ex.getMessage().contains("return value of \"org.dhatim.fastexcel.reader.Row.getCell(int)\" is null")) {
-                         msg = "Erro ao processar o arquivo Excel. Uma célula obrigatória está vazia ou ausente. "
-                                + "Por favor, verifique o arquivo e preencha todas as células necessárias.";
-                    } else {
-                        handleErrors(ex);
-                    }
+                var msg = errMsg.formatted(task,ex.getMessage());
                 showErrorModal(msg);
                 navigateTo("home");
             });
@@ -114,15 +107,8 @@ public class FileTransferController extends AbstractController {
 
             generateDWCATask.setOnFailed((handler) -> Platform.runLater(() -> {
                 var ex = generateDWCATask.getException();
-                var errId = Sentry.captureException(ex);
                 var task = "geração do arquivo";
-                var msg = errMsg.formatted(task, errId);
-                if(ex.getMessage().contains("no such table")) {
-                    String tableName = ex.getMessage().split(":")[1].replace(")", "").trim();
-                    msg = "A query está configurada para a tabela (" + tableName + ") que não está configurada no data source.";
-                } else {
-                    handleErrors(ex);
-                }
+                var msg = errMsg.formatted(task, ex.getMessage());
                 showErrorModal(msg);
                 navigateTo("home");
             }));
@@ -141,11 +127,9 @@ public class FileTransferController extends AbstractController {
 
         checkRecordCountTask.setOnFailed((handler) -> Platform.runLater(() -> {
             var ex = checkRecordCountTask.getException();
-            var errId = Sentry.captureException(ex);
             var task = "verificação de registros";
-            var msg = errMsg.formatted(task, errId);
+            var msg = errMsg.formatted(task, ex.getMessage());
             handleErrors(ex);
-
             showErrorModal(msg);
             navigateTo("home");
         }));
@@ -221,9 +205,8 @@ public class FileTransferController extends AbstractController {
                 System.gc();
                 Platform.runLater(() -> {
                     var ex = transferFileTask.getException();
-                    var errId = Sentry.captureException(ex);
                     var task = "transferência do arquivo";
-                    var msg = errMsg.formatted(task, errId);
+                    var msg = errMsg.formatted(task, ex.getMessage());
                     handleErrors(ex);
                     showErrorModal(msg);
                     navigateTo("home");
