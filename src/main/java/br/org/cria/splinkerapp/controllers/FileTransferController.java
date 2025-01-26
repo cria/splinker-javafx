@@ -110,7 +110,6 @@ public class FileTransferController extends AbstractController {
                 var ex = generateDWCATask.getException();
                 var task = "geração do arquivo";
                 var msg = errMsg.formatted(task, ex.getMessage());
-                var msg = errMsg.formatted(task, errId);
                 handleErrors(ex);
                 showErrorModal(msg);
                 navigateTo("home");
