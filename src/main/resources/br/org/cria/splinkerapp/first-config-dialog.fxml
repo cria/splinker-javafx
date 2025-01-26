@@ -8,6 +8,6 @@
    <children>
       <Button id="btnYes" layoutX="68.0" layoutY="78.0" mnemonicParsing="false" onMouseClicked="#onYesButtonClicked" text="Sim" textAlignment="CENTER" />
       <Button id="btnNo" layoutX="192.0" layoutY="78.0" mnemonicParsing="false" onMouseClicked="#onNoButtonClicked" text="Não" />
-      <Label layoutX="42.0" layoutY="23.0" prefHeight="49.0" prefWidth="249.0" text="Deseja fazer a configuração inicial do spLinker v1?" wrapText="true" />
+      <Label layoutX="42.0" layoutY="23.0" prefHeight="49.0" prefWidth="249.0" text="Deseja fazer a configuração inicial do spLinker v2?" wrapText="true" />
    </children>
 </Pane>

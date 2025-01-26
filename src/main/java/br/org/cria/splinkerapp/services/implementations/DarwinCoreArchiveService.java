@@ -6,7 +6,6 @@ import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.managers.LocalDbManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
-import com.github.perlundq.yajsync.ui.YajsyncClient;
 import com.google.common.eventbus.EventBus;
 import io.sentry.Sentry;
 
@@ -152,7 +151,8 @@ public class DarwinCoreArchiveService {
 
         var args = new String[]{"client", "--port=%s".formatted(port), "-r", this.zipFile, destination};
         String[] arrayArgs = Arrays.copyOfRange(args, 1, args.length);
-        new YajsyncClient().start(arrayArgs);
+        //new YajsyncClient().start(arrayArgs);
+        sendFileUsingCommandLine(args);
         return this;
     }
 
