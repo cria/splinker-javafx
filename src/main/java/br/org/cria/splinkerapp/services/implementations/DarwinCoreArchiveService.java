@@ -149,10 +149,9 @@ public class DarwinCoreArchiveService {
         var port = rSyncConfig.getrSyncPort();
         var destination = "%s::%s".formatted(rSyncConfig.getrSyncDestination(), ds.getToken());
 
-        var args = new String[]{"client", "--port=%s".formatted(port), "-r", this.zipFile, destination};
-        String[] arrayArgs = Arrays.copyOfRange(args, 1, args.length);
-        //new YajsyncClient().start(arrayArgs);
-        sendFileUsingCommandLine(args);
+        var command = new String[] {"java", "-jar", "libs/yajsync-app-0.9.0-SNAPSHOT-full.jar",
+                "client", "--port=%s".formatted(port), "-r", this.zipFile, destination };
+        sendFileUsingCommandLine(command);
         return this;
     }
 
