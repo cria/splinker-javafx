@@ -85,12 +85,13 @@ public class FileTransferController extends AbstractController {
                 var errId = Sentry.captureException(ex);
                 var task = "importação dos dados";
                 var msg = errMsg.formatted(task, errId);
-                    if (ex.getMessage() != null && ex.getMessage().contains("return value of \"org.dhatim.fastexcel.reader.Row.getCell(int)\" is null")) {
+                /*    if (ex.getMessage() != null && ex.getMessage().contains("return value of \"org.dhatim.fastexcel.reader.Row.getCell(int)\" is null")) {
                          msg = "Erro ao processar o arquivo Excel. Uma célula obrigatória está vazia ou ausente. "
                                 + "Por favor, verifique o arquivo e preencha todas as células necessárias.";
                     } else {
                         handleErrors(ex);
-                    }
+                    }*/
+                handleErrors(ex);
                 showErrorModal(msg);
                 navigateTo("home");
             });
@@ -117,7 +118,7 @@ public class FileTransferController extends AbstractController {
                 var errId = Sentry.captureException(ex);
                 var task = "geração do arquivo";
                 var msg = errMsg.formatted(task, errId);
-                if(ex.getMessage().contains("no such table")) {
+                /*if(ex.getMessage().contains("no such table")) {
                     String tableName = ex.getMessage().split(":")[1].replace(")", "").trim();
                     msg = "Erro na configuração da query Sql da coleção. A query está configurada para a tabela (" + tableName + ") que não está configurada no data source.";
                 } else if(ex.getMessage().contains("no such column")) {
@@ -125,7 +126,8 @@ public class FileTransferController extends AbstractController {
                     msg = "Erro no arquivo a coluna (" + columnName + ") não existe ou está com o nome errado. Corrija e tente novamente.";
                 } else {
                     handleErrors(ex);
-                }
+                }*/
+                handleErrors(ex);
                 showErrorModal(msg);
                 navigateTo("home");
             }));

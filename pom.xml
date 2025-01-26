@@ -148,7 +148,7 @@
             <artifactId>yajsync</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${basedir}/libs/yajsync.jar</systemPath>
+            <systemPath>${basedir}/libs/yajsync-app-0.9.0-SNAPSHOT-full.jar</systemPath>
         </dependency>
     </dependencies>
 
