@@ -58,6 +58,7 @@ public class ConfigurationController extends AbstractController {
             var template = basePath.formatted(pageName);
             loader = new FXMLLoader(getClass().getResource(template));
             Node childNode = loader.load();
+            
             var children = content.getChildren();
             children.clear();
             children.add(childNode);

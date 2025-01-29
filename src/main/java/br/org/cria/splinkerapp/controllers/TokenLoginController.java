@@ -150,11 +150,12 @@ public class TokenLoginController extends AbstractController {
         }
         if (tokens.isEmpty()) {
             btnDeleteToken.setVisible(false);
+            btnAddToken.setLayoutX(194);
         } else {
             btnDeleteToken.setVisible(true);
         }
 
-        btnAddToken.setLayoutX(126);
+
     }
 
     @Override

@@ -22,6 +22,8 @@ public final class Router {
         var fxmlLoader = new FXMLLoader(resource);
         var parent = (Parent) fxmlLoader.load();
         var scene = new Scene(parent);
+        scene.getStylesheets().add(Router.class.getResource("styles.css").toExternalForm());
+
 
         return scene;
     }
