@@ -7,22 +7,27 @@
 
 <Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="310.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FirstConfigDialogController">
    <children>
-      <Button id="btnAddToken" fx:id="btnAddIniciar" layoutX="198.0" layoutY="253.0" mnemonicParsing="false" onMouseClicked="#onYesButtonClicked" prefHeight="34.0" prefWidth="85.0" styleClass="primary-button" text="Iniciar" />
+      <Button id="btnAddToken" fx:id="btnAddIniciar" layoutX="198.0" layoutY="225.0" mnemonicParsing="false" onMouseClicked="#onYesButtonClicked" prefHeight="34.0" prefWidth="85.0" styleClass="primary-button" text="Iniciar" />
 
-      <Label alignment="CENTER" layoutX="9.0" layoutY="23.0" prefHeight="49.0" prefWidth="460.0" text="Bem vindo ao spLinker!" textAlignment="CENTER" wrapText="true">
+      <Label alignment="CENTER" layoutX="9.0" layoutY="18.0" prefHeight="49.0" prefWidth="460.0" text="Bem vindo ao spLinker!" textAlignment="CENTER" wrapText="true">
          <font>
             <Font size="18.0" />
          </font></Label>
-      <Label alignment="CENTER" layoutX="9.0" layoutY="61.0" prefHeight="173.0" prefWidth="460.0" text="O spLinker é um software que facilita o envio de dados em formato Darwin Core Archive para a rede speciesLink, promovendo o compartilhamento de dados não confidenciais para apoiar a pesquisa, a educação e políticas voltadas à conservação e uso sustentável da biodiversidade." textAlignment="JUSTIFY" wrapText="true">
+      <Label alignment="CENTER" layoutX="9.0" layoutY="47.0" prefHeight="173.0" prefWidth="460.0" text="O spLinker é um software que facilita o envio de dados em formato Darwin Core Archive para a rede speciesLink, promovendo o compartilhamento de dados não confidenciais para apoiar a pesquisa, a educação e políticas voltadas à conservação e uso sustentável da biodiversidade." textAlignment="JUSTIFY" wrapText="true">
          <font>
             <Font size="16.0" />
          </font></Label>
-      <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="20.0" layoutY="270.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="70.0" fitWidth="105.0" layoutX="196.0" layoutY="250.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../images/splinker.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="14.0" layoutY="267.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../../../images/cria-logo.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="36.0" fitWidth="96.0" layoutX="363.0" layoutY="264.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="36.0" fitWidth="96.0" layoutX="381.0" layoutY="267.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../../../images/splink-logo.gif" />
          </image>

@@ -47,7 +47,6 @@ public class Main extends Application {
 
                 initDb.setOnSucceeded(event -> {
                     Platform.runLater(() -> {
-                        stage.setTitle("spLinker");
                         stage.setResizable(false);
 
                         // Verificar o sistema operacional e definir o ícone correto

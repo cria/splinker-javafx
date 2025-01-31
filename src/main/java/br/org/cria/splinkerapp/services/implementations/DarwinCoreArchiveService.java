@@ -5,6 +5,7 @@ import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.managers.LocalDbManager;
 import br.org.cria.splinkerapp.models.DataSet;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
 import com.google.common.eventbus.EventBus;
 import io.sentry.Sentry;
@@ -187,7 +188,8 @@ public class DarwinCoreArchiveService {
     }
 
     private void deleteSentFiles() throws Exception {
-        var cmd = "SELECT id FROM DataSetConfiguration;";
+        var token = TokenRepository.getCurrentToken();
+        var cmd = "SELECT id FROM DataSetConfiguration WHERE token = '" + token + "';";
         var connString = LocalDbManager.getLocalDbConnectionString();
         var conn = DriverManager.getConnection(connString);
         var result = conn.createStatement().executeQuery(cmd);

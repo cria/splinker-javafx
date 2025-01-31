@@ -69,7 +69,7 @@ public class FileTransferController extends AbstractController {
 
     void configureImportDataTask() {
         if (!ds.isSQLDatabase()) {
-            lblMessage.setText("Importando dados. Isso pode levar um tempo.");
+            lblMessage.setText("Importando dados da coleção. Isso pode levar alguns minutos.");
             importDataTask.setOnSucceeded((handler) -> {
                 System.gc();
                 Platform.runLater(() ->
@@ -102,7 +102,7 @@ public class FileTransferController extends AbstractController {
 
     void configureGenerateDWCTask() {
         try {
-            lblMessage.setText("Gerando arquivo, por favor aguarde.");
+            lblMessage.setText("Gerando arquivo com os dados da coleção, por favor aguarde...");
             generateDWCATask.setOnSucceeded((handler) -> {
                 System.gc();
                 Platform.runLater(() ->
@@ -139,7 +139,7 @@ public class FileTransferController extends AbstractController {
     }
 
     void configureCheckRecordCountTask() {
-        var msgLbl = "Verificando integridade dos dados, por favor aguarde";
+        var msgLbl = "Verificando integridade dos dados da coleção, por favor aguarde...";
         lblMessage.setText(msgLbl);
         progressBar.setVisible(false);
         progressIndicator.setVisible(false);
@@ -194,7 +194,7 @@ public class FileTransferController extends AbstractController {
 
     void configureTransferFileTask() {
         try {
-            lblMessage.setText("Transferindo arquivo, por favor não feche o spLinker.");
+            lblMessage.setText("Transferindo arquivo com dados da coleção. Não feche o spLinker.");
             transferFileTask.setOnSucceeded((handler) ->
             {
                 System.gc();
@@ -204,7 +204,7 @@ public class FileTransferController extends AbstractController {
                         progressBar.setVisible(false);
                         var fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                         var updatedAt = LocalDateTime.now().format(fmt);
-                        lblMessage.setText("Arquivo transferido com sucesso.");
+                        lblMessage.setText("Dados da coleção transferido com sucesso!");
                         var newData = new HashMap<String, String>() {{
                             put("last_rowcount", String.valueOf(rowCount));
                             put("updated_at", updatedAt);
@@ -213,7 +213,8 @@ public class FileTransferController extends AbstractController {
                         DataSetService.updateDataSource(newData);
                         dwcService.cleanData();
                         executor.close();
-                        btnCancelTransfer.setText("OK");
+                        btnCancelTransfer.setText("Finalizar");
+                        btnCancelTransfer.getStyleClass().add("primary-button");
                         btnCancelTransfer.setOnMouseClicked((__) ->
                                 navigateTo("home"));
 
