@@ -1,11 +1,11 @@
 package br.org.cria.splinkerapp.tasks;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.managers.FileSourceManager;
 import br.org.cria.splinkerapp.models.DataSet;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import javafx.concurrent.Task;
 
 public class ImportDataTask extends Task<Void> {

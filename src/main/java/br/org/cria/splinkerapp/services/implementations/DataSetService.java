@@ -72,6 +72,22 @@ public class DataSetService extends BaseRepository {
         return hasConfig;
     }
 
+    public static boolean hasConfiguration(String token) throws Exception {
+
+        var cmd2 = " SELECT COUNT(*) AS HAS_CONFIGURED_TOKENS " +
+                "FROM DataSetConfiguration " +
+                "WHERE TOKEN = '" + token + "' AND (datasource_filepath IS NOT NULL " +
+                "OR db_host IS NOT NULL); ";
+
+        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+        var result = runQuery(cmd2, conn);
+        var hasConfiguredTokens = result.getInt("HAS_CONFIGURED_TOKENS") > 0;
+
+        result.close();
+        conn.close();
+        return hasConfiguredTokens;
+    }
+
     public static List<DataSet> getAllDataSets() throws Exception {
         var sources = new ArrayList<DataSet>();
         var cmd = "SELECT * FROM  DataSetConfiguration;";

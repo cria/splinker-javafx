@@ -170,9 +170,10 @@ public class FileTransferController extends AbstractController {
                         return;
                     }
 
-                    var newMsg = "A quantidade de registros a ser enviados é menor do que no último envio. Deseja continuar?";
+                    var newMsg = "A quantidade de registros é menor do que no último envio.";
                     btnCancelTransfer.setVisible(false);
                     lblMessage.setText(newMsg);
+                    btnYes.setText("Continuar");
 
                     btnNo.setOnMouseClicked((__) -> navigateTo("home"));
                     btnYes.setOnMouseClicked((__) -> {
@@ -246,6 +247,12 @@ public class FileTransferController extends AbstractController {
     @FXML
     void onBtnYesClicked() {
         try {
+            boolean hasConfiguration = DataSetService.hasConfiguration(TokenRepository.getCurrentToken());
+            if (!hasConfiguration) {
+                showErrorModal("Coleção não possui dataset configurado. Acesse Configuração -> Dados para realizar a configuração.");
+                navigateTo("home");
+                return;
+            }
             btnYes.setVisible(false);
             btnNo.setVisible(false);
             btnCancelTransfer.setVisible(true);

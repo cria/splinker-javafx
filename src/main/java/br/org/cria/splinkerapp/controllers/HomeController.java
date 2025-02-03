@@ -23,6 +23,12 @@ public class HomeController extends AbstractController {
     Button btnHelp;
 
     @FXML
+    Button btnReport;
+
+    @FXML
+    Button btnEmail;
+
+    @FXML
     Button btnSettings;
 
     @FXML
@@ -31,6 +37,8 @@ public class HomeController extends AbstractController {
     ImageView principalImg;
     ImageView settingsImg;
     ImageView helpImg;
+    ImageView emailImg;
+    ImageView reportImg;
 
     String basePath = "/br/org/cria/splinkerapp/%s.fxml";
 
@@ -47,7 +55,17 @@ public class HomeController extends AbstractController {
 
     @FXML
     void onHelpItemClick() {
-        //  loadPage("help");
+          loadPage("help");
+    }
+
+    @FXML
+    void onEmailItemClick() {
+        loadPage("email");
+    }
+
+    @FXML
+    void onReportItemClick() {
+        loadPage("report");
     }
 
 
@@ -78,6 +96,14 @@ public class HomeController extends AbstractController {
         helpImg.setFitHeight(28);
         helpImg.setFitWidth(28);
 
+        emailImg = new ImageView(new Image("images/email.png"));
+        emailImg.setFitHeight(28);
+        emailImg.setFitWidth(28);
+
+        reportImg = new ImageView(new Image("images/report.png"));
+        reportImg.setFitHeight(28);
+        reportImg.setFitWidth(28);
+
         btnPrincipal.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
         btnPrincipal.setGraphic(principalImg);
         btnPrincipal.setTooltip(new Tooltip("Principal"));
@@ -90,6 +116,14 @@ public class HomeController extends AbstractController {
         btnHelp.setGraphic(helpImg);
         btnHelp.setTooltip(new Tooltip("Ajuda"));
 
+        btnEmail.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
+        btnEmail.setGraphic(emailImg);
+        btnEmail.setTooltip(new Tooltip("Email"));
+
+
+        btnReport.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
+        btnReport.setGraphic(reportImg);
+        btnReport.setTooltip(new Tooltip("Relatório"));
 
     }
 

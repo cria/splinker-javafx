@@ -68,8 +68,6 @@ public class PrincipalController extends AbstractController {
             var id = (int) Double.parseDouble(config.get("dataset_id").toString());
             var dsType = DataSourceType.valueOf(config.get("data_source_type").toString());
 
-            TokenRepository.setCurrentToken(token);
-
             map.put("token", token);
             map.put("id", String.valueOf(id));
             map.put("dataset_name", collName);
