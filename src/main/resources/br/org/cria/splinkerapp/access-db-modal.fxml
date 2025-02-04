@@ -9,7 +9,7 @@
 
 <Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="168.0" prefWidth="424.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.AccessDbController">
    <children>
-      <Button id="btnSave" fx:id="btnSave" layoutX="148.0" layoutY="118.0" mnemonicParsing="false" onMouseClicked="#onBtnSaveClicked" prefHeight="39.0" prefWidth="96.0" text="Salvar">
+      <Button id="btnSave" styleClass="success-button" fx:id="btnSave" layoutX="148.0" layoutY="118.0" mnemonicParsing="false" onMouseClicked="#onBtnSaveClicked" prefHeight="39.0" prefWidth="96.0" text="Salvar">
          <font>
             <Font size="18.0" />
          </font></Button>
