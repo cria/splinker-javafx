@@ -9,7 +9,7 @@
 <Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="327.0" prefWidth="471.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.PrincipalController">
    <children>
       <ComboBox id="cmbCollection" fx:id="cmbCollection" layoutX="20.0" layoutY="29.0" onAction="#onCmbCollectionChange" prefWidth="150.0" />
-      <Button id="syncServerBtn" fx:id="syncServerBtn" layoutX="20.0" layoutY="74.0" mnemonicParsing="false" onMouseClicked="#onSyncServerBtnClicked" prefHeight="113.0" prefWidth="150.0" styleClass="gray-button" text="Enviar" textAlignment="JUSTIFY">
+      <Button id="syncServerBtn" fx:id="syncServerBtn" layoutX="20.0" layoutY="74.0" mnemonicParsing="false" onMouseClicked="#onSyncServerBtnClicked" prefHeight="113.0" prefWidth="150.0" text="Enviar" textAlignment="JUSTIFY">
          <font>
             <Font name="System Bold" size="29.0" />
          </font>

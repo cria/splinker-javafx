@@ -55,23 +55,3 @@
 .primary-button:pressed {
     -fx-background-color: #004085; /* Tom mais escuro ao clicar */
 }
-
-.gray-button {
-    -fx-background-color: #7d7f86; /* Cinza Bootstrap 5 */
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-font-size: 24px; /* Exemplo de tamanho fixo */
-    -fx-background-radius: 5;
-    -fx-border-radius: 5;
-    -fx-border-color: #6c757d;
-    -fx-border-width: 1px;
-}
-
-.gray-button:hover {
-    -fx-background-color: #5a6268; /* Tom um pouco mais escuro ao passar o mouse */
-}
-
-.gray-button:pressed {
-    -fx-background-color: #545b62; /* Tom ainda mais escuro ao clicar */
-}
-
