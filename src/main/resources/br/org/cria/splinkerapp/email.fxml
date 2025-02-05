@@ -5,12 +5,30 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="524.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FirstConfigDialogController">
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="524.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.EmailController">
     <children>
-        <Label alignment="CENTER" layoutX="24.0" layoutY="62.0" prefHeight="173.0" prefWidth="460.0" text="Em desenvolvimento!!!" textAlignment="JUSTIFY" wrapText="true">
+        <ComboBox id="cmbAssunto" fx:id="cmbAssunto" layoutX="20.0" layoutY="44.0" prefHeight="25.0" prefWidth="483.0" />
+        <Label id="proxyLabel" fx:id="proxyLabel" layoutX="189.0" layoutY="6.0" text="Fale Conosco">
+            <font>
+                <Font name="System Bold" size="18.0" />
+            </font>
+        </Label>
+        <Label layoutX="21.0" layoutY="22.0" text="Título" textAlignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font></Label>
+        <TextArea id="urlField" fx:id="urlField" layoutX="20.0" layoutY="95.0" prefHeight="131.0" prefWidth="483.0" promptText="Mensagem" />
+        <Label layoutX="21.0" layoutY="73.0" prefHeight="25.0" prefWidth="90.0" text="Mensagem" textAlignment="CENTER">
+            <font>
+                <Font size="16.0" />
+            </font></Label>
+        <TextField id="urlField" fx:id="emailField" layoutX="20.0" layoutY="253.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="483.0" promptText="Email" />
+        <Label layoutX="22.0" layoutY="230.0" text="Email" textAlignment="CENTER">
+            <font>
+                <Font size="16.0" />
+            </font></Label>
+        <Button id="btnSave" fx:id="btnSave" layoutX="206.0" layoutY="288.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" styleClass="primary-button" text="Enviar" />
+
         <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="20.0" layoutY="289.0" pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="@../../../../images/cria-logo.png" />

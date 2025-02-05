@@ -5,12 +5,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="524.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FirstConfigDialogController">
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="524.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.ReportController">
     <children>
-        <Label alignment="CENTER" layoutX="24.0" layoutY="62.0" prefHeight="173.0" prefWidth="460.0" text="Em desenvolvimento!!!" textAlignment="JUSTIFY" wrapText="true">
+        <Label id="proxyLabel" fx:id="proxyLabel" layoutX="215.0" layoutY="8.0" text="Histórico">
             <font>
-                <Font size="16.0" />
-            </font></Label>
+                <Font name="System Bold" size="18.0" />
+            </font>
+        </Label>
         <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="20.0" layoutY="289.0" pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="@../../../../images/cria-logo.png" />
@@ -21,5 +22,14 @@
                 <Image url="@../../../../images/splink-logo.gif" />
             </image>
         </ImageView>
+        <TableView fx:id="tableView" layoutX="22.0" layoutY="46.0" prefHeight="217.0" prefWidth="463.0">
+            <columns>
+                <TableColumn fx:id="colData" prefWidth="209.40000915527344" text="Data" />
+                <TableColumn fx:id="colRegistros" prefWidth="253.79998779296875" text="Registros Enviados" />
+            </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+        </TableView>
     </children>
 </Pane>
