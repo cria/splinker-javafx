@@ -3,7 +3,9 @@ package br.org.cria.splinkerapp.services.implementations;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,8 +16,11 @@ import java.util.Map;
 
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
+import br.org.cria.splinkerapp.models.TransferHistoryDataSet;
 import br.org.cria.splinkerapp.repositories.BaseRepository;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
+import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
 
 public class DataSetService extends BaseRepository {
 
@@ -286,4 +291,35 @@ public class DataSetService extends BaseRepository {
         stm.close();
         conn.close();
     }
+
+    public static void insertTransferHistory(HashMap<String, String> args) throws Exception {
+        String cmd = "INSERT INTO TransferHistoryDataSet (token, rowcount, send_date) VALUES ('"
+                + args.get("token") + "', '"
+                + args.get("last_rowcount") + "', '"
+                + args.get("updated_at") + "');";
+
+        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+        var stm = conn.prepareStatement(cmd);
+        stm.executeUpdate();
+        stm.close();
+        conn.close();
+    }
+
+    public static List<TransferHistoryDataSet> getTransferHistory() throws Exception {
+        String token = TokenRepository.getCurrentToken();
+        var sources = new ArrayList<TransferHistoryDataSet>();
+        var cmd = "SELECT * FROM  TransferHistoryDataSet th WHERE th.token = '" + token + "' ORDER BY th.created_at DESC;";
+        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+        var results = runQuery(cmd, conn);
+        while (results.next()) {
+            TransferHistoryDataSet dataHistory= new TransferHistoryDataSet();
+            dataHistory.setDate(results.getString("send_date"));
+            dataHistory.setRowcount(results.getString("rowcount"));
+            sources.add(dataHistory);
+        }
+        results.close();
+        conn.close();
+        return sources;
+    }
+
 }

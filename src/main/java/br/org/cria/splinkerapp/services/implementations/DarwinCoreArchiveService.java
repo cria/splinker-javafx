@@ -167,7 +167,7 @@ public class DarwinCoreArchiveService {
                 FROM sqlite_master
                 WHERE type='table' AND name NOT IN 
                 ('DataSetConfiguration', 'CentralServiceConfiguration', 
-                'TransferConfiguration','ProxyConfiguration');
+                'TransferConfiguration','ProxyConfiguration','TransferHistoryDataSet');
                 """;
         var connString = System.getProperty("splinker.connection", LocalDbManager.getLocalDbConnectionString());
         var conn = DriverManager.getConnection(connString);

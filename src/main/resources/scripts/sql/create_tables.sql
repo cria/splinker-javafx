@@ -44,5 +44,13 @@ CREATE TABLE IF NOT EXISTS ProxyConfiguration (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS TransferHistoryDataSet (
+    token VARCHAR(20) NOT NULL,
+    rowcount VARCHAR(10),
+    send_date VARCHAR(20),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
 INSERT INTO CentralServiceConfiguration (central_service_url, last_system_version)
 VALUES ('https://specieslink.net/ws/1.0/splinker/login', "1.0");
