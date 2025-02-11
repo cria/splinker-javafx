@@ -150,6 +150,12 @@
             <scope>system</scope>
             <systemPath>${basedir}/libs/yajsync-app-0.9.0-SNAPSHOT-full.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>
