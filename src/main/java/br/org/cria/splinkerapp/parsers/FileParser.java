@@ -46,7 +46,7 @@ public abstract class FileParser {
     @SuppressWarnings("null")
     protected String getCellValue(String cell) {
         var isNull = cell == null;
-        var hasNullValue = isNull ? true : cell.toLowerCase() != "null";
+        var hasNullValue = isNull || cell.equalsIgnoreCase("null");
         var value = hasNullValue ? "" : cell.replace("\r", " ").replace("\t", " ");
         return value;
     }
