@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.sql.Connection;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,7 +44,21 @@ public class XLSXFileParser extends FileParser {
                 builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
                 var fieldCount = headerRow.getCellCount();
                 for (int i = 0; i < fieldCount; i++) {
-                    var cellValue = headerRow.getCell(i).asString();
+                    var cell = headerRow.getCell(i);
+                    String cellValue = "";
+                    try {
+                        cellValue = cell.asString();
+                    } catch (Exception e) {
+                        cellValue = cell.toString();
+                    }
+                    if (cellValue != null && cellValue.startsWith("[FORMULA")) {
+                        int startIndex = cellValue.indexOf("\"");
+                        int endIndex = cellValue.lastIndexOf("\"");
+                        if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
+                            cellValue = cellValue.substring(startIndex + 1, endIndex);
+                        }
+                    }
+
                     if (!StringUtils.isEmpty(cellValue)) {
                         String columnName = makeColumnName(cellValue);
                         builder.append("%s VARCHAR(1),".formatted(columnName));
@@ -89,11 +104,16 @@ public class XLSXFileParser extends FileParser {
                 var lines = sheet.read();
                 var headerRow = lines.get(0);
                 var tableName = StringStandards.normalizeString(sheet.getName());
-                totalColumnCount = headerRow.getCellCount();
+                int totalColumnCount = (int) IntStream.range(0, headerRow.getCellCount())
+                        .mapToObj(headerRow::getCell)
+                        .filter(cell -> cell != null && cell.getRawValue() != null && !cell.getRawValue().trim().isEmpty())
+                        .count();
+
                 totalRowCount = lines.size() - 1;
 
                 List<String> columns = getRowAsStringList(headerRow, totalColumnCount).stream()
-                        .map((col) -> makeColumnName(col))
+                        .filter(col -> !col.isEmpty())
+                        .map(this::makeColumnName)
                         .toList();
 
                 var valuesStr = "?,".repeat(totalColumnCount);
@@ -101,35 +121,33 @@ public class XLSXFileParser extends FileParser {
                 var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
                         .replace(",)", ")");
                 var statement = conn.prepareStatement(command);
-                //sublist exclui o elemento na posição toIndex;
+
                 var rows = lines.subList(1, lines.size());
-                rows.stream().filter(row -> row != null && row.getCellCount() != 0).forEach((row) ->
-                {
-                    try {
-                        var cellIterator = row.iterator();
-                        var index = 1;
-                        while (cellIterator.hasNext()) {
-                            var cell = cellIterator.next();
-                            var isNullCell = cell == null;
-                            var value = isNullCell ? "" : getCellValue(cell.getRawValue());
+                rows.stream()
+                        .filter(row -> row != null && row.getCellCount() != 0)
+                        .forEach(row -> {
+                            try {
+                                // Itera exatamente o número de colunas definido pelo cabeçalho
+                                for (int i = 0; i < totalColumnCount; i++) {
+                                    var cell = row.getCell(i);
+                                    String value = (cell != null && cell.getRawValue() != null)
+                                            ? getCellValue(cell.getRawValue())
+                                            : "";
+                                    statement.setString(i + 1, value);
+                                }
+                                statement.addBatch();
+                                currentRow++;
+                                if (currentRow % 10_000 == 0) {
+                                    statement.executeBatch();
+                                    conn.commit();
+                                    statement.clearBatch();
+                                }
+                                readRowEventBus.post(currentRow);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
 
-                            statement.setString(index, value);
-                            index++;
-                        }
-                        statement.addBatch();
-                        currentRow++;
-                        if (currentRow % 10_000 == 0) {
-                            statement.executeBatch();
-                            conn.commit();
-                            statement.clearBatch();
-
-                        }
-                        readRowEventBus.post(currentRow);
-
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
                 statement.executeBatch();
                 conn.commit();
                 statement.clearBatch();
