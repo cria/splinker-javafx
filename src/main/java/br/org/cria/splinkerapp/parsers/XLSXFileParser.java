@@ -43,7 +43,20 @@ public class XLSXFileParser extends FileParser {
                 builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
                 var fieldCount = headerRow.getCellCount();
                 for (int i = 0; i < fieldCount; i++) {
-                    var cellValue = headerRow.getCell(i).asString();
+                    var cell = headerRow.getCell(i);
+                    String cellValue = "";
+                    try {
+                        cellValue = cell.asString();
+                    } catch (Exception e) {
+                        cellValue = cell.toString();
+                    }
+                    if (cellValue != null && cellValue.startsWith("[FORMULA")) {
+                        int startIndex = cellValue.indexOf("\"");
+                        int endIndex = cellValue.lastIndexOf("\"");
+                        if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
+                            cellValue = cellValue.substring(startIndex + 1, endIndex);
+                        }
+                    }
                     if (!StringUtils.isEmpty(cellValue)) {
                         String columnName = makeColumnName(cellValue);
                         builder.append("%s VARCHAR(1),".formatted(columnName));
@@ -90,34 +103,38 @@ public class XLSXFileParser extends FileParser {
                 var headerRow = lines.get(0);
                 var tableName = StringStandards.normalizeString(sheet.getName());
                 totalColumnCount = headerRow.getCellCount();
-                totalRowCount = lines.size() - 1;
+                totalRowCount = 0;
 
                 List<String> columns = getRowAsStringList(headerRow, totalColumnCount).stream()
-                        .map((col) -> makeColumnName(col))
+                        .map(this::makeColumnName)
+                        .filter(col -> col != null && !col.trim().isEmpty())
                         .toList();
 
-                var valuesStr = "?,".repeat(totalColumnCount);
+                var valuesStr = "?,".repeat(columns.size());
                 var columnNames = String.join(",", columns);
                 var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
                         .replace(",)", ")");
                 var statement = conn.prepareStatement(command);
                 //sublist exclui o elemento na posição toIndex;
                 var rows = lines.subList(1, lines.size());
-                rows.stream().filter(row -> row != null && row.getCellCount() != 0).forEach((row) ->
+                rows.stream().filter(row -> row != null && row.getCellCount() != 0 && !isRowEmpty(row)).forEach((row) ->
                 {
                     try {
-                        var cellIterator = row.iterator();
-                        var index = 1;
-                        while (cellIterator.hasNext()) {
-                            var cell = cellIterator.next();
+                        for (int i = 0; i < columns.size(); i++) {
+                            Cell cell = null;
+                            try {
+                                cell = row.getCell(i);
+                            } catch (Exception ignored) {
+
+                            }
+
                             var isNullCell = cell == null;
                             var value = isNullCell ? "" : getCellValue(cell.getRawValue());
-
-                            statement.setString(index, value);
-                            index++;
+                            statement.setString(i + 1, value);
                         }
                         statement.addBatch();
                         currentRow++;
+                        totalRowCount ++;
                         if (currentRow % 10_000 == 0) {
                             statement.executeBatch();
                             conn.commit();
@@ -143,6 +160,22 @@ public class XLSXFileParser extends FileParser {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean isRowEmpty(Row row) {
+        if (row == null) {
+            return true;
+        }
+
+        for (Cell cell : row) {
+            var isNullCell = cell == null;
+            var value = isNullCell ? "" : getCellValue(cell.getRawValue());
+            if (!value.isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }
