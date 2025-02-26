@@ -1,15 +1,20 @@
 package br.org.cria.splinkerapp.services.implementations;
 
-import br.org.cria.splinkerapp.repositories.TokenRepository;
-import javax.mail.*;
+import java.sql.DriverManager;
+import java.util.Properties;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
-public class EmailService {
+import br.org.cria.splinkerapp.models.EmailConfiguration;
+import br.org.cria.splinkerapp.repositories.BaseRepository;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
+
+public class EmailService extends BaseRepository {
 
     private String destinatario;
     private String usuario;
@@ -22,14 +27,15 @@ public class EmailService {
     }
 
     private void loadEmailConfigurations() {
-        Properties props = new Properties();
-        try (InputStream input = new FileInputStream("src/main/java/br/org/cria/splinkerapp/properties/email.properties")) {
-            props.load(input);
-            this.destinatario = props.getProperty("email.destinatario");
-            this.usuario = props.getProperty("email.usuario");
-            this.senha = props.getProperty("email.senha");
-        } catch (IOException ex) {
-            throw new RuntimeException("Não foi possível carregar as configurações de e-mail: " + ex.getMessage(), ex);
+        try {
+
+            var results = DataSetService.getEmailConfiguration();
+                destinatario = results.getContact_email_recipient();
+                usuario = results.getContact_email_send();
+                senha = results.getContact_email_token();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao carregar configurações de e-mail.", e);
         }
     }
 
