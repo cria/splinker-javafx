@@ -16,6 +16,7 @@ import java.util.Map;
 
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
+import br.org.cria.splinkerapp.models.EmailConfiguration;
 import br.org.cria.splinkerapp.models.TransferHistoryDataSet;
 import br.org.cria.splinkerapp.repositories.BaseRepository;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
@@ -322,4 +323,18 @@ public class DataSetService extends BaseRepository {
         return sources;
     }
 
+    public static EmailConfiguration getEmailConfiguration() throws Exception {
+        var cmd = "SELECT * FROM EmailConfiguration";
+        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+        var results = runQuery(cmd, conn);
+        EmailConfiguration emailConfiguration = new EmailConfiguration();
+        if (results.next()) {
+            emailConfiguration.setContact_email_recipient(results.getString("contact_email_recipient"));
+            emailConfiguration.setContact_email_send(results.getString("contact_email_send"));
+            emailConfiguration.setContact_email_token(results.getString("contact_email_token"));
+        }
+        results.close();
+        conn.close();
+        return emailConfiguration;
+    }
 }
