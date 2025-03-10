@@ -13,5 +13,6 @@
          <font>
             <Font size="18.0" />
          </font></Label>
+      <Label layoutX="14.0" layoutY="98.0" prefHeight="27.0" prefWidth="409.0" text="Selecione o arquivo com os dados para envio à rede speciesLink." />
    </children>
 </Pane>
