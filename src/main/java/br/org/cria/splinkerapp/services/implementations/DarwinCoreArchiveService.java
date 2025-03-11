@@ -77,7 +77,14 @@ public class DarwinCoreArchiveService {
         var dataSourceRows = new StringBuilder();
         var rowCount = 0;
         var baseStr = "%s\t";
+        boolean firstRow = true;
         while (data.next()) {
+            if (!firstRow) {
+                dataSourceRows.append("\n");
+            } else {
+                firstRow = false;
+            }
+
             var resultSetMetaData = data.getMetaData();
             var count = resultSetMetaData.getColumnCount();
 
@@ -90,7 +97,6 @@ public class DarwinCoreArchiveService {
                 dataSourceRows.append(content);
             }
 
-            dataSourceRows.append("\n");
             rowCount++;
             writeDataEventBus.post(rowCount);
         }
@@ -167,7 +173,7 @@ public class DarwinCoreArchiveService {
                 FROM sqlite_master
                 WHERE type='table' AND name NOT IN 
                 ('DataSetConfiguration', 'CentralServiceConfiguration', 
-                'TransferConfiguration','ProxyConfiguration','TransferHistoryDataSet');
+                'TransferConfiguration','ProxyConfiguration','TransferHistoryDataSet', 'EmailConfiguration');
                 """;
         var connString = System.getProperty("splinker.connection", LocalDbManager.getLocalDbConnectionString());
         var conn = DriverManager.getConnection(connString);
