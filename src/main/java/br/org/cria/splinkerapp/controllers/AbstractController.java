@@ -1,20 +1,24 @@
 package br.org.cria.splinkerapp.controllers;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.Router;
+import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import br.org.cria.splinkerapp.utils.ModalAlertUtil;
 import com.google.common.eventbus.EventBus;
 import io.sentry.Sentry;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public abstract class AbstractController implements Initializable {
@@ -26,6 +30,7 @@ public abstract class AbstractController implements Initializable {
     @FXML
     Pane pane;
     Alert dialog = new Alert(AlertType.INFORMATION);
+    String basePath = "/br/org/cria/splinkerapp/%s.fxml";
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -72,6 +77,51 @@ public abstract class AbstractController implements Initializable {
             ex.printStackTrace();
             return null;
         }
+    }
+
+    @FXML
+    void showDataSourceConfiguration(String token) {
+        try {
+            var ds = DataSetService.getDataSet(token);
+            var pageName = "collection-database";
+
+            if (ds.isAccessDb()) {
+                pageName = "access-db-modal";
+            }
+
+            if (ds.isFile()) {
+                pageName = "file-selection";
+            }
+
+            loadPage(pageName);
+            paintItRed("dataLabel");
+        } catch (Exception e) {
+            handleErrors(e);
+        }
+    }
+
+    protected void loadPage(String pageName) {
+        try {
+            var template = basePath.formatted(pageName);
+            loader = new FXMLLoader(getClass().getResource(template));
+            Node childNode = loader.load();
+
+            var children = pane.getChildren();
+            children.clear();
+            children.add(childNode);
+        } catch (Exception e) {
+            handleErrors(e);
+        }
+    }
+
+
+    void paintItRed(String lblName) {
+        var lbls = pane.getScene().getRoot().lookupAll(".label");
+        lbls.forEach((lbl) -> {
+            var id = lbl.getId();
+            var paintItBlack = !lblName.equals(id);
+            ((Label) lbl).setTextFill(paintItBlack ? Color.BLACK : Color.RED);
+        });
     }
 
     protected void showErrorModal(String errorMessage) {

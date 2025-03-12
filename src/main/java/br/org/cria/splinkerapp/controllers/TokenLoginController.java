@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -110,7 +111,7 @@ public class TokenLoginController extends AbstractController {
                 if (!hasConfig) {
                     navigateTo(getStage(), routeName);
                 } else {
-                    navigateTo(getStage(), "home");
+                    showDataSourceConfiguration(newToken);
                 }
             }
         } catch (Exception e) {
