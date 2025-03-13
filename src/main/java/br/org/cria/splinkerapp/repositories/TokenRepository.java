@@ -1,6 +1,9 @@
 package br.org.cria.splinkerapp.repositories;
 
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class TokenRepository extends BaseRepository {
 
@@ -19,6 +22,19 @@ public class TokenRepository extends BaseRepository {
 
         return token;
     }
+
+    public static Collection<String> getTokens() throws Exception {
+        String query = "SELECT token FROM DataSetConfiguration;";
+        Collection<String> tokens = new ArrayList<>();
+        try (var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+             ResultSet rs = runQuery(query, conn)) {
+            while (rs.next()) {
+                tokens.add(rs.getString("token"));
+            }
+        }
+        return tokens;
+    }
+
 
     public static void setCurrentToken(String token) {
         System.setProperty("splinker_token", token);

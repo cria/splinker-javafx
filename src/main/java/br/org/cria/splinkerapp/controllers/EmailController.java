@@ -1,17 +1,19 @@
 package br.org.cria.splinkerapp.controllers;
 
-import br.org.cria.splinkerapp.enums.WindowSizes;
-import br.org.cria.splinkerapp.services.implementations.EmailService;
-import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Button;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javax.mail.MessagingException;
+
+import br.org.cria.splinkerapp.enums.WindowSizes;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
+import br.org.cria.splinkerapp.services.implementations.EmailService;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 
 public class EmailController extends AbstractController {
 
@@ -23,6 +25,8 @@ public class EmailController extends AbstractController {
     private TextField emailField;
     @FXML
     private Button btnSave;
+    @FXML
+    private ComboBox<String> cmbToken;
 
     private EmailService emailService = new EmailService();
 
@@ -36,6 +40,11 @@ public class EmailController extends AbstractController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         cmbAssunto.getItems().addAll("Sugestões", "Erro na transmissão", "Outros");
+        try {
+            cmbToken.getItems().addAll(TokenRepository.getTokens());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         btnSave.setOnAction(e -> enviarEmail());
     }
 
@@ -43,6 +52,7 @@ public class EmailController extends AbstractController {
         String assunto = cmbAssunto.getValue();
         String mensagem = urlField.getText();
         String emailUsuario = emailField.getText();
+        String token = cmbToken.getValue();
 
         if (assunto == null || assunto.isEmpty()) {
             showAlert("Erro", "Por favor, selecione um assunto.");
@@ -56,9 +66,12 @@ public class EmailController extends AbstractController {
             showAlert("Erro", "Por favor, informe o seu email.");
             return;
         }
-
+        if (token == null || token.isEmpty()) {
+            showAlert("Erro", "Por favor, escolha um token.");
+            return;
+        }
         try {
-            emailService.sendEmail(assunto, mensagem, emailUsuario);
+            emailService.sendEmail(assunto, mensagem, emailUsuario, token);
             showAlert("Sucesso", "Email enviado com sucesso!");
         } catch (MessagingException me) {
             me.printStackTrace();
