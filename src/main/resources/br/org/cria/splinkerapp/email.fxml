@@ -5,20 +5,20 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="524.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.EmailController">
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="524.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.EmailController">
     <children>
-        <ComboBox id="cmbAssunto" fx:id="cmbAssunto" layoutX="20.0" layoutY="44.0" prefHeight="25.0" prefWidth="483.0" />
+        <ComboBox id="cmbAssunto" fx:id="cmbAssunto" layoutX="21.0" layoutY="72.0" prefHeight="25.0" prefWidth="231.0" />
         <Label id="proxyLabel" fx:id="proxyLabel" layoutX="189.0" layoutY="6.0" text="Fale Conosco">
             <font>
                 <Font name="System Bold" size="18.0" />
             </font>
         </Label>
-        <Label layoutX="21.0" layoutY="22.0" text="Título" textAlignment="CENTER">
+        <Label layoutX="21.0" layoutY="51.0" text="Título" textAlignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font></Label>
-        <TextArea id="urlField" fx:id="urlField" layoutX="20.0" layoutY="95.0" prefHeight="131.0" prefWidth="483.0" promptText="Mensagem" />
-        <Label layoutX="21.0" layoutY="73.0" prefHeight="25.0" prefWidth="90.0" text="Mensagem" textAlignment="CENTER">
+        <TextArea id="urlField" fx:id="urlField" layoutX="20.0" layoutY="131.0" prefHeight="95.0" prefWidth="494.0" promptText="Mensagem" />
+        <Label layoutX="22.0" layoutY="106.0" prefHeight="25.0" prefWidth="90.0" text="Mensagem" textAlignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font></Label>
@@ -39,5 +39,10 @@
                 <Image url="@../../../../images/splink-logo.gif" />
             </image>
         </ImageView>
+      <Label layoutX="269.0" layoutY="51.0" text="Token">
+         <font>
+            <Font size="16.0" />
+         </font></Label>
+      <ComboBox id="cmbAssunto" fx:id="cmbToken" layoutX="269.0" layoutY="72.0" prefHeight="25.0" prefWidth="231.0" />
     </children>
 </Pane>
