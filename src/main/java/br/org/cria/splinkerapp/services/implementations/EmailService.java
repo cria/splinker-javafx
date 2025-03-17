@@ -1,6 +1,5 @@
 package br.org.cria.splinkerapp.services.implementations;
 
-import java.sql.DriverManager;
 import java.util.Properties;
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -10,9 +9,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import br.org.cria.splinkerapp.models.EmailConfiguration;
 import br.org.cria.splinkerapp.repositories.BaseRepository;
-import br.org.cria.splinkerapp.repositories.TokenRepository;
 
 public class EmailService extends BaseRepository {
 
@@ -30,10 +27,9 @@ public class EmailService extends BaseRepository {
         try {
 
             var results = DataSetService.getEmailConfiguration();
-                destinatario = results.getContact_email_recipient();
-                usuario = results.getContact_email_send();
-                senha = results.getContact_email_token();
-
+            destinatario = results.getContact_email_recipient();
+            usuario = results.getContact_email_send();
+            senha = results.getContact_email_token();
         } catch (Exception e) {
             throw new RuntimeException("Erro ao carregar configurações de e-mail.", e);
         }
@@ -47,7 +43,7 @@ public class EmailService extends BaseRepository {
         emailProps.put("mail.smtp.port", "587");
     }
 
-    public void sendEmail(String assunto, String mensagem, String emailUsuario) throws Exception {
+    public void sendEmail(String assunto, String mensagem, String emailUsuario, String token) throws Exception {
         if (destinatario == null || destinatario.isEmpty() ||
                 usuario == null || usuario.isEmpty() ||
                 senha == null || senha.isEmpty()) {
@@ -65,9 +61,7 @@ public class EmailService extends BaseRepository {
         message.setFrom(new InternetAddress(usuario));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
         message.setSubject(assunto);
-        String token = TokenRepository.getCurrentToken();
         message.setText(mensagem + " de: " + emailUsuario + " no token: " + token);
-
         Transport.send(message);
     }
 }
