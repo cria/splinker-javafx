@@ -41,6 +41,8 @@ public class EmailService extends BaseRepository {
         emailProps.put("mail.smtp.starttls.enable", "true");
         emailProps.put("mail.smtp.host", "smtp.gmail.com");
         emailProps.put("mail.smtp.port", "587");
+        emailProps.put("mail.smtp.ssl.checkserveridentity", "false");
+        emailProps.put("mail.smtp.ssl.trust", "*");
     }
 
     public void sendEmail(String assunto, String mensagem, String emailUsuario, String token) throws Exception {

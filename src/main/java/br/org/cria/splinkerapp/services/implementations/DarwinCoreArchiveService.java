@@ -76,9 +76,9 @@ public class DarwinCoreArchiveService {
     private String getDataSetRows(ResultSet data) throws Exception {
         var dataSourceRows = new StringBuilder();
         var rowCount = 0;
-        var baseStr = "%s\t";
         boolean firstRow = true;
         while (data.next()) {
+            var baseStr = "%s\t";
             if (!firstRow) {
                 dataSourceRows.append("\n");
             } else {
@@ -93,6 +93,9 @@ public class DarwinCoreArchiveService {
                 var isNotNull = value != null && value.toLowerCase() != "null";
                 var isNotCRLF = isNotNull && value != "\r" && value != "\t";
                 var hasValue = isNotNull && isNotCRLF;
+                if (i==count) {
+                    baseStr = "%s";
+                }
                 var content = baseStr.formatted(hasValue ? value : "");
                 dataSourceRows.append(content);
             }
@@ -108,9 +111,13 @@ public class DarwinCoreArchiveService {
         var builder = new StringBuilder();
         var metaData = data.getMetaData();
         int count = metaData.getColumnCount();
+        var baseStr = "%s\t";
 
         for (int i = 1; i <= count; i++) {
-            builder.append("%s\t".formatted(metaData.getColumnName(i)));
+            if (i==count) {
+                baseStr = "%s";
+            }
+            builder.append(baseStr.formatted(metaData.getColumnName(i)));
         }
         builder.append("\n");
         var columns = builder.toString();

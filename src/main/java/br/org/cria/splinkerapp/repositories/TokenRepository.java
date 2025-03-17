@@ -24,12 +24,12 @@ public class TokenRepository extends BaseRepository {
     }
 
     public static Collection<String> getTokens() throws Exception {
-        String query = "SELECT token FROM DataSetConfiguration;";
+        String query = "SELECT dataset_acronym FROM DataSetConfiguration;";
         Collection<String> tokens = new ArrayList<>();
         try (var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
              ResultSet rs = runQuery(query, conn)) {
             while (rs.next()) {
-                tokens.add(rs.getString("token"));
+                tokens.add(rs.getString("dataset_acronym"));
             }
         }
         return tokens;
