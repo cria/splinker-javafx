@@ -7,6 +7,7 @@ import javax.mail.MessagingException;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.EmailService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -71,14 +72,29 @@ public class EmailController extends AbstractController {
             return;
         }
         try {
-            emailService.sendEmail(assunto, mensagem, emailUsuario, token);
-            showAlert("Sucesso", "Email enviado com sucesso!");
-        } catch (MessagingException me) {
-            me.printStackTrace();
-            showAlert("Erro", "Falha ao enviar o email: " + me.getMessage());
+            onButtonEnviarClicked();
+            new Thread(() -> {
+                try {
+                    emailService.sendEmail(assunto, mensagem, emailUsuario, token);
+                    Platform.runLater(() -> {
+                        showAlert("Sucesso", "Email enviado com sucesso!");
+                        cmbAssunto.setValue(null);
+                        urlField.clear();
+                        emailField.clear();
+                        cmbToken.setValue(null);
+                        loadPage("email");
+                    });
+                } catch (MessagingException me) {
+                    me.printStackTrace();
+                    Platform.runLater(() -> showAlert("Erro", "Falha ao enviar o email: " + me.getMessage()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Platform.runLater(() -> showAlert("Erro", "Ocorreu um erro: " + e.getMessage()));
+                }
+            }).start();
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Erro", "Ocorreu um erro: " + e.getMessage());
+            showAlert("Erro", "Ocorreu um erro ao iniciar o envio: " + e.getMessage());
         }
     }
 
@@ -88,5 +104,10 @@ public class EmailController extends AbstractController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    void onButtonEnviarClicked() {
+        loadPage("email-sending");
     }
 }

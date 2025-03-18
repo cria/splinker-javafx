@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="222.0" prefWidth="514.0" xmlns="http://javafx.com/javafx/17.0.2-ea">
+    <children>
+        <Label alignment="CENTER" layoutX="121.0" layoutY="58.0" prefHeight="94.0" prefWidth="273.0" text="Enviando Email, Aguarde." textAlignment="CENTER" textOverrun="WORD_ELLIPSIS">
+            <font>
+                <Font name="System Bold" size="18.0"/>
+            </font>
+        </Label>
+    </children>
+</AnchorPane>
