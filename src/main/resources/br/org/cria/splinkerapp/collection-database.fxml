@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="364.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.CollectionLocalDatabaseController">
+<Pane fx:id="pane" layoutX="1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="421.0" prefWidth="364.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.CollectionLocalDatabaseController">
    <children>
-      <TextField fx:id="usernameField" layoutX="163.0" layoutY="20.0" prefHeight="36.0" prefWidth="193.0" promptText="Usuário" />
-      <Button fx:id="btnSalvar" layoutX="116.0" layoutY="276.0" mnemonicParsing="false" onAction="#onSaveButtonClicked" prefHeight="50.0" prefWidth="132.0" text="Salvar">
+      <TextField fx:id="usernameField" layoutX="8.0" layoutY="37.0" prefHeight="36.0" prefWidth="338.0" promptText="Usuário" />
+      <Button fx:id="btnSalvar" alignment="CENTER" styleClass="success-button" layoutX="117.0" layoutY="357.0" mnemonicParsing="false" onAction="#onSaveButtonClicked" prefHeight="50.0" prefWidth="132.0" text="Salvar">
          <font>
             <Font size="18.0" />
          </font></Button>
-      <TextField id="portField" fx:id="portField" layoutX="165.0" layoutY="118.0" prefHeight="36.0" prefWidth="193.0" promptText="Porta" />
-      <TextField id="hostAddressField" fx:id="hostAddressField" layoutX="163.0" layoutY="219.0" prefHeight="36.0" prefWidth="193.0" promptText="Endereço de Host" />
-      <TextField id="dbNameField" fx:id="dbNameField" layoutX="163.0" layoutY="168.0" prefHeight="36.0" prefWidth="193.0" promptText="Nome do Banco de dados" />
-      <PasswordField id="passwordField" fx:id="passwordField" layoutX="163.0" layoutY="68.0" prefHeight="36.0" prefWidth="193.0" promptText="Senha" />
-      <Label layoutX="15.0" layoutY="24.0" text="Usuário">
+      <TextField id="portField" fx:id="portField" layoutX="8.0" layoutY="163.0" prefHeight="36.0" prefWidth="338.0" promptText="Porta" />
+      <TextField id="hostAddressField" fx:id="hostAddressField" layoutX="8.0" layoutY="287.0" prefHeight="36.0" prefWidth="338.0" promptText="Endereço de Host" />
+      <TextField id="dbNameField" fx:id="dbNameField" layoutX="8.0" layoutY="224.0" prefHeight="36.0" prefWidth="338.0" promptText="Nome do Banco de dados" />
+      <PasswordField id="passwordField" fx:id="passwordField" layoutX="8.0" layoutY="100.0" prefHeight="36.0" prefWidth="338.0" promptText="Senha" />
+      <Label layoutX="15.0" layoutY="14.0" text="Usuário">
          <font>
             <Font size="18.0" />
          </font></Label>
@@ -26,15 +23,15 @@
          <font>
             <Font size="18.0" />
          </font></Label>
-      <Label layoutX="15.0" layoutY="118.0" text="Porta">
+      <Label layoutX="15.0" layoutY="136.0" text="Porta">
          <font>
             <Font size="18.0" />
          </font></Label>
-      <Label layoutX="15.0" layoutY="169.0" text="Nome do banco">
+      <Label layoutX="15.0" layoutY="197.0" text="Nome do banco">
          <font>
             <Font size="18.0" />
          </font></Label>
-      <Label layoutX="15.0" layoutY="228.0" text="Endereço de host">
+      <Label layoutX="15.0" layoutY="260.0" lineSpacing="1.0" text="Endereço de host">
          <font>
             <Font size="18.0" />
          </font></Label>
