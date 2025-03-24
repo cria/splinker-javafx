@@ -43,6 +43,7 @@ public class EmailController extends AbstractController {
         cmbAssunto.getItems().addAll("Sugestões", "Erro na transmissão", "Outros");
         try {
             cmbToken.getItems().addAll(TokenRepository.getTokens());
+            cmbToken.setValue(TokenRepository.getCurrentTokenSigla());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

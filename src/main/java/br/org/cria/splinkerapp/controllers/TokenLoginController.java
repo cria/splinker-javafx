@@ -1,6 +1,5 @@
 package br.org.cria.splinkerapp.controllers;
 
-import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -155,8 +154,6 @@ public class TokenLoginController extends AbstractController {
         } else {
             btnDeleteToken.setVisible(true);
         }
-
-
     }
 
     @Override

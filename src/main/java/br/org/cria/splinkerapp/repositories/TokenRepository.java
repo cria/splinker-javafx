@@ -1,7 +1,10 @@
 package br.org.cria.splinkerapp.repositories;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -23,6 +26,28 @@ public class TokenRepository extends BaseRepository {
         return token;
     }
 
+    public static void setCurrentToken(String token) {
+        System.setProperty("splinker_token", token);
+    }
+
+    public static String getCurrentTokenSigla() {
+        String token = System.getProperty("splinker_token");
+        if (token == null) {
+            return "";
+        }
+        try (Connection conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+             PreparedStatement stmt = conn.prepareStatement("SELECT dataset_acronym FROM DataSetConfiguration WHERE token = ?")) {
+            stmt.setString(1, token);
+            try (ResultSet result = stmt.executeQuery()) {
+                return result.next() ?
+                        result.getString("dataset_acronym") :
+                        "";
+            }
+        } catch (SQLException e) {
+            return "";
+        }
+    }
+
     public static Collection<String> getTokens() throws Exception {
         String query = "SELECT dataset_acronym FROM DataSetConfiguration;";
         Collection<String> tokens = new ArrayList<>();
@@ -34,10 +59,4 @@ public class TokenRepository extends BaseRepository {
         }
         return tokens;
     }
-
-
-    public static void setCurrentToken(String token) {
-        System.setProperty("splinker_token", token);
-    }
-
 }
