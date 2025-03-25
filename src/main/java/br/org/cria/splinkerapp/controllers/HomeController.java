@@ -83,10 +83,14 @@ public class HomeController extends AbstractController {
         principalImg = new ImageView(new Image("images/home.png"));
         principalImg.setFitHeight(32);
         principalImg.setFitWidth(32);
+        principalImg.setSmooth(true);
+        principalImg.setPreserveRatio(true);
 
         settingsImg = new ImageView(new Image("images/settings.png"));
         settingsImg.setFitHeight(32);
         settingsImg.setFitWidth(32);
+        settingsImg.setSmooth(true);
+        settingsImg.setPreserveRatio(true);
 
         helpImg = new ImageView(new Image("images/help.png"));
         helpImg.setFitHeight(32);
@@ -103,6 +107,8 @@ public class HomeController extends AbstractController {
         reportImg = new ImageView(new Image("images/report.png"));
         reportImg.setFitHeight(32);
         reportImg.setFitWidth(32);
+        reportImg.setSmooth(true);
+        reportImg.setPreserveRatio(true);
 
         btnPrincipal.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
         btnPrincipal.setGraphic(principalImg);
