@@ -15,6 +15,7 @@ public final class LockFileManager {
     public static void verifyLockFile() {
         final File lockFile = new File(LOCK_FILE_NAME);
         try {
+            runInDevelopment();
             var fileAlreadyExists = lockFile.exists();
             if (fileAlreadyExists) {
                 ModalAlertUtil.show("Não é possível rodar mais de uma instãncia do splinker ao mesmo tempo. Feche a outra instância.");
@@ -24,6 +25,13 @@ public final class LockFileManager {
         } catch (IOException e) {
             Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
+        }
+    }
+
+    private static void runInDevelopment() {
+        String env = System.getenv("env");
+        if ("dev".equals(env) && Files.exists(Path.of(LOCK_FILE_NAME))) {
+            deleteLockfile();
         }
     }
 
