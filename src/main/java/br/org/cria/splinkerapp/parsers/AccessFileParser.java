@@ -7,9 +7,13 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
+import com.healthmarketscience.jackcess.Table;
+import com.healthmarketscience.jackcess.query.Query;
 import com.microsoft.sqlserver.jdbc.StringUtils;
 import br.org.cria.splinkerapp.utils.StringStandards;
 import io.sentry.Sentry;
@@ -29,12 +33,12 @@ public class AccessFileParser extends FileParser {
         }
         db = DatabaseBuilder.open(new File(filePath));
         tableNames = db.getTableNames();
-            DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet rs = metaData.getTables(null, null, "%", new String[]{"VIEW"});
-            while (rs.next()) {
-                String nomeView = rs.getString("TABLE_NAME");
-                tableNames.add(nomeView);
+        List<Query> queries = db.getQueries();
+        for (Query query : queries) {
+            if (!query.getName().contains("sq")) {
+                tableNames.add(query.getName());
             }
+        }
         conn.close();
     }
 
@@ -59,13 +63,13 @@ public class AccessFileParser extends FileParser {
                     columns = tempColumns;
                     int numberOfColumns = columns.size();
                     valuesStr = "?,".repeat(numberOfColumns);
-                    } else {
-                        var headerRow = table.getColumns().stream().filter(e -> !StringUtils.isEmpty(e.getName())).toList();
-                        int numberOfColumns = headerRow.size();
-                        columns = getRowAsStringList(headerRow.stream().map(e -> e.getName()).toList(), numberOfColumns).stream()
+                } else {
+                    var headerRow = table.getColumns().stream().filter(e -> !StringUtils.isEmpty(e.getName())).toList();
+                    int numberOfColumns = headerRow.size();
+                    columns = getRowAsStringList(headerRow.stream().map(e -> e.getName()).toList(), numberOfColumns).stream()
                             .map(col -> makeColumnName(col))
                             .toList();
-                        valuesStr = "?,".repeat(numberOfColumns);
+                    valuesStr = "?,".repeat(numberOfColumns);
                 }
                 var columnNames = String.join(",", columns);
                 var command = insertIntoCommand.formatted(finalTableName, columnNames, valuesStr).replace(",)", ")");
@@ -122,21 +126,22 @@ public class AccessFileParser extends FileParser {
     protected String buildCreateTableCommand() throws Exception {
         var builder = new StringBuilder();
         for (var name : tableNames) {
-        List<String> columns = new ArrayList<>();
+            List<String> columns = new ArrayList<>();
             try {
-                var table = db.getTable(name);
+                Table table = db.getTable(name);
                 var finalTableName = StringStandards.normalizeString(name);
-                if(table == null) {
-                    var conn = getConnection();
-                    DatabaseMetaData metaData = conn.getMetaData();
-                    ResultSet rsColumns  = metaData.getColumns(null, null, name, null);
-                    while (rsColumns.next()) {
-                        columns.add(rsColumns .getString("COLUMN_NAME"));
+                if (table == null) { //processar as views
+                    List<Query> queries = db.getQueries();
+                    for (Query query : queries) {
+                        if (query.getName().equals(name) && query.getName().equals("DarwinCore")) {
+                            String sqlString = query.toSQLString();
+                            List<String> extractColumnNames = extractColumnNames(sqlString);
+                            columns.addAll(extractColumnNames);
+                        }
                     }
-                    conn.close();
                 } else {
                     var columnTable = table.getColumns();
-                    for (var c : columnTable){
+                    for (var c : columnTable) {
                         columns.add(c.getName());
                     }
                 }
@@ -158,5 +163,37 @@ public class AccessFileParser extends FileParser {
         }
         var command = builder.toString().replace(",);", ");");
         return command;
+    }
+
+    public static List<String> extractColumnNames(String query) {
+        List<String> columnNames = new ArrayList<>();
+
+        // Melhor regex para capturar a cláusula SELECT corretamente
+        Pattern pattern = Pattern.compile("SELECT\\s+(.*?)\\s+FROM", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(query);
+
+        if (matcher.find()) {
+            String selectClause = matcher.group(1);
+
+            // Dividir colunas considerando vírgulas fora de parênteses e colchetes
+            String[] columns = selectClause.split(",(?=(?:[^\"'\\[\\]()]*[\"'\\[\\(][^\"'\\[\\]()]*[\"'\\]\\)])*[^\"'\\[\\]()]*$)");
+
+            for (String column : columns) {
+                column = column.trim();
+
+                // Identifica alias explicitamente definidos (AS ...)
+                Matcher aliasMatcher = Pattern.compile("\\bAS\\s+\\[?([^\\]]+)\\]?", Pattern.CASE_INSENSITIVE).matcher(column);
+                if (aliasMatcher.find()) {
+                    columnNames.add(aliasMatcher.group(1).trim());
+                } else {
+                    // Remove qualquer alias implícito e pega o nome principal da coluna
+                    column = column.replaceAll("\\[|\\]", ""); // Remove colchetes
+                    String[] parts = column.split("\\s+|\\.");
+                    columnNames.add(parts[parts.length - 1].trim());
+                }
+            }
+        }
+
+        return columnNames;
     }
 }
