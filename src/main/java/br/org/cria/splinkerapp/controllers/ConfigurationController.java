@@ -36,10 +36,12 @@ public class ConfigurationController extends AbstractController {
     public void initialize(URL location, ResourceBundle bundle) {
         try {
             loadPage("central-service");
-            serverLabel.setTextFill(Color.RED);
-
             token = TokenRepository.getCurrentToken();
-
+            pane.sceneProperty().addListener((observable, oldScene, newScene) -> {
+                if (newScene != null) {
+                    paintItBlue("serverLabel");
+                }
+            });
         } catch (Exception e) {
             handleErrors(e);
         }
@@ -54,11 +56,10 @@ public class ConfigurationController extends AbstractController {
 
     protected void loadPage(String pageName) {
         try {
-
             var template = basePath.formatted(pageName);
             loader = new FXMLLoader(getClass().getResource(template));
             Node childNode = loader.load();
-            
+
             var children = content.getChildren();
             children.clear();
             children.add(childNode);
@@ -67,32 +68,42 @@ public class ConfigurationController extends AbstractController {
         }
     }
 
-
-    void paintItRed(String lblName) {
+    void paintItBlue(String lblName) {
         var lbls = pane.getScene().getRoot().lookupAll(".label");
         lbls.forEach((lbl) -> {
             var id = lbl.getId();
-            var paintItBlack = !lblName.equals(id);
-            ((Label) lbl).setTextFill(paintItBlack ? Color.BLACK : Color.RED);
+            var isSelected = lblName.equals(id);
+            Label label = (Label) lbl;
+            if (isSelected) {
+                label.setTextFill(Color.rgb(14, 85, 145));
+                label.setStyle(
+                        "-fx-font-weight: bold;" +
+                                "-fx-border-color: transparent transparent #0E5591 transparent;" +
+                                "-fx-border-width: 0 0 1.7px 0;"
+                );
+            } else {
+                label.setTextFill(Color.BLACK);
+                label.setStyle("");
+            }
         });
     }
 
     @FXML
     void showCentralServiceConfiguration() {
         loadPage("central-service");
-        paintItRed("serverLabel");
+        paintItBlue("serverLabel");
     }
 
     @FXML
     void showProxyConfiguration() {
         loadPage("proxy-config");
-        paintItRed("proxyLabel");
+        paintItBlue("proxyLabel");
     }
 
     @FXML
     void showTokenConfiguration() {
         loadPage("token-login");
-        paintItRed("tokenLabel");
+        paintItBlue("tokenLabel");
     }
 
     @FXML
@@ -110,11 +121,9 @@ public class ConfigurationController extends AbstractController {
             }
 
             loadPage(pageName);
-            paintItRed("dataLabel");
+            paintItBlue("dataLabel");
         } catch (Exception e) {
             handleErrors(e);
         }
     }
-
-
 }

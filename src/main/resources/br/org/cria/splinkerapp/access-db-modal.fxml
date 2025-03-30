@@ -6,20 +6,21 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
-
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="168.0" prefWidth="424.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.AccessDbController">
-   <children>
-      <Button id="btnSave" fx:id="btnSave" layoutX="148.0" layoutY="118.0" mnemonicParsing="false" onMouseClicked="#onBtnSaveClicked" prefHeight="39.0" prefWidth="96.0" text="Salvar">
-         <font>
-            <Font size="18.0" />
-         </font></Button>
-      <TextField id="accessFilePathField" fx:id="accessFilePathField" layoutX="9.0" layoutY="16.0" prefHeight="39.0" prefWidth="331.0" promptText="Caminho do arquivo" />
-      <Button id="btnSelectFile" fx:id="btnSelectFile" layoutX="349.0" layoutY="18.0" mnemonicParsing="false" onMouseClicked="#onBtnSelectFileClick" prefHeight="39.0" prefWidth="52.0" />
-      <PasswordField id="accessPasswordField" fx:id="accessPasswordField" layoutX="77.0" layoutY="68.0" prefHeight="33.0" prefWidth="263.0" promptText="Senha (deixe em branco se não tiver)" />
-      <Label layoutX="8.0" layoutY="20.0" />
-      <Label layoutX="14.0" layoutY="73.0" text="Senha">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font></Label>
-   </children>
+<Pane xmlns:fx="http://javafx.com/fxml/1" id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="168.0" prefWidth="424.0" xmlns="http://javafx.com/javafx/19" fx:controller="br.org.cria.splinkerapp.controllers.AccessDbController">
+    <children>
+        <Button id="btnSave" fx:id="btnSave" layoutX="148.0" layoutY="118.0" mnemonicParsing="false" onMouseClicked="#onBtnSaveClicked" prefHeight="39.0" prefWidth="96.0" styleClass="success-button" text="Salvar">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Button>
+        <TextField id="accessFilePathField" fx:id="accessFilePathField" layoutX="9.0" layoutY="16.0" prefHeight="39.0" prefWidth="331.0" promptText="Caminho do arquivo"/>
+        <Button id="btnSelectFile" fx:id="btnSelectFile" layoutX="349.0" layoutY="18.0" mnemonicParsing="false" onMouseClicked="#onBtnSelectFileClick" prefHeight="39.0" prefWidth="52.0"/>
+        <PasswordField id="accessPasswordField" fx:id="accessPasswordField" layoutX="77.0" layoutY="68.0" prefHeight="33.0" prefWidth="263.0" promptText="Senha (deixe em branco se não tiver)"/>
+        <Label layoutX="8.0" layoutY="20.0"/>
+        <Label layoutX="14.0" layoutY="73.0" text="Senha">
+            <font>
+                <Font name="System Bold" size="18.0"/>
+            </font>
+        </Label>
+    </children>
 </Pane>

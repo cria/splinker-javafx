@@ -6,6 +6,7 @@
     -fx-border-radius: 5;
     -fx-border-color: #218838;
     -fx-border-width: 1px;
+    -fx-font-size: 16;
 }
 
 .success-button:hover {
@@ -24,6 +25,7 @@
     -fx-border-radius: 5;
     -fx-border-color: #bd2130;
     -fx-border-width: 1px;
+    -fx-font-size: 16;
 }
 
 .danger-button:hover {
@@ -42,6 +44,7 @@
     -fx-border-radius: 5;
     -fx-border-color: #0056b3;
     -fx-border-width: 1px;
+    -fx-font-size: 16;
 }
 
 .primary-button:hover {
