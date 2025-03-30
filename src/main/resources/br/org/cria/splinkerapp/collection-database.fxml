@@ -11,7 +11,7 @@
         <TextField fx:id="usernameField" layoutX="78.0" layoutY="3.0" prefHeight="36.0" prefWidth="389.0" promptText="Usuário" />
         <Button fx:id="btnSalvar" layoutX="182.0" layoutY="226.0" mnemonicParsing="false" onAction="#onSaveButtonClicked" prefHeight="36.0" prefWidth="112.0" styleClass="success-button" text="Salvar">
             <font>
-                <Font size="18.0" />
+                <Font size="16.0" />
             </font>
         </Button>
         <TextField id="portField" fx:id="portField" layoutX="78.0" layoutY="94.0" prefHeight="36.0" prefWidth="389.0" promptText="Porta" />
