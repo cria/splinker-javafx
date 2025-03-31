@@ -9,9 +9,6 @@
 <Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="168.0" prefWidth="424.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.AccessDbController">
     <children>
         <Button id="btnSave" fx:id="btnSave" layoutX="148.0" layoutY="118.0" mnemonicParsing="false" onMouseClicked="#onBtnSaveClicked" prefHeight="39.0" prefWidth="96.0" styleClass="success-button" text="Salvar">
-            <font>
-                <Font size="16.0" />
-            </font>
         </Button>
         <TextField id="accessFilePathField" fx:id="accessFilePathField" layoutX="9.0" layoutY="16.0" prefHeight="39.0" prefWidth="331.0" promptText="Caminho do arquivo" />
         <Button id="btnSelectFile" fx:id="btnSelectFile" layoutX="349.0" layoutY="18.0" mnemonicParsing="false" onMouseClicked="#onBtnSelectFileClick" prefHeight="39.0" prefWidth="52.0" />

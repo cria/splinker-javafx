@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.List;
 
-import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
 import io.sentry.Sentry;
 
@@ -45,7 +44,7 @@ public class ProxyConfigRepository extends BaseRepository {
         statement.setString(2, proxyConfig.getPassword());
         statement.setString(3, proxyConfig.getPort());
         statement.setString(4, proxyConfig.getUsername());
-        statement.executeUpdate(sql);
+        statement.executeUpdate();
         statement.close();
         conn.close();
     }
