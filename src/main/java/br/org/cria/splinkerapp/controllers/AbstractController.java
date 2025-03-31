@@ -120,10 +120,10 @@ public abstract class AbstractController implements Initializable {
             var isSelected = lblName.equals(id);
             Label label = (Label) lbl;
             if (isSelected) {
-                label.setTextFill(Color.rgb(14, 85, 145));
+                label.setTextFill(Color.rgb(14, 85, 220));
                 label.setStyle(
                         "-fx-font-weight: bold;" +
-                                "-fx-border-color: transparent transparent #0E5591 transparent;" +
+                                "-fx-border-color: transparent;" +
                                 "-fx-border-width: 0 0 1.7px 0;"
                 );
             } else {
