@@ -6,37 +6,42 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
-
-<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="364.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.CollectionLocalDatabaseController">
-   <children>
-      <TextField fx:id="usernameField" layoutX="163.0" layoutY="20.0" prefHeight="36.0" prefWidth="193.0" promptText="Usuário" />
-      <Button fx:id="btnSalvar" layoutX="116.0" layoutY="276.0" mnemonicParsing="false" onAction="#onSaveButtonClicked" prefHeight="50.0" prefWidth="132.0" text="Salvar">
-         <font>
-            <Font size="18.0" />
-         </font></Button>
-      <TextField id="portField" fx:id="portField" layoutX="165.0" layoutY="118.0" prefHeight="36.0" prefWidth="193.0" promptText="Porta" />
-      <TextField id="hostAddressField" fx:id="hostAddressField" layoutX="163.0" layoutY="219.0" prefHeight="36.0" prefWidth="193.0" promptText="Endereço de Host" />
-      <TextField id="dbNameField" fx:id="dbNameField" layoutX="163.0" layoutY="168.0" prefHeight="36.0" prefWidth="193.0" promptText="Nome do Banco de dados" />
-      <PasswordField id="passwordField" fx:id="passwordField" layoutX="163.0" layoutY="68.0" prefHeight="36.0" prefWidth="193.0" promptText="Senha" />
-      <Label layoutX="15.0" layoutY="24.0" text="Usuário">
-         <font>
-            <Font size="18.0" />
-         </font></Label>
-      <Label layoutX="15.0" layoutY="73.0" text="Senha">
-         <font>
-            <Font size="18.0" />
-         </font></Label>
-      <Label layoutX="15.0" layoutY="118.0" text="Porta">
-         <font>
-            <Font size="18.0" />
-         </font></Label>
-      <Label layoutX="15.0" layoutY="169.0" text="Nome do banco">
-         <font>
-            <Font size="18.0" />
-         </font></Label>
-      <Label layoutX="15.0" layoutY="228.0" text="Endereço de host">
-         <font>
-            <Font size="18.0" />
-         </font></Label>
-   </children>
+<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="279.0" prefWidth="475.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.CollectionLocalDatabaseController">
+    <children>
+        <TextField fx:id="usernameField" layoutX="78.0" layoutY="3.0" prefHeight="36.0" prefWidth="389.0" promptText="Usuário" />
+        <Button fx:id="btnSalvar" layoutX="182.0" layoutY="226.0" mnemonicParsing="false" onAction="#onSaveButtonClicked" prefHeight="36.0" prefWidth="112.0" styleClass="success-button" text="Salvar">
+            <font>
+                <Font size="16.0" />
+            </font>
+        </Button>
+        <TextField id="portField" fx:id="portField" layoutX="78.0" layoutY="94.0" prefHeight="36.0" prefWidth="389.0" promptText="Porta" />
+        <TextField id="hostAddressField" fx:id="hostAddressField" layoutX="163.0" layoutY="176.0" prefHeight="36.0" prefWidth="304.0" promptText="Endereço de Host" />
+        <TextField id="dbNameField" fx:id="dbNameField" layoutX="163.0" layoutY="137.0" prefHeight="36.0" prefWidth="304.0" promptText="Nome do Banco de dados" />
+        <PasswordField id="passwordField" fx:id="passwordField" layoutX="78.0" layoutY="48.0" prefHeight="36.0" prefWidth="389.0" promptText="Senha" />
+        <Label layoutX="12.0" layoutY="14.0" text="Usuário">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Label>
+        <Label layoutX="12.0" layoutY="57.0" text="Senha">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Label>
+        <Label layoutX="15.0" layoutY="103.0" text="Porta">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Label>
+        <Label layoutX="14.0" layoutY="149.0" text="Nome do banco">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Label>
+        <Label layoutX="15.0" layoutY="185.0" text="Endereço de host">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Label>
+    </children>
 </Pane>

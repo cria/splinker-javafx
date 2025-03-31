@@ -1,6 +1,5 @@
 package br.org.cria.splinkerapp.controllers;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -94,7 +93,7 @@ public abstract class AbstractController implements Initializable {
             }
 
             loadPage(pageName);
-            paintItRed("dataLabel");
+            paintItBlue("dataLabel");
         } catch (Exception e) {
             handleErrors(e);
         }
@@ -114,13 +113,23 @@ public abstract class AbstractController implements Initializable {
         }
     }
 
-
-    void paintItRed(String lblName) {
+    void paintItBlue(String lblName) {
         var lbls = pane.getScene().getRoot().lookupAll(".label");
         lbls.forEach((lbl) -> {
             var id = lbl.getId();
-            var paintItBlack = !lblName.equals(id);
-            ((Label) lbl).setTextFill(paintItBlack ? Color.BLACK : Color.RED);
+            var isSelected = lblName.equals(id);
+            Label label = (Label) lbl;
+            if (isSelected) {
+                label.setTextFill(Color.rgb(14, 85, 220));
+                label.setStyle(
+                        "-fx-font-weight: bold;" +
+                                "-fx-border-color: transparent;" +
+                                "-fx-border-width: 0 0 1.7px 0;"
+                );
+            } else {
+                label.setTextFill(Color.BLACK);
+                label.setStyle("");
+            }
         });
     }
 
