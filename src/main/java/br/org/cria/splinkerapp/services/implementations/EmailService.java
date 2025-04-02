@@ -45,7 +45,7 @@ public class EmailService extends BaseRepository {
         emailProps.put("mail.smtp.ssl.trust", "*");
     }
 
-    public void sendEmail(String assunto, String mensagem, String emailUsuario, String token) throws Exception {
+    public void sendEmail(String assunto, String mensagem, String token) throws Exception {
         if (destinatario == null || destinatario.isEmpty() ||
                 usuario == null || usuario.isEmpty() ||
                 senha == null || senha.isEmpty()) {
@@ -62,8 +62,8 @@ public class EmailService extends BaseRepository {
         Message message = new MimeMessage(session);
         message.setFrom(new InternetAddress(usuario));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
-        message.setSubject(assunto);
-        message.setText(mensagem + " de: " + emailUsuario + " no token: " + token);
+        message.setSubject(assunto + " [ " + token + " ]");
+        message.setText(mensagem);
         Transport.send(message);
     }
 }
