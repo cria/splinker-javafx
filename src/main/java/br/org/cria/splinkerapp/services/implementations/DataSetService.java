@@ -3,15 +3,13 @@ package br.org.cria.splinkerapp.services.implementations;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import br.org.cria.splinkerapp.models.DataSet;
@@ -21,8 +19,9 @@ import br.org.cria.splinkerapp.models.TransferHistoryDataSet;
 import br.org.cria.splinkerapp.repositories.BaseRepository;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
-import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class DataSetService extends BaseRepository {
 
 
@@ -178,10 +177,13 @@ public class DataSetService extends BaseRepository {
         return read;
     }
 
+
     public static String getSQLCommandFromApi(String token) throws Exception {
         Map config = DataSetService.getConfigurationDataFromAPI(token);
         var cmd = (List<Double>) config.get("sql_command");
-        return BaseRepository.byteArrayToString(cmd);
+        String resultado = BaseRepository.byteArrayToString(cmd);
+        log.info("Resultado da query SQL: {}", resultado);
+        return resultado;
     }
 
     /**

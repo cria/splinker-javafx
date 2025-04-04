@@ -1,5 +1,21 @@
 package br.org.cria.splinkerapp.services.implementations;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.managers.EventBusManager;
@@ -9,18 +25,6 @@ import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
 import com.google.common.eventbus.EventBus;
 import io.sentry.Sentry;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 public class DarwinCoreArchiveService {
     int rowCount = 0;
@@ -47,6 +51,7 @@ public class DarwinCoreArchiveService {
     public String getTxtFilePath() {
         return this.textFile;
     }
+    String env = System.getenv("env");
 
     public DarwinCoreArchiveService(DataSet ds) throws Exception {
         var userDir = System.getProperty("user.dir") + "/" + ds.getId();
@@ -170,8 +175,10 @@ public class DarwinCoreArchiveService {
     }
 
     public void cleanData() throws Exception {
-        dropDataTables();
-        deleteSentFiles();
+        if (!"dev".equals(env)) {
+            dropDataTables();
+            deleteSentFiles();
+        }
     }
 
     private void dropDataTables() throws Exception {
@@ -210,7 +217,9 @@ public class DarwinCoreArchiveService {
         while (result.next()) {
             var datasetId = result.getString("id");
             var userDir = "%s/%s".formatted(System.getProperty("user.dir"), datasetId);
-            Files.delete(Path.of("%s/occurrence.txt".formatted(userDir)));
+            if (!"dev".equals(env)) {
+                Files.delete(Path.of("%s/occurrence.txt".formatted(userDir)));
+            }
             Files.delete(Path.of("%s/dwca.zip".formatted(userDir)));
            // Files.delete(Path.of("%s.sql".formatted(userDir)));
             Files.delete(Path.of("%s/".formatted(userDir)));
