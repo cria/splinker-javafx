@@ -1,15 +1,11 @@
 package br.org.cria.splinkerapp.services.implementations;
 
-import java.util.Properties;
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
+import br.org.cria.splinkerapp.repositories.BaseRepository;
+
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
-import br.org.cria.splinkerapp.repositories.BaseRepository;
+import java.util.Properties;
 
 public class EmailService extends BaseRepository {
 
@@ -45,7 +41,7 @@ public class EmailService extends BaseRepository {
         emailProps.put("mail.smtp.ssl.trust", "*");
     }
 
-    public void sendEmail(String assunto, String mensagem,String emailUsuario, String token) throws Exception {
+    public void sendEmail(String assunto, String mensagem, String emailUsuario, String token) throws Exception {
         if (destinatario == null || destinatario.isEmpty() ||
                 usuario == null || usuario.isEmpty() ||
                 senha == null || senha.isEmpty()) {
@@ -62,8 +58,8 @@ public class EmailService extends BaseRepository {
         Message message = new MimeMessage(session);
         message.setFrom(new InternetAddress(usuario));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
-        message.setSubject(assunto + " [ " + token + " ]");
-        message.setText(mensagem + " de: " + emailUsuario);
+        message.setSubject("[ " + token + " ] - " + assunto);
+        message.setText(mensagem + "\n\nRemetente: " + emailUsuario);
         Transport.send(message);
     }
 }
