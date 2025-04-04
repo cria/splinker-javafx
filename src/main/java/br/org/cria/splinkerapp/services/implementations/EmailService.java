@@ -1,15 +1,11 @@
 package br.org.cria.splinkerapp.services.implementations;
 
-import java.util.Properties;
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
+import br.org.cria.splinkerapp.repositories.BaseRepository;
+
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
-import br.org.cria.splinkerapp.repositories.BaseRepository;
+import java.util.Properties;
 
 public class EmailService extends BaseRepository {
 
@@ -62,8 +58,8 @@ public class EmailService extends BaseRepository {
         Message message = new MimeMessage(session);
         message.setFrom(new InternetAddress(usuario));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
-        message.setSubject(assunto);
-        message.setText(mensagem + " de: " + emailUsuario + " no token: " + token);
+        message.setSubject("[ " + token + " ] - " + assunto);
+        message.setText(mensagem + "\n\nRemetente: " + emailUsuario);
         Transport.send(message);
     }
 }
