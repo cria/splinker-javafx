@@ -76,7 +76,7 @@ public class EmailController extends AbstractController {
             onButtonEnviarClicked();
             new Thread(() -> {
                 try {
-                    emailService.sendEmail(assunto, mensagem, token);
+                    emailService.sendEmail(assunto, mensagem,emailUsuario, token);
                     Platform.runLater(() -> {
                         showAlert("Sucesso", "Email enviado com sucesso!");
                         cmbAssunto.setValue(null);
