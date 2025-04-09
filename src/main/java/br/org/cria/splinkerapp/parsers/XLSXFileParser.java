@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+
 import org.apache.commons.lang3.StringUtils;
 import org.dhatim.fastexcel.reader.Cell;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
@@ -37,12 +38,25 @@ public class XLSXFileParser extends FileParser {
             try {
                 var tableName = StringStandards.normalizeString(sheet.getName());
                 dropTable(tableName);
-                
+
                 var headerRow = sheet.openStream().findFirst().get();
                 builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
                 var fieldCount = headerRow.getCellCount();
                 for (int i = 0; i < fieldCount; i++) {
-                    var cellValue = headerRow.getCell(i).asString();
+                    var cell = headerRow.getCell(i);
+                    String cellValue = "";
+                    try {
+                        cellValue = cell.asString();
+                    } catch (Exception e) {
+                        cellValue = cell.toString();
+                    }
+                    if (cellValue != null && cellValue.startsWith("[FORMULA")) {
+                        int startIndex = cellValue.indexOf("\"");
+                        int endIndex = cellValue.lastIndexOf("\"");
+                        if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
+                            cellValue = cellValue.substring(startIndex + 1, endIndex);
+                        }
+                    }
                     if (!StringUtils.isEmpty(cellValue)) {
                         String columnName = makeColumnName(cellValue);
                         builder.append("%s VARCHAR(1),".formatted(columnName));
@@ -55,7 +69,7 @@ public class XLSXFileParser extends FileParser {
         });
 
         var command = builder.toString().replace(",);", ");");
-        
+
         return command;
     }
 
@@ -63,94 +77,105 @@ public class XLSXFileParser extends FileParser {
     protected List<String> getRowAsStringList(Object row, int numberOfColumns) {
         var fullRow = (Row) row;
         var arr = new String[numberOfColumns];
-        
+
         for (int colNum = 0; colNum < numberOfColumns; colNum++) {
             Cell cell = fullRow.getCell(colNum);
             var cellValue = cell.getRawValue();
-            arr[colNum] = cellValue == null? "": cellValue.toString();
+            arr[colNum] = cellValue == null ? "" : cellValue.toString();
         }
 
         return Arrays.asList(arr);
     }
 
     @Override
-    public void insertDataIntoTable() throws Exception 
-    {
+    public void insertDataIntoTable() throws Exception {
         Connection conn;
-        try 
-        {
+        try {
             sheets = wb.getSheets();
             conn = getConnection();
             conn.setAutoCommit(false);
             var woorkbookIterator = sheets.iterator();
-         
-          while (woorkbookIterator.hasNext()) 
-          {
-            
-              var sheet = woorkbookIterator.next();
-              var lines = sheet.read();
-              var headerRow = lines.get(0);
-              var tableName = StringStandards.normalizeString(sheet.getName());
-              totalColumnCount = headerRow.getCellCount();
-              totalRowCount = lines.size() -1;
-              
-              List<String> columns = getRowAsStringList(headerRow, totalColumnCount).stream()
-                      .map((col) -> makeColumnName(col))
-                      .toList();
 
-              var valuesStr = "?,".repeat(totalColumnCount);
-              var columnNames = String.join(",", columns);
-              var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
-                              .replace(",)", ")");
-              var statement = conn.prepareStatement(command);
-              //sublist exclui o elemento na posição toIndex;
-              var rows = lines.subList(1, lines.size());
-              rows.forEach((row)->
-              {
-               try {
-                if (row != null) 
-                { 
-                    var cellIterator = row.iterator();
-                    var index = 1;
-                    while (cellIterator.hasNext()) 
-                    {
-                        var cell = cellIterator.next();
-                        var isNullCell = cell == null;
-                        var value = isNullCell? "": getCellValue(cell.getRawValue());
-                                                
-                        statement.setString(index, value);
-                        index++;
-                    }
-                    statement.addBatch();
-                }
-                currentRow++;
-                if (currentRow % 10_000 == 0) 
+            while (woorkbookIterator.hasNext()) {
+
+                var sheet = woorkbookIterator.next();
+                var lines = sheet.read();
+                var headerRow = lines.get(0);
+                var tableName = StringStandards.normalizeString(sheet.getName());
+                totalColumnCount = headerRow.getCellCount();
+                totalRowCount = 0;
+
+                List<String> columns = getRowAsStringList(headerRow, totalColumnCount).stream()
+                        .map(this::makeColumnName)
+                        .filter(col -> col != null && !col.trim().isEmpty())
+                        .toList();
+
+                var valuesStr = "?,".repeat(columns.size());
+                var columnNames = String.join(",", columns);
+                var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
+                        .replace(",)", ")");
+                var statement = conn.prepareStatement(command);
+                //sublist exclui o elemento na posição toIndex;
+                var rows = lines.subList(1, lines.size());
+                rows.stream().filter(row -> row != null && row.getCellCount() != 0 && !isRowEmpty(row)).forEach((row) ->
                 {
-                    statement.executeBatch();
-                    conn.commit();
-                    statement.clearBatch();
-                    
-                }
-                readRowEventBus.post(currentRow);
-                
-               } catch (Exception e) {
-                throw new RuntimeException(e);
-               }
-              });
-              statement.executeBatch();
-              conn.commit();
-              statement.clearBatch();
-              statement.close();
-          }
-          
-          conn.setAutoCommit(true);
-          conn.close();
-        }catch (Exception e) 
-        {
+                    try {
+                        for (int i = 0; i < columns.size(); i++) {
+                            Cell cell = null;
+                            try {
+                                cell = row.getCell(i);
+                            } catch (Exception ignored) {
+
+                            }
+
+                            var isNullCell = cell == null;
+                            var value = isNullCell ? "" : getCellValue(cell.getRawValue());
+                            statement.setString(i + 1, value);
+                        }
+                        statement.addBatch();
+                        currentRow++;
+                        totalRowCount ++;
+                        if (currentRow % 10_000 == 0) {
+                            statement.executeBatch();
+                            conn.commit();
+                            statement.clearBatch();
+
+                        }
+                        readRowEventBus.post(currentRow);
+
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                statement.executeBatch();
+                conn.commit();
+                statement.clearBatch();
+                statement.close();
+            }
+
+            conn.setAutoCommit(true);
+            conn.close();
+        } catch (Exception e) {
             Sentry.captureException(e);
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean isRowEmpty(Row row) {
+        if (row == null) {
+            return true;
+        }
+
+        for (Cell cell : row) {
+            var isNullCell = cell == null;
+            var value = isNullCell ? "" : getCellValue(cell.getRawValue());
+            if (!value.isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -17,7 +18,7 @@ import io.sentry.Sentry;
 public class XLSFileParser extends FileParser {
     String fileSourcePath;
     Workbook workbook;
-    
+
     public XLSFileParser(String fileSourcePath) throws Exception {
         this.fileSourcePath = fileSourcePath;
         var excelFile = new File(fileSourcePath);
@@ -29,8 +30,7 @@ public class XLSFileParser extends FileParser {
     protected String buildCreateTableCommand() throws Exception {
         int numberOfTabs = workbook.getNumberOfSheets();
         var builder = new StringBuilder();
-        for (int i = 0; i < numberOfTabs; i++) 
-        {
+        for (int i = 0; i < numberOfTabs; i++) {
             var sheet = workbook.getSheetAt(i);
             Row headerRow = sheet.getRow(0);
             var tableName = StringStandards.normalizeString(sheet.getSheetName());
@@ -68,78 +68,69 @@ public class XLSFileParser extends FileParser {
     }
 
     @Override
-    public void insertDataIntoTable() throws Exception 
-    {
+    public void insertDataIntoTable() throws Exception {
         Connection conn;
-        try 
-        {
-          conn = getConnection();
-          conn.setAutoCommit(false);
-          var woorkbookIterator = workbook.sheetIterator();
-          var formatter = new DataFormatter();
-          while (woorkbookIterator.hasNext()) 
-          {
-              var sheet = woorkbookIterator.next();
-              totalRowCount = sheet.getLastRowNum();
-              var sheetIterator = sheet.iterator();
-              var headerRow = sheetIterator.next();
-              var tableName = StringStandards.normalizeString(sheet.getSheetName());
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);
+            var woorkbookIterator = workbook.sheetIterator();
+            var formatter = new DataFormatter();
+            while (woorkbookIterator.hasNext()) {
+                var sheet = woorkbookIterator.next();
+                totalRowCount = sheet.getLastRowNum();
+                var sheetIterator = sheet.iterator();
+                var headerRow = sheetIterator.next();
+                var tableName = StringStandards.normalizeString(sheet.getSheetName());
 
-              headerRow.forEach(e -> 
-              {
-                  if (StringUtils.isEmpty(e.getStringCellValue())) 
-                  {
-                      headerRow.removeCell(e);
-                  }
-              });
-              totalColumnCount = headerRow.getLastCellNum();
-              List<String> columns = getRowAsStringList(headerRow, totalColumnCount).stream()
-                      .map((col) -> makeColumnName(col))
-                      .toList();
+                headerRow.forEach(e ->
+                {
+                    if (StringUtils.isEmpty(e.getStringCellValue())) {
+                        headerRow.removeCell(e);
+                    }
+                });
+                totalColumnCount = headerRow.getLastCellNum();
+                List<String> columns = getRowAsStringList(headerRow, totalColumnCount).stream()
+                        .map((col) -> makeColumnName(col))
+                        .toList();
 
-              var valuesStr = "?,".repeat(totalColumnCount);
-              var columnNames = String.join(",", columns);
-              var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
-                              .replace(",)", ")");
-              var statement = conn.prepareStatement(command);
-              while (sheetIterator.hasNext()) 
-              {
-                  var row = sheetIterator.next();
-                  if (row != null) 
-                  { 
-                      var cellIterator = row.cellIterator();
-                      while (cellIterator.hasNext()) 
-                      {
-                          var cell = cellIterator.next();
-                          var index = cell.getColumnIndex() + 1;
-                          var formattedValue = formatter.formatCellValue(cell);
-                          var value = getCellValue(formattedValue);
-                          
-                          statement.setString(index, value);
-                      }
-                      statement.addBatch();
-                  }
-                  currentRow++;
-                  if (currentRow % 10_000 == 0) 
-                  {
-                      statement.executeBatch();
-                      conn.commit();
-                      statement.clearBatch();
-                      
-                  }
-                  readRowEventBus.post(currentRow);
-              }
+                var valuesStr = "?,".repeat(totalColumnCount);
+                var columnNames = String.join(",", columns);
+                var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
+                        .replace(",)", ")");
+                var statement = conn.prepareStatement(command);
+                while (sheetIterator.hasNext()) {
+                    var row = sheetIterator.next();
+                    if (row != null) {
+                        var cellIterator = row.cellIterator();
+                        while (cellIterator.hasNext()) {
+                            var cell = cellIterator.next();
+                            var index = cell.getColumnIndex() + 1;
+                            var formattedValue = formatter.formatCellValue(cell);
+                            var value = getCellValue(formattedValue);
 
-              statement.executeBatch();
-              conn.commit();
-              statement.clearBatch();
-              statement.close();
-          }
-          
-          conn.setAutoCommit(true);
-          conn.close();
-        }catch (Exception e) 
-        {
+                            statement.setString(index, value);
+                        }
+                        statement.addBatch();
+                    }
+                    currentRow++;
+                    if (currentRow % 10_000 == 0) {
+                        statement.executeBatch();
+                        conn.commit();
+                        statement.clearBatch();
+
+                    }
+                    readRowEventBus.post(currentRow);
+                }
+
+                statement.executeBatch();
+                conn.commit();
+                statement.clearBatch();
+                statement.close();
+            }
+
+            conn.setAutoCommit(true);
+            conn.close();
+        } catch (Exception e) {
             Sentry.captureException(e);
             e.printStackTrace();
             throw new RuntimeException(e);

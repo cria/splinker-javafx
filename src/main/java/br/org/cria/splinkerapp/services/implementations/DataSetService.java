@@ -3,7 +3,9 @@ package br.org.cria.splinkerapp.services.implementations;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,10 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
+import br.org.cria.splinkerapp.models.EmailConfiguration;
+import br.org.cria.splinkerapp.models.TransferHistoryDataSet;
 import br.org.cria.splinkerapp.repositories.BaseRepository;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
+import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
+
 public class DataSetService extends BaseRepository {
 
 
@@ -48,26 +56,42 @@ public class DataSetService extends BaseRepository {
     }
 
     public static boolean hasConfiguration() throws Exception {
-        
+
         var cmd1 = "SELECT COUNT(TOKEN) as TOKEN_COUNT FROM DataSetConfiguration;";
         var cmd2 = """
-            SELECT COUNT(*) AS NOT_CONFIGURED_TOKENS
-            FROM DataSetConfiguration
-            WHERE TOKEN IS NOT NULL 
-            AND datasource_filepath IS NULL 
-            AND db_host IS NULL;
-            """;
-        
+                SELECT COUNT(*) AS HAS_CONFIGURED_TOKENS
+                FROM DataSetConfiguration
+                WHERE TOKEN IS NOT NULL 
+                AND (datasource_filepath IS NOT NULL 
+                OR db_host IS NOT NULL);
+                """;
+
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var result = runQuery(cmd1, conn);
-        var hasTokens = result.getInt("TOKEN_COUNT") > 0;        
+        var hasTokens = result.getInt("TOKEN_COUNT") > 0;
         result = runQuery(cmd2, conn);
-        var hasUnconfiguredTokens = result.getInt("NOT_CONFIGURED_TOKENS") > 0;
-        var hasConfig = hasTokens && !hasUnconfiguredTokens;
-        
+        var hasConfiguredTokens = result.getInt("HAS_CONFIGURED_TOKENS") > 0;
+        var hasConfig = hasTokens && hasConfiguredTokens;
+
         result.close();
         conn.close();
         return hasConfig;
+    }
+
+    public static boolean hasConfiguration(String token) throws Exception {
+
+        var cmd2 = " SELECT COUNT(*) AS HAS_CONFIGURED_TOKENS " +
+                "FROM DataSetConfiguration " +
+                "WHERE TOKEN = '" + token + "' AND (datasource_filepath IS NOT NULL " +
+                "OR db_host IS NOT NULL); ";
+
+        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+        var result = runQuery(cmd2, conn);
+        var hasConfiguredTokens = result.getInt("HAS_CONFIGURED_TOKENS") > 0;
+
+        result.close();
+        conn.close();
+        return hasConfiguredTokens;
     }
 
     public static List<DataSet> getAllDataSets() throws Exception {
@@ -96,17 +120,15 @@ public class DataSetService extends BaseRepository {
         conn.close();
         return ds;
     }
-   
+
     private static DataSet buildFromResultSet(ResultSet result) throws Exception {
 
-        
+
         var dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
-
         var token = result.getString("token");
-        if(token == null)
-        {
+        if (token == null) {
             return null;
         }
         var id = result.getInt("id");
@@ -122,10 +144,10 @@ public class DataSetService extends BaseRepository {
         var type = result.getString("datasource_type") == null ? null
                 : DataSourceType.valueOf(result.getString("datasource_type"));
         var strUpdatedAt = result.getString("updated_at");
-        var updatedAt = strUpdatedAt == null? null: LocalDateTime.parse(strUpdatedAt, dateFormatter);
+        var updatedAt = strUpdatedAt == null ? null : LocalDateTime.parse(strUpdatedAt, dateFormatter);
         var ds = DataSet.factory(token, type, filePath, host, dbName, user, pwd, port,
                 acronym, name, lastRowCount, id, updatedAt);
-                
+
         return ds;
     }
 
@@ -156,9 +178,15 @@ public class DataSetService extends BaseRepository {
         return read;
     }
 
+    public static String getSQLCommandFromApi(String token) throws Exception {
+        Map config = DataSetService.getConfigurationDataFromAPI(token);
+        var cmd = (List<Double>) config.get("sql_command");
+        return BaseRepository.byteArrayToString(cmd);
+    }
+
     /**
      * Salva os dados da coleção.
-     * 
+     *
      * @param token   - token da coleção
      * @param type    - Tipo de fonte de dados
      * @param acronym - acrônimo da coleção
@@ -205,7 +233,7 @@ public class DataSetService extends BaseRepository {
     }
 
     public static void saveSQLDataSource(String token, String host, String port,
-            String dbName, String userName, String password) throws Exception {
+                                         String dbName, String userName, String password) throws Exception {
         var cmd = """
                     UPDATE DataSetConfiguration
                     SET db_name = ?,
@@ -263,5 +291,50 @@ public class DataSetService extends BaseRepository {
         stm.executeUpdate();
         stm.close();
         conn.close();
+    }
+
+    public static void insertTransferHistory(HashMap<String, String> args) throws Exception {
+        String cmd = "INSERT INTO TransferHistoryDataSet (token, rowcount, send_date) VALUES ('"
+                + args.get("token") + "', '"
+                + args.get("last_rowcount") + "', '"
+                + args.get("updated_at") + "');";
+
+        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+        var stm = conn.prepareStatement(cmd);
+        stm.executeUpdate();
+        stm.close();
+        conn.close();
+    }
+
+    public static List<TransferHistoryDataSet> getTransferHistory() throws Exception {
+        String token = TokenRepository.getCurrentToken();
+        var sources = new ArrayList<TransferHistoryDataSet>();
+        var cmd = "SELECT * FROM  TransferHistoryDataSet th WHERE th.token = '" + token + "' ORDER BY th.created_at DESC;";
+        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+        var results = runQuery(cmd, conn);
+        while (results.next()) {
+            TransferHistoryDataSet dataHistory= new TransferHistoryDataSet();
+            dataHistory.setDate(results.getString("send_date"));
+            dataHistory.setRowcount(results.getString("rowcount"));
+            sources.add(dataHistory);
+        }
+        results.close();
+        conn.close();
+        return sources;
+    }
+
+    public static EmailConfiguration getEmailConfiguration() throws Exception {
+        var cmd = "SELECT * FROM EmailConfiguration";
+        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+        var results = runQuery(cmd, conn);
+        EmailConfiguration emailConfiguration = new EmailConfiguration();
+        if (results.next()) {
+            emailConfiguration.setContact_email_recipient(results.getString("contact_email_recipient"));
+            emailConfiguration.setContact_email_send(results.getString("contact_email_send"));
+            emailConfiguration.setContact_email_token(results.getString("contact_email_token"));
+        }
+        results.close();
+        conn.close();
+        return emailConfiguration;
     }
 }

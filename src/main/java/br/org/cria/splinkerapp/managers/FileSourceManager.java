@@ -16,64 +16,53 @@ public class FileSourceManager {
     DataSet ds;
     FileParser fileParser;
     String filePath;
-    public FileSourceManager(DataSet ds) throws Exception
-    {
+
+    public FileSourceManager(DataSet ds) throws Exception {
         this.ds = ds;
         this.filePath = ds.getDataSetFilePath().toLowerCase();
         buildFileParser();
     }
 
-    public FileParser getParser()
-    {
+    public FileParser getParser() {
         return this.fileParser;
     }
 
-    void buildFileParser() throws Exception
-    {
+    void buildFileParser() throws Exception {
         var isAccessDb = filePath.endsWith("mdb");
         var isXLS = filePath.endsWith(".xls");
-        var isXLSX = filePath.endsWith(".xlsx"); 
+        var isXLSX = filePath.endsWith(".xlsx");
         var isCsv = filePath.endsWith(".csv") || filePath.endsWith(".tsv") || filePath.endsWith(".txt");
         var isOds = filePath.endsWith(".ods");
         var isDbf = filePath.endsWith(".dbf");
         var isNumbers = filePath.endsWith(".numbers");
-        var unsupportedFileFormat = !(isAccessDb || isXLS|| isXLSX || isCsv || isOds || isDbf || isCsv || isNumbers);
+        var unsupportedFileFormat = !(isAccessDb || isXLS || isXLSX || isOds || isDbf || isCsv || isNumbers);
 
-        if(unsupportedFileFormat)
-        {
+        if (unsupportedFileFormat) {
             throw new Exception("Formato de arquivo não suportado");
         }
-        if(isAccessDb)
-        {
+        if (isAccessDb) {
             fileParser = new AccessFileParser(filePath, ds.getDbPassword());
         }
-        if(isXLS)
-        {
+        if (isXLS) {
             fileParser = new XLSFileParser(filePath);
         }
-        if(isXLSX)
-        {
+        if (isXLSX) {
             fileParser = new XLSXFileParser(filePath);
         }
-        if(isCsv)
-        {
+        if (isCsv) {
             fileParser = new CsvFileParser(filePath);
         }
-        if(isOds)
-        {
+        if (isOds) {
             fileParser = new OdsFileParser(filePath);
         }
-        if(isDbf)
-        {
+        if (isDbf) {
             fileParser = new DbfFileParser(filePath);
         }
     }
 
-    public void importData() throws Exception
-    {
+    public void importData() throws Exception {
         var isNotMacOsNumbersFile = ds.getType() != DataSourceType.Numbers;
-        if(isNotMacOsNumbersFile)
-        {
+        if (isNotMacOsNumbersFile) {
             fileParser.createTableBasedOnSheet();
             fileParser.insertDataIntoTable();
 
@@ -81,13 +70,11 @@ public class FileSourceManager {
             var totalRowCount = fileParser.getTotalRowCount();
             DataSetService.updateRowcount(token, totalRowCount);
 
-        }
-        else
-        {
+        } else {
             var fp = new NumbersFileParser();
             var finalFile = NumbersFileParser.numbersToXLSX(filePath);
             fp.parseFile(finalFile);
         }
     }
-    
+
 }

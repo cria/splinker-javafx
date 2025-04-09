@@ -4,31 +4,30 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
-
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="347.0" prefWidth="490.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.ConfigurationController">
-   <children>
-      <Line endX="367.0" layoutX="111.0" layoutY="15.0" startX="-100.0" />
-      <Line endX="368.0" layoutX="111.0" layoutY="54.0" startX="-100.0" />
-      <Label id="serverLabel" fx:id="serverLabel" layoutX="22.0" layoutY="22.0" onMouseClicked="#showCentralServiceConfiguration" text="Servidor">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-      </Label>
-      <Label id="proxyLabel" fx:id="proxyLabel" layoutX="141.0" layoutY="22.0" onMouseClicked="#showProxyConfiguration" text="Proxy">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-      </Label>
-      <Label id="tokenLabel" fx:id="tokenLabel" layoutX="277.0" layoutY="22.0" onMouseClicked="#showTokenConfiguration" text="Token">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-      </Label>
-      <Label id="dataLabel" fx:id="dataLabel" layoutX="404.0" layoutY="22.0" onMouseClicked="#showDataSourceConfiguration" text="Dados">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-      </Label>
-      <Pane id="content" fx:id="content" layoutX="11.0" layoutY="55.0" prefHeight="278.0" prefWidth="469.0" />
-   </children>
+<Pane xmlns:fx="http://javafx.com/fxml/1" id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="347.0" prefWidth="490.0" xmlns="http://javafx.com/javafx/17.0.2-ea" fx:controller="br.org.cria.splinkerapp.controllers.ConfigurationController">
+    <children>
+        <Line endX="367.0" layoutX="111.0" layoutY="15.0" startX="-100.0"/>
+        <Line endX="368.0" layoutX="111.0" layoutY="54.0" startX="-100.0"/>
+        <Label id="serverLabel" fx:id="serverLabel" layoutX="23.0" layoutY="22.0" onMouseClicked="#showCentralServiceConfiguration" text="Servidor">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Label>
+        <Label id="proxyLabel" fx:id="proxyLabel" layoutX="148.0" layoutY="22.0" onMouseClicked="#showProxyConfiguration" text="Proxy">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Label>
+        <Label id="tokenLabel" fx:id="tokenLabel" layoutX="269.0" layoutY="22.0" onMouseClicked="#showTokenConfiguration" text="Token">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Label>
+        <Label id="dataLabel" fx:id="dataLabel" layoutX="400.0" layoutY="22.0" onMouseClicked="#showDataSourceConfiguration" text="Dados">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Label>
+        <Pane id="content" fx:id="content" layoutX="11.0" layoutY="55.0" prefHeight="278.0" prefWidth="469.0"/>
+    </children>
 </Pane>

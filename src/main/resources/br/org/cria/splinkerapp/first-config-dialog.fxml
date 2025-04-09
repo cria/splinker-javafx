@@ -1,13 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="161.0" prefWidth="332.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FirstConfigDialogController">
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="310.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FirstConfigDialogController">
    <children>
-      <Button id="btnYes" layoutX="68.0" layoutY="78.0" mnemonicParsing="false" onMouseClicked="#onYesButtonClicked" text="Sim" textAlignment="CENTER" />
-      <Button id="btnNo" layoutX="192.0" layoutY="78.0" mnemonicParsing="false" onMouseClicked="#onNoButtonClicked" text="Não" />
-      <Label layoutX="42.0" layoutY="23.0" prefHeight="49.0" prefWidth="249.0" text="Deseja fazer a configuração inicial do spLinker?" wrapText="true" />
+      <Button id="btnAddToken" fx:id="btnAddIniciar" layoutX="198.0" layoutY="246.0" mnemonicParsing="false" onMouseClicked="#onYesButtonClicked" prefHeight="34.0" prefWidth="85.0" styleClass="primary-button" text="Iniciar" />
+
+      <Label alignment="CENTER" layoutX="9.0" layoutY="33.0" prefHeight="49.0" prefWidth="460.0" text="Bem vindo ao spLinker!" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font size="18.0" />
+         </font></Label>
+      <Label alignment="CENTER" layoutX="9.0" layoutY="74.0" prefHeight="173.0" prefWidth="460.0" text="O spLinker é um software que facilita o envio de dados em formato Darwin Core Archive para a rede speciesLink, promovendo o compartilhamento de dados não confidenciais para apoiar a pesquisa, a educação e políticas voltadas à conservação e uso sustentável da biodiversidade." textAlignment="JUSTIFY" wrapText="true">
+         <font>
+            <Font size="16.0" />
+         </font></Label>
+      <ImageView fitHeight="130.0" fitWidth="128.0" layoutX="177.0" layoutY="-29.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../images/splinker.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="14.0" layoutY="267.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../images/cria-logo.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="36.0" fitWidth="96.0" layoutX="381.0" layoutY="267.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../images/splink-logo.gif" />
+         </image>
+      </ImageView>
    </children>
 </Pane>

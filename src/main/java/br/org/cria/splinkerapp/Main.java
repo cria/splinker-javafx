@@ -2,6 +2,7 @@ package br.org.cria.splinkerapp;
 
 import javafx.application.Application;
 import javafx.concurrent.Task;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import org.apache.logging.log4j.LogManager;
@@ -14,33 +15,27 @@ import br.org.cria.splinkerapp.services.implementations.SpLinkerUpdateService;
 import io.sentry.Sentry;
 import javafx.application.Platform;
 
-public class Main extends Application 
-{
+import java.util.Objects;
+
+public class Main extends Application {
     @Override
-    public void start(Stage stage) throws Exception
-    {
-        try 
-        {
+    public void start(Stage stage) throws Exception {
+        try {
             SentryConfig.setUp();
             LockFileManager.verifyLockFile();
             Task<Void> initDb = DatabaseSetup.initDb();
-            if (initDb != null) 
-            {
+            if (initDb != null) {
                 stage.setOnCloseRequest(event -> {
-                    try 
-                    {
+                    try {
                         LockFileManager.deleteLockfile();
-                        LogManager.shutdown();    
+                        LogManager.shutdown();
                     } catch (Exception e) {
                         Sentry.captureException(e);
                         throw new RuntimeException(e);
                     }
-                    
                 });
-                initDb.setOnFailed(event -> 
-                {
-                    try 
-                    {
+                initDb.setOnFailed(event -> {
+                    try {
                         LockFileManager.deleteLockfile();
                         var exception = initDb.getException();
                         Sentry.captureException(exception);
@@ -51,44 +46,42 @@ public class Main extends Application
                 });
 
                 initDb.setOnSucceeded(event -> {
-                    Platform.runLater(() ->
-                    {
-                        stage.setTitle("spLinker");
-                        stage.setResizable(false); 
-                        try 
-                        {
-                            if(new SpLinkerUpdateService().hasNewVersion())
-                            {
+                    Platform.runLater(() -> {
+                        stage.setResizable(false);
+
+                        // Verificar o sistema operacional e definir o ícone correto
+                        String os = System.getProperty("os.name").toLowerCase();
+                        if (os.contains("win")) {
+                            stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png"))));
+                        } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+                            stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png"))));
+                        }
+
+                        try {
+                            if (SpLinkerUpdateService.hasNewVersion()) {
                                 Router.navigateTo(stage, "splinker-update");
-                                return;
                             }
-                            
+
                             var hasConfig = DataSetService.hasConfiguration();
-                            var routeName = hasConfig ? "home" :  "first-config-dialog";
+                            var routeName = hasConfig ? "home" : "first-config-dialog";
                             Router.navigateTo(stage, routeName);
-                        } 
-                        catch (Exception e) 
-                        {
+                        } catch (Exception e) {
                             Sentry.captureException(e);
                             throw new RuntimeException(e);
                         }
                     });
-                        
                 });
                 initDb.run();
                 initDb.get();
             }
-        } 
-        catch (Exception ex) 
-        {
+        } catch (Exception ex) {
             Sentry.captureException(ex);
             LockFileManager.deleteLockfile();
             throw new RuntimeException(ex);
         }
     }
 
-    public static void main(String[] args) 
-    {
+    public static void main(String[] args) {
         launch(args);
     }
 }

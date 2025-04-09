@@ -1,120 +1,89 @@
 package br.org.cria.splinkerapp.services.implementations;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
+import java.util.HashMap;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
-import com.google.gson.reflect.TypeToken;
-
-import br.org.cria.splinkerapp.config.LockFileManager;
-import br.org.cria.splinkerapp.models.GithubAPIResponse;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
 
-public class SpLinkerUpdateService 
-{
-    String command = "Powershell.exe";
-    String scriptPath = "/scripts/update/softwareUpdate.";
-    String operatingSystemName = SystemUtils.OS_NAME.toLowerCase();
-    String scriptFileExtension = "ps1";
-    String scriptArgs = "";
-    String params = "-Command";
-    boolean isRunningOnWindows = operatingSystemName.contains("windows");
-    GithubAPIResponse lastRelease;
-    String packageExtension = "msi";
-    static final String githubURL = "https://api.github.com/repos/cria/splinker-javafx/releases";
-    
+public class SpLinkerUpdateService {
+    static String command = "Powershell.exe";
+    static String scriptPath = "/scripts/update/softwareUpdate.";
+    static String operatingSystem = SystemUtils.OS_NAME.toLowerCase();
+    static String fileExtension = "ps1";
+    static String params = "-Command";
+    static String githubURL = "https://api.github.com/repos/cria/splinker-javafx/releases";
 
-    public SpLinkerUpdateService() throws Exception
-    {
-        getReleaseData();
-    }
+    //1) faz request no github
+    //2) Parsing de string para verificar a versão
+    //3) verifica se tem versão nova disponível
+    //4) Pega a URL do download
+    //5) Roda o script
 
-    private void getReleaseData() throws Exception
-    {
-        var type = new TypeToken<ArrayList<GithubAPIResponse>>(){}.getType();
-        var releaseList = (ArrayList<GithubAPIResponse>) HttpService.getJson(githubURL, type);
-        lastRelease = releaseList.get(0);
-    }
+    public static boolean hasNewVersion() throws Exception {
+        var needUpdates = false;
+        // var strVersion = CentralServiceRepository.getCentralServiceData().getSystemVersion();
+        // //TODO: Remover os pontos dos números de versão, transformar em inteiro e comparar para ver quem é maior
+        // var currentVersion = Double.parseDouble(strVersion.replaceAll("[^0-9]", ""));
+        // var response = HttpService.getJson(githubURL);
+        // var releaseName = response.get("name").toString();
+        // var lastVersion = getVersionNumber(releaseName);
 
-    public boolean hasNewVersion() throws Exception
-    {
-        var strVersion = CentralServiceRepository.getCentralServiceData().getSystemVersion();
-        var currentVersion = Integer.parseInt(strVersion.replaceAll("[^0-9]", ""));        
-        var releaseName = lastRelease.getName();
-        var lastVersion = getVersionNumber(releaseName);
-        var needUpdates = lastVersion > currentVersion;
+        // needUpdates = lastVersion > currentVersion;
+
 
         return needUpdates;
     }
 
-    private static int getVersionNumber(String releaseName)
-    {
-        var intPart = releaseName.replaceAll("[^0-9]", "");
-        return Integer.parseInt(intPart);
+    private static Double getVersionNumber(String releaseName) {
+        var doublePart = releaseName.replaceAll("[^0-9]", "");
+        return Double.parseDouble(doublePart);
     }
 
-    private void defineOperatingSystemConfiguration()
-    {
-        if (isRunningOnWindows)
-        {
-            var versionNumber = operatingSystemName.replaceAll("[^0-9]", "");
+    private static HashMap<String, String> getGithubRelease() {
+        return new HashMap<>();
+    }
+
+    public static void verifyOSVersion() {
+
+        if (operatingSystem.contains("windows")) {
+            var versionNumber = operatingSystem.replaceAll("[^0-9]", "");
             var hasVersion = versionNumber != "";
-            var isOldWindowsVersion = true;//hasVersion && Integer.parseInt(versionNumber) < 11;
-            
-            if(isOldWindowsVersion)
-            {
-                scriptFileExtension = "bat";
+            var isOldWindowsVersion = hasVersion && Integer.parseInt(versionNumber) < 11;
+
+            if (isOldWindowsVersion) {
+                fileExtension = "bat";
                 command = "cmd"; //? 
                 params = "";
             }
-            return;
+        } else {
+            command = "bash";
+            fileExtension = "sh";
         }
-        
-        command = "bash";
-        scriptFileExtension = "sh";
+
+
     }
 
-    private void definePackageExtension() throws IOException
-    {
-        if(!isRunningOnWindows)
-        {
-            var builder = new ProcessBuilder("which dpkg");
-            var process = builder.start();
-            var commandOutput = IOUtils.toString(process.getInputStream(), Charset.forName("UTF-8"));
-            var hasDpkgInstall =  commandOutput.contains("dpkg");
-            packageExtension = hasDpkgInstall ? ".deb": ".rpm";    
+    public static void runSoftwareUpdate() {
+        try {
+            var scriptWithExtension = "%s%s".formatted(scriptPath, fileExtension);
+            var resource = SpLinkerUpdateService.class.getResource(scriptWithExtension);
+            var resourcePath = resource.toURI().getPath();
+            var fullScriptPath = operatingSystem.contains("windows") ? resourcePath.substring(1) : resourcePath;
+            var home = System.getProperty("user.home");
+            var outputPath = "%s/Downloads/splinker_new_version.msi".formatted(home);
+            var downloadLink = "https://swupdate.openvpn.net/downloads/connect/openvpn-connect-3.3.7.2979_signed.msi";
+
+            var processBuilder = new ProcessBuilder();
+            var values = "%s \"%s\" \"%s\";".formatted(fullScriptPath, downloadLink, outputPath);
+            processBuilder.command(command, params, values);
+            processBuilder.inheritIO(); // Redirect PowerShell's input, output, and error streams to the Java application
+
+            //processBuilder.environment().put("$env:DOWNLOAD_LINK", downloadUrl);
+
+            Process shellProcess = processBuilder.start();
+            System.exit(0);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
-
-    
-    private ProcessBuilder configureUpdateProcess() throws Exception
-    {
-        definePackageExtension();
-        var scriptWithExtension = "%s%s".formatted(scriptPath, scriptFileExtension);
-        var resource = getClass().getResource(scriptWithExtension);
-        var resourcePath = resource.toURI().getPath();
-        var fullScriptPath = isRunningOnWindows ? resourcePath.substring(1) :resourcePath;
-        var assets = lastRelease.getAssets().stream();
-        var asset = assets.filter(a -> a.getName().contains(packageExtension)).findFirst().get();
-        var outputfile = asset.getName();
-        var downloadLink = asset.getBrowserDownloadUrl();
-        var values =  "%s \"%s\" \"%s\";".formatted(fullScriptPath, downloadLink, outputfile);
-        var processBuilder = new ProcessBuilder();
-        processBuilder.command(command, params, values);
-        processBuilder.inheritIO();
-        
-        return processBuilder;
-    }
-
-    public void runSoftwareUpdate() throws Exception
-    {
-        getReleaseData();
-        defineOperatingSystemConfiguration();
-        var processBuilder = configureUpdateProcess();
-        var shellProcess = processBuilder.start();
-        LockFileManager.deleteLockfile();
-        System.exit(0);
     }
 }

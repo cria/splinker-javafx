@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="524.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FirstConfigDialogController">
+    <children>
+        <Label alignment="CENTER" layoutX="24.0" layoutY="63.0" prefHeight="173.0" prefWidth="460.0" text="O spLinker é uma ferramenta desenvolvida para facilitar o envio de dados para a rede speciesLink, utilizando o formato Darwin Core Archive (DwC-A). Com ele, você pode compartilhar dados não confidenciais sobre biodiversidade, contribuindo para a pesquisa científica, a educação e a formulação de políticas de conservação e uso sustentável." textAlignment="JUSTIFY" wrapText="true">
+            <font>
+                <Font size="16.0" />
+            </font></Label>
+        <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="20.0" layoutY="289.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../../../../images/cria-logo.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="36.0" fitWidth="96.0" layoutX="378.0" layoutY="286.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../../../../images/splink-logo.gif" />
+            </image>
+        </ImageView>
+    </children>
+</Pane>

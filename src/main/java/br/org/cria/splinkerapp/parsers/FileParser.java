@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+
 import com.google.common.eventbus.EventBus;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.managers.EventBusManager;
@@ -13,28 +14,26 @@ import br.org.cria.splinkerapp.utils.StringStandards;
 
 public abstract class FileParser {
     protected EventBus readRowEventBus;
-    protected int totalRowCount = 0;;
+    protected int totalRowCount = 0;
+    ;
     protected int currentRow = 0;
     protected int totalColumnCount = 0;
     protected final String CONNECTION_STRING = System.getProperty("splinker.dbname", LocalDbManager.getLocalDbConnectionString());
-    protected FileParser() throws Exception
-    {
+
+    protected FileParser() throws Exception {
         readRowEventBus = EventBusManager.getEvent(EventTypes.READ_ROW.name());
     }
 
-    public int getTotalRowCount()
-    {
+    public int getTotalRowCount() {
         return totalRowCount;
     }
 
-    public int getCurrentRow()
-    {
+    public int getCurrentRow() {
         return currentRow;
     }
 
-    protected void dropTable(String tableName) throws Exception{
-        if(tableName == null)
-        {
+    protected void dropTable(String tableName) throws Exception {
+        if (tableName == null) {
             tableName = getTableName();
         }
         var conn = getConnection();
@@ -45,28 +44,42 @@ public abstract class FileParser {
     }
 
     @SuppressWarnings("null")
-    protected String getCellValue(String cell)
-    {
+    protected String getCellValue(String cell) {
         var isNull = cell == null;
-        var hasNullValue = isNull? true : cell.toLowerCase() != "null";
-        var value = hasNullValue? "" : cell.replace("\r", " ").replace("\t", " ");
+        var hasNullValue = isNull || cell.equalsIgnoreCase("null");
+        var value = hasNullValue ? "" : cell.replace("\r", " ").replace("\t", " ").replace("\n", " ").trim();
         return value;
     }
+
     protected static String createTableCommand = "CREATE TABLE IF NOT EXISTS %s (%s)";
     protected static String insertIntoCommand = "INSERT INTO %s (%s) VALUES (%s);";
-    protected Connection getConnection() throws SQLException { return DriverManager.getConnection(CONNECTION_STRING); }
-    protected String getTableName(){ return "spLinker";}
+
+    protected Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(CONNECTION_STRING);
+    }
+
+    protected String getTableName() {
+        return "spLinker";
+    }
+
     public abstract void insertDataIntoTable() throws Exception;
+
     protected abstract List<String> getRowAsStringList(Object row, int numberOfColumns);
+
     protected abstract String buildCreateTableCommand() throws Exception;
 
-    protected String makeValueString(int numberOfColumns) { return "?,".repeat(numberOfColumns); }
+    protected String makeValueString(int numberOfColumns) {
+        return "?,".repeat(numberOfColumns);
+    }
+
     protected String makeColumnName(String originalField) {
-        var chars = Arrays.asList(""," ","\t","\n");
+        var chars = Arrays.asList("", " ", "\t", "\n");
         var isEmptyString = chars.contains(originalField);
-        var column = isEmptyString ? 
-        null : "`%s`".formatted(StringStandards.normalizeString(originalField));
-        return column;}
+        var column = isEmptyString ?
+                null : "`%s`".formatted(StringStandards.normalizeString(originalField));
+        return column;
+    }
+
     public void createTableBasedOnSheet() throws Exception {
         var command = buildCreateTableCommand();
         var conn = getConnection();

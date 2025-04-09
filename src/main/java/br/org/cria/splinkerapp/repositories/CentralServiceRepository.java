@@ -6,10 +6,8 @@ import com.google.common.base.Strings;
 
 import br.org.cria.splinkerapp.models.CentralService;
 
-public class CentralServiceRepository extends BaseRepository 
-{
-    public static CentralService getCentralServiceData() throws Exception
-    {
+public class CentralServiceRepository extends BaseRepository {
+    public static CentralService getCentralServiceData() throws Exception {
         var cmd = "SELECT * FROM CentralServiceConfiguration";
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var result = runQuery(cmd, conn);
@@ -18,19 +16,16 @@ public class CentralServiceRepository extends BaseRepository
         result.close();
         conn.close();
         return new CentralService(url, systemVersion);
-    };
+    }
 
-    public static void saveCentralServiceData(String url, String systemVersion) throws Exception
-    {
+    public static void saveCentralServiceData(String url, String systemVersion) throws Exception {
         saveCentralServiceData(new CentralService(url, systemVersion));
 
     }
 
-    private static void saveCentralServiceData(CentralService cserv) throws Exception
-    {
+    private static void saveCentralServiceData(CentralService cserv) throws Exception {
         var isEmptyUrl = Strings.isNullOrEmpty(cserv.getCentralServiceUrl());
-        if(!isEmptyUrl)
-        {
+        if (!isEmptyUrl) {
             cleanTable("CentralServiceConfiguration");
             var cmd = """
                     INSERT INTO CentralServiceConfiguration (central_service_url, last_system_version) 
@@ -39,25 +34,22 @@ public class CentralServiceRepository extends BaseRepository
             var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
             var statement = conn.prepareStatement(cmd);
             statement.setString(1, cserv.getCentralServiceUrl());
-            statement.setString(2,cserv.getSystemVersion());
-            
+            statement.setString(2, cserv.getSystemVersion());
+
             statement.executeUpdate();
             statement.close();
             conn.close();
-        }
-        else
-        {
+        } else {
             throw new Exception("O campo não pode ser vazio");
         }
     }
-    
-    public static String getCurrentVersion() throws Exception
-    { 
+
+    public static String getCurrentVersion() throws Exception {
         var cmd = "SELECT last_system_version FROM CentralServiceConfiguration;";
         var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var result = runQuery(cmd, conn);
         var system_version = result.getString("last_system_version");
         conn.close();
         return system_version;
-    }    
+    }
 }

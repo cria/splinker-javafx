@@ -1,4 +1,4 @@
-name: Workflow de Release 
+name: Workflow de Release
 
 on:
   workflow_run:
@@ -8,6 +8,7 @@ on:
       - v*
     types:
       - completed
+
 jobs:
   steve:
     name: "Release Version"
@@ -22,13 +23,39 @@ jobs:
           name: splinker-linux
           path: dist/linux
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Download de artefatos Windows
         uses: actions/download-artifact@v3
         with:
-          workflow: build-workflow.yaml
+          name: build-workflow.yaml
           path: ./dist/windows
           search_artifacts: true
+
+      - name: Criar pacote .deb com ícone e .desktop
+        run: |
+          mkdir -p package/usr/bin
+          mkdir -p package/usr/share/applications
+          mkdir -p package/usr/share/icons/hicolor/48x48/apps
+          mkdir -p package/DEBIAN
+
+          cp ./dist/linux/splinker package/usr/bin/splinker
+
+          cp resources/desktop/splinker.desktop package/usr/share/applications/splinker.desktop
+          cp resources/icons/cria-logo.png package/usr/share/icons/hicolor/48x48/apps/splinker.png
+
+
+          cat <<EOF > package/DEBIAN/control
+          Package: splinker
+          Version: 1.0
+          Section: utils
+          Priority: optional
+          Architecture: amd64
+          Depends: openjdk-11-jre
+          Maintainer: Seu Nome <seuemail@example.com>
+          Description: Aplicação spLinker para ajudar pesquisadores.
+          EOF
+
+          dpkg-deb --build package ./dist/linux/splinker-1.0-1.x86_64.deb
 
       - name: Define versão
         id: version
@@ -55,7 +82,7 @@ jobs:
           asset_path: ./dist/linux/splinker-1.0-1.x86_64.rpm
           asset_name: splinker-1.0-1.x86_64.rpm
           asset_content_type: application/x-rpm
-      
+
       - name: Upload Linux .deb Artifacts
         uses: actions/upload-release-asset@v1
         env:
