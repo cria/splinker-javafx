@@ -3,15 +3,13 @@ package br.org.cria.splinkerapp.services.implementations;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import br.org.cria.splinkerapp.models.DataSet;
@@ -21,7 +19,6 @@ import br.org.cria.splinkerapp.models.TransferHistoryDataSet;
 import br.org.cria.splinkerapp.repositories.BaseRepository;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
-import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
 
 public class DataSetService extends BaseRepository {
 
@@ -48,11 +45,27 @@ public class DataSetService extends BaseRepository {
     }
 
     public static Map<String, Object> getConfigurationDataFromAPI(String token) throws Exception {
-
         var config = CentralServiceRepository.getCentralServiceData();
         var url = "%s?version=%s&token=%s".formatted(config.getCentralServiceUrl(), config.getSystemVersion(), token);
-        var json = HttpService.getJson(url);
-        return json;
+
+        // Como getJson() agora retorna Object (que pode ser Map ou List)
+        Object jsonResponse = HttpService.getJson(url);
+
+        // Verificar se a resposta é um Map (objeto JSON)
+        if (jsonResponse instanceof Map) {
+            return (Map<String, Object>) jsonResponse;
+        }
+        // Se por algum motivo a resposta for uma List (array JSON)
+        else if (jsonResponse instanceof List && !((List<?>)jsonResponse).isEmpty()) {
+            // Pegar o primeiro item da lista, assumindo que é um Map
+            Object firstItem = ((List<?>)jsonResponse).get(0);
+            if (firstItem instanceof Map) {
+                return (Map<String, Object>) firstItem;
+            }
+        }
+
+        // Se chegou aqui, a resposta não foi reconhecida como esperado
+        throw new Exception("Formato de resposta inesperado da API: " + jsonResponse);
     }
 
     public static boolean hasConfiguration() throws Exception {
