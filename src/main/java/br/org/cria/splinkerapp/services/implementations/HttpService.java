@@ -7,14 +7,14 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import com.google.gson.Gson;
 import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
 
 public class HttpService {
 
-    public static Map<String, Object> getJson(String url) throws Exception {
+    public static Object getJson(String url) throws Exception {
         String line;
         HttpURLConnection connection;
         var urlConn = new URI(url).toURL();
@@ -42,11 +42,22 @@ public class HttpService {
         reader.close();
         connection.disconnect();
         var stringResponse = response.toString();
-        var isList = stringResponse.charAt(0) == '[';
-        var lastIndex = stringResponse.length() - 1;
-        var content = isList ? stringResponse.substring(1, lastIndex) : stringResponse;
-        HashMap<String, Object> json = new Gson().fromJson(content, HashMap.class);
-        return json;
+
+        // Configurar Gson para ser leniente com JSON mal formatado
+        com.google.gson.GsonBuilder gsonBuilder = new com.google.gson.GsonBuilder();
+        gsonBuilder.setLenient();
+        com.google.gson.Gson gson = gsonBuilder.create();
+
+        // Identificar se é um array ou objeto e fazer o parse adequado
+        if (stringResponse.trim().startsWith("[")) {
+            // É um array JSON
+            com.google.gson.reflect.TypeToken<List<Map<String, Object>>> typeToken =
+                    new com.google.gson.reflect.TypeToken<List<Map<String, Object>>>() {};
+            return gson.fromJson(stringResponse, typeToken.getType());
+        } else {
+            // É um objeto JSON
+            return gson.fromJson(stringResponse, HashMap.class);
+        }
     }
 
 }
