@@ -18,21 +18,13 @@
                 </Label>
                 <Label id="lblMessage" fx:id="lblMessage" alignment="CENTER" prefHeight="60.0" prefWidth="340.0" text="Deseja instalar a nova versão do spLinker agora? O aplicativo será fechado durante a instalação." textAlignment="CENTER" wrapText="true">
                     <font>
-                        <Font size="14.0" />
+                        <Font size="15.0" />
                     </font>
                 </Label>
                 <HBox alignment="CENTER" prefHeight="40.0" prefWidth="340.0" spacing="40.0">
                     <children>
-                        <Button id="btnYes" fx:id="btnYes" mnemonicParsing="false" onMouseClicked="#onBtnYesClicked" prefHeight="30.0" prefWidth="112.0" text="Instalar agora">
-                            <font>
-                                <Font size="14.0" />
-                            </font>
-                        </Button>
-                        <Button id="btnNo" fx:id="btnNo" mnemonicParsing="false" onMouseClicked="#onBtnNoClicked" prefWidth="100.0" text="Mais tarde">
-                            <font>
-                                <Font size="14.0" />
-                            </font>
-                        </Button>
+                        <Button id="btnYes" fx:id="btnYes" mnemonicParsing="false" onMouseClicked="#onBtnYesClicked" prefHeight="30.0" prefWidth="112.0" styleClass="success-button" text="Instalar agora" />
+                        <Button id="btnNo" fx:id="btnNo" mnemonicParsing="false" onMouseClicked="#onBtnNoClicked" prefWidth="100.0" styleClass="danger-button" text="Mais tarde" />
                     </children>
                 </HBox>
             </children>

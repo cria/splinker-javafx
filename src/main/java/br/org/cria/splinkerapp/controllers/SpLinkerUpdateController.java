@@ -82,6 +82,7 @@ public class SpLinkerUpdateController extends AbstractController {
 
             if (lblMessage != null) {
                 lblMessage.setText("Preparando download da atualização...");
+                lblMessage.getStyleClass().add("update-message");
             }
 
             // Criar tarefa de download com progresso
@@ -118,6 +119,7 @@ public class SpLinkerUpdateController extends AbstractController {
                         Platform.runLater(() -> {
                             if (lblMessage != null) {
                                 lblMessage.setText("Baixando atualização do spLinker...");
+                                lblMessage.getStyleClass().add("update-message");
                             }
                         });
 
