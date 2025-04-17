@@ -8,14 +8,12 @@ param (
 )
 
 # Faz Download da nova versão
-Invoke-WebRequest -Uri $DOWNLOAD_LINK -OutFile $OUTPUT_PATH
-
-# Extrai o zip do download
-# Expand-Archive -Path splinker_new_version.zip -DestinationPath .
+Invoke-WebRequest -Uri $DOWNLOAD_LINK -OutFile "$HOME\Downloads\$OUTPUT_PATH"
 
 # Remove a versão antiga do spLinker
-$software = Get-WmiObject -Class Win32_Product | Where-Object {$_.Name -like "*spLinker*"} | Select-Object -Property Name, IdentifyingNumber
-msiexec.exe /x $software.IdentifyingNumber /quiet /qn /norestart
-
+$spLinker = Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -like "*spLinker*" }
+# msiexec.exe /x $spLinker.IdentifyingNumber /quiet /qn /norestart
+$uninstallArgs = "/x $($spLinker.IdentifyingNumber) /qn"
+Start-Process -FilePath "msiexec.exe" -ArgumentList $uninstallArgs -NoNewWindow -Wait
 # Run GUI installer
-Start-Process -FilePath $OUTPUT_PATH -Wait
+Start-Process -FilePath "$HOME\Downloads\$OUTPUT_PATH" -Wait
