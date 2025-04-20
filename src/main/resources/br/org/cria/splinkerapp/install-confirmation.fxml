@@ -1,36 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="380.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.InstallConfirmationController">
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="252.0" prefWidth="380.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.InstallConfirmationController">
     <children>
-        <VBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="180.0" prefWidth="360.0" spacing="15.0">
-            <children>
-                <Label id="lblTitle" fx:id="lblTitle" alignment="CENTER" prefHeight="30.0" prefWidth="340.0" text="Download concluído!" textAlignment="CENTER" wrapText="true">
-                    <font>
-                        <Font name="System Bold" size="16.0" />
-                    </font>
-                </Label>
-                <Label id="lblMessage" fx:id="lblMessage" alignment="CENTER" prefHeight="60.0" prefWidth="340.0" text="Deseja instalar a nova versão do spLinker agora? O aplicativo será fechado durante a instalação." textAlignment="CENTER" wrapText="true">
-                    <font>
-                        <Font size="15.0" />
-                    </font>
-                </Label>
-                <HBox alignment="CENTER" prefHeight="40.0" prefWidth="340.0" spacing="40.0">
-                    <children>
-                        <Button id="btnYes" fx:id="btnYes" mnemonicParsing="false" onMouseClicked="#onBtnYesClicked" prefHeight="30.0" prefWidth="112.0" styleClass="success-button" text="Instalar agora" />
-                        <Button id="btnNo" fx:id="btnNo" mnemonicParsing="false" onMouseClicked="#onBtnNoClicked" prefWidth="100.0" styleClass="danger-button" text="Mais tarde" />
-                    </children>
-                </HBox>
-            </children>
-            <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
-        </VBox>
+          <Label id="lblTitle" fx:id="lblTitle" alignment="CENTER" layoutX="20.0" layoutY="77.0" prefHeight="30.0" prefWidth="340.0" text="Download concluído!" textAlignment="CENTER" wrapText="true">
+              <font>
+                  <Font name="System Bold" size="16.0" />
+              </font>
+          </Label>
+          <Label id="lblMessage" fx:id="lblMessage" alignment="CENTER" layoutX="20.0" layoutY="92.0" prefHeight="80.0" prefWidth="340.0" text="Deseja instalar a nova versão do spLinker agora? O aplicativo será fechado durante a instalação." textAlignment="CENTER" wrapText="true">
+              <font>
+                  <Font size="15.0" />
+              </font>
+          </Label>
+            <Button id="btnNo" fx:id="btnNo" layoutX="223.0" layoutY="187.0" mnemonicParsing="false" onMouseClicked="#onBtnNoClicked" prefHeight="30.0" prefWidth="112.0" styleClass="danger-button" text="Mais tarde" />
+            <Button id="btnYes" fx:id="btnYes" layoutX="45.0" layoutY="187.0" mnemonicParsing="false" onMouseClicked="#onBtnYesClicked" prefHeight="30.0" prefWidth="112.0" styleClass="success-button" text="Instalar agora" />
+      <ImageView fitHeight="154.0" fitWidth="178.0" layoutX="101.0" layoutY="-33.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../images/splinker.png" />
+         </image></ImageView>
     </children>
 </Pane>

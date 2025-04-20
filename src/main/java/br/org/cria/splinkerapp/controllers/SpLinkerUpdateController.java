@@ -40,18 +40,13 @@ public class SpLinkerUpdateController extends AbstractController {
     private ProgressIndicator progressIndicator;
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
-
-    // Obtenha a URL de download do serviço
     private String downloadUrl;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
-
-        // Obter a URL de download do serviço
         downloadUrl = SpLinkerUpdateService.getLatestDownloadUrl();
 
-        // Configurar a visibilidade inicial
         if (progressBar != null) progressBar.setVisible(false);
         if (progressIndicator != null) progressIndicator.setVisible(false);
 
@@ -66,7 +61,6 @@ public class SpLinkerUpdateController extends AbstractController {
     @FXML
     void onBtnYesClicked() {
         try {
-            // Esconder botões e mostrar progresso
             if (btnYes != null) btnYes.setVisible(false);
             if (btnNo != null) btnNo.setVisible(false);
 
@@ -85,51 +79,43 @@ public class SpLinkerUpdateController extends AbstractController {
                 lblMessage.getStyleClass().add("update-message");
             }
 
-            // Criar tarefa de download com progresso
             Task<File> downloadTask = new Task<File>() {
                 @Override
                 protected File call() throws Exception {
-                    // Criar diretório de downloads se não existir
                     File homeDir = new File(System.getProperty("user.home"));
                     File downloadDir = new File(homeDir, "Downloads");
                     if (!downloadDir.exists()) {
                         downloadDir.mkdirs();
                     }
 
-                    // Definir arquivo de destino
-                    File outputFile = new File(downloadDir, "splinker_new_version.msi");
+                    String fileExtension = SpLinkerUpdateService.getInstallerExtension();
+                    File outputFile = new File(downloadDir, "splinker_new_version." + fileExtension);
 
-                    // Configurar conexão
                     URL url = new URL(downloadUrl);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestProperty("User-Agent", "SpLinker-App");
 
-                    // Obter tamanho do arquivo
                     int fileSize = connection.getContentLength();
 
-                    // Iniciar download
                     try (InputStream in = connection.getInputStream();
                          FileOutputStream out = new FileOutputStream(outputFile)) {
 
-                        byte[] buffer = new byte[8192]; // 8KB buffer
+                        byte[] buffer = new byte[8192];
                         int bytesRead;
                         long totalBytesRead = 0;
 
-                        // Atualizar mensagem
                         Platform.runLater(() -> {
                             if (lblMessage != null) {
-                                lblMessage.setText("Baixando atualização do spLinker...");
+                                lblMessage.setText("Baixando atualização do spLinker.");
                                 lblMessage.getStyleClass().add("update-message");
                             }
                         });
 
-                        // Ler e escrever o arquivo, atualizando o progresso
                         while ((bytesRead = in.read(buffer)) != -1) {
                             out.write(buffer, 0, bytesRead);
                             totalBytesRead += bytesRead;
 
-                            // Atualizar progresso na UI
-                            if (fileSize > 0) { // Evitar divisão por zero
+                            if (fileSize > 0) {
                                 final double progress = (double) totalBytesRead / fileSize;
                                 Platform.runLater(() -> {
                                     if (progressBar != null) progressBar.setProgress(progress);
@@ -143,12 +129,10 @@ public class SpLinkerUpdateController extends AbstractController {
                 }
             };
 
-            // Configurar callbacks para a conclusão do download
             downloadTask.setOnSucceeded(event -> {
                 try {
                     File downloadedFile = downloadTask.getValue();
 
-                    // Atualizar UI
                     Platform.runLater(() -> {
                         if (lblMessage != null) {
                             lblMessage.setText("Download concluído!");
@@ -157,16 +141,12 @@ public class SpLinkerUpdateController extends AbstractController {
                         if (progressIndicator != null) progressIndicator.setProgress(1.0);
                     });
 
-                    // IMPORTANTE: Armazenar o caminho no serviço compartilhado
                     InstallerService.setInstallerPath(downloadedFile.getAbsolutePath());
 
-                    // Aguardar um pouco para o usuário ver que terminou
                     Thread.sleep(1000);
 
-                    // Navegar para a tela de confirmação de instalação
                     Platform.runLater(() -> {
                         try {
-                            // Navegar para a tela de confirmação
                             Router.navigateTo(getStage(), "install-confirmation");
                         } catch (Exception e) {
                             Sentry.captureException(e);
@@ -180,14 +160,12 @@ public class SpLinkerUpdateController extends AbstractController {
                 }
             });
 
-            // Configurar callbacks para erros durante o download
             downloadTask.setOnFailed(event -> {
                 Throwable ex = downloadTask.getException();
                 Sentry.captureException(ex);
                 showError("Falha ao baixar a atualização: " + ex.getMessage());
             });
 
-            // Executar a tarefa de download
             executor.execute(downloadTask);
 
         } catch (Exception e) {
@@ -199,10 +177,7 @@ public class SpLinkerUpdateController extends AbstractController {
     @FXML
     void onBtnNoClicked() {
         try {
-            // Fechar o executor
             executor.shutdownNow();
-
-            // Voltar para a tela principal
             SpLinkerUpdateService.verifyOSVersion();
             navigateToHome();
         } catch (Exception e) {
@@ -226,7 +201,6 @@ public class SpLinkerUpdateController extends AbstractController {
 
     private void navigateToHome() {
         try {
-            // Navegar para a tela principal
             Router.navigateTo(getStage(), "home");
         } catch (Exception e) {
             Sentry.captureException(e);
