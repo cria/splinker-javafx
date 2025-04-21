@@ -5,8 +5,10 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import br.org.cria.splinkerapp.Router;
+import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
+import br.org.cria.splinkerapp.services.implementations.SpLinkerUpdateService;
 import io.sentry.Sentry;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -39,7 +41,7 @@ public class InstallConfirmationController extends AbstractController {
         if (os.contains("windows")) {
             fileExtension = "msi";
         } else if (os.contains("linux")) {
-            fileExtension = br.org.cria.splinkerapp.services.implementations.SpLinkerUpdateService.getInstallerExtension();
+            fileExtension = SpLinkerUpdateService.getInstallerExtension();
         } else {
             fileExtension = "dmg";
         }
@@ -65,13 +67,14 @@ public class InstallConfirmationController extends AbstractController {
                 lblMessage.setText("Iniciando processo de atualização...");
             }
 
+            LockFileManager.deleteLockfile();
             String os = System.getProperty("os.name").toLowerCase();
 
             if (os.contains("linux")) {
                 if (lblMessage != null) {
                     lblMessage.setText("Iniciando o processo de atualização para Linux...");
                 }
-                br.org.cria.splinkerapp.services.implementations.SpLinkerUpdateService.runSoftwareUpdate();
+                SpLinkerUpdateService.runSoftwareUpdate();
                 return;
             }
 
@@ -80,7 +83,7 @@ public class InstallConfirmationController extends AbstractController {
                 if (lblMessage != null) {
                     lblMessage.setText("Instalador não encontrado. Iniciando download...");
                 }
-                br.org.cria.splinkerapp.services.implementations.SpLinkerUpdateService.runSoftwareUpdate();
+                SpLinkerUpdateService.runSoftwareUpdate();
                 return;
             }
 
