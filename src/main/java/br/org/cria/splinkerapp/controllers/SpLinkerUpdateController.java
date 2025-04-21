@@ -52,10 +52,6 @@ public class SpLinkerUpdateController extends AbstractController {
 
         if (btnYes != null) btnYes.setVisible(true);
         if (btnNo != null) btnNo.setVisible(true);
-
-        if (lblMessage != null) {
-            lblMessage.setText("É necessário atualizar o spLinker. Deseja fazê-lo agora?");
-        }
     }
 
     @FXML
@@ -75,7 +71,7 @@ public class SpLinkerUpdateController extends AbstractController {
             }
 
             if (lblMessage != null) {
-                lblMessage.setText("Preparando download da atualização...");
+                lblMessage.setText("Preparando download da atualização.");
                 lblMessage.getStyleClass().add("update-message");
             }
 
@@ -106,7 +102,7 @@ public class SpLinkerUpdateController extends AbstractController {
 
                         Platform.runLater(() -> {
                             if (lblMessage != null) {
-                                lblMessage.setText("Baixando atualização do spLinker.");
+                                lblMessage.setText("Download da atualização em progresso.");
                                 lblMessage.getStyleClass().add("update-message");
                             }
                         });

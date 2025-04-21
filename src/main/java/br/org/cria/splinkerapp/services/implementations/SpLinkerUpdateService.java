@@ -18,7 +18,6 @@ import org.apache.commons.lang3.SystemUtils;
 
 public class SpLinkerUpdateService {
     static String command;
-    static String scriptPath = "/scripts/update/softwareUpdate.";
     static String operatingSystem = SystemUtils.OS_NAME.toLowerCase();
     static String fileExtension;
     static String params;

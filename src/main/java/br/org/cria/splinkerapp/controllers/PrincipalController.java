@@ -76,10 +76,6 @@ public class PrincipalController extends AbstractController {
             DataSetService.updateDataSource(map);
 
             ConfigFacade.HandleBackendData(token, config);
-            // if(SpLinkerUpdater.hasNewVersion())
-            // {
-            //     navigateTo("splinker-update");
-            // }
         } catch (Exception e) {
             handleErrors(e);
         }
