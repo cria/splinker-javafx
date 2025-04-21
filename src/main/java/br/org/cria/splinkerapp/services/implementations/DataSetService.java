@@ -3,15 +3,13 @@ package br.org.cria.splinkerapp.services.implementations;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import br.org.cria.splinkerapp.models.DataSet;
@@ -21,10 +19,13 @@ import br.org.cria.splinkerapp.models.TransferHistoryDataSet;
 import br.org.cria.splinkerapp.repositories.BaseRepository;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
-import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class DataSetService extends BaseRepository {
 
+
+    private static final Log log = LogFactory.getLog(DataSetService.class);
 
     public static void updateRowcount(String token, int rowCount) throws Exception {
         var cmd = "UPDATE DataSetConfiguration SET last_rowcount = ? WHERE token = ?;";
@@ -48,11 +49,21 @@ public class DataSetService extends BaseRepository {
     }
 
     public static Map<String, Object> getConfigurationDataFromAPI(String token) throws Exception {
-
         var config = CentralServiceRepository.getCentralServiceData();
-        var url = "%s?version=%s&token=%s".formatted(config.getCentralServiceUrl(), config.getSystemVersion(), token);
-        var json = HttpService.getJson(url);
-        return json;
+        var url = "%s?version=%s&token=%s".formatted(config.getCentralServiceUrl(), VersionService.getVersion(), token);
+        Object jsonResponse = HttpService.getJson(url);
+
+        if (jsonResponse instanceof Map) {
+            return (Map<String, Object>) jsonResponse;
+        }
+        else if (jsonResponse instanceof List && !((List<?>)jsonResponse).isEmpty()) {
+            Object firstItem = ((List<?>)jsonResponse).get(0);
+            if (firstItem instanceof Map) {
+                return (Map<String, Object>) firstItem;
+            }
+        }
+
+        throw new Exception("Formato de resposta inesperado da API: " + jsonResponse);
     }
 
     public static boolean hasConfiguration() throws Exception {

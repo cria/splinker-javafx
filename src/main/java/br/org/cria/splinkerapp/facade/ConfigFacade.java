@@ -6,6 +6,7 @@ import java.util.Map;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
 import br.org.cria.splinkerapp.repositories.EmailRepository;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
+import br.org.cria.splinkerapp.services.implementations.VersionService;
 
 import static br.org.cria.splinkerapp.repositories.BaseRepository.byteArrayToString;
 
@@ -23,10 +24,8 @@ public class ConfigFacade {
         var emailRecipients = apiConfig.get("contact_email_recipient");
 
         System.setProperty("SENTRY_AUTH_TOKEN", sentryToken);
-        var systemVersion = 1.1;
-        //DataSetService.saveSQLCommand(token, cmd);
         TransferConfigRepository.saveRSyncConfig(rsyncPort.intValue(), rsyncDestination);
-        CentralServiceRepository.saveCentralServiceData(centralServiceUrl, String.valueOf(systemVersion));
+        CentralServiceRepository.saveCentralServiceData(centralServiceUrl, VersionService.getVersion());
         EmailRepository.saveEmailData((String) emailSend, (String) emailToken, (String) emailRecipients);
     }
 }

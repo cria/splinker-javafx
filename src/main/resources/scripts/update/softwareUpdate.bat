@@ -1,15 +1,16 @@
 @echo off
 
-set DOWNLOAD_LINK=https://swupdate.openvpn.net/downloads/connect/openvpn-connect-3.3.7.2979_signed.msi
-set OUTPUT_PATH=%userprofile%/Downloads/splinker_new_version.msi
+set "DOWNLOAD_LINK=%~1"
+set "OUTPUT_PATH=%UserProfile%/Downloads/%~2"
 
-REM Download the new version (replace 'download_link' with the actual link)
-powershell -Command "(New-Object Net.WebClient).DownloadFile('%DOWNLOAD_LINK%', '%OUTPUT_PATH%')
 
-REM Extract the downloaded file (replace 'new_version.zip' with the actual file name)
-::powershell -Command "Expand-Archive -Path splinker_new_version.zip -DestinationPath ."
+echo %DOWNLOAD_LINK%
+echo %OUTPUT_PATH%
+REM Download the new version
+powershell -Command "(New-Object Net.WebClient).DownloadFile('%DOWNLOAD_LINK%', '%OUTPUT_PATH%')"
 
 REM Uninstall the existing software
-start /wait wmic product where "name='spLinker'" call uninstall
-REM Run GUI installer (replace 'installer.bat' with the actual installer script)
+wmic product where "name='splinker'" call uninstall /nointeractive
+
+REM Run GUI installer
 start %OUTPUT_PATH%
