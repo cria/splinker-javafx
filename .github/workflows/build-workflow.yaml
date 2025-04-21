@@ -129,7 +129,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout de código
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Download de artefatos Linux
         uses: actions/download-artifact@v4
@@ -139,7 +139,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Download de artefatos Windows
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: splinker-windows
           path: ./dist/windows
@@ -150,7 +150,7 @@ jobs:
 
       - name: Criar Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -162,7 +162,7 @@ jobs:
           allowUpdates: true
 
       - name: Upload Linux .rpm Artifacts
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -172,7 +172,7 @@ jobs:
           asset_content_type: application/x-rpm
 
       - name: Upload Linux .deb Artifacts
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -182,7 +182,7 @@ jobs:
           asset_content_type: application/x-deb
 
       - name: Upload Windows Artifacts
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
