@@ -65,8 +65,16 @@ jobs:
         run:  cp .\src\main\resources\log4j2.xml .\spLinker\
 
       - name: Empacotar para Windows
-        run: jpackage --name spLinker --app-image spLinker --type msi --dest dist\windows --win-shortcut  --win-dir-chooser --win-per-user-install
-        # --icon app.ico
+        run: >
+          jpackage
+          --name spLinker
+          --app-image spLinker
+          --type msi
+          --dest dist\windows
+          --win-shortcut
+          --win-dir-chooser
+          --win-per-user-install
+          --win-upgrade-uuid "12345678-abcd-4def-9012-3456789abcde"  # --icon app.ico
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
