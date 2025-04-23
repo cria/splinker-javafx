@@ -7,7 +7,6 @@ on:
 jobs:
 
   build-on-windows:
-    needs: test
     name: "Compilação para Windows"
     runs-on: windows-latest
     env:
@@ -67,7 +66,6 @@ jobs:
 
   build-on-linux:
       name: "Compilação para Linux (.deb e .rpm)"
-      needs: test
       runs-on: ubuntu-latest
       env:
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
