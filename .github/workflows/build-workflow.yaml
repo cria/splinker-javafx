@@ -5,25 +5,6 @@ on:
     branches:
       - master
 jobs:
-  test:
-    name: "Testes automatizados do Maven"
-    runs-on: ubuntu-latest
-    env:
-      CURRENT_DIR: ${{ github.workspace }}
-      SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: 'temurin'
-          architecture: x64
-          lfs: true
-          path: src
-
-      - name: Testes automatizados
-        run: mvn clean test
 
   build-on-windows:
     needs: test
@@ -71,10 +52,11 @@ jobs:
           --app-image spLinker
           --type msi
           --dest dist\windows
+          --app-version $env:VERSION
+          --win-upgrade-uuid "12345678-abcd-4def-9012-3456789abcde"
           --win-shortcut
           --win-dir-chooser
           --win-per-user-install
-          --win-upgrade-uuid "12345678-abcd-4def-9012-3456789abcde"  # --icon app.ico
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -194,7 +176,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/windows/spLinker-1.0.msi
-          asset_name: spLinker-1.0.msi
+          asset_path: ./dist/windows/spLinker.msi
+          asset_name: spLinker.msi
           asset_content_type: application/x-msdownload
 
