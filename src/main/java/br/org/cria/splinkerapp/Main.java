@@ -213,9 +213,10 @@ public class Main extends Application {
             File shortcutFile = new File(startupFolder, nomeAplicacao + ".vbs");
 
             if (ativar) {
+                // Corrigindo a formatação das aspas no script VBS
                 String vbsScript =
-                        "Set WshShell = CreateObject(\"WScript.Shell\")\n" +
-                                "WshShell.Run \"\"\"javaw\"\" -jar \"\"\"" + caminhoJar + "\"\"\"\", 0, false";
+                        "Set WshShell = CreateObject(\"WScript.Shell\")\r\n" +
+                                "WshShell.Run \"javaw -jar \"\"" + caminhoJar + "\"\"\", 0, false";
 
                 java.nio.file.Files.write(shortcutFile.toPath(), vbsScript.getBytes());
 
