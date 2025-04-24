@@ -210,14 +210,20 @@ public class Main extends Application {
 
             String startupFolder = System.getProperty("user.home") +
                     "\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup";
-            File shortcutFile = new File(startupFolder, nomeAplicacao + ".vbs");
+
+            File batFile = new File(new File(caminhoJar).getParent(), "launcher.bat");
+            File vbsFile = new File(startupFolder, nomeAplicacao + ".vbs");
 
             if (ativar) {
-                String vbsScript =
-                        "Set WshShell = CreateObject(\"WScript.Shell\")\n" +
-                                "WshShell.Run \"\"\"javaw\"\" -jar \"\"\"" + caminhoJar + "\"\"\"\", 0, false";
+                String batContent = "@echo off\r\n" +
+                        "start javaw -jar \"" + caminhoJar + "\"";
+                java.nio.file.Files.write(batFile.toPath(), batContent.getBytes());
 
-                java.nio.file.Files.write(shortcutFile.toPath(), vbsScript.getBytes());
+                String vbsContent =
+                        "CreateObject(\"WScript.Shell\").Run \"\"\"" +
+                                batFile.getAbsolutePath() + "\"\"\", 0, false";
+
+                java.nio.file.Files.write(vbsFile.toPath(), vbsContent.getBytes());
 
                 trayIcon.displayMessage(
                         "Configuração salva",
@@ -225,8 +231,11 @@ public class Main extends Application {
                         TrayIcon.MessageType.INFO
                 );
             } else {
-                if (shortcutFile.exists()) {
-                    shortcutFile.delete();
+                if (vbsFile.exists()) {
+                    vbsFile.delete();
+                }
+                if (batFile.exists()) {
+                    batFile.delete();
                 }
 
                 trayIcon.displayMessage(
@@ -240,6 +249,7 @@ public class Main extends Application {
             System.err.println("Erro ao configurar inicialização automática: " + e.getMessage());
         }
     }
+
 
     private boolean isAutoStartEnabled() {
         try {
