@@ -1,10 +1,6 @@
 package br.org.cria.splinkerapp;
 
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
-import javax.imageio.ImageIO;
 
 import br.org.cria.splinkerapp.config.DatabaseSetup;
 import br.org.cria.splinkerapp.config.LockFileManager;
@@ -21,35 +17,22 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 
 public class Main extends Application {
-    private TrayIcon trayIcon;
-    private SystemTray tray;
-    private Stage primaryStage;
-    private Image appIcon;
-
     @Override
     public void start(Stage stage) throws Exception {
-        this.primaryStage = stage;
-
         try {
             SentryConfig.setUp();
             LockFileManager.verifyLockFile();
-
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                try {
-                    LockFileManager.deleteLockfile();
-                    LogManager.shutdown();
-                } catch (Exception e) {
-                    Sentry.captureException(e);
-                }
-            }));
-
             Task<Void> initDb = DatabaseSetup.initDb();
             if (initDb != null) {
                 stage.setOnCloseRequest(event -> {
-                    event.consume();
-                    minimizarParaTray();
+                    try {
+                        LockFileManager.deleteLockfile();
+                        LogManager.shutdown();
+                    } catch (Exception e) {
+                        Sentry.captureException(e);
+                        throw new RuntimeException(e);
+                    }
                 });
-
                 initDb.setOnFailed(event -> {
                     try {
                         LockFileManager.deleteLockfile();
@@ -65,18 +48,15 @@ public class Main extends Application {
                     Platform.runLater(() -> {
                         try {
                             stage.setResizable(false);
+
                             stage.setTitle("v" + VersionService.getVersion());
 
                             String os = System.getProperty("os.name").toLowerCase();
                             if (os.contains("win")) {
-                                appIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png")));
-                                stage.getIcons().add(appIcon);
+                                stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png"))));
                             } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
-                                appIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png")));
-                                stage.getIcons().add(appIcon);
+                                stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png"))));
                             }
-
-                            inicializarSystemTray();
 
                             if (SpLinkerUpdateService.hasNewVersion()) {
                                 Router.navigateTo(stage, "splinker-update");
@@ -106,160 +86,6 @@ public class Main extends Application {
             Sentry.captureException(ex);
             LockFileManager.deleteLockfile();
             throw new RuntimeException(ex);
-        }
-    }
-
-    private void inicializarSystemTray() {
-        if (!SystemTray.isSupported()) {
-            System.out.println("SystemTray não é suportado");
-            return;
-        }
-
-        try {
-            tray = SystemTray.getSystemTray();
-
-            java.awt.Image awtImage = getAwtImageFromFxImage(appIcon);
-            if (awtImage == null) {
-                awtImage = ImageIO.read(getClass().getResource("/images/cria-logo.png"));
-            }
-
-            PopupMenu popup = new PopupMenu();
-
-            MenuItem mostrarItem = new MenuItem("Mostrar aplicação");
-            mostrarItem.addActionListener(e -> Platform.runLater(() -> {
-                primaryStage.show();
-                primaryStage.setIconified(false);
-                primaryStage.toFront();
-            }));
-            popup.add(mostrarItem);
-
-            CheckboxMenuItem startupItem = new CheckboxMenuItem("Iniciar com o Windows");
-            startupItem.setState(isAutoStartEnabled());
-            startupItem.addItemListener(e -> {
-                configurarInicializacaoAutomatica(startupItem.getState(), "SpLinker");
-            });
-            popup.add(startupItem);
-
-            popup.addSeparator();
-
-            MenuItem sairItem = new MenuItem("Sair");
-            sairItem.addActionListener(e -> {
-                fecharAplicacao();
-            });
-            popup.add(sairItem);
-
-            trayIcon = new TrayIcon(awtImage, "SpLinker v" + VersionService.getVersion(), popup);
-            trayIcon.setImageAutoSize(true);
-
-            trayIcon.addActionListener(e -> Platform.runLater(() -> {
-                primaryStage.show();
-                primaryStage.setIconified(false);
-                primaryStage.toFront();
-            }));
-
-            tray.add(trayIcon);
-
-        } catch (AWTException | IOException e) {
-            Sentry.captureException(e);
-            System.err.println("Erro ao inicializar o system tray: " + e.getMessage());
-        }
-    }
-
-    private void minimizarParaTray() {
-        Platform.runLater(() -> primaryStage.hide());
-
-        if (trayIcon != null && SystemTray.isSupported()) {
-            trayIcon.displayMessage(
-                    "SpLinker em execução",
-                    "A aplicação continua em execução na bandeja do sistema.",
-                    TrayIcon.MessageType.INFO
-            );
-        }
-    }
-
-    private void fecharAplicacao() {
-        try {
-            if (tray != null && trayIcon != null) {
-                tray.remove(trayIcon);
-            }
-
-            LockFileManager.deleteLockfile();
-            LogManager.shutdown();
-
-            Platform.exit();
-            System.exit(0);
-        } catch (Exception e) {
-            Sentry.captureException(e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    private java.awt.Image getAwtImageFromFxImage(Image fxImage) {
-        try {
-            return ImageIO.read(getClass().getResource("/images/cria-logo.png"));
-        } catch (Exception e) {
-            Sentry.captureException(e);
-            return null;
-        }
-    }
-
-    private void configurarInicializacaoAutomatica(boolean ativar, String nomeAplicacao) {
-        try {
-            String caminhoJar = new File(Main.class.getProtectionDomain()
-                    .getCodeSource().getLocation().toURI()).getPath();
-
-            String startupFolder = System.getProperty("user.home") +
-                    "\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup";
-
-            File batFile = new File(new File(caminhoJar).getParent(), "launcher.bat");
-            File vbsFile = new File(startupFolder, nomeAplicacao + ".vbs");
-
-            if (ativar) {
-                String batContent = "@echo off\r\n" +
-                        "start javaw -jar \"" + caminhoJar + "\"";
-                java.nio.file.Files.write(batFile.toPath(), batContent.getBytes());
-
-                String vbsContent =
-                        "CreateObject(\"WScript.Shell\").Run \"\"\"" +
-                                batFile.getAbsolutePath() + "\"\"\", 0, false";
-
-                java.nio.file.Files.write(vbsFile.toPath(), vbsContent.getBytes());
-
-                trayIcon.displayMessage(
-                        "Configuração salva",
-                        "SpLinker será iniciado automaticamente com o Windows",
-                        TrayIcon.MessageType.INFO
-                );
-            } else {
-                if (vbsFile.exists()) {
-                    vbsFile.delete();
-                }
-                if (batFile.exists()) {
-                    batFile.delete();
-                }
-
-                trayIcon.displayMessage(
-                        "Configuração salva",
-                        "SpLinker não será mais iniciado automaticamente",
-                        TrayIcon.MessageType.INFO
-                );
-            }
-        } catch (Exception e) {
-            Sentry.captureException(e);
-            System.err.println("Erro ao configurar inicialização automática: " + e.getMessage());
-        }
-    }
-
-
-    private boolean isAutoStartEnabled() {
-        try {
-            String startupFolder = System.getProperty("user.home") +
-                    "\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup";
-            File shortcutFile = new File(startupFolder, "SpLinker.vbs");
-
-            return shortcutFile.exists();
-        } catch (Exception e) {
-            return false;
         }
     }
 
