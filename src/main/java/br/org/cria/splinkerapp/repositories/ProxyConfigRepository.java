@@ -6,11 +6,9 @@ import java.net.ProxySelector;
 import java.net.URI;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.util.Iterator;
 import java.util.List;
 
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
-import io.sentry.Sentry;
 
 
 public class ProxyConfigRepository extends BaseRepository {
@@ -57,18 +55,22 @@ public class ProxyConfigRepository extends BaseRepository {
             List<Proxy> proxies = ProxySelector.getDefault().select(
                     new URI("https://www.cria.org.br/"));
 
-            for (Iterator<Proxy> iter = proxies.iterator(); iter.hasNext(); ) {
+            System.out.println("Proxies encontrados: " + proxies.size());
+            for (Proxy proxy : proxies) {
+                System.out.println("Proxy: " + proxy);
+                System.out.println("Tipo: " + proxy.type());
+                System.out.println("Endereço: " + proxy.address());
 
-                var proxy = iter.next();
                 var addr = (InetSocketAddress) proxy.address();
-                hasProxy = addr != null;
+                if (addr != null) {
+                    hasProxy = true;
+                    System.out.println("Proxy ativo encontrado!");
+                }
             }
         } catch (Exception e) {
-            Sentry.captureException(e);
             e.printStackTrace();
-        } finally {
-            return hasProxy;
         }
+        return hasProxy;
     }
 
 
