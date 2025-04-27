@@ -55,16 +55,10 @@ public class ProxyConfigRepository extends BaseRepository {
             List<Proxy> proxies = ProxySelector.getDefault().select(
                     new URI("https://www.cria.org.br/"));
 
-            System.out.println("Proxies encontrados: " + proxies.size());
             for (Proxy proxy : proxies) {
-                System.out.println("Proxy: " + proxy);
-                System.out.println("Tipo: " + proxy.type());
-                System.out.println("Endereço: " + proxy.address());
-
                 var addr = (InetSocketAddress) proxy.address();
                 if (addr != null) {
                     hasProxy = true;
-                    System.out.println("Proxy ativo encontrado!");
                 }
             }
         } catch (Exception e) {
