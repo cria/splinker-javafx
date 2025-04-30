@@ -1,12 +1,15 @@
 package br.org.cria.splinkerapp.repositories;
 
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.URI;
+import java.net.URL;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.List;
+import java.util.Map;
 
 import br.org.cria.splinkerapp.models.ProxyConfiguration;
 
@@ -47,24 +50,114 @@ public class ProxyConfigRepository extends BaseRepository {
         conn.close();
     }
 
-    @SuppressWarnings("finally")
     public static boolean isBehindProxyServer() {
-        boolean hasProxy = false;
         try {
-            System.setProperty("java.net.useSystemProxies", "true");
-            List<Proxy> proxies = ProxySelector.getDefault().select(
-                    new URI("https://www.cria.org.br/"));
+            boolean directConnection = testDirectConnection("https://specieslink.net/");
 
-            for (Proxy proxy : proxies) {
-                var addr = (InetSocketAddress) proxy.address();
-                if (addr != null) {
-                    hasProxy = true;
+            System.setProperty("java.net.useSystemProxies", "true");
+            boolean proxyConnection = testProxyConnection("https://specieslink.net/");
+
+            if (directConnection != proxyConnection) {
+                return true;
+            }
+
+            String[] proxyKeys = {"http.proxyHost", "https.proxyHost", "socksProxyHost",
+                    "proxyHost", "http.proxyPort", "https.proxyPort"};
+
+            for (String key : proxyKeys) {
+                if (System.getProperty(key) != null) {
+                    return true;
                 }
             }
+
+            if (System.getenv("http_proxy") != null || System.getenv("https_proxy") != null ||
+                    System.getenv("HTTP_PROXY") != null || System.getenv("HTTPS_PROXY") != null) {
+                return true;
+            }
+            try {
+                List<Proxy> proxies = ProxySelector.getDefault().select(new URI("https://specieslink.net/"));
+                for (Proxy proxy : proxies) {
+                    if (proxy.type() != Proxy.Type.DIRECT) {
+                        return true;
+                    }
+                }
+            } catch (Exception e) {
+            }
+
+            try {
+                URL url = new URL("https://specieslink.net/");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(5000);
+                conn.setRequestMethod("HEAD");
+
+                conn.connect();
+                Map<String, List<String>> headers = conn.getHeaderFields();
+
+                // Procura por cabeçalhos que indiquem proxy
+                for (String headerName : headers.keySet()) {
+                    if (headerName != null &&
+                            (headerName.toLowerCase().contains("proxy") ||
+                                    headerName.toLowerCase().contains("via"))) {
+                        return true;
+                    }
+                }
+
+                conn.disconnect();
+            } catch (Exception e) {
+                return true;
+            }
+
+            return false;
         } catch (Exception e) {
-            e.printStackTrace();
+            return false;
         }
-        return hasProxy;
+    }
+
+    private static boolean testDirectConnection(String urlStr) {
+        try {
+            System.clearProperty("http.proxyHost");
+            System.clearProperty("https.proxyHost");
+            System.clearProperty("socksProxyHost");
+
+            URL url = new URL(urlStr);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
+            conn.setConnectTimeout(3000);
+            conn.setReadTimeout(3000);
+            conn.setRequestMethod("HEAD");
+            conn.connect();
+
+            int responseCode = conn.getResponseCode();
+            conn.disconnect();
+
+            return responseCode >= 200 && responseCode < 400;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static boolean testProxyConnection(String urlStr) {
+        try {
+            URL url = new URL(urlStr);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(3000);
+            conn.setReadTimeout(3000);
+            conn.setRequestMethod("HEAD");
+            conn.connect();
+
+            int responseCode = conn.getResponseCode();
+            conn.disconnect();
+
+            return responseCode >= 200 && responseCode < 400;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static void checkDirectProxyConnection(String host, int port) throws Exception {
+        java.net.Socket socket = new java.net.Socket();
+        socket.connect(new InetSocketAddress(host, port), 1000);
+        socket.close();
     }
 
 
