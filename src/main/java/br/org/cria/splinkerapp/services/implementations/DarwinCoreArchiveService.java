@@ -7,6 +7,7 @@ import br.org.cria.splinkerapp.managers.LocalDbManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
+import br.org.cria.splinkerapp.utils.SystemConfigurationUtil;
 import com.google.common.eventbus.EventBus;
 import io.sentry.Sentry;
 
@@ -170,8 +171,10 @@ public class DarwinCoreArchiveService {
     }
 
     public void cleanData() throws Exception {
-        dropDataTables();
-        deleteSentFiles();
+        if (!SystemConfigurationUtil.runInDevelopment()) {
+            dropDataTables();
+            deleteSentFiles();
+        }
     }
 
     private void dropDataTables() throws Exception {

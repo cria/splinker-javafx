@@ -1,13 +1,14 @@
 package br.org.cria.splinkerapp.config;
 
+import br.org.cria.splinkerapp.ApplicationLog;
+import br.org.cria.splinkerapp.utils.ModalAlertUtil;
+import br.org.cria.splinkerapp.utils.SystemConfigurationUtil;
+import io.sentry.Sentry;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import br.org.cria.splinkerapp.ApplicationLog;
-import br.org.cria.splinkerapp.utils.ModalAlertUtil;
-import io.sentry.Sentry;
 
 public final class LockFileManager {
     private static final String LOCK_FILE_NAME = "%s/spLinker.lock".formatted(System.getProperty("user.dir"));
@@ -15,7 +16,9 @@ public final class LockFileManager {
     public static void verifyLockFile() {
         final File lockFile = new File(LOCK_FILE_NAME);
         try {
-            runInDevelopment();
+            if (SystemConfigurationUtil.runInDevelopment() && Files.exists(Path.of(LOCK_FILE_NAME))) {
+                deleteLockfile();
+            }
             var fileAlreadyExists = lockFile.exists();
             if (fileAlreadyExists) {
                 ModalAlertUtil.show("Não é possível rodar mais de uma instãncia do splinker ao mesmo tempo. Feche a outra instância.");
@@ -25,13 +28,6 @@ public final class LockFileManager {
         } catch (IOException e) {
             Sentry.captureException(e);
             ApplicationLog.error(e.getLocalizedMessage());
-        }
-    }
-
-    private static void runInDevelopment() {
-        String env = System.getenv("env");
-        if ("dev".equals(env) && Files.exists(Path.of(LOCK_FILE_NAME))) {
-            deleteLockfile();
         }
     }
 
