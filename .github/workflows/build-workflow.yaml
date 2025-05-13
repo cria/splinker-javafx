@@ -1,4 +1,4 @@
-name: Compilar e Lançar spLinker para Windows e Linux
+name: Compilar e Lançar spLinker para Windows, Linux e MacOS
 
 on:
   push:
@@ -140,9 +140,65 @@ jobs:
           name: splinker-linux
           path: dist/linux
 
+  build-on-macos:
+    name: "Compilação para MacOS (.pkg)"
+    needs: test
+    runs-on: macos-latest
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+          architecture: x64
+
+      - name: Define nome do JAR
+        run: echo "SPLINKER_FILE=splinker-$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | head -1).jar" >> $GITHUB_ENV
+
+      - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar
+        run: mvn package -DskipTests
+
+      - name: Criar imagem com jpackage
+        run: jpackage --type app-image --name spLinker --input target/ --main-jar ${{ env.SPLINKER_FILE }}
+
+      - name: Criar pasta do yajsync
+        run: mkdir -p spLinker/libs
+
+      - name: Copiar yajsync
+        run: cp libs/yajsync-app-0.9.0-SNAPSHOT-full.jar spLinker/libs/
+
+      - name: Copiar log4j2.xml
+        run: cp src/main/resources/log4j2.xml spLinker/
+
+      - name: Empacotar para MacOS (.pkg)
+        run: |
+          VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | head -1)
+          jpackage \
+            --name spLinker \
+            --app-image spLinker \
+            --type pkg \
+            --dest dist/macos \
+            --app-version "$VERSION"
+
+      - name: Renomear arquivo .pkg com versão
+        run: |
+          VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | head -1)
+          mv dist/macos/spLinker-*.pkg dist/macos/spLinker-$VERSION.pkg
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: splinker-macos
+          path: dist/macos
+          retention-days: 3
+
   version-release:
     name: "Lançar nova versão"
-    needs: [build-on-windows, build-on-linux]
+    needs: [build-on-windows, build-on-linux, build-on-macos]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout de código
@@ -160,48 +216,12 @@ jobs:
           name: splinker-windows
           path: ./dist/windows
 
+      - name: Download de artefatos MacOS
+        uses: actions/download-artifact@v4
+        with:
+          name: splinker-macos
+          path: ./dist/macos
+
       - name: Define versão
         id: version
-        run: echo "SPLINKER_VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')" >> $GITHUB_ENV
-
-      - name: Criar Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ env.SPLINKER_VERSION }}
-          release_name: Release v${{ env.SPLINKER_VERSION }}
-          body: "Release created automatically by GitHub Actions."
-          draft: false
-          prerelease: false
-
-      - name: Upload Linux .rpm Artifacts
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/linux/rpm/splinker-1.0-1.x86_64.rpm
-          asset_name: splinker-1.0-1.x86_64.rpm
-          asset_content_type: application/x-rpm
-
-      - name: Upload Linux .deb Artifacts
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/linux/deb/splinker_1.0_amd64.deb
-          asset_name: splinker_1.0_amd64.deb
-          asset_content_type: application/x-deb
-
-      - name: Upload Windows Artifacts
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/windows/spLinker-${{ env.SPLINKER_VERSION }}.msi
-          asset_name: spLinker-${{ env.SPLINKER_VERSION }}.msi
-          asset_content_type: application/x-msdownload
+        run: echo "SPLINKER_VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1
