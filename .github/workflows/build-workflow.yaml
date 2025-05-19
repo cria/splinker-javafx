@@ -187,7 +187,6 @@ jobs:
             --dest dist/macos/dmg \
             --input app \
             --main-jar ${{ env.SPLINKER_FILE }} \
-            --icon src/main/resources/icon.icns \
             --app-version "1.0.0" \
             --java-options "-Dlog4j.configurationFile=log4j2.xml"
 
