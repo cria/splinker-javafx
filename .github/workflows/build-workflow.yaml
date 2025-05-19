@@ -140,6 +140,59 @@ jobs:
           name: splinker-linux
           path: dist/linux
 
+
+  build-on-macos:
+    name: "Compilação para macOS (.dmg)"
+    needs: test
+    runs-on: macos-latest
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+
+      - name: Definir nome do JAR
+        run: echo "SPLINKER_FILE=splinker-$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}').jar" >> $GITHUB_ENV
+
+      - name: Maven - Build sem testes
+        run: mvn package -DskipTests
+
+      - name: Criar imagem com jpackage
+        run: |
+          jpackage \
+            --type app-image \
+            --name spLinker \
+            --input target/ \
+            --main-jar ${{ env.SPLINKER_FILE }}
+
+      - name: Copiar yajsync
+        run: |
+          mkdir -p ./spLinker/libs
+          cp ./libs/yajsync-app-0.9.0-SNAPSHOT-full.jar ./spLinker/libs
+
+      - name: Copiar config log4j
+        run: cp ./src/main/resources/log4j2.xml ./spLinker
+
+      - name: Empacotar como DMG
+        run: |
+          jpackage \
+            --name spLinker \
+            --type dmg \
+            --dest dist/macos/dmg \
+            --app-image spLinker
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: splinker-macos
+          path: dist/macos
+
+
   version-release:
     name: "Lançar nova versão"
     needs: [build-on-windows, build-on-linux]
