@@ -172,21 +172,24 @@ jobs:
             --input target/ \
             --main-jar ${{ env.SPLINKER_FILE }}
 
-      - name: Copiar yajsync
+      - name: Preparar estrutura temporária
         run: |
-          mkdir -p ./spLinker/libs
-          cp ./libs/yajsync-app-0.9.0-SNAPSHOT-full.jar ./spLinker/libs
-
-      - name: Copiar config log4j
-        run: cp ./src/main/resources/log4j2.xml ./spLinker
+          mkdir -p app/libs
+          cp ./target/${{ env.SPLINKER_FILE }} app/
+          cp ./libs/yajsync-app-0.9.0-SNAPSHOT-full.jar app/libs/
+          cp ./src/main/resources/log4j2.xml app/
 
       - name: Empacotar como DMG
         run: |
           jpackage \
-            --name spLinker \
             --type dmg \
+            --name spLinker \
             --dest dist/macos/dmg \
-            --app-image spLinker
+            --input app \
+            --main-jar ${{ env.SPLINKER_FILE }} \
+            --icon src/main/resources/icon.icns \
+            --app-version "1.0.0" \
+            --java-options "-Dlog4j.configurationFile=log4j2.xml"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
