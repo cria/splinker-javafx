@@ -141,12 +141,11 @@ jobs:
           path: dist/linux
 
 
-  build-on-macos:
+  build-on-mac:
     name: "Compilação para macOS (.dmg)"
     needs: test
     runs-on: macos-latest
-    env:
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -155,46 +154,40 @@ jobs:
         with:
           java-version: 21
           distribution: 'temurin'
+          architecture: x64
 
-      - name: Definir nome do JAR
+      - name: Obter versão do projeto
         run: |
           VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
           echo "SPLINKER_FILE=splinker-$VERSION.jar" >> $GITHUB_ENV
 
-      - name: Maven - Build sem testes
-        run: mvn package -DskipTests
+      - name: Compilar o projeto
+        run: mvn clean package -DskipTests
 
-      - name: Criar imagem com jpackage
-        run: |
-          jpackage \
-            --type app-image \
-            --name spLinker \
-            --input target/ \
-            --main-jar ${{ env.SPLINKER_FILE }}
-
-      - name: Preparar estrutura temporária
+      - name: Preparar pasta de entrada para jpackage
         run: |
           mkdir -p app/libs
           cp ./target/${{ env.SPLINKER_FILE }} app/
           cp ./libs/yajsync-app-0.9.0-SNAPSHOT-full.jar app/libs/
           cp ./src/main/resources/log4j2.xml app/
 
-      - name: Empacotar como DMG
+      - name: Gerar DMG com jpackage
         run: |
           jpackage \
             --type dmg \
             --name spLinker \
-            --dest dist/macos/dmg \
             --input app \
             --main-jar ${{ env.SPLINKER_FILE }} \
+            --dest dist/macos \
             --app-version "1.0.0" \
             --java-options "-Dlog4j.configurationFile=log4j2.xml"
 
-      - name: Upload artifacts
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: splinker-macos
           path: dist/macos
+
 
 
   version-release:
