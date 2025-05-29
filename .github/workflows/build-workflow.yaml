@@ -74,7 +74,7 @@ jobs:
           jpackage
           --name spLinker
           --app-image spLinker
-          --type msi
+          --type exe
           --dest dist\windows
           --icon installer\splinker.ico
           --app-version $env:VERSION
