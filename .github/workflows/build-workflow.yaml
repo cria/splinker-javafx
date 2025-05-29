@@ -57,9 +57,6 @@ jobs:
       - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar
         run: mvn package -DskipTests
 
-      - name: Criar image jpackage
-        run: jpackage --type app-image --name spLinker --input target/ --main-jar $env:SPLINKER_FILE
-
       - name: Criar pasta do yajsync
         run: mkdir spLinker\libs
 
@@ -69,10 +66,7 @@ jobs:
       - name: Copiar arquivo de configuração do Log4J/Sentry
         run: cp .\src\main\resources\log4j2.xml .\spLinker\
 
-      - name: Copiar ícone para pasta (opcional, se usar --icon)
-        run: cp .\src\main\resources\images\splinker.ico .\spLinker\
-
-      - name: Empacotar para Windows (com upgrade support)
+      - name: Empacotar para Windows
         run: >
           jpackage
           --name spLinker
