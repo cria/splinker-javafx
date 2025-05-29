@@ -39,10 +39,15 @@ public class SpLinkerUpdateService {
             var isBehindProxy = ProxyConfigRepository.isBehindProxyServer();
             if (isBehindProxy) {
                 var proxyConfig = ProxyConfigRepository.getConfiguration();
-                var proxyHost = proxyConfig.getAddress();
-                var proxyPort = Integer.valueOf(proxyConfig.getPort());
-                var proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
-                connection = (HttpURLConnection) url.openConnection(proxy);
+
+                if (proxyConfig != null) {
+                    var proxyHost = proxyConfig.getAddress();
+                    var proxyPort = Integer.valueOf(proxyConfig.getPort());
+                    var proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+                    connection = (HttpURLConnection) url.openConnection(proxy);
+                } else {
+                    connection = (HttpURLConnection) url.openConnection();
+                }
             } else {
                 connection = (HttpURLConnection) url.openConnection();
             }
