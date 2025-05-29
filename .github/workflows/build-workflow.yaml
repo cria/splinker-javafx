@@ -76,10 +76,12 @@ jobs:
         run: >
           jpackage
           --name spLinker
-          --app-image spLinker
+          --input target/
+          --main-jar $env:SPLINKER_FILE 
+          --main-class br.org.cria.splinkerapp.App
           --type exe
           --dest dist\windows
-          --icon splinker.ico
+          --icon .\src\main\resources\images\splinker.ico 
           --app-version $env:VERSION
           --win-upgrade-uuid "e7f6cb61-254e-4e94-9184-0eaad5cb3e3b"
           --win-shortcut
