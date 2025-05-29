@@ -84,7 +84,7 @@ jobs:
           --win-per-user-install
 
       - name: Renomear MSI com versão
-        run: Rename-Item -Path "dist\windows\spLinker-*.msi" -NewName "spLinker-$env:VERSION.msi"
+        run: Rename-Item -Path "dist\windows\spLinker-*.exe" -NewName "spLinker-$env:VERSION.exe"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
