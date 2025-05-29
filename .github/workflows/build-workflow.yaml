@@ -69,6 +69,9 @@ jobs:
       - name: Copiar arquivo de configuração do Log4J/Sentry
         run: cp .\src\main\resources\log4j2.xml .\spLinker\
 
+      - name: Copiar ícone para pasta (opcional, se usar --icon)
+        run: cp .\src\main\resources\images\splinker.ico .\spLinker\
+
       - name: Empacotar para Windows (com upgrade support)
         run: >
           jpackage
@@ -76,7 +79,7 @@ jobs:
           --app-image spLinker
           --type exe
           --dest dist\windows
-          --icon installer\splinker.ico
+          --icon src\main\resources\images\splinker.ico
           --app-version $env:VERSION
           --win-upgrade-uuid "e7f6cb61-254e-4e94-9184-0eaad5cb3e3b"
           --win-shortcut
