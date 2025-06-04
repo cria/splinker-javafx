@@ -70,7 +70,6 @@ jobs:
         run: >
           jpackage
           --name spLinker
-          --input target/
           --main-jar $env:SPLINKER_FILE 
           --main-class br.org.cria.splinkerapp.App
           --type msi
