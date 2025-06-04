@@ -58,7 +58,7 @@ jobs:
         run: mvn package -DskipTests
 
       - name: Criar image jpackage
-        run: jpackage --type app-image --name spLinker --input target/ --main-jar $env:SPLINKER_FILE
+        run: jpackage --type app-image --name spLinker --input target/ --main-jar $env:SPLINKER_FILE --icon .\src\main\resources\images\splinker.ico
 
       - name: Criar pasta do yajsync
         run: mkdir spLinker\libs
@@ -76,7 +76,6 @@ jobs:
           --app-image spLinker
           --type msi
           --dest dist\windows
-          --icon .\src\main\resources\images\splinker.ico 
           --app-version $env:VERSION
           --win-upgrade-uuid "e7f6cb61-254e-4e94-9184-0eaad5cb3e3b"
           --win-shortcut
