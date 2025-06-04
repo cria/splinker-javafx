@@ -57,6 +57,9 @@ jobs:
       - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar
         run: mvn package -DskipTests
 
+      - name: Criar image jpackage
+        run: jpackage --type app-image --name spLinker --input target/ --main-jar $env:SPLINKER_FILE
+
       - name: Criar pasta do yajsync
         run: mkdir spLinker\libs
 
@@ -70,8 +73,6 @@ jobs:
         run: >
           jpackage
           --name spLinker
-          --main-jar $env:SPLINKER_FILE 
-          --main-class br.org.cria.splinkerapp.App
           --type msi
           --dest dist\windows
           --icon .\src\main\resources\images\splinker.ico 
