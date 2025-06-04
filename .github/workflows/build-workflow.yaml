@@ -73,6 +73,7 @@ jobs:
         run: >
           jpackage
           --name spLinker
+          --app-image spLinker
           --type msi
           --dest dist\windows
           --icon .\src\main\resources\images\splinker.ico 
