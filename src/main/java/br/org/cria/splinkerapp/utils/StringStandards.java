@@ -2,7 +2,7 @@ package br.org.cria.splinkerapp.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
-public final class StringStandards {
+public class StringStandards {
 
     public static String normalizeString(String str) {
         var lowered = str.toLowerCase().trim();

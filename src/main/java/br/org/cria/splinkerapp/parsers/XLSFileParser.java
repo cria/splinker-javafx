@@ -101,14 +101,16 @@ public class XLSFileParser extends FileParser {
                 while (sheetIterator.hasNext()) {
                     var row = sheetIterator.next();
                     if (row != null) {
-                        var cellIterator = row.cellIterator();
-                        while (cellIterator.hasNext()) {
-                            var cell = cellIterator.next();
-                            var index = cell.getColumnIndex() + 1;
-                            var formattedValue = formatter.formatCellValue(cell);
-                            var value = getCellValue(formattedValue);
+                        for (int i = 0; i < columns.size(); i++) {
+                            Cell cell = null;
+                            try {
+                                cell = row.getCell(i);
+                            } catch (Exception e) {
 
-                            statement.setString(index, value);
+                            }
+                            var isNullCell = cell == null;
+                            var value = isNullCell ? "" : getCellValue(formatter.formatCellValue(cell));
+                            statement.setString(i + 1, value);
                         }
                         statement.addBatch();
                     }

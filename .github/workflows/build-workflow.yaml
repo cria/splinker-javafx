@@ -81,6 +81,7 @@ jobs:
           --win-shortcut
           --win-dir-chooser
           --win-per-user-install
+          --resource-dir resources\windows
 
       - name: Renomear MSI com versão
         run: Rename-Item -Path "dist\windows\spLinker-*.msi" -NewName "spLinker-$env:VERSION.msi"
