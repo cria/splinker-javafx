@@ -7,7 +7,7 @@
 
 <Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="252.0" prefWidth="380.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.InstallConfirmationController">
     <children>
-          <Label id="lblMessage" fx:id="lblMessage" alignment="CENTER" layoutX="20.0" layoutY="79.0" prefHeight="80.0" prefWidth="340.0" text="O download da atualização foi concluída com sucesso. Deseja instalar agora?" textAlignment="CENTER" wrapText="true">
+          <Label id="lblMessage" fx:id="lblMessage" alignment="CENTER" layoutX="20.0" layoutY="79.0" prefHeight="104.0" prefWidth="340.0" text="O download da atualização foi concluída com sucesso. Ao instalar, basta prosseguir em cada etapa, mantendo o mesmo local original de instalação." textAlignment="CENTER" wrapText="true">
               <font>
                   <Font size="15.0" />
               </font>

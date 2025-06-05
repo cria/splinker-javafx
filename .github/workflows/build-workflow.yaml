@@ -60,12 +60,6 @@ jobs:
       - name: Criar image jpackage
         run: jpackage --type app-image --name spLinker --input target/ --main-jar $env:SPLINKER_FILE --icon .\src\main\resources\images\splinker.ico
 
-      - name: Criar pasta do yajsync
-        run: mkdir spLinker\libs
-
-      - name: Copiar yajsync
-        run: cp libs\yajsync-app-0.9.0-SNAPSHOT-full.jar spLinker\libs
-
       - name: Copiar arquivo de configuração do Log4J/Sentry
         run: cp .\src\main\resources\log4j2.xml .\spLinker\
 

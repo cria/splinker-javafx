@@ -22,6 +22,7 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import com.github.perlundq.yajsync.ui.YajsyncClient;
 
 public class DarwinCoreArchiveService {
     int rowCount = 0;
@@ -164,9 +165,9 @@ public class DarwinCoreArchiveService {
         var port = rSyncConfig.getrSyncPort();
         var destination = "%s::%s".formatted(rSyncConfig.getrSyncDestination(), ds.getToken());
 
-        var command = new String[] {"java", "-jar", "libs/yajsync-app-0.9.0-SNAPSHOT-full.jar",
-                "client", "--port=%s".formatted(port), "-r", this.zipFile, destination };
-        sendFileUsingCommandLine(command);
+        var args = new String[] {"client", "--port=%s".formatted(port), "-r", this.zipFile, destination };
+        String[] arrayArgs = Arrays.copyOfRange(args, 1, args.length);
+        new YajsyncClient().start(arrayArgs);
         return this;
     }
 
