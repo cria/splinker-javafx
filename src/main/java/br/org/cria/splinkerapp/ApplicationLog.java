@@ -7,11 +7,11 @@ public class ApplicationLog {
     protected static final Logger logger = LogManager.getLogger(ApplicationLog.class);
 
     public static void error(String erroMessage) {
-        logger.error(erroMessage);
+        System.out.println(erroMessage);
     }
 
     public static void info(String warningMessage) {
-        logger.info(warningMessage);
+        System.out.println(warningMessage);
     }
 
     public static void debug(String message) {
