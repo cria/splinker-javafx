@@ -136,8 +136,8 @@ jobs:
           path: dist/linux
 
 
-  build-on-mac:
-    name: "Compilação para macOS (.dmg)"
+  build-jar-on-mac:
+    name: "Gerar JAR no macOS"
     needs: test
     runs-on: macos-latest
 
@@ -151,38 +151,23 @@ jobs:
           distribution: 'temurin'
           architecture: x64
 
+      - name: Compilar o projeto
+        run: mvn clean package -DskipTests
+
       - name: Obter versão do projeto
         run: |
           VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
           echo "SPLINKER_FILE=splinker-$VERSION.jar" >> $GITHUB_ENV
 
-      - name: Compilar o projeto
-        run: mvn clean package -DskipTests
-
-      - name: Preparar pasta de entrada para jpackage
+      - name: Renomear JAR final
         run: |
-          mkdir -p app/libs
-          cp ./target/${{ env.SPLINKER_FILE }} app/
-          cp ./libs/yajsync-app-0.9.0-SNAPSHOT-full.jar app/libs/
-          cp ./src/main/resources/log4j2.xml app/
+          mv target/*.jar target/${{ env.SPLINKER_FILE }}
 
-      - name: Gerar DMG com jpackage
-        run: |
-          jpackage \
-            --type dmg \
-            --name spLinker \
-            --input app \
-            --main-jar ${{ env.SPLINKER_FILE }} \
-            --dest dist/macos \
-            --app-version "1.0.0" \
-            --java-options "-Dlog4j.configurationFile=log4j2.xml"
-
-      - name: Upload artifact
+      - name: Upload do JAR
         uses: actions/upload-artifact@v4
         with:
-          name: splinker-macos
-          path: dist/macos
-
+          name: splinker-jar-macos
+          path: target/${{ env.SPLINKER_FILE }}
 
 
   version-release:

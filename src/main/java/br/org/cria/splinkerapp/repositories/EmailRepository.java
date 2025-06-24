@@ -4,6 +4,7 @@ import java.sql.DriverManager;
 public class EmailRepository extends BaseRepository{
 
     public static void saveEmailData(String emailSend, String emailToken, String emailRecipient) throws Exception {
+        cleanTable("EmailConfiguration");
         var cmd = """
                 INSERT INTO EmailConfiguration (contact_email_send, contact_email_token, contact_email_recipient)
                 VALUES (?,?,?)

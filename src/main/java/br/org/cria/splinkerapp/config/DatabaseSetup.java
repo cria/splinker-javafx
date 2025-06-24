@@ -22,41 +22,44 @@ public class DatabaseSetup {
         return new Task<>() {
             @Override
             protected Void call() {
-                try {
-                    var file = "/scripts/sql/create_tables.sql";
-                    var inputStream = Task.class.getResourceAsStream(file);
-                    var builder = new StringBuilder();
-
-                    if (inputStream != null) {
-                        var reader = new BufferedReader(new InputStreamReader(inputStream));
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            builder.append("%s\n".formatted(line));
-                        }
-                    } else {
-                        System.err.println("SQL File not found!");
-                        throw new FileNotFoundException(file);
-                    }
-
-                    var content = builder.toString();
-                    var url = System.getProperty("splinker.connection", LocalDbManager.getLocalDbConnectionString());
-                    var conn = DriverManager.getConnection(url);
-                    var statement = conn.createStatement();
-                    var result = statement.executeUpdate(content);
-
-                    System.out.println(result);
-                    statement.close();
-                    conn.close();
-
-                } catch (Exception e) {
-                    Sentry.captureException(e);
-                    e.printStackTrace();
-                    LockFileManager.deleteLockfile();
-                    throw new RuntimeException(e);
-                    //System.exit(1);
-                }
-                return null;
+                return iniciarDB();
             }
         };
+    }
+
+    public static Void iniciarDB() {
+        try {
+            var file = "/scripts/sql/create_tables.sql";
+            var inputStream = Task.class.getResourceAsStream(file);
+            var builder = new StringBuilder();
+
+            if (inputStream != null) {
+                var reader = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append("%s\n".formatted(line));
+                }
+            } else {
+                System.err.println("SQL File not found!");
+                throw new FileNotFoundException(file);
+            }
+
+            var content = builder.toString();
+            var url = System.getProperty("splinker.connection", LocalDbManager.getLocalDbConnectionString());
+            var conn = DriverManager.getConnection(url);
+            var statement = conn.createStatement();
+            statement.executeUpdate(content);
+
+            statement.close();
+            conn.close();
+
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            e.printStackTrace();
+            LockFileManager.deleteLockfile();
+            throw new RuntimeException(e);
+            //System.exit(1);
+        }
+        return null;
     }
 }
