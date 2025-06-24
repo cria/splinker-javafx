@@ -161,10 +161,6 @@ jobs:
           VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
           echo "SPLINKER_FILE=splinker-$VERSION.jar" >> $GITHUB_ENV
 
-      - name: Renomear JAR final
-        run: |
-          mv target/*.jar target/${{ env.SPLINKER_FILE }}
-
       - name: Upload do JAR
         uses: actions/upload-artifact@v4
         with:
