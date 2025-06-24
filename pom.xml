@@ -189,7 +189,7 @@
                     <debugSentryCli>true</debugSentryCli>
                     <org>cria-specieslink</org>
                     <project>java-log4j2</project>
-                    <authToken>${secrets.SENTRY_AUTH_TOKEN}</authToken>
+                    <authToken>${env.SENTRY_AUTH_TOKEN}</authToken>
                 </configuration>
                 <executions>
                     <execution>

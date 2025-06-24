@@ -111,11 +111,6 @@ jobs:
       - name: Criar image jpackage
         run: jpackage --type app-image --name spLinker --input target/ --main-jar ${{ env.SPLINKER_FILE }}
 
-      - name: Criar pasta do yajsync
-        run: mkdir ./spLinker/libs
-
-      - name: Copiar yajsync
-        run: cp ./libs/yajsync-app-0.9.0-SNAPSHOT-full.jar ./spLinker/libs
 
       - name: Copiar arquivo de configuração do Log4J/Sentry
         run: cp ./src/main/resources/log4j2.xml ./spLinker
@@ -136,8 +131,8 @@ jobs:
           path: dist/linux
 
 
-  build-jar-on-mac:
-    name: "Gerar JAR no macOS"
+  build-jar:
+    name: "Gerar JAR executavel"
     needs: test
     runs-on: macos-latest
     env:
@@ -164,13 +159,13 @@ jobs:
       - name: Upload do JAR
         uses: actions/upload-artifact@v4
         with:
-          name: splinker-jar-macos
+          name: splinker-jar
           path: target/${{ env.SPLINKER_FILE }}
 
 
   version-release:
     name: "Lançar nova versão"
-    needs: [build-on-windows, build-on-linux]
+    needs: [build-on-windows, build-on-linux, build-jar]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout de código
@@ -210,8 +205,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/linux/rpm/splinker-1.0-1.x86_64.rpm
-          asset_name: splinker-1.0-1.x86_64.rpm
+          asset_path: ./dist/linux/rpm/spLinker-${{ env.SPLINKER_VERSION }}.rpm
+          asset_name: spLinker-${{ env.SPLINKER_VERSION }}.rpm
           asset_content_type: application/x-rpm
 
       - name: Upload Linux .deb Artifacts
@@ -220,8 +215,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/linux/deb/splinker_1.0_amd64.deb
-          asset_name: splinker_1.0_amd64.deb
+          asset_path: ./dist/linux/deb/spLinker-${{ env.SPLINKER_VERSION }}.deb
+          asset_name: spLinker-${{ env.SPLINKER_VERSION }}.deb
           asset_content_type: application/x-deb
 
       - name: Upload Windows Artifacts
