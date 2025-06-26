@@ -160,7 +160,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: splinker-jar
-          path: target/${{ env.SPLINKER_FILE }}
+          path: dist/jar
 
 
   version-release:
@@ -228,3 +228,13 @@ jobs:
           asset_path: ./dist/windows/spLinker-${{ env.SPLINKER_VERSION }}.msi
           asset_name: spLinker-${{ env.SPLINKER_VERSION }}.msi
           asset_content_type: application/x-msdownload
+
+      - name: Upload Jar Artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/jar/spLinker-${{ env.SPLINKER_VERSION }}.jar
+          asset_name: spLinker-${{ env.SPLINKER_VERSION }}.jar
+          asset_content_type: application/x-jar

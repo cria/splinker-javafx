@@ -1,44 +1,138 @@
+
 # CRIA - Centro de Referência em Informação Ambiental
 
-Este é um projeto desenvolvido para a ONG CRIA ([Centro de Referência em Informação Ambiental](https://www.cria.org.br/index)) com o objetivo de facilitar o envio de informações de pesquisas por pesquisadores para um banco de dados central, integrado ao [speciesLink](https://specieslink.net/).
+Este é um projeto desenvolvido para a ONG CRIA ([Centro de Referência em Informação Ambiental](https://www.cria.org.br/index)) com o objetivo de facilitar o envio de informações de pesquisas para um banco de dados central, integrado ao [speciesLink](https://specieslink.net/).
 
-# Descrição do Projeto
-O CRIA Research Data Uploader é uma aplicação JavaFX que oferece uma interface amigável para que pesquisadores possam:
+## Descrição do Projeto
 
-* Inserir dados de suas pesquisas.
-* Validar as informações antes do envio.
-* Realizar o upload dos dados para o banco de dados central.
+O **spLinker** é uma aplicação JavaFX que oferece uma interface amigável para pesquisadores que desejam:
+
+- Inserir dados de suas pesquisas.
+- Validar e configurar as fontes de dados.
+- Realizar o upload para a rede **speciesLink**.
+- Gerenciar coleções e transmitir dados de forma segura.
+
 A aplicação foi projetada para apoiar a comunidade científica, agilizando o compartilhamento e a centralização de dados ambientais.
 
-# Tecnologias Utilizadas
-* JavaFX: para o desenvolvimento da interface gráfica.
-* Java: como linguagem principal.
-* SQL: para integração com o banco de dados central.
-* Maven/Gradle: para gerenciamento de dependências.
+## Tecnologias Utilizadas
 
-# Funcionalidades
-* Cadastro de Pesquisas
-* Interface para inserir detalhes da pesquisa (nome do pesquisador, título da pesquisa, área de estudo, etc.).
-* Validação de Dados: Sistema para verificar inconsistências nos dados antes do envio.
-* Envio ao Banco de Dados: Integração com o banco de dados central do speciesLink.
-* Histórico de Envios: Registro das pesquisas enviadas pelo usuário.
+- **Java 21**: linguagem principal.
+- **JavaFX**: construção da interface gráfica.
+- **SQLite**: armazenamento local temporário dos dados.
+- **Maven**: gerenciamento de dependências e empacotamento.
+- **rsync**: transmissão segura de arquivos para a rede speciesLink.
 
-# Como Rodar o Projeto
-## Pré-requisitos
-* Java 17 ou superior.
-* Um gerenciador de dependências como Maven ou Gradle.
-* Um banco de dados configurado e acessível.
-## Passos para Instalação
-1. Clone este repositório: bash Copiar código git clone https://github.com/<usuario>/<nome-do-repositorio>.git
+## Arquitetura da Aplicação
 
-2. Acesse o diretório do projeto: bash
-Copiar código
-cd nome-do-repositorio
-3. Compile e rode o projeto: Com Maven: bash
-Copiar código
+A estrutura segue o padrão MVC:
+
+- **View (FXML)**: arquivos `.fxml` localizados em `resources/br/org/cria/splinkerapp`, representam a interface gráfica.
+- **Controller**: cada view tem um controller correspondente para manipulação da interface e interações com o usuário.
+- **Service**: camada com a lógica de negócio da aplicação.
+- **Model**: mapeamento das entidades persistidas localmente.
+
+### Visão do fluxo geral da aplicação
+
+1. O usuário insere o **token da coleção**.
+2. A aplicação acessa a API do speciesLink e obtém a configuração da coleção.
+3. O usuário informa o caminho da fonte de dados local (arquivo ou banco de dados).
+4. Ao transmitir, os dados são importados e salvos localmente em SQLite.
+5. A query configurada no speciesLink é executada.
+6. Os dados são transformados em **Darwin Core Archive**.
+7. O arquivo é transmitido via **rsync** para o servidor speciesLink.
+8. Um histórico local da transmissão é mantido.
+9. O usuário pode alterar as configurações, cadastrar novas coleções ou contatar o suporte por e-mail.
+
+## Funcionalidades
+
+- Adicionar coleções com base no token cadastrado no speciesLink.
+- Suporte a diversas fontes de dados (Excel, CSV, Access, MySQL, Oracle, PostgreSQL etc.).
+- Transmissão automatizada de dados.
+- Execução em modo gráfico ou linha de comando.
+- Registro de histórico de transmissões.
+- Suporte multiplataforma (Windows, Linux, macOS).
+
+## Modo Headless
+
+A aplicação pode ser executada via terminal (sem interface gráfica):
+
+```bash
+java -jar splinker.jar path_arquivo_configuracao/config.txt
+```
+
+O arquivo de configuração deve conter, por exemplo:
+
+```
+VALOR_TOKEN
+PATH_ARQUIVO_EXCEL
+```
+
+Exemplo de arquivo de um token de excel
+
+```
+XPTO23454
+C:\Users\cria\Downloads\DadosExtraidos.xls
+```
+
+Exemplo de arquivo de um token de banco mySql
+
+```
+XPTO23454
+host
+porta
+db_name
+user
+password
+```
+
+## Execução do Projeto
+
+### Requisitos
+
+- Java 21 instalado.
+- Maven.
+
+### Rodando via Maven
+
+```bash
 mvn javafx:run
-Com Gradle:
-bash
-Copiar código
-gradle run
-Siga as instruções exibidas na interface do aplicativo.
+```
+
+### Classe principal
+
+```text
+br.org.cria.splinkerapp.App
+```
+
+Não é necessário definir variáveis de ambiente.
+
+## Geração de Release
+
+### Boas práticas
+
+- Criar uma **branch** a partir da `master`.
+- Realizar o desenvolvimento.
+- Criar uma **pull request (PR)**.
+- Após aprovação e merge na `master`, o GitHub Actions dispara o workflow de build e release automaticamente.
+
+### Sobre o Workflow
+
+O arquivo de workflow no GitHub Actions realiza:
+
+1. **Testes automatizados** com Maven.
+2. **Builds nativos** para:
+    - Windows (MSI)
+    - Linux (DEB e RPM)
+    - macOS (JAR executável)
+3. **Upload automático** dos artefatos.
+4. **Criação de uma nova Release** com os arquivos.
+
+A versão da aplicação é definida no `pom.xml`. Para uma nova release:
+
+- **Atualize o `<version>` no pom.xml** seguindo o padrão SemVer (`MAJOR.MINOR.PATCH`).
+- Faça merge na `master` para disparar o fluxo.
+
+## Repositório
+
+O código-fonte está disponível em:  
+[https://github.com/cria/splinker-javafx](https://github.com/cria/splinker-javafx)
