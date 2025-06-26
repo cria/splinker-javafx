@@ -116,13 +116,13 @@ jobs:
         run: cp ./src/main/resources/log4j2.xml ./spLinker
 
       - name: Empacotar para Deb
-        run: jpackage --name spLinker --type deb --dest dist/linux/deb --linux-shortcut --app-image spLinker
+        run: jpackage --name spLinker --type deb --dest dist/linux --linux-shortcut --app-image spLinker
 
       - name: Instalar empacotador RPM
         run: sudo apt-get install fakeroot
 
       - name: Empacotar para RPM
-        run: jpackage --name spLinker --type rpm --dest dist/linux/rpm --linux-shortcut --app-image spLinker
+        run: jpackage --name spLinker --type rpm --dest dist/linux --linux-shortcut --app-image spLinker
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -205,7 +205,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/linux/rpm/spLinker-${{ env.SPLINKER_VERSION }}.rpm
+          asset_path: ./dist/linux/spLinker-${{ env.SPLINKER_VERSION }}.rpm
           asset_name: spLinker-${{ env.SPLINKER_VERSION }}.rpm
           asset_content_type: application/x-rpm
 
@@ -215,7 +215,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/linux/deb/spLinker-${{ env.SPLINKER_VERSION }}.deb
+          asset_path: ./dist/linux/spLinker-${{ env.SPLINKER_VERSION }}.deb
           asset_name: spLinker-${{ env.SPLINKER_VERSION }}.deb
           asset_content_type: application/x-deb
 
