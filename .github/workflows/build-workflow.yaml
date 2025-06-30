@@ -103,7 +103,7 @@ jobs:
           architecture: x64
 
       - name: Define nome do JAR
-        run: echo "SPLINKER_FILE="spLinker-$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')".jar" >> $GITHUB_ENV
+        run: echo "SPLINKER_FILE="splinker-$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')".jar" >> $GITHUB_ENV
 
       - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar
         run: mvn package -DskipTests
