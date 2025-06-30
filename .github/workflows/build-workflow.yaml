@@ -203,7 +203,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/linux/splinker-${{ env.SPLINKER_VERSION }}.rpm
+          asset_path: ./dist/linux/rpm/splinker-${{ env.SPLINKER_VERSION }}.rpm
           asset_name: splinker-${{ env.SPLINKER_VERSION }}.rpm
           asset_content_type: application/x-rpm
 
@@ -213,7 +213,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/linux/splinker-${{ env.SPLINKER_VERSION }}.deb
+          asset_path: ./dist/linux/deb/splinker-${{ env.SPLINKER_VERSION }}.deb
           asset_name: splinker-${{ env.SPLINKER_VERSION }}.deb
           asset_content_type: application/x-deb
 
