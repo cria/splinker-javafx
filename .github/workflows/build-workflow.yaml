@@ -203,8 +203,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/linux/spLinker-${{ env.SPLINKER_VERSION }}.rpm
-          asset_name: spLinker-${{ env.SPLINKER_VERSION }}.rpm
+          asset_path: ./dist/linux/splinker-${{ env.SPLINKER_VERSION }}.rpm
+          asset_name: splinker-${{ env.SPLINKER_VERSION }}.rpm
           asset_content_type: application/x-rpm
 
       - name: Upload Linux .deb Artifacts
@@ -213,8 +213,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/linux/spLinker-${{ env.SPLINKER_VERSION }}.deb
-          asset_name: spLinker-${{ env.SPLINKER_VERSION }}.deb
+          asset_path: ./dist/linux/splinker-${{ env.SPLINKER_VERSION }}.deb
+          asset_name: splinker-${{ env.SPLINKER_VERSION }}.deb
           asset_content_type: application/x-deb
 
       - name: Upload Windows Artifacts
