@@ -149,10 +149,13 @@ jobs:
       - name: Compilar o projeto
         run: mvn clean package -DskipTests
 
-      - name: Obter versão do projeto
+      - name: Obter versão do projeto e mover o JAR
         run: |
           VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
+          mkdir -p dist/jar
+          mv target/splinker-$VERSION.jar dist/jar/splinker-$VERSION.jar
           echo "SPLINKER_FILE=splinker-$VERSION.jar" >> $GITHUB_ENV
+          echo "SPLINKER_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Upload do JAR
         uses: actions/upload-artifact@v4
