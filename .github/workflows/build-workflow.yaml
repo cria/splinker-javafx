@@ -103,7 +103,7 @@ jobs:
           architecture: x64
 
       - name: Define nome do JAR
-        run: echo "SPLINKER_FILE="splinker-$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')".jar" >> $GITHUB_ENV
+        run: echo "SPLINKER_FILE="spLinker-$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')".jar" >> $GITHUB_ENV
 
       - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar
         run: mvn package -DskipTests
@@ -111,35 +111,23 @@ jobs:
       - name: Criar image jpackage
         run: jpackage --type app-image --name spLinker --input target/ --main-jar ${{ env.SPLINKER_FILE }}
 
-
       - name: Copiar arquivo de configuração do Log4J/Sentry
         run: cp ./src/main/resources/log4j2.xml ./spLinker
 
       - name: Empacotar para Deb
-        run: |
-          VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')
-          jpackage --name spLinker --type deb --dest dist/linux --linux-shortcut --app-image spLinker --app-version "$VERSION"
+        run: jpackage --name spLinker --type deb --dest dist/linux/deb --linux-shortcut --app-image spLinker
 
       - name: Instalar empacotador RPM
         run: sudo apt-get install fakeroot
 
       - name: Empacotar para RPM
-        run: |
-          VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')
-          jpackage --name spLinker --type rpm --dest dist/linux --linux-shortcut --app-image spLinker --app-version "$VERSION"
-
-      - name: Renomear pacotes .deb e .rpm com a versão
-        run: |
-          VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')
-          mv dist/linux/spLinker-*.deb dist/linux/spLinker-$VERSION.deb
-          mv dist/linux/spLinker-*.rpm dist/linux/spLinker-$VERSION.rpm
+        run: jpackage --name spLinker --type rpm --dest dist/linux/rpm --linux-shortcut --app-image spLinker
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: splinker-linux
           path: dist/linux
-
 
   build-jar:
     name: "Gerar JAR executavel"
