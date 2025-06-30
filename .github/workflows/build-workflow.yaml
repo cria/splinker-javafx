@@ -116,13 +116,23 @@ jobs:
         run: cp ./src/main/resources/log4j2.xml ./spLinker
 
       - name: Empacotar para Deb
-        run: jpackage --name spLinker --type deb --dest dist/linux --linux-shortcut --app-image spLinker
+        run: |
+          VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')
+          jpackage --name spLinker --type deb --dest dist/linux --linux-shortcut --app-image spLinker --app-version "$VERSION"
 
       - name: Instalar empacotador RPM
         run: sudo apt-get install fakeroot
 
       - name: Empacotar para RPM
-        run: jpackage --name spLinker --type rpm --dest dist/linux --linux-shortcut --app-image spLinker
+        run: |
+          VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')
+          jpackage --name spLinker --type rpm --dest dist/linux --linux-shortcut --app-image spLinker --app-version "$VERSION"
+
+      - name: Renomear pacotes .deb e .rpm com a versão
+        run: |
+          VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')
+          mv dist/linux/spLinker-*.deb dist/linux/spLinker-$VERSION.deb
+          mv dist/linux/spLinker-*.rpm dist/linux/spLinker-$VERSION.rpm
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
