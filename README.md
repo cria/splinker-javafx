@@ -1,18 +1,7 @@
 
-# CRIA - Centro de Referência em Informação Ambiental
+# splinker
 
-Este é um projeto desenvolvido para a ONG CRIA ([Centro de Referência em Informação Ambiental](https://www.cria.org.br/index)) com o objetivo de facilitar o envio de informações de pesquisas para um banco de dados central, integrado ao [speciesLink](https://specieslink.net/).
-
-## Descrição do Projeto
-
-O **spLinker** é uma aplicação JavaFX que oferece uma interface amigável para pesquisadores que desejam:
-
-- Inserir dados de suas pesquisas.
-- Validar e configurar as fontes de dados.
-- Realizar o upload para a rede **speciesLink**.
-- Gerenciar coleções e transmitir dados de forma segura.
-
-A aplicação foi projetada para apoiar a comunidade científica, agilizando o compartilhamento e a centralização de dados ambientais.
+Este software foi desenvolvido pelo CRIA ([Centro de Referência em Informação Ambiental](https://www.cria.org.br/index)) com o objetivo de facilitar o envio de dados para a rede [speciesLink](https://specieslink.net/) de forma rápida e eficiente a partir de bases de dados locais (planilhas ou sistemas de gerenciamento de coleçlões biológicas).
 
 ## Tecnologias Utilizadas
 
@@ -33,7 +22,7 @@ A estrutura segue o padrão MVC:
 
 ### Visão do fluxo geral da aplicação
 
-1. O usuário insere o **token da coleção**.
+1. O usuário insere o **token da coleção** fornecido pelo CRIA.
 2. A aplicação acessa a API do speciesLink e obtém a configuração da coleção.
 3. O usuário informa o caminho da fonte de dados local (arquivo ou banco de dados).
 4. Ao transmitir, os dados são importados e salvos localmente em SQLite.
@@ -45,7 +34,7 @@ A estrutura segue o padrão MVC:
 
 ## Funcionalidades
 
-- Adicionar coleções com base no token cadastrado no speciesLink.
+- Inclusão de uma ou mais coleções com base em tokens fornecidos pelo CRIA.
 - Suporte a diversas fontes de dados (Excel, CSV, Access, MySQL, Oracle, PostgreSQL etc.).
 - Transmissão automatizada de dados.
 - Execução em modo gráfico ou linha de comando.
