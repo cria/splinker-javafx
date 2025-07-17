@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.nio.charset.Charset;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import static java.util.Map.entry;
@@ -37,7 +38,7 @@ public class DbfFileParserTest extends ParserBaseTest {
         var parser = new DbfFileParser(dbf.getAbsolutePath());
         
         parser.createTableBasedOnSheet(null);
-        parser.insertDataIntoTable();
+        parser.insertDataIntoTable(new HashSet<>());
         var expected = getParsedDataFromTable(tableName, connString);
         var numberOfInsertedRows = expected.size();
 

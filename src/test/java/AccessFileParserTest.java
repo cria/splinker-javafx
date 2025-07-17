@@ -1,11 +1,7 @@
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -42,7 +38,7 @@ public class AccessFileParserTest extends ParserBaseTest {
         var formattedTableName = tableName.formatted(format);
         var parser = new AccessFileParser(fileName, "");
         parser.createTableBasedOnSheet(null);
-        parser.insertDataIntoTable();
+        parser.insertDataIntoTable(new HashSet<>());
         var expected = getParsedDataFromTable(formattedTableName, connString);
         var numberOfInsertedRows = expected.size();
 
@@ -67,7 +63,7 @@ public class AccessFileParserTest extends ParserBaseTest {
         var formattedTableName = tableName.formatted(format);
         var parser = new AccessFileParser(fileName, "");
         parser.createTableBasedOnSheet(null);
-        parser.insertDataIntoTable();
+        parser.insertDataIntoTable(new HashSet<>());
         var expected = getParsedDataFromTable(formattedTableName, connString);
         var numberOfInsertedRows = expected.size();
 
@@ -92,7 +88,7 @@ public class AccessFileParserTest extends ParserBaseTest {
         var formattedTableName = tableName.formatted(format);
         var parser = new AccessFileParser(fileName, "");
         parser.createTableBasedOnSheet(null);
-        parser.insertDataIntoTable();
+        parser.insertDataIntoTable(new HashSet<>());
         var expected = getParsedDataFromTable(formattedTableName, connString);
         var numberOfInsertedRows = expected.size();
 
@@ -117,7 +113,7 @@ public class AccessFileParserTest extends ParserBaseTest {
         var formattedTableName = tableName.formatted(format);
         var parser = new AccessFileParser(fileName, "");
         parser.createTableBasedOnSheet(null);
-        parser.insertDataIntoTable();
+        parser.insertDataIntoTable(new HashSet<>());
         var expected = getParsedDataFromTable(formattedTableName, connString);
         var numberOfInsertedRows = expected.size();
 
@@ -142,7 +138,7 @@ public class AccessFileParserTest extends ParserBaseTest {
         var formattedTableName = tableName.formatted(format);
         var parser = new AccessFileParser(fileName, "");
         parser.createTableBasedOnSheet(null);
-        parser.insertDataIntoTable();
+        parser.insertDataIntoTable(new HashSet<>());
         var expected = getParsedDataFromTable(formattedTableName, connString);
         var numberOfInsertedRows = expected.size();
 
@@ -167,7 +163,7 @@ public class AccessFileParserTest extends ParserBaseTest {
         var formattedTableName = tableName.formatted(format);
         var parser = new AccessFileParser(fileName, "");
         parser.createTableBasedOnSheet(null);
-        parser.insertDataIntoTable();
+        parser.insertDataIntoTable(new HashSet<>());
         var expected = getParsedDataFromTable(formattedTableName, connString);
         var numberOfInsertedRows = expected.size();
 

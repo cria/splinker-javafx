@@ -1,6 +1,8 @@
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import java.io.File;
+import java.util.HashSet;
+
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -26,7 +28,7 @@ public class OdsFileParserTest  extends ParserBaseTest {
         var parser = new OdsFileParser(ods.getAbsolutePath());
         
         parser.createTableBasedOnSheet(null);
-        parser.insertDataIntoTable();
+        parser.insertDataIntoTable(new HashSet<>());
         var expected = getParsedDataFromTable(tableName, connString);
         var numberOfInsertedRows = expected.size();
 

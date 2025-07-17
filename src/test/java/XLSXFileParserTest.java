@@ -2,6 +2,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.HashSet;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -33,7 +35,7 @@ public class XLSXFileParserTest extends ParserBaseTest {
         var path = xlsx.getAbsolutePath();
         var parser = new XLSXFileParser(path);
         parser.createTableBasedOnSheet(null);
-        parser.insertDataIntoTable();
+        parser.insertDataIntoTable(new HashSet<>());
         var expected = getParsedDataFromTable(tableName, connString);
         var numberOfInsertedRows = expected.size();
         for (var map : expected) 

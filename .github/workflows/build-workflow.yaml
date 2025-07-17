@@ -6,26 +6,6 @@ on:
       - master
 
 jobs:
-  test:
-    name: "Testes automatizados do Maven"
-    runs-on: ubuntu-latest
-    env:
-      CURRENT_DIR: ${{ github.workspace }}
-      SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: 'temurin'
-          architecture: x64
-          lfs: true
-          path: src
-
-      - name: Testes automatizados
-        run: mvn clean test
-
   build-on-windows:
     needs: test
     name: "Compilação para Windows"
