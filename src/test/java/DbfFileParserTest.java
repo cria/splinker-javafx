@@ -36,7 +36,7 @@ public class DbfFileParserTest extends ParserBaseTest {
         var tableName = "test_dbf_data";
         var parser = new DbfFileParser(dbf.getAbsolutePath());
         
-        parser.createTableBasedOnSheet();
+        parser.createTableBasedOnSheet(null);
         parser.insertDataIntoTable();
         var expected = getParsedDataFromTable(tableName, connString);
         var numberOfInsertedRows = expected.size();

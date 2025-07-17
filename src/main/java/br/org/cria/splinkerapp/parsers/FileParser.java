@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import com.google.common.eventbus.EventBus;
 import br.org.cria.splinkerapp.enums.EventTypes;
@@ -62,11 +63,11 @@ public abstract class FileParser {
         return "spLinker";
     }
 
-    public abstract void insertDataIntoTable() throws Exception;
+    public abstract void insertDataIntoTable(Set<String> tabelas) throws Exception;
 
     protected abstract List<String> getRowAsStringList(Object row, int numberOfColumns);
 
-    protected abstract String buildCreateTableCommand() throws Exception;
+    protected abstract String buildCreateTableCommand(Set<String> tabelas) throws Exception;
 
     protected String makeValueString(int numberOfColumns) {
         return "?,".repeat(numberOfColumns);
@@ -80,8 +81,8 @@ public abstract class FileParser {
         return column;
     }
 
-    public void createTableBasedOnSheet() throws Exception {
-        var command = buildCreateTableCommand();
+    public void createTableBasedOnSheet(Set<String> tabelas) throws Exception {
+        var command = buildCreateTableCommand(tabelas);
         var conn = getConnection();
         var statement = conn.createStatement();
         statement.executeUpdate(command);

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class CsvFileParser extends FileParser {
     CsvParser parser;
@@ -40,20 +41,26 @@ public class CsvFileParser extends FileParser {
     }
 
     @Override
-    protected String buildCreateTableCommand() throws Exception {
+    protected String buildCreateTableCommand(Set<String> tabelas) throws Exception {
         dropTable("spLinker");
         var tableName = getTableName();
+
+        if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) return null;
+
         var columnNames = String.join(",", columns.stream().map((e) -> "%s VARCHAR(1)".formatted(e)).toList());
         var command = createTableCommand.formatted(tableName, columnNames).replace(",)", " );");
         return command;
     }
 
     @Override
-    public void insertDataIntoTable() throws Exception {
+    public void insertDataIntoTable(Set<String> tabelas) throws Exception {
         String separator = detectSeparator(filePath);
         var conn = getConnection();
         conn.setAutoCommit(false);
         var tableName = getTableName();
+
+        if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) return;
+
         var valuesStr = makeValueString(columns.size());
         var columnNames = String.join(",", columns);
         var columnCount = columns.size();

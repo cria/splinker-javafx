@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import com.linuxense.javadbf.DBFException;
 import com.linuxense.javadbf.DBFReader;
@@ -39,11 +40,14 @@ public class DbfFileParser extends FileParser {
     }
 
     @Override
-    public void insertDataIntoTable() throws SQLException {
+    public void insertDataIntoTable(Set<String> tabelas) throws SQLException {
         Object[] rowObjects;
         var conn = getConnection();
         int numberOfColumns = reader.getFieldCount();
         var tableName = getTableName();
+
+        if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) return;
+
         var valuesStr = "?,".repeat(numberOfColumns);
         var columnNames = String.join(",", columnNameList);
         var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
@@ -79,7 +83,7 @@ public class DbfFileParser extends FileParser {
     }
 
     @Override
-    public String buildCreateTableCommand() throws Exception {
+    public String buildCreateTableCommand(Set<String> tabelas) throws Exception {
 
         int numberOfFields = reader.getFieldCount();
 
@@ -87,6 +91,9 @@ public class DbfFileParser extends FileParser {
         var tableName = getTableName();
         builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
         dropTable(tableName);
+
+        if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) return null;
+
         for (int i = 0; i < numberOfFields; i++) {
             var field = reader.getField(i);
             var fieldName = field.getName();

@@ -23,65 +23,61 @@ public class Main extends Application {
             SentryConfig.setUp();
             LockFileManager.verifyLockFile();
             Task<Void> initDb = DatabaseSetup.initDb();
-            if (initDb != null) {
-                stage.setOnCloseRequest(event -> {
-                    try {
-                        LockFileManager.deleteLockfile();
-                        LogManager.shutdown();
-                    } catch (Exception e) {
-                        Sentry.captureException(e);
-                        throw new RuntimeException(e);
+            stage.setOnCloseRequest(event -> {
+                try {
+                    LockFileManager.deleteLockfile();
+                    LogManager.shutdown();
+                } catch (Exception e) {
+                    Sentry.captureException(e);
+                    throw new RuntimeException(e);
+                }
+            });
+            initDb.setOnFailed(event -> {
+                try {
+                    LockFileManager.deleteLockfile();
+                    var exception = initDb.getException();
+                    Sentry.captureException(exception);
+                    throw new RuntimeException(exception);
+                } catch (Exception e) {
+                    Sentry.captureException(e);
+                }
+            });
+
+            initDb.setOnSucceeded(event -> Platform.runLater(() -> {
+                try {
+                    stage.setResizable(false);
+
+                    stage.setTitle("v" + VersionService.getVersion());
+
+                    String os = System.getProperty("os.name").toLowerCase();
+                    if (os.contains("win")) {
+                        stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png"))));
+                    } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+                        stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png"))));
                     }
-                });
-                initDb.setOnFailed(event -> {
-                    try {
-                        LockFileManager.deleteLockfile();
-                        var exception = initDb.getException();
-                        Sentry.captureException(exception);
-                        throw new RuntimeException(exception);
-                    } catch (Exception e) {
-                        Sentry.captureException(e);
+
+                    if (SpLinkerUpdateService.hasNewVersion()) {
+                        Router.navigateTo(stage, "splinker-update");
+                    } else {
+                        var hasConfig = DataSetService.hasConfiguration();
+                        var routeName = hasConfig ? "home" : "first-config-dialog";
+                        Router.navigateTo(stage, routeName);
                     }
-                });
+                } catch (Exception e) {
+                    Sentry.captureException(e);
 
-                initDb.setOnSucceeded(event -> {
-                    Platform.runLater(() -> {
-                        try {
-                            stage.setResizable(false);
-
-                            stage.setTitle("v" + VersionService.getVersion());
-
-                            String os = System.getProperty("os.name").toLowerCase();
-                            if (os.contains("win")) {
-                                stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png"))));
-                            } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
-                                stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png"))));
-                            }
-
-                            if (SpLinkerUpdateService.hasNewVersion()) {
-                                Router.navigateTo(stage, "splinker-update");
-                            } else {
-                                var hasConfig = DataSetService.hasConfiguration();
-                                var routeName = hasConfig ? "home" : "first-config-dialog";
-                                Router.navigateTo(stage, routeName);
-                            }
-                        } catch (Exception e) {
-                            Sentry.captureException(e);
-
-                            try {
-                                var hasConfig = DataSetService.hasConfiguration();
-                                var routeName = hasConfig ? "home" : "first-config-dialog";
-                                Router.navigateTo(stage, routeName);
-                            } catch (Exception ex) {
-                                Sentry.captureException(ex);
-                                throw new RuntimeException(ex);
-                            }
-                        }
-                    });
-                });
-                initDb.run();
-                initDb.get();
-            }
+                    try {
+                        var hasConfig = DataSetService.hasConfiguration();
+                        var routeName = hasConfig ? "home" : "first-config-dialog";
+                        Router.navigateTo(stage, routeName);
+                    } catch (Exception ex) {
+                        Sentry.captureException(ex);
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }));
+            initDb.run();
+            initDb.get();
         } catch (Exception ex) {
             Sentry.captureException(ex);
             LockFileManager.deleteLockfile();

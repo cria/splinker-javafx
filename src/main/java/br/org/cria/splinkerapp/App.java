@@ -8,6 +8,7 @@ import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
+import br.org.cria.splinkerapp.utils.SQLiteTableExtractor;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -68,7 +69,7 @@ public class App {
                 DataSet ds = DataSetService.getDataSet(token);
                 ApplicationLog.info("Iniciando importação de dados. Aguarde alguns minutos.");
                 FileSourceManager fileSourceManager = new FileSourceManager(ds);
-                fileSourceManager.importData();
+                fileSourceManager.importData(SQLiteTableExtractor.extrairTabelas(DataSetService.getSQLCommandFromApi(ds.getToken())));
                 ApplicationLog.info("Importação finalizada");
 
                 DarwinCoreArchiveService service = new DarwinCoreArchiveService(ds);

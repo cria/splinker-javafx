@@ -52,7 +52,7 @@ public class AccessFileParser extends FileParser {
     }
 
     @Override
-    public void insertDataIntoTable() throws Exception {
+    public void insertDataIntoTable(Set<String> tabelas) throws Exception {
         var conn = getConnection();
         conn.setAutoCommit(false);
         List<String> columns;
@@ -61,6 +61,7 @@ public class AccessFileParser extends FileParser {
             try {
                 var finalTableName = StringStandards.normalizeString(name);
                 if (SQLKeywordChecker.isReservedSQLKeyword(finalTableName)) continue;
+                if (tabelas != null && !tabelas.contains(finalTableName.toLowerCase())) continue;
                 var table = db.getTable(name);
                 if (table == null) {
                     DatabaseMetaData metaData = conn.getMetaData();
@@ -187,7 +188,7 @@ public class AccessFileParser extends FileParser {
     }
 
     @Override
-    protected String buildCreateTableCommand() throws Exception {
+    protected String buildCreateTableCommand(Set<String> tabelas) throws Exception {
         var builder = new StringBuilder();
         for (var name : tableNames) {
             List<String> columns = new ArrayList<>();
@@ -211,6 +212,9 @@ public class AccessFileParser extends FileParser {
                     }
                 }
                 dropTable(finalTableName);
+
+                if (tabelas != null && !tabelas.contains(finalTableName.toLowerCase())) continue;
+
                 if (columns.isEmpty()) continue;
                 builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(finalTableName));
                 for (var column : columns) {

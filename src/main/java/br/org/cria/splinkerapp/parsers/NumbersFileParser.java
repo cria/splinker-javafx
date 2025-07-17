@@ -3,6 +3,7 @@ package br.org.cria.splinkerapp.parsers;
 import java.util.List;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -70,7 +71,7 @@ public class NumbersFileParser extends FileParser {
     }
 
     @Override
-    public void insertDataIntoTable() throws Exception {
+    public void insertDataIntoTable(Set<String> tabelas) throws Exception {
         throw new UnsupportedOperationException("Unimplemented method 'insertDataIntoTable'");
     }
 
@@ -80,7 +81,7 @@ public class NumbersFileParser extends FileParser {
     }
 
     @Override
-    protected String buildCreateTableCommand() throws Exception {
+    protected String buildCreateTableCommand(Set<String> tabelas) throws Exception {
         throw new UnsupportedOperationException("Unimplemented method 'buildCreateTableCommand'");
     }
 

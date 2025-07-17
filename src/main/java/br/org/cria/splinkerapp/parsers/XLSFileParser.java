@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -27,7 +28,7 @@ public class XLSFileParser extends FileParser {
     }
 
     @Override
-    protected String buildCreateTableCommand() throws Exception {
+    protected String buildCreateTableCommand(Set<String> tabelas) throws Exception {
         int numberOfTabs = workbook.getNumberOfSheets();
         var builder = new StringBuilder();
         for (int i = 0; i < numberOfTabs; i++) {
@@ -35,6 +36,9 @@ public class XLSFileParser extends FileParser {
             Row headerRow = sheet.getRow(0);
             var tableName = StringStandards.normalizeString(sheet.getSheetName());
             dropTable(tableName);
+
+            if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) continue;
+
             builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
 
             for (Cell cell : headerRow) {
@@ -68,7 +72,7 @@ public class XLSFileParser extends FileParser {
     }
 
     @Override
-    public void insertDataIntoTable() throws Exception {
+    public void insertDataIntoTable(Set<String> tabelas) throws Exception {
         Connection conn;
         try {
             conn = getConnection();
@@ -81,6 +85,8 @@ public class XLSFileParser extends FileParser {
                 var sheetIterator = sheet.iterator();
                 var headerRow = sheetIterator.next();
                 var tableName = StringStandards.normalizeString(sheet.getSheetName());
+
+                if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) continue;
 
                 headerRow.forEach(e ->
                 {

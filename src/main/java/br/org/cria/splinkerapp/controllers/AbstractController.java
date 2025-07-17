@@ -138,16 +138,18 @@ public abstract class AbstractController implements Initializable {
     }
 
     protected void handleErrors(Throwable ex) {
-       /* String msg;
+        String msg;
         if (isConnectionError(ex)) {
             msg = "Ausência de conexão com a Internet. Este software precisa de uma conexão para funcionar. Verifique sua conexão e tente novamente.";
+            showErrorModal(msg);
         } else {
             var sentryId = Sentry.captureException(ex);
-            var sentryMsg = (sentryId != null) ? " - Error ID %s".formatted(sentryId.toString()) : "";
-            msg = "Ocorreu um erro. Contate o administrador do spLinker%s".formatted(sentryMsg);
-        }*/
-        ApplicationLog.error(ex.getLocalizedMessage());
-        showErrorModal(ex.getLocalizedMessage());
+            //var sentryMsg = (sentryId != null) ? " - Error ID %s".formatted(sentryId.toString()) : "";
+           // msg = "Ocorreu um erro. Contate o administrador do spLinker%s".formatted(sentryMsg);
+            ApplicationLog.error(ex.getLocalizedMessage());
+            showErrorModal("Detalhe do erro: " +ex.getLocalizedMessage());
+        }
+
     }
 
     private boolean isConnectionError(Throwable ex) {

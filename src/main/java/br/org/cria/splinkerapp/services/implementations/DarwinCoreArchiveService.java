@@ -145,7 +145,6 @@ public class DarwinCoreArchiveService {
         var message = "Iniciando leitura de dados do banco SQL.";
         ApplicationLog.info(message);
 
-        var loader = ClassLoader.load(ds.getType());
         var command = DataSetService.getSQLCommandFromApi(ds.getToken());
         var conn = ds.getDataSetConnection();
         var statement = conn.createStatement();

@@ -12,6 +12,9 @@ import br.org.cria.splinkerapp.parsers.NumbersFileParser;
 import br.org.cria.splinkerapp.parsers.OdsFileParser;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 
+import java.util.List;
+import java.util.Set;
+
 public class FileSourceManager {
     DataSet ds;
     FileParser fileParser;
@@ -60,11 +63,11 @@ public class FileSourceManager {
         }
     }
 
-    public void importData() throws Exception {
+    public void importData(Set<String> tabelas) throws Exception {
         var isNotMacOsNumbersFile = ds.getType() != DataSourceType.Numbers;
         if (isNotMacOsNumbersFile) {
-            fileParser.createTableBasedOnSheet();
-            fileParser.insertDataIntoTable();
+            fileParser.createTableBasedOnSheet(tabelas);
+            fileParser.insertDataIntoTable(tabelas);
 
             var token = ds.getToken();
             var totalRowCount = fileParser.getTotalRowCount();

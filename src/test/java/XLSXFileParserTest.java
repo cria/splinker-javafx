@@ -32,7 +32,7 @@ public class XLSXFileParserTest extends ParserBaseTest {
         var tableName = "test_sheet_xlsx";
         var path = xlsx.getAbsolutePath();
         var parser = new XLSXFileParser(path);
-        parser.createTableBasedOnSheet();
+        parser.createTableBasedOnSheet(null);
         parser.insertDataIntoTable();
         var expected = getParsedDataFromTable(tableName, connString);
         var numberOfInsertedRows = expected.size();

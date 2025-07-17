@@ -25,7 +25,7 @@ public class OdsFileParserTest  extends ParserBaseTest {
         System.setProperty("splinker.dbname", connString);
         var parser = new OdsFileParser(ods.getAbsolutePath());
         
-        parser.createTableBasedOnSheet();
+        parser.createTableBasedOnSheet(null);
         parser.insertDataIntoTable();
         var expected = getParsedDataFromTable(tableName, connString);
         var numberOfInsertedRows = expected.size();

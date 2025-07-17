@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import com.github.miachm.sods.Range;
@@ -24,7 +25,7 @@ public class OdsFileParser extends FileParser {
     }
 
     @Override
-    public void insertDataIntoTable() throws Exception {
+    public void insertDataIntoTable(Set<String> tabelas) throws Exception {
         int numberOfTabs = spreadSheet.getSheets().size();
         var conn = getConnection();
         var commandBase = "INSERT INTO %s (%s) VALUES (%s);";
@@ -34,6 +35,7 @@ public class OdsFileParser extends FileParser {
         for (int i = 0; i < numberOfTabs; i++) {
             var sheet = spreadSheet.getSheet(i);
             var tableName = StringStandards.normalizeString(sheet.getName());
+            if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) continue;
             var columns = new ArrayList<String>();
             var numberOfColumns = sheet.getMaxColumns();
             var valuesStr = makeValueString(numberOfColumns);
@@ -103,12 +105,15 @@ public class OdsFileParser extends FileParser {
     }
 
     @Override
-    protected String buildCreateTableCommand() throws Exception {
+    protected String buildCreateTableCommand(Set<String> tabelas) throws Exception {
         var builder = new StringBuilder();
         for (Sheet sheet : spreadSheet.getSheets()) {
             var numberOfColumns = sheet.getMaxColumns();
             var tableName = StringStandards.normalizeString(sheet.getName());
             dropTable(tableName);
+
+            if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) continue;
+
             builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
 
             for (int i = 0; i < numberOfColumns; i++) {

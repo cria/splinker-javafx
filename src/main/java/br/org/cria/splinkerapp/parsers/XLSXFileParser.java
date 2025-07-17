@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.sql.Connection;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,13 +32,14 @@ public class XLSXFileParser extends FileParser {
     }
 
     @Override
-    protected String buildCreateTableCommand() throws Exception {
+    protected String buildCreateTableCommand(Set<String> tabelas) throws Exception {
 
         var builder = new StringBuilder();
         sheets.forEach((sheet) -> {
             try {
                 var tableName = StringStandards.normalizeString(sheet.getName());
                 dropTable(tableName);
+                if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) return;
 
                 var headerRow = sheet.openStream().findFirst().get();
                 builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
@@ -88,7 +90,7 @@ public class XLSXFileParser extends FileParser {
     }
 
     @Override
-    public void insertDataIntoTable() throws Exception {
+    public void insertDataIntoTable(Set<String> tabelas) throws Exception {
         Connection conn;
         try {
             sheets = wb.getSheets();
@@ -102,6 +104,7 @@ public class XLSXFileParser extends FileParser {
                 var lines = sheet.read();
                 var headerRow = lines.get(0);
                 var tableName = StringStandards.normalizeString(sheet.getName());
+                if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) continue;
                 totalColumnCount = headerRow.getCellCount();
                 totalRowCount = 0;
 
