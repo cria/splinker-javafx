@@ -3,16 +3,15 @@ package br.org.cria.splinkerapp.parsers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.sql.Connection;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.dhatim.fastexcel.reader.Cell;
-import org.dhatim.fastexcel.reader.ReadableWorkbook;
-import org.dhatim.fastexcel.reader.Row;
-import org.dhatim.fastexcel.reader.Sheet;
+import org.dhatim.fastexcel.reader.*;
 import br.org.cria.splinkerapp.utils.StringStandards;
 import io.sentry.Sentry;
 
@@ -50,7 +49,9 @@ public class XLSXFileParser extends FileParser {
                     try {
                         cellValue = cell.asString();
                     } catch (Exception e) {
-                        cellValue = cell.toString();
+                        if (cell != null) {
+                            cellValue = cell.toString();
+                        }
                     }
                     if (cellValue != null && cellValue.startsWith("[FORMULA")) {
                         int startIndex = cellValue.indexOf("\"");
@@ -82,8 +83,11 @@ public class XLSXFileParser extends FileParser {
 
         for (int colNum = 0; colNum < numberOfColumns; colNum++) {
             Cell cell = fullRow.getCell(colNum);
-            var cellValue = cell.getRawValue();
-            arr[colNum] = cellValue == null ? "" : cellValue.toString();
+            String cellValue = "";
+            if (cell != null) {
+                cellValue = cell.getRawValue();
+            }
+            arr[colNum] = cellValue;
         }
 
         return Arrays.asList(arr);
@@ -125,15 +129,29 @@ public class XLSXFileParser extends FileParser {
                     try {
                         for (int i = 0; i < columns.size(); i++) {
                             Cell cell = null;
+                            String valueData = null;
                             try {
                                 cell = row.getCell(i);
+                                if (CellType.NUMBER.equals(cell.getType())){
+                                    double num = Double.parseDouble(cell.getRawValue());
+                                    if (num >= 20000 && num <= 50000 && num % 1 == 0) {
+                                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                                        valueData = LocalDate.of(1899, 12, 30)
+                                                .plusDays((long) num)
+                                                .format(formatter);
+                                    }
+                                }
                             } catch (Exception ignored) {
 
                             }
 
-                            var isNullCell = cell == null;
-                            var value = isNullCell ? "" : getCellValue(cell.getRawValue());
-                            statement.setString(i + 1, value);
+                            if (valueData != null) {
+                                statement.setString(i + 1, valueData);
+                            } else {
+                                var isNullCell = cell == null;
+                                var value = isNullCell ? "" : getCellValue(cell.getRawValue());
+                                statement.setString(i + 1, value);
+                            }
                         }
                         statement.addBatch();
                         currentRow++;
