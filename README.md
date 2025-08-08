@@ -1,7 +1,7 @@
 
 # splinker
 
-Este software foi desenvolvido pelo CRIA ([Centro de Referência em Informação Ambiental](https://www.cria.org.br/index)) com o objetivo de facilitar o envio de dados para a rede [speciesLink](https://specieslink.net/) de forma rápida e eficiente a partir de bases de dados locais (planilhas ou sistemas de gerenciamento de coleçlões biológicas).
+Este software foi desenvolvido pelo CRIA ([Centro de Referência em Informação Ambiental](https://www.cria.org.br/index)) com o objetivo de facilitar o envio de dados para a rede [speciesLink](https://specieslink.net/) de forma rápida e eficiente a partir de bases de dados locais (planilhas ou sistemas de gerenciamento de coleções biológicas).
 
 ## Tecnologias Utilizadas
 
