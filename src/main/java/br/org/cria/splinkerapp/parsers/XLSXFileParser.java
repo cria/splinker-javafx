@@ -129,29 +129,14 @@ public class XLSXFileParser extends FileParser {
                     try {
                         for (int i = 0; i < columns.size(); i++) {
                             Cell cell = null;
-                            String valueData = null;
                             try {
                                 cell = row.getCell(i);
-                                if (CellType.NUMBER.equals(cell.getType())){
-                                    double num = Double.parseDouble(cell.getRawValue());
-                                    if (num >= 20000 && num <= 50000 && num % 1 == 0) {
-                                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                                        valueData = LocalDate.of(1899, 12, 30)
-                                                .plusDays((long) num)
-                                                .format(formatter);
-                                    }
-                                }
                             } catch (Exception ignored) {
 
                             }
-
-                            if (valueData != null) {
-                                statement.setString(i + 1, valueData);
-                            } else {
-                                var isNullCell = cell == null;
-                                var value = isNullCell ? "" : getCellValue(cell.getRawValue());
-                                statement.setString(i + 1, value);
-                            }
+                            var isNullCell = cell == null;
+                            var value = isNullCell ? "" : getCellValue(cell.getRawValue());
+                            statement.setString(i + 1, value);
                         }
                         statement.addBatch();
                         currentRow++;
