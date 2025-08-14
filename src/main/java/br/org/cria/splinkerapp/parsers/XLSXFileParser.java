@@ -148,7 +148,7 @@ public class XLSXFileParser extends FileParser {
 
         switch (cell.getCellType()) {
             case STRING:
-                return cell.getStringCellValue().trim();
+                return getCellValue(cell.getStringCellValue());
 
             case NUMERIC:
                 if (DateUtil.isCellDateFormatted(cell)) {
@@ -173,7 +173,7 @@ public class XLSXFileParser extends FileParser {
                 FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
                 CellValue cellValue = evaluator.evaluate(cell);
                 return switch (cellValue.getCellType()) {
-                    case STRING -> cellValue.getStringValue();
+                    case STRING -> getCellValue(cellValue.getStringValue());
                     case NUMERIC -> {
                         if (DateUtil.isCellDateFormatted(cell)) {
                             yield cell.getLocalDateTimeCellValue().toString();
