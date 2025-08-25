@@ -7,10 +7,13 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,9 +21,13 @@ public class XLSXFileParser extends FileParser {
 
     private Workbook workbook;
     private String fileSourcePath;
+    private FormulaEvaluator evaluator;
+    private final DataFormatter formatter;
+    private final SimpleDateFormat dateFmt = new SimpleDateFormat("dd/MM/yyyy");
 
     public XLSXFileParser(String fileSourcePath) throws Exception {
         super();
+        this.formatter = new DataFormatter(Locale.getDefault());
         this.fileSourcePath = fileSourcePath;
         org.apache.poi.openxml4j.util.ZipSecureFile.setMinInflateRatio(0.0);
     }
@@ -30,6 +37,7 @@ public class XLSXFileParser extends FileParser {
         try (FileInputStream fis = new FileInputStream(fileSourcePath)) {
             workbook = new XSSFWorkbook(fis);
         }
+        evaluator = workbook.getCreationHelper().createFormulaEvaluator();
         StringBuilder builder = new StringBuilder();
 
         for (Sheet sheet : workbook) {
@@ -143,49 +151,67 @@ public class XLSXFileParser extends FileParser {
     /**
      * Retorna valor da célula como String, detectando datas automaticamente.
      */
-    private String getCellStringValue(Cell cell) {
+    public String getCellStringValue(Cell cell) {
         if (cell == null) return "";
 
-        switch (cell.getCellType()) {
-            case STRING:
-                return getCellValue(cell.getStringCellValue());
+        try {
+            if (cell.getCellType() == CellType.FORMULA) {
+                try {
+                    evaluator.evaluateFormulaCell(cell);
+                } catch (RuntimeException ignore) { /* usa valor em cache */ }
+            }
 
-            case NUMERIC:
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    return new SimpleDateFormat("dd/MM/yyyy").format(cell.getDateCellValue());
-                } else {
-                    double numericValue = cell.getNumericCellValue();
-                    if (numericValue == Math.floor(numericValue)) {
-                        if (numericValue <= Integer.MAX_VALUE && numericValue >= Integer.MIN_VALUE) {
-                            return String.valueOf((int) numericValue);
-                        } else {
-                            return String.valueOf((long) numericValue);
-                        }
-                    } else {
-                        return String.valueOf(numericValue);
+            final CellType effectiveType = (cell.getCellType() == CellType.FORMULA)
+                    ? cell.getCachedFormulaResultType()
+                    : cell.getCellType();
+
+            switch (effectiveType) {
+                case STRING:
+                    return getCellValue(cell.getStringCellValue());
+
+                case NUMERIC:
+                    if (DateUtil.isCellDateFormatted(cell)) {
+                        return dateFmt.format(cell.getDateCellValue());
                     }
-                }
 
-            case BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue());
-
-            case FORMULA:
-                FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
-                CellValue cellValue = evaluator.evaluate(cell);
-                return switch (cellValue.getCellType()) {
-                    case STRING -> getCellValue(cellValue.getStringValue());
-                    case NUMERIC -> {
-                        if (DateUtil.isCellDateFormatted(cell)) {
-                            yield cell.getLocalDateTimeCellValue().toString();
-                        }
-                        yield String.valueOf(cellValue.getNumberValue());
+                    String formatted = formatter.formatCellValue(cell, evaluator);
+                    try {
+                        double raw = cell.getNumericCellValue();
+                        return formatNumericNoSci(raw);
+                    } catch (Exception e) {
+                        return formatted;
                     }
-                    case BOOLEAN -> String.valueOf(cellValue.getBooleanValue());
-                    default -> "";
-                };
-            case BLANK:
-            default:
+
+                case BOOLEAN:
+                    return String.valueOf(cell.getBooleanCellValue());
+
+                case ERROR:
+                    byte code = cell.getErrorCellValue();
+                    FormulaError fe = FormulaError.forInt(code);
+                    return fe != null ? fe.getString() : "#ERROR";
+
+                case BLANK:
+                default:
+                    String v = formatter.formatCellValue(cell, evaluator);
+                    return v != null ? v : "";
+            }
+        } catch (Exception e) {
+            try {
+                return formatter.formatCellValue(cell, evaluator);
+            } catch (Exception ignore) {
                 return "";
+            }
         }
     }
+
+    private String formatNumericNoSci(double d) {
+        BigDecimal bd = BigDecimal.valueOf(d);
+        if (bd.scale() <= 0 || bd.stripTrailingZeros().scale() <= 0) {
+            // inteiro
+            return bd.setScale(0, RoundingMode.DOWN).toPlainString();
+        }
+        return bd.stripTrailingZeros().toPlainString();
+    }
+
+
 }
