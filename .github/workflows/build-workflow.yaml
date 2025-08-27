@@ -13,6 +13,7 @@ jobs:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+
       - name: Configurar Java
         uses: actions/setup-java@v4
         with:
@@ -68,7 +69,7 @@ jobs:
           Rename-Item -Path "dist\windows\spLinker-*.msi" -NewName "spLinker-$env:VERSION.msi"
 
       # =========================
-      # NOVO: EXE legado (URL hardcoded) — tudo com shell: pwsh e here-strings seguros
+      # NOVO: EXE legado (Win7/8+) com JRE 11 embutido (URL hardcoded)
       # =========================
       - name: Definir URL fixa do JRE legado
         shell: pwsh
@@ -172,153 +173,151 @@ jobs:
           path: dist/windows
           retention-days: 3
 
-build-on-linux:
-  name: "Compilação para Linux (.deb e .rpm)"
-  runs-on: ubuntu-latest
-  env:
-    SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-  steps:
-    - uses: actions/checkout@v4
-    - name: Configurar Java
-      uses: actions/setup-java@v4
-      with:
-        java-version: 21
-        distribution: 'temurin'
-        architecture: x64
+  build-on-linux:
+    name: "Compilação para Linux (.deb e .rpm)"
+    runs-on: ubuntu-latest
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+          architecture: x64
 
-    - name: Define nome do JAR
-      run: echo "SPLINKER_FILE="splinker-$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')".jar" >> $GITHUB_ENV
+      - name: Define nome do JAR
+        run: echo "SPLINKER_FILE="splinker-$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')".jar" >> $GITHUB_ENV
 
-    - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar
-      run: mvn package -DskipTests
+      - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar
+        run: mvn package -DskipTests
 
-    - name: Criar image jpackage
-      run: jpackage --type app-image --name spLinker --input target/ --main-jar ${{ env.SPLINKER_FILE }}
+      - name: Criar image jpackage
+        run: jpackage --type app-image --name spLinker --input target/ --main-jar ${{ env.SPLINKER_FILE }}
 
-    - name: Copiar arquivo de configuração do Log4J/Sentry
-      run: cp ./src/main/resources/log4j2.xml ./spLinker
+      - name: Copiar arquivo de configuração do Log4J/Sentry
+        run: cp ./src/main/resources/log4j2.xml ./spLinker
 
-    - name: Empacotar para Deb
-      run: jpackage --name spLinker --type deb --dest dist/linux/deb --linux-shortcut --app-image spLinker
+      - name: Empacotar para Deb
+        run: jpackage --name spLinker --type deb --dest dist/linux/deb --linux-shortcut --app-image spLinker
 
-    - name: Instalar empacotador RPM
-      run: sudo apt-get install fakeroot
+      - name: Instalar empacotador RPM
+        run: sudo apt-get install fakeroot
 
-    - name: Empacotar para RPM
-      run: jpackage --name spLinker --type rpm --dest dist/linux/rpm --linux-shortcut --app-image spLinker
+      - name: Empacotar para RPM
+        run: jpackage --name spLinker --type rpm --dest dist/linux/rpm --linux-shortcut --app-image spLinker
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: splinker-linux
-        path: dist/linux
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: splinker-linux
+          path: dist/linux
 
-build-jar:
-  name: "Gerar JAR executavel"
-  runs-on: macos-latest
-  env:
-    SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  build-jar:
+    name: "Gerar JAR executavel"
+    runs-on: macos-latest
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
 
-  steps:
-    - uses: actions/checkout@v4
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+          architecture: x64
 
-    - name: Configurar Java
-      uses: actions/setup-java@v4
-      with:
-        java-version: 21
-        distribution: 'temurin'
-        architecture: x64
+      - name: Compilar o projeto
+        run: mvn clean package -DskipTests
 
-    - name: Compilar o projeto
-      run: mvn clean package -DskipTests
+      - name: Obter versão do projeto e mover o JAR
+        run: |
+          VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
+          mkdir -p dist/jar
+          mv target/splinker-$VERSION.jar dist/jar/splinker-$VERSION.jar
+          echo "SPLINKER_FILE=splinker-$VERSION.jar" >> $GITHUB_ENV
+          echo "SPLINKER_VERSION=$VERSION" >> $GITHUB_ENV
 
-    - name: Obter versão do projeto e mover o JAR
-      run: |
-        VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
-        mkdir -p dist/jar
-        mv target/splinker-$VERSION.jar dist/jar/splinker-$VERSION.jar
-        echo "SPLINKER_FILE=splinker-$VERSION.jar" >> $GITHUB_ENV
-        echo "SPLINKER_VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Upload do JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: splinker-jar
+          path: dist/jar
 
-    - name: Upload do JAR
-      uses: actions/upload-artifact@v4
-      with:
-        name: splinker-jar
-        path: dist/jar
+  version-release:
+    name: "Lançar nova versão"
+    needs: [build-on-windows, build-on-linux, build-jar]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout de código
+        uses: actions/checkout@v4
 
+      - name: Download de artefatos Linux
+        uses: actions/download-artifact@v4
+        with:
+          name: splinker-linux
+          path: dist/linux
 
-version-release:
-  name: "Lançar nova versão"
-  needs: [build-on-windows, build-on-linux, build-jar]
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout de código
-      uses: actions/checkout@v4
+      - name: Download de artefatos Windows
+        uses: actions/download-artifact@v4
+        with:
+          name: splinker-windows
+          path: ./dist/windows
 
-    - name: Download de artefatos Linux
-      uses: actions/download-artifact@v4
-      with:
-        name: splinker-linux
-        path: dist/linux
+      - name: Define versão
+        id: version
+        run: echo "SPLINKER_VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')" >> $GITHUB_ENV
 
-    - name: Download de artefatos Windows
-      uses: actions/download-artifact@v4
-      with:
-        name: splinker-windows
-        path: ./dist/windows
+      - name: Criar Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.SPLINKER_VERSION }}
+          release_name: Release v${{ env.SPLINKER_VERSION }}
+          body: "Release created automatically by GitHub Actions."
+          draft: false
+          prerelease: false
 
-    - name: Define versão
-      id: version
-      run: echo "SPLINKER_VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | awk 'NR==1{print $1; exit}')" >> $GITHUB_ENV
+      - name: Upload Linux .rpm Artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/linux/rpm/splinker-1.0-1.x86_64.rpm
+          asset_name: spLinker-${{ env.SPLINKER_VERSION }}.rpm
+          asset_content_type: application/x-rpm
 
-    - name: Criar Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ env.SPLINKER_VERSION }}
-        release_name: Release v${{ env.SPLINKER_VERSION }}
-        body: "Release created automatically by GitHub Actions."
-        draft: false
-        prerelease: false
+      - name: Upload Linux .deb Artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/linux/deb/splinker_1.0_amd64.deb
+          asset_name: spLinker-${{ env.SPLINKER_VERSION }}.deb
+          asset_content_type: application/x-deb
 
-    - name: Upload Linux .rpm Artifacts
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/linux/rpm/splinker-1.0-1.x86_64.rpm
-        asset_name: spLinker-${{ env.SPLINKER_VERSION }}.rpm
-        asset_content_type: application/x-rpm
+      - name: Upload Windows MSI
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/windows/spLinker-${{ env.SPLINKER_VERSION }}.msi
+          asset_name: spLinker-${{ env.SPLINKER_VERSION }}.msi
+          asset_content_type: application/x-msdownload
 
-    - name: Upload Linux .deb Artifacts
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/linux/deb/splinker_1.0_amd64.deb
-        asset_name: spLinker-${{ env.SPLINKER_VERSION }}.deb
-        asset_content_type: application/x-deb
-
-    - name: Upload Windows MSI
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/windows/spLinker-${{ env.SPLINKER_VERSION }}.msi
-        asset_name: spLinker-${{ env.SPLINKER_VERSION }}.msi
-        asset_content_type: application/x-msdownload
-
-    - name: Upload Windows EXE legado
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/windows/spLinker-${{ env.SPLINKER_VERSION }}-legacy.exe
-        asset_name: spLinker-${{ env.SPLINKER_VERSION }}-legacy.exe
-        asset_content_type: application/x-msdownload
+      - name: Upload Windows EXE legado
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/windows/spLinker-${{ env.SPLINKER_VERSION }}-legacy.exe
+          asset_name: spLinker-${{ env.SPLINKER_VERSION }}-legacy.exe
+          asset_content_type: application/x-msdownload
