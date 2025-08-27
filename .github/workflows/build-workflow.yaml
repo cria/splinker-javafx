@@ -93,7 +93,7 @@ jobs:
       - name: Baixar JRE legado
         shell: pwsh
         run: |
-          Invoke-WebRequest "$env:LEGACY_JRE_URL" -OutFile dist\legacy\jre\jre.zip
+          Invoke-WebRequest "https://cdn.azul.com/zulu/bin/zulu11.72.19-ca-jre11.0.24-win_x64.zip" -OutFile dist\legacy\jre\jre.zip
 
       - name: Extrair JRE legado
         shell: pwsh
