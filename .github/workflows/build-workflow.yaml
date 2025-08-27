@@ -74,7 +74,7 @@ jobs:
       - name: Definir URL fixa do JRE legado
         shell: pwsh
         run: |
-          "LEGACY_JRE_URL=https://cdn.azul.com/zulu/bin/zulu11.72.19-ca-jre11.0.24-win_x64.zip" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "LEGACY_JRE_URL=https://cdn.azul.com/zulu/bin/zulu11.82.19-ca-jre11.0.28-win_x64.zip" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Instalar ferramentas (Inno Setup, Launch4j, 7zip)
         run: |
@@ -93,7 +93,7 @@ jobs:
       - name: Baixar JRE legado
         shell: pwsh
         run: |
-          Invoke-WebRequest "https://cdn.azul.com/zulu/bin/zulu11.72.19-ca-jre11.0.24-win_x64.zip" -OutFile dist\legacy\jre\jre.zip
+          Invoke-WebRequest "https://cdn.azul.com/zulu/bin/zulu11.82.19-ca-jre11.0.28-win_x64.zip" -OutFile dist\legacy\jre\jre.zip
 
       - name: Extrair JRE legado
         shell: pwsh
