@@ -128,7 +128,12 @@ jobs:
           $xml | Out-File -FilePath dist\legacy\launch4j.xml -Encoding UTF8
 
       - name: Criar EXE portátil (Launch4j)
-        run: '"C:\Program Files (x86)\Launch4j\launch4jc.exe" dist\legacy\launch4j.xml'
+        shell: pwsh
+        run: |
+          $path1 = "${env:ProgramFiles(x86)}\Launch4j\launch4jc.exe"
+          $path2 = "${env:ProgramFiles}\Launch4j\launch4jc.exe"
+          $exe = if (Test-Path $path1) { $path1 } elseif (Test-Path $path2) { $path2 } else { throw "Launch4j não encontrado em Program Files." }
+          & "$exe" "dist\legacy\launch4j.xml"
 
       - name: Gerar script Inno Setup (instalador legado)
         shell: pwsh
