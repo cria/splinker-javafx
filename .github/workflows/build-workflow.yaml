@@ -117,15 +117,35 @@ jobs:
           '@
           $vbs | Out-File -FilePath dist\legacy\run-spLinker.vbs -Encoding ASCII
 
+      - name: Verificar payload legado
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "dist\legacy\app\$env:SPLINKER_FILE")) {
+            throw "JAR não encontrado em dist\legacy\app\$env:SPLINKER_FILE"
+          }
+          if (-not (Test-Path "dist\legacy\jre\bin\java.exe")) {
+            throw "JRE legado não encontrado em dist\legacy\jre"
+          }
+          Write-Host "Conteúdo de dist\legacy:"
+          Get-ChildItem -Recurse dist\legacy | Select-Object FullName, Length
+
       - name: Gerar script NSIS (instalador legado)
         shell: pwsh
         run: |
-          $nsi = @'
+          $ws    = (Get-Location).Path
+          $appDir= Join-Path $ws 'dist\legacy\app'
+          $jreDir= Join-Path $ws 'dist\legacy\jre'
+          $vbs   = Join-Path $ws 'dist\legacy\run-spLinker.vbs'
+          $log4j = Join-Path $ws 'dist\legacy\log4j2.xml'
+          $out   = Join-Path $ws 'dist\windows'
+          $ico   = Join-Path $appDir 'splinker.ico'
+
+          $nsi = @"
           !define APPNAME "spLinker"
-          !define APPVER  "'$env:VERSION'"
+          !define APPVER  "$($env:VERSION)"
 
           Name "${APPNAME}"
-          OutFile "dist\windows\spLinker-${APPVER}-legacy.exe"
+          OutFile "$out\spLinker-${APPVER}-legacy.exe"
           InstallDir "$PROGRAMFILES64\${APPNAME}"
           InstallDirRegKey HKLM "Software\${APPNAME}" "Install_Dir"
           RequestExecutionLevel admin
@@ -145,11 +165,11 @@ jobs:
 
           Section "Install"
             SetOutPath "$INSTDIR"
-            ; arquivos do app e JRE
-            File /r "dist\legacy\app\*.*"
-            File /r "dist\legacy\jre\*.*"
-            File "dist\legacy\run-spLinker.vbs"
-            File "dist\legacy\log4j2.xml"
+            ; arquivos do app e JRE (caminhos absolutos)
+            File /r "$appDir\*.*"
+            File /r "$jreDir\*.*"
+            File "$vbs"
+            File "$log4j"
 
             ; uninstaller
             WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -172,7 +192,8 @@ jobs:
             DeleteRegKey HKLM "Software\${APPNAME}"
             DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
           SectionEnd
-          '@
+          "@
+
           $nsi | Out-File -FilePath dist\legacy\setup.nsi -Encoding UTF8
 
       - name: Compilar instalador EXE legado (NSIS)
