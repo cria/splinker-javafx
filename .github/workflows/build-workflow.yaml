@@ -99,8 +99,10 @@ jobs:
         shell: pwsh
         run: |
           Expand-Archive -Path dist\legacy\jre\jre.zip -DestinationPath dist\legacy\jre\unzipped -Force
-          $root = Get-ChildItem dist\legacy\jre\unzipped | Where-Object {$_.PsIsContainer} | Select-Object -First 1
-          Copy-Item -Recurse -Path $root.FullName\* -Destination dist\legacy\jre\ -Force
+          $root = Get-ChildItem dist\legacy\jre\unzipped -Directory | Select-Object -First 1
+          if (-not $root) { throw "Não foi encontrada pasta após extração do JRE (unzipped)." }
+          # Copia conteúdo (e não a pasta raiz) para dist\legacy\jre
+          robocopy "$($root.FullName)" "dist\legacy\jre" /E > $null
 
       - name: Gerar configuração Launch4j (usa Main-Class do JAR)
         shell: pwsh
