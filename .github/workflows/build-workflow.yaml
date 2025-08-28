@@ -138,7 +138,6 @@ jobs:
           $vbs   = Join-Path $ws 'dist\legacy\run-spLinker.vbs'
           $log4j = Join-Path $ws 'dist\legacy\log4j2.xml'
           $out   = Join-Path $ws 'dist\windows'
-          $ico   = Join-Path $appDir 'splinker.ico'
 
           $nsi = @"
           !define APPNAME "spLinker"
@@ -155,7 +154,6 @@ jobs:
 
           !include "MUI2.nsh"
           !include "LogicLib.nsh"
-          Var StartMenuDir
 
           !define MUI_ABORTWARNING
           !insertmacro MUI_PAGE_WELCOME
@@ -178,26 +176,23 @@ jobs:
             WriteUninstaller "$INSTDIR\Uninstall.exe"
 
             ; ===== Shortcuts (robust on CI without Start Menu) =====
+            ; Try All Users Start Menu
             SetShellVarContext all
-            StrCpy $StartMenuDir "$SMPROGRAMS"
-            ${If} "$StartMenuDir" == ""
-              SetShellVarContext current
-              StrCpy $StartMenuDir "$SMPROGRAMS"
-            ${EndIf}
+            IfFileExists "$SMPROGRAMS\." 0 +4
+              CreateDirectory "$SMPROGRAMS\${APPNAME}"
+              CreateShortCut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
+              Goto +6
+            ; Try Current User Start Menu
+            SetShellVarContext current
+            IfFileExists "$SMPROGRAMS\." 0 +3
+              CreateDirectory "$SMPROGRAMS\${APPNAME}"
+              CreateShortCut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
+              Goto +2
+            DetailPrint "Start Menu not found; skipping Start Menu shortcut."
 
-            ${If} "$StartMenuDir" != ""
-              StrCpy $StartMenuDir "$StartMenuDir\${APPNAME}"
-              CreateDirectory "$StartMenuDir"
-              CreateShortCut "$StartMenuDir\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
-            ${Else}
-              DetailPrint "Start Menu not found; skipping Start Menu shortcuts."
-            ${EndIf}
-
-            ${If} "$DESKTOP" != ""
+            ; Desktop (if available)
+            IfFileExists "$DESKTOP\." 0 +2
               CreateShortCut "$DESKTOP\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
-            ${Else}
-              DetailPrint "Desktop not found; skipping Desktop shortcut."
-            ${EndIf}
 
             ; registry
             WriteRegStr HKLM "Software\${APPNAME}" "Install_Dir" "$INSTDIR"
@@ -206,29 +201,27 @@ jobs:
           SectionEnd
 
           Section "Uninstall"
+            ; Remove Start Menu shortcuts (try both contexts)
             SetShellVarContext all
-            StrCpy $StartMenuDir "$SMPROGRAMS"
-            ${If} "$StartMenuDir" == ""
-              SetShellVarContext current
-              StrCpy $StartMenuDir "$SMPROGRAMS"
-            ${EndIf}
-            ${If} "$StartMenuDir" != ""
-              StrCpy $StartMenuDir "$StartMenuDir\${APPNAME}"
-              Delete "$StartMenuDir\${APPNAME}.lnk"
-              RMDir "$StartMenuDir"
-            ${EndIf}
+            IfFileExists "$SMPROGRAMS\${APPNAME}\." 0 +3
+              Delete "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk"
+              RMDir "$SMPROGRAMS\${APPNAME}"
+            SetShellVarContext current
+            IfFileExists "$SMPROGRAMS\${APPNAME}\." 0 +3
+              Delete "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk"
+              RMDir "$SMPROGRAMS\${APPNAME}"
 
-            ${If} "$DESKTOP" != ""
+            ; Desktop
+            IfFileExists "$DESKTOP\${APPNAME}.lnk" 0 +1
               Delete "$DESKTOP\${APPNAME}.lnk"
-            ${EndIf}
 
+            ; App dir and registry
             RMDir /r "$INSTDIR"
             DeleteRegKey HKLM "Software\${APPNAME}"
             DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
           SectionEnd
           "@
 
-          # Salva o NSI em ASCII para evitar problemas de charset no makensis (log mostrava ACP)
           $nsi | Out-File -FilePath dist\legacy\setup.nsi -Encoding ASCII
 
       - name: Compilar instalador EXE legado (NSIS)
