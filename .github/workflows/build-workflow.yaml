@@ -175,24 +175,27 @@ jobs:
             ; uninstaller
             WriteUninstaller "$INSTDIR\Uninstall.exe"
 
-            ; ===== Shortcuts (robust on CI without Start Menu) =====
-            ; Try All Users Start Menu
+            ; ===== Start Menu shortcuts (only if SMPROGRAMS is not empty) =====
             SetShellVarContext all
-            IfFileExists "$SMPROGRAMS\." 0 +4
+            ${If} "$SMPROGRAMS" != ""
               CreateDirectory "$SMPROGRAMS\${APPNAME}"
               CreateShortCut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
-              Goto +6
-            ; Try Current User Start Menu
-            SetShellVarContext current
-            IfFileExists "$SMPROGRAMS\." 0 +3
-              CreateDirectory "$SMPROGRAMS\${APPNAME}"
-              CreateShortCut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
-              Goto +2
-            DetailPrint "Start Menu not found; skipping Start Menu shortcut."
+            ${Else}
+              SetShellVarContext current
+              ${If} "$SMPROGRAMS" != ""
+                CreateDirectory "$SMPROGRAMS\${APPNAME}"
+                CreateShortCut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
+              ${Else}
+                DetailPrint "Start Menu not available; skipping Start Menu shortcuts."
+              ${EndIf}
+            ${EndIf}
 
-            ; Desktop (if available)
-            IfFileExists "$DESKTOP\." 0 +2
+            ; Desktop shortcut (only if DESKTOP is not empty)
+            ${If} "$DESKTOP" != ""
               CreateShortCut "$DESKTOP\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
+            ${Else}
+              DetailPrint "Desktop not available; skipping Desktop shortcut."
+            ${EndIf}
 
             ; registry
             WriteRegStr HKLM "Software\${APPNAME}" "Install_Dir" "$INSTDIR"
@@ -201,21 +204,25 @@ jobs:
           SectionEnd
 
           Section "Uninstall"
-            ; Remove Start Menu shortcuts (try both contexts)
+            ; remove Start Menu shortcuts (guard against empty SMPROGRAMS)
             SetShellVarContext all
-            IfFileExists "$SMPROGRAMS\${APPNAME}\." 0 +3
+            ${If} "$SMPROGRAMS" != ""
               Delete "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk"
               RMDir "$SMPROGRAMS\${APPNAME}"
-            SetShellVarContext current
-            IfFileExists "$SMPROGRAMS\${APPNAME}\." 0 +3
-              Delete "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk"
-              RMDir "$SMPROGRAMS\${APPNAME}"
+            ${Else}
+              SetShellVarContext current
+              ${If} "$SMPROGRAMS" != ""
+                Delete "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk"
+                RMDir "$SMPROGRAMS\${APPNAME}"
+              ${EndIf}
+            ${EndIf}
 
             ; Desktop
-            IfFileExists "$DESKTOP\${APPNAME}.lnk" 0 +1
+            ${If} "$DESKTOP" != ""
               Delete "$DESKTOP\${APPNAME}.lnk"
+            ${EndIf}
 
-            ; App dir and registry
+            ; app dir and registry
             RMDir /r "$INSTDIR"
             DeleteRegKey HKLM "Software\${APPNAME}"
             DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
