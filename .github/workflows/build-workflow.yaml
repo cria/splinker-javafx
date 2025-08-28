@@ -69,18 +69,17 @@ jobs:
           Rename-Item -Path "dist\windows\spLinker-*.msi" -NewName "spLinker-$env:VERSION.msi"
 
       # =========================
-      # NOVO: EXE legado (Win7/8+) com JRE 11 embutido (URL hardcoded)
+      # NOVO: EXE legado com NSIS (Win7/8+) + JRE 11 EMBUTIDO
       # =========================
       - name: Definir URL fixa do JRE legado
         shell: pwsh
         run: |
           "LEGACY_JRE_URL=https://cdn.azul.com/zulu/bin/zulu11.82.19-ca-jre11.0.28-win_x64.zip" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Instalar ferramentas (Inno Setup, Launch4j, 7zip)
+      - name: Instalar ferramentas (NSIS)
+        shell: pwsh
         run: |
-          choco install -y innosetup
-          choco install -y launch4j
-          choco install -y 7zip
+          choco install -y nsis
 
       - name: Preparar pastas do pacote legado
         shell: pwsh
@@ -89,6 +88,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path dist\legacy\jre | Out-Null
           Copy-Item "target\$env:SPLINKER_FILE" "dist\legacy\app\" -Force
           Copy-Item ".\src\main\resources\log4j2.xml" "dist\legacy\" -Force
+          Copy-Item ".\src\main\resources\images\splinker.ico" "dist\legacy\app\splinker.ico" -Force
 
       - name: Baixar JRE legado
         shell: pwsh
@@ -104,86 +104,79 @@ jobs:
           $src = Join-Path $root.FullName '*'
           Copy-Item -Path "$src" -Destination 'dist\legacy\jre' -Recurse -Force
 
-      - name: Gerar configuração Launch4j (usa Main-Class do JAR)
+      - name: Criar launcher VBS (sem console)
         shell: pwsh
         run: |
-          $xml = @'
-          <launch4jConfig>
-            <dontWrapJar>true</dontWrapJar>
-            <headerType>gui</headerType>
-            <outfile>spLinker-portable-$env:VERSION.exe</outfile>
-            <jar>app\$env:SPLINKER_FILE</jar>
-            <errTitle>spLinker</errTitle>
-            <icon>src\main\resources\images\splinker.ico</icon>
-            <jre>
-              <path>jre</path>
-              <bundledJre64Bit>true</bundledJre64Bit>
-              <minVersion>1.8.0</minVersion>
-            </jre>
-          </launch4jConfig>
+          $vbs = @'
+          ' run-spLinker.vbs - inicia o app com JRE embutido, janela oculta
+          Dim fso, folder, cmd
+          Set fso = CreateObject("Scripting.FileSystemObject")
+          folder = fso.GetParentFolderName(WScript.ScriptFullName)
+          cmd = """" & folder & "\jre\bin\java.exe"" -jar """ & folder & "\app\$env:SPLINKER_FILE"""
+          CreateObject("WScript.Shell").Run cmd, 0, False
           '@
-          $xml | Out-File -FilePath dist\legacy\launch4j.xml -Encoding UTF8
+          $vbs | Out-File -FilePath dist\legacy\run-spLinker.vbs -Encoding ASCII
 
-      - name: Criar EXE portátil (Launch4j)
+      - name: Gerar script NSIS (instalador legado)
         shell: pwsh
         run: |
-          # Java a usar: JRE legado baixado
-          $env:JAVA_HOME = (Resolve-Path "dist\legacy\jre").Path
-          $java = Join-Path $env:JAVA_HOME 'bin\java.exe'
-          if (-not (Test-Path $java)) { throw "java.exe do JRE legado não encontrado." }
+          $nsi = @'
+          !define APPNAME "spLinker"
+          !define APPVER  "'$env:VERSION'"
 
-          # launch4j.jar instalado via Chocolatey
-          $jar1 = Join-Path "${env:ProgramFiles(x86)}\Launch4j" 'launch4j.jar'
-          $jar2 = Join-Path "${env:ProgramFiles}\Launch4j" 'launch4j.jar'
-          if     (Test-Path $jar1) { $l4j = $jar1 }
-          elseif (Test-Path $jar2) { $l4j = $jar2 }
-          else { throw "launch4j.jar não encontrado em Program Files." }
+          Name "${APPNAME}"
+          OutFile "dist\windows\spLinker-${APPVER}-legacy.exe"
+          InstallDir "$PROGRAMFILES64\${APPNAME}"
+          InstallDirRegKey HKLM "Software\${APPNAME}" "Install_Dir"
+          RequestExecutionLevel admin
 
-          # Rodar dentro de dist\legacy para que os caminhos relativos funcionem
-          Push-Location 'dist\legacy'
-          & "$java" -jar "$l4j" "launch4j.xml"
-          Pop-Location
+          SetCompress auto
+          SetCompressor /SOLID lzma
 
-      - name: Gerar script Inno Setup (instalador legado)
-        shell: pwsh
-        run: |
-          $iss = @'
-          #define MyAppName "spLinker"
-          #define MyAppVersion "'$env:VERSION'"
+          !include "MUI2.nsh"
+          !define MUI_ABORTWARNING
+          !insertmacro MUI_PAGE_WELCOME
+          !insertmacro MUI_PAGE_DIRECTORY
+          !insertmacro MUI_PAGE_INSTFILES
+          !insertmacro MUI_PAGE_FINISH
+          !insertmacro MUI_UNPAGE_CONFIRM
+          !insertmacro MUI_UNPAGE_INSTFILES
+          !insertmacro MUI_LANGUAGE "PortugueseBR"
 
-          [Setup]
-          AppName={#MyAppName}
-          AppVersion={#MyAppVersion}
-          DefaultDirName={pf}\{#MyAppName}
-          DefaultGroupName={#MyAppName}
-          OutputDir=dist\windows
-          OutputBaseFilename=spLinker-{#MyAppVersion}-legacy
-          Compression=lzma
-          SolidCompression=yes
-          ArchitecturesInstallIn64BitMode=x64
-          DisableDirPage=no
-          DisableProgramGroupPage=no
+          Section "Install"
+            SetOutPath "$INSTDIR"
+            ; arquivos do app e JRE
+            File /r "dist\legacy\app\*.*"
+            File /r "dist\legacy\jre\*.*"
+            File "dist\legacy\run-spLinker.vbs"
+            File "dist\legacy\log4j2.xml"
 
-          [Files]
-          Source: "dist\legacy\app\*"; DestDir: "{app}\app"; Flags: recursesubdirs
-          Source: "dist\legacy\jre\*"; DestDir: "{app}\jre"; Flags: recursesubdirs
-          Source: "dist\legacy\spLinker-portable-'$env:VERSION'.exe"; DestDir: "{app}"
-          Source: "dist\legacy\log4j2.xml"; DestDir: "{app}"
+            ; uninstaller
+            WriteUninstaller "$INSTDIR\Uninstall.exe"
 
-          [Icons]
-          Name: "{group}\spLinker"; Filename: "{app}\spLinker-portable-'$env:VERSION'.exe"
-          Name: "{commondesktop}\spLinker"; Filename: "{app}\spLinker-portable-'$env:VERSION'.exe"; Tasks: desktopicon
+            ; atalhos
+            CreateDirectory "$SMPROGRAMS\${APPNAME}"
+            CreateShortCut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
+            CreateShortCut "$DESKTOP\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
 
-          [Tasks]
-          Name: "desktopicon"; Description: "Criar atalho na área de trabalho"; GroupDescription: "Atalhos:"
+            ; registro
+            WriteRegStr HKLM "Software\${APPNAME}" "Install_Dir" "$INSTDIR"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPNAME}"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "UninstallString" "$INSTDIR\Uninstall.exe"
+          SectionEnd
 
-          [Run]
-          Filename: "{app}\spLinker-portable-'$env:VERSION'.exe"; Description: "Executar spLinker"; Flags: nowait postinstall skipifsilent
+          Section "Uninstall"
+            Delete "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk"
+            Delete "$DESKTOP\${APPNAME}.lnk"
+            RMDir /r "$INSTDIR"
+            DeleteRegKey HKLM "Software\${APPNAME}"
+            DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
+          SectionEnd
           '@
-          $iss | Out-File -FilePath dist\legacy\setup.iss -Encoding UTF8
+          $nsi | Out-File -FilePath dist\legacy\setup.nsi -Encoding UTF8
 
-      - name: Compilar instalador EXE legado (Inno Setup)
-        run: '"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" dist\legacy\setup.iss'
+      - name: Compilar instalador EXE legado (NSIS)
+        run: '"C:\Program Files (x86)\NSIS\makensis.exe" dist\legacy\setup.nsi'
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -328,7 +321,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./dist/windows/spLinker-${{ env.SPLINKER_VERSION }}.msi
-          asset_name: spLinker-${{ env.SPLINKER_VERSION }}.msi
+          asset_name: spLinker-${{ env:SPLINKER_VERSION }}.msi
           asset_content_type: application/x-msdownload
 
       - name: Upload Windows EXE legado
