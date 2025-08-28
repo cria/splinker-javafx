@@ -48,7 +48,7 @@ jobs:
       - name: Copiar arquivo de configuração do Log4J/Sentry
         run: cp .\src\main\resources\log4j2.xml .\spLinker\
 
-      - name: Empacotar para Windows
+      - name: Empacotar para Windows (MSI)
         shell: pwsh
         run: |
           jpackage `
@@ -77,13 +77,10 @@ jobs:
           "LEGACY_JRE_URL=https://cdn.azul.com/zulu/bin/zulu11.82.19-ca-jre11.0.28-win_x64.zip" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Instalar ferramentas (Inno Setup, Launch4j, 7zip)
-        shell: pwsh
         run: |
           choco install -y innosetup
           choco install -y launch4j
           choco install -y 7zip
-          # só para log:
-          Write-Host "Launch4j em: " (Get-ChildItem -Path "${env:ProgramFiles(x86)}\Launch4j\launch4jc.exe","${env:ProgramFiles}\Launch4j\launch4jc.exe" -ErrorAction SilentlyContinue | Select-Object -Expand FullName)
 
       - name: Preparar pastas do pacote legado
         shell: pwsh
@@ -96,12 +93,12 @@ jobs:
       - name: Baixar JRE legado
         shell: pwsh
         run: |
-          Invoke-WebRequest "https://cdn.azul.com/zulu/bin/zulu11.82.19-ca-jre11.0.28-win_x64.zip" -OutFile dist\legacy\jre\jre.zip
+          Invoke-WebRequest "$env:LEGACY_JRE_URL" -OutFile dist\legacy\jre\jre.zip
 
       - name: Extrair JRE legado
         shell: pwsh
         run: |
-          Expand-Archive -Path dist\legacy\jre\jre.zip -DestinationPath dist\legacy\jre\unzipped -Force
+          Expand-Archive -Path 'dist\legacy\jre\jre.zip' -DestinationPath 'dist\legacy\jre\unzipped' -Force
           $root = Get-ChildItem 'dist\legacy\jre\unzipped' -Directory | Select-Object -First 1
           if (-not $root) { throw "Não foi encontrada pasta após extração do JRE (unzipped)." }
           $src = Join-Path $root.FullName '*'
@@ -125,34 +122,27 @@ jobs:
             </jre>
           </launch4jConfig>
           '@
-          
-          # Salva o XML diretamente dentro de dist\legacy
           $xml | Out-File -FilePath dist\legacy\launch4j.xml -Encoding UTF8
 
       - name: Criar EXE portátil (Launch4j)
         shell: pwsh
         run: |
-          # Define o JAVA_HOME para usar o JRE legado
+          # Java a usar: JRE legado baixado
           $env:JAVA_HOME = (Resolve-Path "dist\legacy\jre").Path
           $java = Join-Path $env:JAVA_HOME 'bin\java.exe'
           if (-not (Test-Path $java)) { throw "java.exe do JRE legado não encontrado." }
-          
-          # Localiza o launch4j.jar instalado via Chocolatey
+
+          # launch4j.jar instalado via Chocolatey
           $jar1 = Join-Path "${env:ProgramFiles(x86)}\Launch4j" 'launch4j.jar'
           $jar2 = Join-Path "${env:ProgramFiles}\Launch4j" 'launch4j.jar'
           if     (Test-Path $jar1) { $l4j = $jar1 }
           elseif (Test-Path $jar2) { $l4j = $jar2 }
           else { throw "launch4j.jar não encontrado em Program Files." }
-          
-          # Muda para a pasta dist\legacy antes de rodar o Launch4j
-          Set-Location dist\legacy
-          
-          # Executa o Launch4j via JAR (com caminho relativo do XML)
+
+          # Rodar dentro de dist\legacy para que os caminhos relativos funcionem
+          Push-Location 'dist\legacy'
           & "$java" -jar "$l4j" "launch4j.xml"
-          
-          # Volta para a raiz do projeto
-          Set-Location ../..
-      
+          Pop-Location
 
       - name: Gerar script Inno Setup (instalador legado)
         shell: pwsh
