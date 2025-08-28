@@ -328,13 +328,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: splinker-linux
-        path: dist/linux
+          path: dist/linux
 
       - name: Download de artefatos Windows
         uses: actions/download-artifact@v4
         with:
           name: splinker-windows
-        path: ./dist/windows
+          path: ./dist/windows
 
       - name: Define versão
         id: version
