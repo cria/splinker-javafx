@@ -153,7 +153,6 @@ jobs:
           SetCompressor /SOLID lzma
 
           !include "MUI2.nsh"
-          !include "LogicLib.nsh"
 
           !define MUI_ABORTWARNING
           !insertmacro MUI_PAGE_WELCOME
@@ -166,7 +165,7 @@ jobs:
 
           Section "Install"
             SetOutPath "$INSTDIR"
-            ; files of app and JRE (absolute paths)
+            ; payload (absolute paths)
             File /r "$appDir\*.*"
             File /r "$jreDir\*.*"
             File "$vbs"
@@ -175,27 +174,9 @@ jobs:
             ; uninstaller
             WriteUninstaller "$INSTDIR\Uninstall.exe"
 
-            ; ===== Start Menu shortcuts (only if SMPROGRAMS is not empty) =====
-            SetShellVarContext all
-            ${If} "$SMPROGRAMS" != ""
-              CreateDirectory "$SMPROGRAMS\${APPNAME}"
-              CreateShortCut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
-            ${Else}
-              SetShellVarContext current
-              ${If} "$SMPROGRAMS" != ""
-                CreateDirectory "$SMPROGRAMS\${APPNAME}"
-                CreateShortCut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
-              ${Else}
-                DetailPrint "Start Menu not available; skipping Start Menu shortcuts."
-              ${EndIf}
-            ${EndIf}
-
-            ; Desktop shortcut (only if DESKTOP is not empty)
-            ${If} "$DESKTOP" != ""
+            ; Desktop shortcut only if Desktop exists (CI-safe)
+            IfFileExists "$DESKTOP\." 0 +2
               CreateShortCut "$DESKTOP\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
-            ${Else}
-              DetailPrint "Desktop not available; skipping Desktop shortcut."
-            ${EndIf}
 
             ; registry
             WriteRegStr HKLM "Software\${APPNAME}" "Install_Dir" "$INSTDIR"
@@ -204,31 +185,18 @@ jobs:
           SectionEnd
 
           Section "Uninstall"
-            ; remove Start Menu shortcuts (guard against empty SMPROGRAMS)
-            SetShellVarContext all
-            ${If} "$SMPROGRAMS" != ""
-              Delete "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk"
-              RMDir "$SMPROGRAMS\${APPNAME}"
-            ${Else}
-              SetShellVarContext current
-              ${If} "$SMPROGRAMS" != ""
-                Delete "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk"
-                RMDir "$SMPROGRAMS\${APPNAME}"
-              ${EndIf}
-            ${EndIf}
-
-            ; Desktop
-            ${If} "$DESKTOP" != ""
+            ; remove desktop shortcut if present
+            IfFileExists "$DESKTOP\${APPNAME}.lnk" 0 +1
               Delete "$DESKTOP\${APPNAME}.lnk"
-            ${EndIf}
 
-            ; app dir and registry
+            ; remove app dir & registry
             RMDir /r "$INSTDIR"
             DeleteRegKey HKLM "Software\${APPNAME}"
             DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
           SectionEnd
           "@
 
+          # ASCII para evitar problemas de charset (log mostra ACP)
           $nsi | Out-File -FilePath dist\legacy\setup.nsi -Encoding ASCII
 
       - name: Compilar instalador EXE legado (NSIS)
