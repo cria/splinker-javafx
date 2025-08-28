@@ -176,7 +176,9 @@ jobs:
           $nsi | Out-File -FilePath dist\legacy\setup.nsi -Encoding UTF8
 
       - name: Compilar instalador EXE legado (NSIS)
-        run: '"C:\Program Files (x86)\NSIS\makensis.exe" dist\legacy\setup.nsi'
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\NSIS\makensis.exe" "dist\legacy\setup.nsi"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
