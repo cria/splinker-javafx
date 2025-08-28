@@ -69,7 +69,7 @@ jobs:
           Rename-Item -Path "dist\windows\spLinker-*.msi" -NewName "spLinker-$env:VERSION.msi"
 
       # =========================
-      # NOVO: EXE legado com NSIS (Win7/8+) + JRE 11 EMBUTIDO
+      # EXE legado com NSIS (Win7/8+) + JRE 11 EMBUTIDO
       # =========================
       - name: Definir URL fixa do JRE legado
         shell: pwsh
@@ -100,7 +100,7 @@ jobs:
         run: |
           Expand-Archive -Path 'dist\legacy\jre\jre.zip' -DestinationPath 'dist\legacy\jre\unzipped' -Force
           $root = Get-ChildItem 'dist\legacy\jre\unzipped' -Directory | Select-Object -First 1
-          if (-not $root) { throw "Não foi encontrada pasta após extração do JRE (unzipped)." }
+          if (-not $root) { throw "Nao foi encontrada pasta apos extracao do JRE (unzipped)." }
           $src = Join-Path $root.FullName '*'
           Copy-Item -Path "$src" -Destination 'dist\legacy\jre' -Recurse -Force
 
@@ -121,12 +121,12 @@ jobs:
         shell: pwsh
         run: |
           if (-not (Test-Path "dist\legacy\app\$env:SPLINKER_FILE")) {
-            throw "JAR não encontrado em dist\legacy\app\$env:SPLINKER_FILE"
+            throw "JAR nao encontrado em dist\legacy\app\$env:SPLINKER_FILE"
           }
           if (-not (Test-Path "dist\legacy\jre\bin\java.exe")) {
-            throw "JRE legado não encontrado em dist\legacy\jre"
+            throw "JRE legado nao encontrado em dist\legacy\jre"
           }
-          Write-Host "Conteúdo de dist\legacy:"
+          Write-Host "Conteudo de dist\legacy:"
           Get-ChildItem -Recurse dist\legacy | Select-Object FullName, Length
 
       - name: Gerar script NSIS (instalador legado)
@@ -164,11 +164,11 @@ jobs:
           !insertmacro MUI_PAGE_FINISH
           !insertmacro MUI_UNPAGE_CONFIRM
           !insertmacro MUI_UNPAGE_INSTFILES
-          !insertmacro MUI_LANGUAGE "PortugueseBR"
+          !insertmacro MUI_LANGUAGE "English"
 
           Section "Install"
             SetOutPath "$INSTDIR"
-            ; arquivos do app e JRE (caminhos absolutos)
+            ; files of app and JRE (absolute paths)
             File /r "$appDir\*.*"
             File /r "$jreDir\*.*"
             File "$vbs"
@@ -177,7 +177,7 @@ jobs:
             ; uninstaller
             WriteUninstaller "$INSTDIR\Uninstall.exe"
 
-            ; ===== Atalhos (robusto a ambientes sem Start Menu) =====
+            ; ===== Shortcuts (robust on CI without Start Menu) =====
             SetShellVarContext all
             StrCpy $StartMenuDir "$SMPROGRAMS"
             ${If} "$StartMenuDir" == ""
@@ -190,16 +190,16 @@ jobs:
               CreateDirectory "$StartMenuDir"
               CreateShortCut "$StartMenuDir\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
             ${Else}
-              DetailPrint "Start Menu não encontrado; pulando criação de pasta no menu Iniciar."
+              DetailPrint "Start Menu not found; skipping Start Menu shortcuts."
             ${EndIf}
 
             ${If} "$DESKTOP" != ""
               CreateShortCut "$DESKTOP\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
             ${Else}
-              DetailPrint "Desktop não encontrado; pulando atalho na área de trabalho."
+              DetailPrint "Desktop not found; skipping Desktop shortcut."
             ${EndIf}
 
-            ; registro
+            ; registry
             WriteRegStr HKLM "Software\${APPNAME}" "Install_Dir" "$INSTDIR"
             WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPNAME}"
             WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "UninstallString" "$INSTDIR\Uninstall.exe"
@@ -228,7 +228,8 @@ jobs:
           SectionEnd
           "@
 
-          $nsi | Out-File -FilePath dist\legacy\setup.nsi -Encoding UTF8
+          # Salva o NSI em ASCII para evitar problemas de charset no makensis (log mostrava ACP)
+          $nsi | Out-File -FilePath dist\legacy\setup.nsi -Encoding ASCII
 
       - name: Compilar instalador EXE legado (NSIS)
         shell: pwsh
@@ -327,13 +328,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: splinker-linux
-          path: dist/linux
+        path: dist/linux
 
       - name: Download de artefatos Windows
         uses: actions/download-artifact@v4
         with:
           name: splinker-windows
-          path: ./dist/windows
+        path: ./dist/windows
 
       - name: Define versão
         id: version
