@@ -154,6 +154,9 @@ jobs:
           SetCompressor /SOLID lzma
 
           !include "MUI2.nsh"
+          !include "LogicLib.nsh"
+          Var StartMenuDir
+
           !define MUI_ABORTWARNING
           !insertmacro MUI_PAGE_WELCOME
           !insertmacro MUI_PAGE_DIRECTORY
@@ -174,10 +177,27 @@ jobs:
             ; uninstaller
             WriteUninstaller "$INSTDIR\Uninstall.exe"
 
-            ; atalhos
-            CreateDirectory "$SMPROGRAMS\${APPNAME}"
-            CreateShortCut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
-            CreateShortCut "$DESKTOP\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
+            ; ===== Atalhos (robusto a ambientes sem Start Menu) =====
+            SetShellVarContext all
+            StrCpy $StartMenuDir "$SMPROGRAMS"
+            ${If} "$StartMenuDir" == ""
+              SetShellVarContext current
+              StrCpy $StartMenuDir "$SMPROGRAMS"
+            ${EndIf}
+
+            ${If} "$StartMenuDir" != ""
+              StrCpy $StartMenuDir "$StartMenuDir\${APPNAME}"
+              CreateDirectory "$StartMenuDir"
+              CreateShortCut "$StartMenuDir\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
+            ${Else}
+              DetailPrint "Start Menu não encontrado; pulando criação de pasta no menu Iniciar."
+            ${EndIf}
+
+            ${If} "$DESKTOP" != ""
+              CreateShortCut "$DESKTOP\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
+            ${Else}
+              DetailPrint "Desktop não encontrado; pulando atalho na área de trabalho."
+            ${EndIf}
 
             ; registro
             WriteRegStr HKLM "Software\${APPNAME}" "Install_Dir" "$INSTDIR"
@@ -186,8 +206,22 @@ jobs:
           SectionEnd
 
           Section "Uninstall"
-            Delete "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk"
-            Delete "$DESKTOP\${APPNAME}.lnk"
+            SetShellVarContext all
+            StrCpy $StartMenuDir "$SMPROGRAMS"
+            ${If} "$StartMenuDir" == ""
+              SetShellVarContext current
+              StrCpy $StartMenuDir "$SMPROGRAMS"
+            ${EndIf}
+            ${If} "$StartMenuDir" != ""
+              StrCpy $StartMenuDir "$StartMenuDir\${APPNAME}"
+              Delete "$StartMenuDir\${APPNAME}.lnk"
+              RMDir "$StartMenuDir"
+            ${EndIf}
+
+            ${If} "$DESKTOP" != ""
+              Delete "$DESKTOP\${APPNAME}.lnk"
+            ${EndIf}
+
             RMDir /r "$INSTDIR"
             DeleteRegKey HKLM "Software\${APPNAME}"
             DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
