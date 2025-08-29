@@ -67,26 +67,27 @@ jobs:
         run: Rename-Item -Path "dist\windows\spLinker-*.msi" -NewName "spLinker-$env:VERSION.msi"
 
       # =========================
-      # NOVO: EXE LEGADO "PORTABLE" (7-Zip SFX) com JRE 8 — Win7/8/10/11
+      # EXE LEGADO com NSIS (per-user) + JRE 8 — Win7/8/10/11
       # =========================
-      - name: Instalar 7-Zip (para gerar SFX)
-        shell: pwsh
-        run: choco install -y 7zip
 
-      - name: Definir URLs fixas (JRE8)
+      - name: Definir URL fixa do JRE 8
         shell: pwsh
         run: |
-          # Zulu 8 JRE x64 (compatível com Windows 7, sem UCRT)
+          # Zulu 8 JRE x64 (compatível com Windows 7 e sem dependência de UCRT)
           "LEGACY_JRE_URL=https://cdn.azul.com/zulu/bin/zulu8.74.0.17-ca-jre8.0.392-win_x64.zip" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Preparar pastas do pacote legado
+      - name: Instalar NSIS
+        shell: pwsh
+        run: choco install -y nsis
+
+      - name: Preparar payload legado
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path dist\legacy\pkg\app | Out-Null
-          New-Item -ItemType Directory -Force -Path dist\legacy\pkg\jre | Out-Null
-          Copy-Item "target\$env:SPLINKER_FILE" "dist\legacy\pkg\app\" -Force
-          Copy-Item ".\src\main\resources\log4j2.xml" "dist\legacy\pkg\" -Force
-          Copy-Item ".\src\main\resources\images\splinker.ico" "dist\legacy\pkg\app\splinker.ico" -Force
+          New-Item -ItemType Directory -Force -Path dist\legacy\app | Out-Null
+          New-Item -ItemType Directory -Force -Path dist\legacy\jre | Out-Null
+          Copy-Item "target\$env:SPLINKER_FILE" "dist\legacy\app\" -Force
+          Copy-Item ".\src\main\resources\log4j2.xml" "dist\legacy\" -Force
+          Copy-Item ".\src\main\resources\images\splinker.ico" "dist\legacy\app\splinker.ico" -Force
 
       - name: Baixar e extrair JRE 8
         shell: pwsh
@@ -95,7 +96,7 @@ jobs:
           Expand-Archive -Path 'dist\legacy\jre.zip' -DestinationPath 'dist\legacy\unzipped' -Force
           $root = Get-ChildItem 'dist\legacy\unzipped' -Directory | Select-Object -First 1
           if (-not $root) { throw "Nao foi encontrada pasta apos extracao do JRE." }
-          Copy-Item -Path (Join-Path $root.FullName '*') -Destination 'dist\legacy\pkg\jre' -Recurse -Force
+          Copy-Item -Path (Join-Path $root.FullName '*') -Destination 'dist\legacy\jre' -Recurse -Force
 
       - name: Criar launcher VBS (sem console)
         shell: pwsh
@@ -108,82 +109,76 @@ jobs:
           cmd = """" & folder & "\jre\bin\java.exe"" -jar """ & folder & "\app\$env:SPLINKER_FILE"""
           CreateObject("WScript.Shell").Run cmd, 0, False
           '@
-          $vbs | Out-File -FilePath dist\legacy\pkg\run-spLinker.vbs -Encoding ASCII
+          $vbs | Out-File -FilePath dist\legacy\run-spLinker.vbs -Encoding ASCII
 
       - name: Verificar payload legado
         shell: pwsh
         run: |
-          if (-not (Test-Path "dist\legacy\pkg\app\$env:SPLINKER_FILE")) { throw "JAR nao encontrado." }
-          if (-not (Test-Path "dist\legacy\pkg\jre\bin\java.exe")) { throw "JRE 8 nao encontrado." }
-          Get-ChildItem -Recurse dist\legacy\pkg | Select-Object FullName,Length
+          if (-not (Test-Path "dist\legacy\app\$env:SPLINKER_FILE")) { throw "JAR nao encontrado." }
+          if (-not (Test-Path "dist\legacy\jre\bin\java.exe")) { throw "JRE 8 nao encontrado." }
+          Get-ChildItem -Recurse dist\legacy | Select-Object FullName, Length
 
-      - name: Gerar pacote 7z + SFX
+      - name: Gerar script NSIS (per-user, sem registro/Start Menu)
         shell: pwsh
         run: |
-          # Localiza 7z.exe
-          $sevenZip = Join-Path ${env:ProgramFiles} '7-Zip\7z.exe'
-          if (-not (Test-Path $sevenZip)) { $sevenZip = Join-Path ${env:ProgramFiles(x86)} '7-Zip\7z.exe' }
-          if (-not (Test-Path $sevenZip)) { throw "7z.exe nao encontrado." }
+          $ws    = (Get-Location).Path
+          $appDir= Join-Path $ws 'dist\legacy\app'
+          $jreDir= Join-Path $ws 'dist\legacy\jre'
+          $vbs   = Join-Path $ws 'dist\legacy\run-spLinker.vbs'
+          $log4j = Join-Path $ws 'dist\legacy\log4j2.xml'
+          $out   = Join-Path $ws 'dist\windows'
 
-          New-Item -ItemType Directory -Force -Path dist\windows | Out-Null
+          $nsi = @"
+          !define APPNAME "spLinker"
+          !define APPVER  "$($env:VERSION)"
 
-          # 1) Compacta payload em .7z
-          & "$sevenZip" a -t7z -m0=lzma2 -mx=9 -mmt=on "dist\legacy\payload.7z" ".\dist\legacy\pkg\*" | Out-Null
+          Name "${APPNAME}"
+          OutFile "$out\spLinker-${APPVER}-legacy.exe"
+          ; Instala por usuario, sem admin:
+          InstallDir "$LOCALAPPDATA\${APPNAME}"
+          RequestExecutionLevel user
 
-          # 2) Garante modulo SFX (7-Zip Extra) -> procurar 7z*.sfx
-          $sfxStub = $null
-          $cands = @(
-            (Join-Path ${env:ProgramFiles}     '7-Zip\7zsd.sfx'),
-            (Join-Path ${env:ProgramFiles(x86)} '7-Zip\7zsd.sfx'),
-            (Join-Path ${env:ProgramFiles}     '7-Zip\7zSD.sfx'),
-            (Join-Path ${env:ProgramFiles(x86)} '7-Zip\7zSD.sfx'),
-            (Join-Path ${env:ProgramFiles}     '7-Zip\7zS.sfx'),
-            (Join-Path ${env:ProgramFiles(x86)} '7-Zip\7zS.sfx')
-          )
-          foreach ($p in $cands) { if (Test-Path $p) { $sfxStub = $p; break } }
+          SetCompress auto
+          SetCompressor /SOLID lzma
 
-          if (-not $sfxStub) {
-            Write-Host "Baixando 7-Zip Extra (para obter modulo SFX)..."
-            $extraUrl = "https://www.7-zip.org/a/7z2301-extra.7z"
-            $extra7z  = "dist\legacy\7z-extra.7z"
-            $extraDir = "dist\legacy\7z-extra"
-            Invoke-WebRequest $extraUrl -OutFile $extra7z
-            & "$sevenZip" x $extra7z -o"$extraDir" -y | Out-Null
+          !include "MUI2.nsh"
+          !define MUI_ABORTWARNING
+          !insertmacro MUI_PAGE_WELCOME
+          !insertmacro MUI_PAGE_DIRECTORY
+          !insertmacro MUI_PAGE_INSTFILES
+          !insertmacro MUI_PAGE_FINISH
+          !insertmacro MUI_LANGUAGE "English"
 
-            # Tenta caminhos tipicos
-            $cands2 = @(
-              (Join-Path $extraDir '7zsd.sfx'),
-              (Join-Path $extraDir '7zSD.sfx'),
-              (Join-Path $extraDir '7zS.sfx')
-            )
-            foreach ($p in $cands2) { if (Test-Path $p) { $sfxStub = $p; break } }
+          Section "Install"
+            SetOutPath "$INSTDIR"
+            ; Copia payload (caminhos absolutos)
+            File /r "$appDir\*.*"
+            File /r "$jreDir\*.*"
+            File "$vbs"
+            File "$log4j"
 
-            # Busca generica como fallback
-            if (-not $sfxStub) {
-              $anySfx = Get-ChildItem -Path $extraDir -Recurse -Filter '7z*.sfx' -File | Select-Object -First 1
-              if ($anySfx) { $sfxStub = $anySfx.FullName }
-            }
-            if (-not $sfxStub) { throw "Modulo SFX (7z*.sfx) nao encontrado apos extrair o pacote Extra." }
-          }
+            ; Atalho na area de trabalho (se existir)
+            IfFileExists "$DESKTOP\." 0 +2
+              CreateShortCut "$DESKTOP\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
 
-          # 3) Config do SFX (ASCII, sem acentos)
-          $cfg = @'
-          ;!@Install@!UTF-8!
-          Title="spLinker (Portable)"
-          Directory="%LOCALAPPDATA%\\spLinker"
-          OverwriteMode="1"
-          RunProgram="wscript.exe \"run-spLinker.vbs\""
-          ;!@InstallEnd@!
-          '@
-          $cfgPath = "dist\legacy\config.txt"
-          $cfg | Out-File -FilePath $cfgPath -Encoding ASCII
+            ; Uninstaller no proprio diretorio (sem registro)
+            WriteUninstaller "$INSTDIR\Uninstall.exe"
+          SectionEnd
 
-          # 4) Monta EXE final concatenando: SFX stub + config + payload
-          $outFile = "dist\windows\spLinker-$env:VERSION-legacy.exe"
-          $b1 = [IO.File]::ReadAllBytes($sfxStub)
-          $b2 = [IO.File]::ReadAllBytes($cfgPath)
-          $b3 = [IO.File]::ReadAllBytes("dist\legacy\payload.7z")
-          [IO.File]::WriteAllBytes($outFile, $b1 + $b2 + $b3)
+          Section "Uninstall"
+            IfFileExists "$DESKTOP\${APPNAME}.lnk" 0 +1
+              Delete "$DESKTOP\${APPNAME}.lnk"
+            RMDir /r "$INSTDIR"
+          SectionEnd
+          "@
+
+          # ASCII para evitar problemas de charset no makensis
+          $nsi | Out-File -FilePath dist\legacy\setup.nsi -Encoding ASCII
+
+      - name: Compilar instalador EXE legado (NSIS)
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\NSIS\makensis.exe" "dist\legacy\setup.nsi"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -331,7 +326,7 @@ jobs:
           asset_name: spLinker-${{ env.SPLINKER_VERSION }}.msi
           asset_content_type: application/x-msdownload
 
-      - name: Upload Windows EXE legado (portable)
+      - name: Upload Windows EXE legado
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
