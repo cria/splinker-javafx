@@ -134,7 +134,7 @@ jobs:
 
           Name "${APPNAME}"
           OutFile "$out\spLinker-${APPVER}-legacy.exe"
-          ; valor default (pode estar vazio em alguns ambientes)
+          ; default (pode ficar vazio em ambientes limitados, entao validamos no .onInit)
           InstallDir "$LOCALAPPDATA\${APPNAME}"
           RequestExecutionLevel user
 
@@ -144,54 +144,44 @@ jobs:
           !include "MUI2.nsh"
           !include "LogicLib.nsh"
 
-          ; Garante INSTDIR valido antes de instalar
           Function .onInit
-            ; tenta %LOCALAPPDATA%
-            ReadEnvStr $0 LOCALAPPDATA
-            ${If} "$0" != ""
-              StrCpy $INSTDIR "$0\${APPNAME}"
+            ; garante contexto do usuario atual
+            SetShellVarContext current
+            ; tenta LOCALAPPDATA -> APPDATA -> TEMP
+            ${If} "$LOCALAPPDATA" != ""
+              StrCpy $INSTDIR "$LOCALAPPDATA\${APPNAME}"
+            ${ElseIf} "$APPDATA" != ""
+              StrCpy $INSTDIR "$APPDATA\${APPNAME}"
+            ${ElseIf} "$TEMP" != ""
+              StrCpy $INSTDIR "$TEMP\${APPNAME}"
             ${Else}
-              ; fallback para %APPDATA%
-              ReadEnvStr $1 APPDATA
-              ${If} "$1" != ""
-                StrCpy $INSTDIR "$1\${APPNAME}"
-              ${Else}
-                ; ultimo fallback: %TEMP%
-                ReadEnvStr $2 TEMP
-                ${If} "$2" != ""
-                  StrCpy $INSTDIR "$2\${APPNAME}"
-                ${Else}
-                  ; se ainda assim ficar vazio, aborta com mensagem clara
-                  MessageBox MB_ICONSTOP "Nao foi possivel determinar pasta de instalacao (LOCALAPPDATA/APPDATA/TEMP)."
-                  Quit
-                ${EndIf}
-              ${EndIf}
+              MessageBox MB_ICONSTOP "Nao foi possivel determinar pasta de instalacao (LOCALAPPDATA/APPDATA/TEMP)."
+              Quit
             ${EndIf}
           FunctionEnd
 
           !define MUI_ABORTWARNING
           !insertmacro MUI_PAGE_WELCOME
-          ; removemos a MUI_PAGE_DIRECTORY para evitar caminhos invalidos como "\"
+          ; sem pagina de diretorio para evitar caminhos vazios/raiz
           !insertmacro MUI_PAGE_INSTFILES
           !insertmacro MUI_PAGE_FINISH
           !insertmacro MUI_LANGUAGE "English"
 
           Section "Install"
-            ; cria destino e seta como pasta de saida
             CreateDirectory "$INSTDIR"
             SetOutPath "$INSTDIR"
 
-            ; copia payload (caminhos absolutos)
+            ; copia payload
             File /r "$appDir\*.*"
             File /r "$jreDir\*.*"
             File "$vbs"
             File "$log4j"
 
-            ; atalho na area de trabalho (se existir)
+            ; atalho no Desktop se existir
             IfFileExists "$DESKTOP\." 0 +2
               CreateShortCut "$DESKTOP\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
 
-            ; uninstaller simples (sem registro)
+            ; uninstaller simples no proprio diretorio
             WriteUninstaller "$INSTDIR\Uninstall.exe"
           SectionEnd
 
