@@ -130,18 +130,40 @@ jobs:
           # 1) Compacta payload em .7z
           & "$sevenZip" a -t7z -m0=lzma2 -mx=9 -mmt=on "dist\legacy\payload.7z" ".\dist\legacy\pkg\*" | Out-Null
 
-          # 2) Garante modulo SFX (7-Zip Extra) -> 7zsd.sfx
-          $sfxStub = Join-Path ${env:ProgramFiles} '7-Zip\7zsd.sfx'
-          if (-not (Test-Path $sfxStub)) { $sfxStub = Join-Path ${env:ProgramFiles(x86)} '7-Zip\7zsd.sfx' }
-          if (-not (Test-Path $sfxStub)) {
-            Write-Host "Baixando 7-Zip Extra (para obter 7zsd.sfx)..."
+          # 2) Garante modulo SFX (7-Zip Extra) -> procurar 7z*.sfx
+          $sfxStub = $null
+          $cands = @(
+            (Join-Path ${env:ProgramFiles}     '7-Zip\7zsd.sfx'),
+            (Join-Path ${env:ProgramFiles(x86)} '7-Zip\7zsd.sfx'),
+            (Join-Path ${env:ProgramFiles}     '7-Zip\7zSD.sfx'),
+            (Join-Path ${env:ProgramFiles(x86)} '7-Zip\7zSD.sfx'),
+            (Join-Path ${env:ProgramFiles}     '7-Zip\7zS.sfx'),
+            (Join-Path ${env:ProgramFiles(x86)} '7-Zip\7zS.sfx')
+          )
+          foreach ($p in $cands) { if (Test-Path $p) { $sfxStub = $p; break } }
+
+          if (-not $sfxStub) {
+            Write-Host "Baixando 7-Zip Extra (para obter modulo SFX)..."
             $extraUrl = "https://www.7-zip.org/a/7z2301-extra.7z"
             $extra7z  = "dist\legacy\7z-extra.7z"
             $extraDir = "dist\legacy\7z-extra"
             Invoke-WebRequest $extraUrl -OutFile $extra7z
             & "$sevenZip" x $extra7z -o"$extraDir" -y | Out-Null
-            $sfxStub = Join-Path $extraDir '7zsd.sfx'
-            if (-not (Test-Path $sfxStub)) { throw "7zsd.sfx nao encontrado mesmo apos baixar o pacote Extra." }
+
+            # Tenta caminhos tipicos
+            $cands2 = @(
+              (Join-Path $extraDir '7zsd.sfx'),
+              (Join-Path $extraDir '7zSD.sfx'),
+              (Join-Path $extraDir '7zS.sfx')
+            )
+            foreach ($p in $cands2) { if (Test-Path $p) { $sfxStub = $p; break } }
+
+            # Busca generica como fallback
+            if (-not $sfxStub) {
+              $anySfx = Get-ChildItem -Path $extraDir -Recurse -Filter '7z*.sfx' -File | Select-Object -First 1
+              if ($anySfx) { $sfxStub = $anySfx.FullName }
+            }
+            if (-not $sfxStub) { throw "Modulo SFX (7z*.sfx) nao encontrado apos extrair o pacote Extra." }
           }
 
           # 3) Config do SFX (ASCII, sem acentos)
