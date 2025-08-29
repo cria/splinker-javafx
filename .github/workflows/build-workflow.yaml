@@ -120,37 +120,46 @@ jobs:
       - name: Gerar pacote 7z + SFX
         shell: pwsh
         run: |
+          # Localiza 7z.exe
           $sevenZip = Join-Path ${env:ProgramFiles} '7-Zip\7z.exe'
           if (-not (Test-Path $sevenZip)) { $sevenZip = Join-Path ${env:ProgramFiles(x86)} '7-Zip\7z.exe' }
           if (-not (Test-Path $sevenZip)) { throw "7z.exe nao encontrado." }
 
-          $sfxStub = Join-Path ${env:ProgramFiles} '7-Zip\7zS.sfx'
-          if (-not (Test-Path $sfxStub)) { $sfxStub = Join-Path ${env:ProgramFiles(x86)} '7-Zip\7zS.sfx' }
-          if (-not (Test-Path $sfxStub)) { throw "7zS.sfx nao encontrado." }
-
           New-Item -ItemType Directory -Force -Path dist\windows | Out-Null
 
-          # 1) Arquivo 7z com o payload
+          # 1) Compacta payload em .7z
           & "$sevenZip" a -t7z -m0=lzma2 -mx=9 -mmt=on "dist\legacy\payload.7z" ".\dist\legacy\pkg\*" | Out-Null
 
-          # 2) Config do SFX (ASCII, sem acentos)
+          # 2) Garante modulo SFX (7-Zip Extra) -> 7zsd.sfx
+          $sfxStub = Join-Path ${env:ProgramFiles} '7-Zip\7zsd.sfx'
+          if (-not (Test-Path $sfxStub)) { $sfxStub = Join-Path ${env:ProgramFiles(x86)} '7-Zip\7zsd.sfx' }
+          if (-not (Test-Path $sfxStub)) {
+            Write-Host "Baixando 7-Zip Extra (para obter 7zsd.sfx)..."
+            $extraUrl = "https://www.7-zip.org/a/7z2301-extra.7z"
+            $extra7z  = "dist\legacy\7z-extra.7z"
+            $extraDir = "dist\legacy\7z-extra"
+            Invoke-WebRequest $extraUrl -OutFile $extra7z
+            & "$sevenZip" x $extra7z -o"$extraDir" -y | Out-Null
+            $sfxStub = Join-Path $extraDir '7zsd.sfx'
+            if (-not (Test-Path $sfxStub)) { throw "7zsd.sfx nao encontrado mesmo apos baixar o pacote Extra." }
+          }
+
+          # 3) Config do SFX (ASCII, sem acentos)
           $cfg = @'
           ;!@Install@!UTF-8!
           Title="spLinker (Portable)"
-          ; extrai em pasta do usuario (sem admin)
           Directory="%LOCALAPPDATA%\\spLinker"
-          ; sobrescreve sem perguntar
           OverwriteMode="1"
-          ; inicia o app apos extrair
           RunProgram="wscript.exe \"run-spLinker.vbs\""
           ;!@InstallEnd@!
           '@
-          $cfg | Out-File -FilePath dist\legacy\config.txt -Encoding ASCII
+          $cfgPath = "dist\legacy\config.txt"
+          $cfg | Out-File -FilePath $cfgPath -Encoding ASCII
 
-          # 3) Monta o EXE final: SFX stub + config + 7z (binario)
+          # 4) Monta EXE final concatenando: SFX stub + config + payload
           $outFile = "dist\windows\spLinker-$env:VERSION-legacy.exe"
           $b1 = [IO.File]::ReadAllBytes($sfxStub)
-          $b2 = [IO.File]::ReadAllBytes("dist\legacy\config.txt")
+          $b2 = [IO.File]::ReadAllBytes($cfgPath)
           $b3 = [IO.File]::ReadAllBytes("dist\legacy\payload.7z")
           [IO.File]::WriteAllBytes($outFile, $b1 + $b2 + $b3)
 
