@@ -157,9 +157,12 @@ jobs:
 
           Name "${APPNAME}"
           OutFile "$out\spLinker-${APPVER}-legacy.exe"
-          InstallDir "$PROGRAMFILES64\${APPNAME}"
+          ; *** CORRIGIDO: usar $PROGRAMFILES (nunca vazio) ***
+          InstallDir "$PROGRAMFILES\${APPNAME}"
           InstallDirRegKey HKLM "Software\${APPNAME}" "Install_Dir"
           RequestExecutionLevel admin
+          ; Opcional: garantir escrita/registro no hive de 64 bits quando existir
+          SetRegView 64
 
           SetCompress auto
           SetCompressor /SOLID lzma
@@ -213,6 +216,7 @@ jobs:
           "@
 
           $nsi | Out-File -FilePath dist\legacy\setup.nsi -Encoding ASCII
+          
 
       - name: Compilar instalador EXE legado (NSIS)
         shell: pwsh
