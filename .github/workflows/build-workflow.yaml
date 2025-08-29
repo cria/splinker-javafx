@@ -287,3 +287,4 @@ jobs:
           asset_path: ./dist/windows-legacy/spLinker-${{ env.SPLINKER_VERSION }}-legacy.exe
           asset_name: spLinker-${{ env.SPLINKER_VERSION }}-legacy.exe
           asset_content_type: application/x-msdownload
+
