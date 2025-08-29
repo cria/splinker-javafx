@@ -69,12 +69,15 @@ jobs:
           Rename-Item -Path "dist\windows\spLinker-*.msi" -NewName "spLinker-$env:VERSION.msi"
 
       # =========================
-      # EXE legado com NSIS (Win7/8+) + JRE 11 EMBUTIDO
+      # EXE legado (NSIS) com JRE 8 + VC++ Redist (Win7+ compatível)
       # =========================
-      - name: Definir URL fixa do JRE legado
+      - name: Definir URLs fixas (JRE8 + VC++ Redist)
         shell: pwsh
         run: |
+          # Zulu 8 JRE x64 (compatível com Windows 7)
           "LEGACY_JRE_URL=https://cdn.azul.com/zulu/bin/zulu8.74.0.17-ca-jre8.0.392-win_x64.zip" | Out-File -FilePath $env:GITHUB_ENV -Append
+          # Link estável do VC++ 2015-2022 x64
+          "VCRUNTIME_URL=https://aka.ms/vs/17/release/vc_redist.x64.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Instalar ferramentas (NSIS)
         shell: pwsh
@@ -90,7 +93,7 @@ jobs:
           Copy-Item ".\src\main\resources\log4j2.xml" "dist\legacy\" -Force
           Copy-Item ".\src\main\resources\images\splinker.ico" "dist\legacy\app\splinker.ico" -Force
 
-      - name: Baixar JRE legado
+      - name: Baixar JRE legado (Zulu 8)
         shell: pwsh
         run: |
           Invoke-WebRequest "$env:LEGACY_JRE_URL" -OutFile dist\legacy\jre\jre.zip
@@ -103,6 +106,11 @@ jobs:
           if (-not $root) { throw "Nao foi encontrada pasta apos extracao do JRE (unzipped)." }
           $src = Join-Path $root.FullName '*'
           Copy-Item -Path "$src" -Destination 'dist\legacy\jre' -Recurse -Force
+
+      - name: Baixar VC++ Redistributable (x64)
+        shell: pwsh
+        run: |
+          Invoke-WebRequest "$env:VCRUNTIME_URL" -OutFile dist\legacy\vc_redist.x64.exe
 
       - name: Criar launcher VBS (sem console)
         shell: pwsh
@@ -126,6 +134,9 @@ jobs:
           if (-not (Test-Path "dist\legacy\jre\bin\java.exe")) {
             throw "JRE legado nao encontrado em dist\legacy\jre"
           }
+          if (-not (Test-Path "dist\legacy\vc_redist.x64.exe")) {
+            throw "VC++ Redist nao baixado (dist\legacy\vc_redist.x64.exe)"
+          }
           Write-Host "Conteudo de dist\legacy:"
           Get-ChildItem -Recurse dist\legacy | Select-Object FullName, Length
 
@@ -137,6 +148,7 @@ jobs:
           $jreDir= Join-Path $ws 'dist\legacy\jre'
           $vbs   = Join-Path $ws 'dist\legacy\run-spLinker.vbs'
           $log4j = Join-Path $ws 'dist\legacy\log4j2.xml'
+          $vcr   = Join-Path $ws 'dist\legacy\vc_redist.x64.exe'
           $out   = Join-Path $ws 'dist\windows'
 
           $nsi = @"
@@ -165,6 +177,13 @@ jobs:
 
           Section "Install"
             SetOutPath "$INSTDIR"
+
+            ; --- prereq: VC++ Runtime (necessario p/ Win7) ---
+            File "$vcr"
+            DetailPrint "Installing Microsoft Visual C++ Redistributable..."
+            ExecWait '"$INSTDIR\vc_redist.x64.exe" /install /quiet /norestart' $0
+            DetailPrint "vc_redist exit code: $0"
+
             ; payload (absolute paths)
             File /r "$appDir\*.*"
             File /r "$jreDir\*.*"
@@ -174,7 +193,7 @@ jobs:
             ; uninstaller
             WriteUninstaller "$INSTDIR\Uninstall.exe"
 
-            ; Desktop shortcut only if Desktop exists (CI-safe)
+            ; Desktop shortcut (CI-safe)
             IfFileExists "$DESKTOP\." 0 +2
               CreateShortCut "$DESKTOP\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
 
@@ -185,18 +204,14 @@ jobs:
           SectionEnd
 
           Section "Uninstall"
-            ; remove desktop shortcut if present
             IfFileExists "$DESKTOP\${APPNAME}.lnk" 0 +1
               Delete "$DESKTOP\${APPNAME}.lnk"
-
-            ; remove app dir & registry
             RMDir /r "$INSTDIR"
             DeleteRegKey HKLM "Software\${APPNAME}"
             DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
           SectionEnd
           "@
 
-          # ASCII para evitar problemas de charset (log mostra ACP)
           $nsi | Out-File -FilePath dist\legacy\setup.nsi -Encoding ASCII
 
       - name: Compilar instalador EXE legado (NSIS)
