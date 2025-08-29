@@ -129,59 +129,57 @@ jobs:
           $out   = Join-Path $ws 'dist\windows'
 
           $nsi = @"
+          ; === NSIS script minimo, sem macros/funcoes ===
           !define APPNAME "spLinker"
           !define APPVER  "$($env:VERSION)"
 
           Name "${APPNAME}"
           OutFile "$out\spLinker-${APPVER}-legacy.exe"
-          ; default (pode ficar vazio em ambientes limitados, entao validamos no .onInit)
           InstallDir "$LOCALAPPDATA\${APPNAME}"
           RequestExecutionLevel user
 
-          SetCompress auto
-          SetCompressor /SOLID lzma
-
-          !include "MUI2.nsh"
-          !include "LogicLib.nsh"
-
-          Function .onInit
-            ; garante contexto do usuario atual
-            SetShellVarContext current
-            ; tenta LOCALAPPDATA -> APPDATA -> TEMP
-            ${If} "$LOCALAPPDATA" != ""
-              StrCpy $INSTDIR "$LOCALAPPDATA\${APPNAME}"
-            ${ElseIf} "$APPDATA" != ""
-              StrCpy $INSTDIR "$APPDATA\${APPNAME}"
-            ${ElseIf} "$TEMP" != ""
-              StrCpy $INSTDIR "$TEMP\${APPNAME}"
-            ${Else}
-              MessageBox MB_ICONSTOP "Nao foi possivel determinar pasta de instalacao (LOCALAPPDATA/APPDATA/TEMP)."
-              Quit
-            ${EndIf}
-          FunctionEnd
-
-          !define MUI_ABORTWARNING
-          !insertmacro MUI_PAGE_WELCOME
-          ; sem pagina de diretorio para evitar caminhos vazios/raiz
-          !insertmacro MUI_PAGE_INSTFILES
-          !insertmacro MUI_PAGE_FINISH
-          !insertmacro MUI_LANGUAGE "English"
+          ; Paginas padrao (apenas progresso)
+          Page instfiles
 
           Section "Install"
+            ; garantir contexto do usuario
+            SetShellVarContext current
+
+            ; fallback para determinar INSTDIR valido
+            StrCmp "$LOCALAPPDATA" "" +2 0
+              Goto _useLocal
+            StrCmp "$APPDATA" "" +2 0
+              Goto _useApp
+            StrCmp "$TEMP" "" +2 0
+              Goto _useTemp
+
+            MessageBox MB_ICONSTOP "Nao foi possivel determinar pasta de instalacao (LOCALAPPDATA/APPDATA/TEMP)."
+            Quit
+
+            _useLocal:
+              StrCpy $INSTDIR "$LOCALAPPDATA\${APPNAME}"
+              Goto _afterSet
+            _useApp:
+              StrCpy $INSTDIR "$APPDATA\${APPNAME}"
+              Goto _afterSet
+            _useTemp:
+              StrCpy $INSTDIR "$TEMP\${APPNAME}"
+
+            _afterSet:
             CreateDirectory "$INSTDIR"
             SetOutPath "$INSTDIR"
 
-            ; copia payload
+            ; copiar payload (caminhos absolutos gerados pelo workflow)
             File /r "$appDir\*.*"
             File /r "$jreDir\*.*"
             File "$vbs"
             File "$log4j"
 
-            ; atalho no Desktop se existir
+            ; atalho no Desktop, se existir
             IfFileExists "$DESKTOP\." 0 +2
               CreateShortCut "$DESKTOP\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
 
-            ; uninstaller simples no proprio diretorio
+            ; uninstaller simples (sem registro)
             WriteUninstaller "$INSTDIR\Uninstall.exe"
           SectionEnd
 
@@ -192,6 +190,7 @@ jobs:
           SectionEnd
           "@
 
+          # Salvar em ASCII para evitar problemas de charset
           $nsi | Out-File -FilePath dist\legacy\setup.nsi -Encoding ASCII
 
       - name: Compilar instalador EXE legado (NSIS)
