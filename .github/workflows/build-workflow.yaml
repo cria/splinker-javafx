@@ -134,7 +134,7 @@ jobs:
 
           Name "${APPNAME}"
           OutFile "$out\spLinker-${APPVER}-legacy.exe"
-          ; Instala por usuario, sem admin:
+          ; valor default (pode estar vazio em alguns ambientes)
           InstallDir "$LOCALAPPDATA\${APPNAME}"
           RequestExecutionLevel user
 
@@ -142,26 +142,56 @@ jobs:
           SetCompressor /SOLID lzma
 
           !include "MUI2.nsh"
+          !include "LogicLib.nsh"
+
+          ; Garante INSTDIR valido antes de instalar
+          Function .onInit
+            ; tenta %LOCALAPPDATA%
+            ReadEnvStr $0 LOCALAPPDATA
+            ${If} "$0" != ""
+              StrCpy $INSTDIR "$0\${APPNAME}"
+            ${Else}
+              ; fallback para %APPDATA%
+              ReadEnvStr $1 APPDATA
+              ${If} "$1" != ""
+                StrCpy $INSTDIR "$1\${APPNAME}"
+              ${Else}
+                ; ultimo fallback: %TEMP%
+                ReadEnvStr $2 TEMP
+                ${If} "$2" != ""
+                  StrCpy $INSTDIR "$2\${APPNAME}"
+                ${Else}
+                  ; se ainda assim ficar vazio, aborta com mensagem clara
+                  MessageBox MB_ICONSTOP "Nao foi possivel determinar pasta de instalacao (LOCALAPPDATA/APPDATA/TEMP)."
+                  Quit
+                ${EndIf}
+              ${EndIf}
+            ${EndIf}
+          FunctionEnd
+
           !define MUI_ABORTWARNING
           !insertmacro MUI_PAGE_WELCOME
-          !insertmacro MUI_PAGE_DIRECTORY
+          ; removemos a MUI_PAGE_DIRECTORY para evitar caminhos invalidos como "\"
           !insertmacro MUI_PAGE_INSTFILES
           !insertmacro MUI_PAGE_FINISH
           !insertmacro MUI_LANGUAGE "English"
 
           Section "Install"
+            ; cria destino e seta como pasta de saida
+            CreateDirectory "$INSTDIR"
             SetOutPath "$INSTDIR"
-            ; Copia payload (caminhos absolutos)
+
+            ; copia payload (caminhos absolutos)
             File /r "$appDir\*.*"
             File /r "$jreDir\*.*"
             File "$vbs"
             File "$log4j"
 
-            ; Atalho na area de trabalho (se existir)
+            ; atalho na area de trabalho (se existir)
             IfFileExists "$DESKTOP\." 0 +2
               CreateShortCut "$DESKTOP\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
 
-            ; Uninstaller no proprio diretorio (sem registro)
+            ; uninstaller simples (sem registro)
             WriteUninstaller "$INSTDIR\Uninstall.exe"
           SectionEnd
 
@@ -172,7 +202,6 @@ jobs:
           SectionEnd
           "@
 
-          # ASCII para evitar problemas de charset no makensis
           $nsi | Out-File -FilePath dist\legacy\setup.nsi -Encoding ASCII
 
       - name: Compilar instalador EXE legado (NSIS)
