@@ -13,7 +13,7 @@ jobs:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - name: Configurar Java
+      - name: Configurar Java 21
         uses: actions/setup-java@v4
         with:
           java-version: 21
@@ -33,7 +33,13 @@ jobs:
       - name: Exibe nome do JAR
         run: echo $env:SPLINKER_FILE
 
-      - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar
+      - name: Download do JAR compilado com Java 21
+        uses: actions/download-artifact@v4
+        with:
+          name: splinker-jar-java21
+          path: target/
+
+      - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar (Java 21)
         run: mvn package -DskipTests
 
       - name: Criar image jpackage
@@ -107,8 +113,8 @@ jobs:
           name: splinker-linux
           path: dist/linux
 
-  build-jar:
-    name: "Gerar JAR executavel"
+  build-jar-java21:
+    name: "Gerar JAR executavel (Java 21)"
     runs-on: macos-latest
     env:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -116,7 +122,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configurar Java
+      - name: Configurar Java 21
         uses: actions/setup-java@v4
         with:
           java-version: 21
@@ -137,13 +143,110 @@ jobs:
       - name: Upload do JAR
         uses: actions/upload-artifact@v4
         with:
-          name: splinker-jar
+          name: splinker-jar-java21
           path: dist/jar
 
+  build-jar-java8:
+    name: "Gerar JAR executavel (Java 8)"
+    runs-on: macos-latest
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Java 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: 8
+          distribution: 'temurin'
+          architecture: x64
+
+      - name: Compilar o projeto com Java 8
+        run: mvn clean package -DskipTests -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
+
+      - name: Obter versão do projeto e mover o JAR
+        run: |
+          VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
+          mkdir -p dist/jar
+          mv target/splinker-$VERSION.jar dist/jar/splinker-$VERSION.jar
+          echo "SPLINKER_FILE=splinker-$VERSION.jar" >> $GITHUB_ENV
+          echo "SPLINKER_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Upload do JAR (Java 8)
+        uses: actions/upload-artifact@v4
+        with:
+          name: splinker-jar-java8
+          path: dist/jar
+
+  build-on-windows-legacy:
+    name: "Compilação para Windows 7/8"
+    runs-on: windows-latest
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configurar Java 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: 8
+          distribution: 'temurin'
+          architecture: x64
+
+      - name: Define versão
+        run: |
+          $version = Select-String -Path "pom.xml" -Pattern '<version>(.*?)</version>' | Select-Object -First 1
+          $matches = [regex]::Match($version.ToString(), "<version>(.*?)</version>")
+          $env:VERSION = $matches.Groups[1].Value
+          echo "VERSION=$env:VERSION" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Define nome do JAR
+        run: echo "SPLINKER_FILE=splinker-$env:VERSION.jar" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Exibe nome do JAR
+        run: echo $env:SPLINKER_FILE
+
+      - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar (Java 8)
+        run: mvn clean install -DskipTests -Dmaven.compiler.source=8 -Dmaven.compiler.target=8
+
+      - name: Download do JAR compilado com Java 8
+        uses: actions/download-artifact@v4
+        with:
+          name: splinker-jar-java8
+          path: target/
+
+      - name: Criar image jpackage (para Windows 7/8)
+        run: jpackage --type app-image --name spLinker --input target/splinker-${{ env.VERSION }}.jar --icon .\src\main\resources\images\splinker.ico
+
+      - name: Copiar arquivo de configuração do Log4J/Sentry
+        run: cp .\src\main\resources\log4j2.xml .\spLinker\
+
+      - name: Empacotar para Windows 7/8 (EXE)
+        run: >
+          jpackage
+          --name spLinker
+          --app-image spLinker
+          --type exe
+          --dest dist\windows-legacy
+          --app-version $env:VERSION
+          --win-shortcut
+          --win-dir-chooser
+          --win-per-user-install
+          --resource-dir .\src\main\resources\windows
+
+      - name: Renomear EXE com versão
+        run: Rename-Item -Path "dist\windows-legacy\spLinker-*.exe" -NewName "spLinker-$env:VERSION-legacy.exe"
+
+      - name: Upload artifacts (Windows 7/8)
+        uses: actions/upload-artifact@v4
+        with:
+          name: splinker-windows-legacy
+          path: dist/windows-legacy
+          retention-days: 3
 
   version-release:
     name: "Lançar nova versão"
-    needs: [build-on-windows, build-on-linux, build-jar, build-on-windows-legacy]
+    needs: [build-on-windows, build-on-linux, build-jar-java21, build-jar-java8, build-on-windows-legacy]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout de código
@@ -160,6 +263,12 @@ jobs:
         with:
           name: splinker-windows
           path: ./dist/windows
+
+      - name: Download de artefatos Windows Legacy
+        uses: actions/download-artifact@v4
+        with:
+          name: splinker-windows-legacy
+          path: ./dist/windows-legacy
 
       - name: Define versão
         id: version
@@ -207,77 +316,6 @@ jobs:
           asset_name: spLinker-${{ env.SPLINKER_VERSION }}.msi
           asset_content_type: application/x-msdownload
 
-
-
-
-  build-on-windows-legacy:
-    name: "Compilação para Windows 7/8"
-    runs-on: windows-latest
-    env:
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Configurar Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: 8
-          distribution: 'temurin'
-          architecture: x64
-
-      - name: Define versão
-        run: |
-          $version = Select-String -Path "pom.xml" -Pattern '<version>(.*?)</version>' | Select-Object -First 1
-          $matches = [regex]::Match($version.ToString(), "<version>(.*?)</version>")
-          $env:VERSION = $matches.Groups[1].Value
-          echo "VERSION=$env:VERSION" | Out-File -FilePath $env:GITHUB_ENV -Append
-
-      - name: Define nome do JAR
-        run: echo "SPLINKER_FILE=splinker-$env:VERSION.jar" | Out-File -FilePath $env:GITHUB_ENV -Append
-
-      - name: Exibe nome do JAR
-        run: echo $env:SPLINKER_FILE
-
-      - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar
-        run: mvn package -DskipTests
-
-      - name: Criar image jpackage (para Windows 7/8)
-        run: jpackage --type app-image --name spLinker --input target/ --main-jar $env:SPLINKER_FILE --icon .\src\main\resources\images\splinker.ico
-
-      - name: Copiar arquivo de configuração do Log4J/Sentry
-        run: cp .\src\main\resources\log4j2.xml .\spLinker\
-
-      - name: Empacotar para Windows 7/8 (EXE)
-        run: >
-          jpackage
-          --name spLinker
-          --app-image spLinker
-          --type exe
-          --dest dist\windows-legacy
-          --app-version $env:VERSION
-          --win-shortcut
-          --win-dir-chooser
-          --win-per-user-install
-          --resource-dir .\src\main\resources\windows
-
-      - name: Renomear EXE com versão
-        run: Rename-Item -Path "dist\windows-legacy\spLinker-*.exe" -NewName "spLinker-$env:VERSION-legacy.exe"
-
-      - name: Upload artifacts (Windows 7/8)
-        uses: actions/upload-artifact@v4
-        with:
-          name: splinker-windows-legacy
-          path: dist/windows-legacy
-          retention-days: 3
-
-
-
-
-      - name: Download de artefatos Windows Legacy
-        uses: actions/download-artifact@v4
-        with:
-          name: splinker-windows-legacy
-          path: ./dist/windows-legacy
-
       - name: Upload Windows Legacy Artifacts
         uses: actions/upload-release-asset@v1
         env:
@@ -288,3 +326,11 @@ jobs:
           asset_name: spLinker-${{ env.SPLINKER_VERSION }}-legacy.exe
           asset_content_type: application/x-msdownload
 
+
+
+
+      - name: Download do JAR compilado com Java 8
+        uses: actions/download-artifact@v4
+        with:
+          name: splinker-jar-java8
+          path: target/
