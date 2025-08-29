@@ -13,7 +13,6 @@ jobs:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-
       - name: Configurar Java
         uses: actions/setup-java@v4
         with:
@@ -22,20 +21,16 @@ jobs:
           architecture: x64
 
       - name: Define versão
-        shell: pwsh
         run: |
           $version = Select-String -Path "pom.xml" -Pattern '<version>(.*?)</version>' | Select-Object -First 1
           $matches = [regex]::Match($version.ToString(), "<version>(.*?)</version>")
           $env:VERSION = $matches.Groups[1].Value
-          "VERSION=$($env:VERSION)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "VERSION=$env:VERSION" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Define nome do JAR
-        shell: pwsh
-        run: |
-          "SPLINKER_FILE=splinker-$env:VERSION.jar" | Out-File -FilePath $env:GITHUB_ENV -Append
+        run: echo "SPLINKER_FILE=splinker-$env:VERSION.jar" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Exibe nome do JAR
-        shell: pwsh
         run: echo $env:SPLINKER_FILE
 
       - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar
@@ -47,156 +42,22 @@ jobs:
       - name: Copiar arquivo de configuração do Log4J/Sentry
         run: cp .\src\main\resources\log4j2.xml .\spLinker\
 
-      - name: Empacotar para Windows (MSI)
-        shell: pwsh
-        run: |
-          jpackage `
-            --name spLinker `
-            --app-image spLinker `
-            --type msi `
-            --dest dist\windows `
-            --app-version $env:VERSION `
-            --win-upgrade-uuid "e7f6cb61-254e-4e94-9184-0eaad5cb3e3b" `
-            --win-shortcut `
-            --win-dir-chooser `
-            --win-per-user-install `
-            --resource-dir .\src\main\resources\windows
+      - name: Empacotar para Windows
+        run: >
+          jpackage
+          --name spLinker
+          --app-image spLinker
+          --type msi
+          --dest dist\windows
+          --app-version $env:VERSION
+          --win-upgrade-uuid "e7f6cb61-254e-4e94-9184-0eaad5cb3e3b"
+          --win-shortcut
+          --win-dir-chooser
+          --win-per-user-install
+          --resource-dir .\src\main\resources\windows
 
       - name: Renomear MSI com versão
-        shell: pwsh
         run: Rename-Item -Path "dist\windows\spLinker-*.msi" -NewName "spLinker-$env:VERSION.msi"
-
-      # =========================
-      # EXE LEGADO com NSIS (per-user) + JRE 8 — Win7/8/10/11
-      # =========================
-
-      - name: Definir URL fixa do JRE 8
-        shell: pwsh
-        run: |
-          # Zulu 8 JRE x64 (compatível com Windows 7 e sem dependência de UCRT)
-          "LEGACY_JRE_URL=https://cdn.azul.com/zulu/bin/zulu8.74.0.17-ca-jre8.0.392-win_x64.zip" | Out-File -FilePath $env:GITHUB_ENV -Append
-
-      - name: Instalar NSIS
-        shell: pwsh
-        run: choco install -y nsis
-
-      - name: Preparar payload legado
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force -Path dist\legacy\app | Out-Null
-          New-Item -ItemType Directory -Force -Path dist\legacy\jre | Out-Null
-          Copy-Item "target\$env:SPLINKER_FILE" "dist\legacy\app\" -Force
-          Copy-Item ".\src\main\resources\log4j2.xml" "dist\legacy\" -Force
-          Copy-Item ".\src\main\resources\images\splinker.ico" "dist\legacy\app\splinker.ico" -Force
-
-      - name: Baixar e extrair JRE 8
-        shell: pwsh
-        run: |
-          Invoke-WebRequest "$env:LEGACY_JRE_URL" -OutFile dist\legacy\jre.zip
-          Expand-Archive -Path 'dist\legacy\jre.zip' -DestinationPath 'dist\legacy\unzipped' -Force
-          $root = Get-ChildItem 'dist\legacy\unzipped' -Directory | Select-Object -First 1
-          if (-not $root) { throw "Nao foi encontrada pasta apos extracao do JRE." }
-          Copy-Item -Path (Join-Path $root.FullName '*') -Destination 'dist\legacy\jre' -Recurse -Force
-
-      - name: Criar launcher VBS (sem console)
-        shell: pwsh
-        run: |
-          $vbs = @'
-          ' run-spLinker.vbs - inicia o app com JRE embutido, janela oculta
-          Dim fso, folder, cmd
-          Set fso = CreateObject("Scripting.FileSystemObject")
-          folder = fso.GetParentFolderName(WScript.ScriptFullName)
-          cmd = """" & folder & "\jre\bin\java.exe"" -jar """ & folder & "\app\$env:SPLINKER_FILE"""
-          CreateObject("WScript.Shell").Run cmd, 0, False
-          '@
-          $vbs | Out-File -FilePath dist\legacy\run-spLinker.vbs -Encoding ASCII
-
-      - name: Verificar payload legado
-        shell: pwsh
-        run: |
-          if (-not (Test-Path "dist\legacy\app\$env:SPLINKER_FILE")) { throw "JAR nao encontrado." }
-          if (-not (Test-Path "dist\legacy\jre\bin\java.exe")) { throw "JRE 8 nao encontrado." }
-          Get-ChildItem -Recurse dist\legacy | Select-Object FullName, Length
-
-      - name: Gerar script NSIS (per-user, sem registro/Start Menu)
-        shell: pwsh
-        run: |
-          $ws    = (Get-Location).Path
-          $appDir= Join-Path $ws 'dist\legacy\app'
-          $jreDir= Join-Path $ws 'dist\legacy\jre'
-          $vbs   = Join-Path $ws 'dist\legacy\run-spLinker.vbs'
-          $log4j = Join-Path $ws 'dist\legacy\log4j2.xml'
-          $out   = Join-Path $ws 'dist\windows'
-
-          $nsi = @"
-          ; === NSIS script minimo, sem macros/funcoes ===
-          !define APPNAME "spLinker"
-          !define APPVER  "$($env:VERSION)"
-
-          Name "${APPNAME}"
-          OutFile "$out\spLinker-${APPVER}-legacy.exe"
-          InstallDir "$LOCALAPPDATA\${APPNAME}"
-          RequestExecutionLevel user
-
-          ; Paginas padrao (apenas progresso)
-          Page instfiles
-
-          Section "Install"
-            ; garantir contexto do usuario
-            SetShellVarContext current
-
-            ; fallback para determinar INSTDIR valido
-            StrCmp "$LOCALAPPDATA" "" +2 0
-              Goto _useLocal
-            StrCmp "$APPDATA" "" +2 0
-              Goto _useApp
-            StrCmp "$TEMP" "" +2 0
-              Goto _useTemp
-
-            MessageBox MB_ICONSTOP "Nao foi possivel determinar pasta de instalacao (LOCALAPPDATA/APPDATA/TEMP)."
-            Quit
-
-            _useLocal:
-              StrCpy $INSTDIR "$LOCALAPPDATA\${APPNAME}"
-              Goto _afterSet
-            _useApp:
-              StrCpy $INSTDIR "$APPDATA\${APPNAME}"
-              Goto _afterSet
-            _useTemp:
-              StrCpy $INSTDIR "$TEMP\${APPNAME}"
-
-            _afterSet:
-            CreateDirectory "$INSTDIR"
-            SetOutPath "$INSTDIR"
-
-            ; copiar payload (caminhos absolutos gerados pelo workflow)
-            File /r "$appDir\*.*"
-            File /r "$jreDir\*.*"
-            File "$vbs"
-            File "$log4j"
-
-            ; atalho no Desktop, se existir
-            IfFileExists "$DESKTOP\." 0 +2
-              CreateShortCut "$DESKTOP\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
-
-            ; uninstaller simples (sem registro)
-            WriteUninstaller "$INSTDIR\Uninstall.exe"
-          SectionEnd
-
-          Section "Uninstall"
-            IfFileExists "$DESKTOP\${APPNAME}.lnk" 0 +1
-              Delete "$DESKTOP\${APPNAME}.lnk"
-            RMDir /r "$INSTDIR"
-          SectionEnd
-          "@
-
-          # Salvar em ASCII para evitar problemas de charset
-          $nsi | Out-File -FilePath dist\legacy\setup.nsi -Encoding ASCII
-
-      - name: Compilar instalador EXE legado (NSIS)
-        shell: pwsh
-        run: |
-          & "C:\Program Files (x86)\NSIS\makensis.exe" "dist\legacy\setup.nsi"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -251,6 +112,7 @@ jobs:
     runs-on: macos-latest
     env:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -278,9 +140,10 @@ jobs:
           name: splinker-jar
           path: dist/jar
 
+
   version-release:
     name: "Lançar nova versão"
-    needs: [build-on-windows, build-on-linux, build-jar]
+    needs: [build-on-windows, build-on-linux, build-jar, build-on-windows-legacy]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout de código
@@ -334,7 +197,7 @@ jobs:
           asset_name: spLinker-${{ env.SPLINKER_VERSION }}.deb
           asset_content_type: application/x-deb
 
-      - name: Upload Windows MSI
+      - name: Upload Windows Artifacts
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -344,12 +207,83 @@ jobs:
           asset_name: spLinker-${{ env.SPLINKER_VERSION }}.msi
           asset_content_type: application/x-msdownload
 
-      - name: Upload Windows EXE legado
+
+
+
+  build-on-windows-legacy:
+    name: "Compilação para Windows 7/8"
+    runs-on: windows-latest
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 8
+          distribution: 'temurin'
+          architecture: x64
+
+      - name: Define versão
+        run: |
+          $version = Select-String -Path "pom.xml" -Pattern '<version>(.*?)</version>' | Select-Object -First 1
+          $matches = [regex]::Match($version.ToString(), "<version>(.*?)</version>")
+          $env:VERSION = $matches.Groups[1].Value
+          echo "VERSION=$env:VERSION" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Define nome do JAR
+        run: echo "SPLINKER_FILE=splinker-$env:VERSION.jar" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Exibe nome do JAR
+        run: echo $env:SPLINKER_FILE
+
+      - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar
+        run: mvn package -DskipTests
+
+      - name: Criar image jpackage (para Windows 7/8)
+        run: jpackage --type app-image --name spLinker --input target/ --main-jar $env:SPLINKER_FILE --icon .\src\main\resources\images\splinker.ico
+
+      - name: Copiar arquivo de configuração do Log4J/Sentry
+        run: cp .\src\main\resources\log4j2.xml .\spLinker\
+
+      - name: Empacotar para Windows 7/8 (EXE)
+        run: >
+          jpackage
+          --name spLinker
+          --app-image spLinker
+          --type exe
+          --dest dist\windows-legacy
+          --app-version $env:VERSION
+          --win-shortcut
+          --win-dir-chooser
+          --win-per-user-install
+          --resource-dir .\src\main\resources\windows
+
+      - name: Renomear EXE com versão
+        run: Rename-Item -Path "dist\windows-legacy\spLinker-*.exe" -NewName "spLinker-$env:VERSION-legacy.exe"
+
+      - name: Upload artifacts (Windows 7/8)
+        uses: actions/upload-artifact@v4
+        with:
+          name: splinker-windows-legacy
+          path: dist/windows-legacy
+          retention-days: 3
+
+
+
+
+      - name: Download de artefatos Windows Legacy
+        uses: actions/download-artifact@v4
+        with:
+          name: splinker-windows-legacy
+          path: ./dist/windows-legacy
+
+      - name: Upload Windows Legacy Artifacts
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/windows/spLinker-${{ env.SPLINKER_VERSION }}-legacy.exe
+          asset_path: ./dist/windows-legacy/spLinker-${{ env.SPLINKER_VERSION }}-legacy.exe
           asset_name: spLinker-${{ env.SPLINKER_VERSION }}-legacy.exe
           asset_content_type: application/x-msdownload
