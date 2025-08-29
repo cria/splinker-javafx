@@ -36,8 +36,7 @@ jobs:
 
       - name: Exibe nome do JAR
         shell: pwsh
-        run: |
-          echo $env:SPLINKER_FILE
+        run: echo $env:SPLINKER_FILE
 
       - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar
         run: mvn package -DskipTests
@@ -65,52 +64,38 @@ jobs:
 
       - name: Renomear MSI com versão
         shell: pwsh
-        run: |
-          Rename-Item -Path "dist\windows\spLinker-*.msi" -NewName "spLinker-$env:VERSION.msi"
+        run: Rename-Item -Path "dist\windows\spLinker-*.msi" -NewName "spLinker-$env:VERSION.msi"
 
       # =========================
-      # EXE legado (NSIS) com JRE 8 + VC++ Redist (Win7+ compatível)
+      # NOVO: EXE LEGADO "PORTABLE" (7-Zip SFX) com JRE 8 — Win7/8/10/11
       # =========================
-      - name: Definir URLs fixas (JRE8 + VC++ Redist)
+      - name: Instalar 7-Zip (para gerar SFX)
+        shell: pwsh
+        run: choco install -y 7zip
+
+      - name: Definir URLs fixas (JRE8)
         shell: pwsh
         run: |
-          # Zulu 8 JRE x64 (compatível com Windows 7)
+          # Zulu 8 JRE x64 (compatível com Windows 7, sem UCRT)
           "LEGACY_JRE_URL=https://cdn.azul.com/zulu/bin/zulu8.74.0.17-ca-jre8.0.392-win_x64.zip" | Out-File -FilePath $env:GITHUB_ENV -Append
-          # Link estável do VC++ 2015-2022 x64
-          "VCRUNTIME_URL=https://aka.ms/vs/17/release/vc_redist.x64.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
-
-      - name: Instalar ferramentas (NSIS)
-        shell: pwsh
-        run: |
-          choco install -y nsis
 
       - name: Preparar pastas do pacote legado
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path dist\legacy\app | Out-Null
-          New-Item -ItemType Directory -Force -Path dist\legacy\jre | Out-Null
-          Copy-Item "target\$env:SPLINKER_FILE" "dist\legacy\app\" -Force
-          Copy-Item ".\src\main\resources\log4j2.xml" "dist\legacy\" -Force
-          Copy-Item ".\src\main\resources\images\splinker.ico" "dist\legacy\app\splinker.ico" -Force
+          New-Item -ItemType Directory -Force -Path dist\legacy\pkg\app | Out-Null
+          New-Item -ItemType Directory -Force -Path dist\legacy\pkg\jre | Out-Null
+          Copy-Item "target\$env:SPLINKER_FILE" "dist\legacy\pkg\app\" -Force
+          Copy-Item ".\src\main\resources\log4j2.xml" "dist\legacy\pkg\" -Force
+          Copy-Item ".\src\main\resources\images\splinker.ico" "dist\legacy\pkg\app\splinker.ico" -Force
 
-      - name: Baixar JRE legado (Zulu 8)
+      - name: Baixar e extrair JRE 8
         shell: pwsh
         run: |
-          Invoke-WebRequest "$env:LEGACY_JRE_URL" -OutFile dist\legacy\jre\jre.zip
-
-      - name: Extrair JRE legado
-        shell: pwsh
-        run: |
-          Expand-Archive -Path 'dist\legacy\jre\jre.zip' -DestinationPath 'dist\legacy\jre\unzipped' -Force
-          $root = Get-ChildItem 'dist\legacy\jre\unzipped' -Directory | Select-Object -First 1
-          if (-not $root) { throw "Nao foi encontrada pasta apos extracao do JRE (unzipped)." }
-          $src = Join-Path $root.FullName '*'
-          Copy-Item -Path "$src" -Destination 'dist\legacy\jre' -Recurse -Force
-
-      - name: Baixar VC++ Redistributable (x64)
-        shell: pwsh
-        run: |
-          Invoke-WebRequest "$env:VCRUNTIME_URL" -OutFile dist\legacy\vc_redist.x64.exe
+          Invoke-WebRequest "$env:LEGACY_JRE_URL" -OutFile dist\legacy\jre.zip
+          Expand-Archive -Path 'dist\legacy\jre.zip' -DestinationPath 'dist\legacy\unzipped' -Force
+          $root = Get-ChildItem 'dist\legacy\unzipped' -Directory | Select-Object -First 1
+          if (-not $root) { throw "Nao foi encontrada pasta apos extracao do JRE." }
+          Copy-Item -Path (Join-Path $root.FullName '*') -Destination 'dist\legacy\pkg\jre' -Recurse -Force
 
       - name: Criar launcher VBS (sem console)
         shell: pwsh
@@ -123,105 +108,51 @@ jobs:
           cmd = """" & folder & "\jre\bin\java.exe"" -jar """ & folder & "\app\$env:SPLINKER_FILE"""
           CreateObject("WScript.Shell").Run cmd, 0, False
           '@
-          $vbs | Out-File -FilePath dist\legacy\run-spLinker.vbs -Encoding ASCII
+          $vbs | Out-File -FilePath dist\legacy\pkg\run-spLinker.vbs -Encoding ASCII
 
       - name: Verificar payload legado
         shell: pwsh
         run: |
-          if (-not (Test-Path "dist\legacy\app\$env:SPLINKER_FILE")) {
-            throw "JAR nao encontrado em dist\legacy\app\$env:SPLINKER_FILE"
-          }
-          if (-not (Test-Path "dist\legacy\jre\bin\java.exe")) {
-            throw "JRE legado nao encontrado em dist\legacy\jre"
-          }
-          if (-not (Test-Path "dist\legacy\vc_redist.x64.exe")) {
-            throw "VC++ Redist nao baixado (dist\legacy\vc_redist.x64.exe)"
-          }
-          Write-Host "Conteudo de dist\legacy:"
-          Get-ChildItem -Recurse dist\legacy | Select-Object FullName, Length
+          if (-not (Test-Path "dist\legacy\pkg\app\$env:SPLINKER_FILE")) { throw "JAR nao encontrado." }
+          if (-not (Test-Path "dist\legacy\pkg\jre\bin\java.exe")) { throw "JRE 8 nao encontrado." }
+          Get-ChildItem -Recurse dist\legacy\pkg | Select-Object FullName,Length
 
-      - name: Gerar script NSIS (instalador legado)
+      - name: Gerar pacote 7z + SFX
         shell: pwsh
         run: |
-          $ws    = (Get-Location).Path
-          $appDir= Join-Path $ws 'dist\legacy\app'
-          $jreDir= Join-Path $ws 'dist\legacy\jre'
-          $vbs   = Join-Path $ws 'dist\legacy\run-spLinker.vbs'
-          $log4j = Join-Path $ws 'dist\legacy\log4j2.xml'
-          $vcr   = Join-Path $ws 'dist\legacy\vc_redist.x64.exe'
-          $out   = Join-Path $ws 'dist\windows'
+          $sevenZip = Join-Path ${env:ProgramFiles} '7-Zip\7z.exe'
+          if (-not (Test-Path $sevenZip)) { $sevenZip = Join-Path ${env:ProgramFiles(x86)} '7-Zip\7z.exe' }
+          if (-not (Test-Path $sevenZip)) { throw "7z.exe nao encontrado." }
 
-          $nsi = @"
-          !define APPNAME "spLinker"
-          !define APPVER  "$($env:VERSION)"
+          $sfxStub = Join-Path ${env:ProgramFiles} '7-Zip\7zS.sfx'
+          if (-not (Test-Path $sfxStub)) { $sfxStub = Join-Path ${env:ProgramFiles(x86)} '7-Zip\7zS.sfx' }
+          if (-not (Test-Path $sfxStub)) { throw "7zS.sfx nao encontrado." }
 
-          Name "${APPNAME}"
-          OutFile "$out\spLinker-${APPVER}-legacy.exe"
-          ; *** CORRIGIDO: usar $PROGRAMFILES (nunca vazio) ***
-          InstallDir "$PROGRAMFILES\${APPNAME}"
-          InstallDirRegKey HKLM "Software\${APPNAME}" "Install_Dir"
-          RequestExecutionLevel admin
-          ; Opcional: garantir escrita/registro no hive de 64 bits quando existir
-          SetRegView 64
+          New-Item -ItemType Directory -Force -Path dist\windows | Out-Null
 
-          SetCompress auto
-          SetCompressor /SOLID lzma
+          # 1) Arquivo 7z com o payload
+          & "$sevenZip" a -t7z -m0=lzma2 -mx=9 -mmt=on "dist\legacy\payload.7z" ".\dist\legacy\pkg\*" | Out-Null
 
-          !include "MUI2.nsh"
+          # 2) Config do SFX (ASCII, sem acentos)
+          $cfg = @'
+          ;!@Install@!UTF-8!
+          Title="spLinker (Portable)"
+          ; extrai em pasta do usuario (sem admin)
+          Directory="%LOCALAPPDATA%\\spLinker"
+          ; sobrescreve sem perguntar
+          OverwriteMode="1"
+          ; inicia o app apos extrair
+          RunProgram="wscript.exe \"run-spLinker.vbs\""
+          ;!@InstallEnd@!
+          '@
+          $cfg | Out-File -FilePath dist\legacy\config.txt -Encoding ASCII
 
-          !define MUI_ABORTWARNING
-          !insertmacro MUI_PAGE_WELCOME
-          !insertmacro MUI_PAGE_DIRECTORY
-          !insertmacro MUI_PAGE_INSTFILES
-          !insertmacro MUI_PAGE_FINISH
-          !insertmacro MUI_UNPAGE_CONFIRM
-          !insertmacro MUI_UNPAGE_INSTFILES
-          !insertmacro MUI_LANGUAGE "English"
-
-          Section "Install"
-            SetOutPath "$INSTDIR"
-
-            ; --- prereq: VC++ Runtime (necessario p/ Win7) ---
-            File "$vcr"
-            DetailPrint "Installing Microsoft Visual C++ Redistributable..."
-            ExecWait '"$INSTDIR\vc_redist.x64.exe" /install /quiet /norestart' $0
-            DetailPrint "vc_redist exit code: $0"
-
-            ; payload (absolute paths)
-            File /r "$appDir\*.*"
-            File /r "$jreDir\*.*"
-            File "$vbs"
-            File "$log4j"
-
-            ; uninstaller
-            WriteUninstaller "$INSTDIR\Uninstall.exe"
-
-            ; Desktop shortcut (CI-safe)
-            IfFileExists "$DESKTOP\." 0 +2
-              CreateShortCut "$DESKTOP\${APPNAME}.lnk" "$INSTDIR\run-spLinker.vbs" "" "$INSTDIR\app\splinker.ico" 0
-
-            ; registry
-            WriteRegStr HKLM "Software\${APPNAME}" "Install_Dir" "$INSTDIR"
-            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPNAME}"
-            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "UninstallString" "$INSTDIR\Uninstall.exe"
-          SectionEnd
-
-          Section "Uninstall"
-            IfFileExists "$DESKTOP\${APPNAME}.lnk" 0 +1
-              Delete "$DESKTOP\${APPNAME}.lnk"
-            RMDir /r "$INSTDIR"
-            DeleteRegKey HKLM "Software\${APPNAME}"
-            DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
-          SectionEnd
-          "@
-
-          $nsi | Out-File -FilePath dist\legacy\setup.nsi -Encoding ASCII
-          
-
-      - name: Compilar instalador EXE legado (NSIS)
-        shell: pwsh
-        run: |
-          & "C:\Program Files (x86)\NSIS\makensis.exe" "dist\legacy\setup.nsi"
+          # 3) Monta o EXE final: SFX stub + config + 7z (binario)
+          $outFile = "dist\windows\spLinker-$env:VERSION-legacy.exe"
+          $b1 = [IO.File]::ReadAllBytes($sfxStub)
+          $b2 = [IO.File]::ReadAllBytes("dist\legacy\config.txt")
+          $b3 = [IO.File]::ReadAllBytes("dist\legacy\payload.7z")
+          [IO.File]::WriteAllBytes($outFile, $b1 + $b2 + $b3)
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -369,7 +300,7 @@ jobs:
           asset_name: spLinker-${{ env.SPLINKER_VERSION }}.msi
           asset_content_type: application/x-msdownload
 
-      - name: Upload Windows EXE legado
+      - name: Upload Windows EXE legado (portable)
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
