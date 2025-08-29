@@ -74,7 +74,7 @@ jobs:
       - name: Definir URL fixa do JRE legado
         shell: pwsh
         run: |
-          "LEGACY_JRE_URL=https://cdn.azul.com/zulu/bin/zulu11.82.19-ca-jre11.0.28-win_x64.zip" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "LEGACY_JRE_URL=https://cdn.azul.com/zulu/bin/zulu8.74.0.17-ca-jre8.0.392-win_x64.zip" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Instalar ferramentas (NSIS)
         shell: pwsh
