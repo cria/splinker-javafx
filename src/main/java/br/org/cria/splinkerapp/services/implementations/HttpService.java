@@ -2,10 +2,9 @@ package br.org.cria.splinkerapp.services.implementations;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URI;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,44 +19,71 @@ public class HttpService {
         var urlConn = new URI(url).toURL();
         var response = new StringBuffer();
         var isBehindProxy = ProxyConfigRepository.isBehindProxyServer();
+
+        // Garante suporte a protocolos TLS mais comuns
         System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+
         if (isBehindProxy) {
             var proxyConfig = ProxyConfigRepository.getConfiguration();
             var proxyHost = proxyConfig.getAddress();
-            var proxyPort = Integer.valueOf(proxyConfig.getPort());
+            var proxyPort = Integer.parseInt(proxyConfig.getPort());
+            var proxyUser = proxyConfig.getUsername();
+            var proxyPass = proxyConfig.getPassword();
+
             var proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
-            connection = (HttpURLConnection) urlConn.openConnection(proxy);
+
+            // Se houver usuário e senha, configura autenticação
+            if (proxyUser != null && !proxyUser.isEmpty()) {
+                Authenticator.setDefault(new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        if (getRequestorType() == RequestorType.PROXY) {
+                            return new PasswordAuthentication(proxyUser, proxyPass.toCharArray());
+                        }
+                        return null;
+                    }
+                });
+
+                // Opcional: enviar credenciais no primeiro request para evitar 407
+                String auth = proxyUser + ":" + proxyPass;
+                String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
+                connection = (HttpURLConnection) urlConn.openConnection(proxy);
+                connection.setRequestProperty("Proxy-Authorization", "Basic " + encodedAuth);
+            } else {
+                connection = (HttpURLConnection) urlConn.openConnection(proxy);
+            }
+
             connection.setDoOutput(true);
         } else {
             connection = (HttpURLConnection) urlConn.openConnection();
         }
 
         connection.setRequestMethod("GET");
-        var reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
-        while ((line = reader.readLine()) != null) {
-            response.append(line);
+        try (var reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
         }
 
-        reader.close();
         connection.disconnect();
+
         var stringResponse = response.toString();
 
-        // Configurar Gson para ser leniente com JSON mal formatado
+        // Configura Gson para ser leniente com JSON mal formatado
         com.google.gson.GsonBuilder gsonBuilder = new com.google.gson.GsonBuilder();
         gsonBuilder.setLenient();
         com.google.gson.Gson gson = gsonBuilder.create();
 
-        // Identificar se é um array ou objeto e fazer o parse adequado
+        // Detecta se é um array ou objeto
         if (stringResponse.trim().startsWith("[")) {
-            // É um array JSON
             com.google.gson.reflect.TypeToken<List<Map<String, Object>>> typeToken =
                     new com.google.gson.reflect.TypeToken<List<Map<String, Object>>>() {};
             return gson.fromJson(stringResponse, typeToken.getType());
         } else {
-            // É um objeto JSON
             return gson.fromJson(stringResponse, HashMap.class);
         }
     }
+
 
 }

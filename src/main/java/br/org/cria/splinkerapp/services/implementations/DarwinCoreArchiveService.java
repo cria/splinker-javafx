@@ -5,6 +5,7 @@ import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.managers.LocalDbManager;
 import br.org.cria.splinkerapp.models.DataSet;
+import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
 import br.org.cria.splinkerapp.utils.SystemConfigurationUtil;
@@ -160,6 +161,25 @@ public class DarwinCoreArchiveService {
         var message = "Iniciando a transferência do arquivo";
         ApplicationLog.info(message);
 
+        var proxyConfig = ProxyConfigRepository.getConfiguration();
+
+        if (ProxyConfigRepository.isBehindProxyServer()) {
+            String proxyHost = proxyConfig.getAddress();
+            String proxyPort = proxyConfig.getPort();
+            String proxyUser = proxyConfig.getUsername();
+            String proxyPass = proxyConfig.getPassword();
+
+            String proxyEnv;
+            if (proxyUser != null && !proxyUser.isBlank()) {
+                proxyEnv = String.format("http://%s:%s@%s:%s", proxyUser, proxyPass, proxyHost, proxyPort);
+            } else {
+                proxyEnv = String.format("http://%s:%s", proxyHost, proxyPort);
+            }
+
+            setEnv("HTTPS_PROXY", proxyEnv);
+            ApplicationLog.info("Proxy configurado: " + proxyEnv);
+        }
+
         var rSyncConfig = TransferConfigRepository.getRSyncConfig();
         var port = rSyncConfig.getrSyncPort();
         var destination = "%s::%s".formatted(rSyncConfig.getrSyncDestination(), ds.getToken());
@@ -244,5 +264,40 @@ public class DarwinCoreArchiveService {
 
         System.out.println("exitcode " + exitCode);
         System.out.println("completed at " + Instant.now().atZone(ZoneId.systemDefault()));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void setEnv(String key, String value) {
+        try {
+            var processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
+            var theEnvironmentField = processEnvironmentClass.getDeclaredField("theEnvironment");
+            theEnvironmentField.setAccessible(true);
+            var env = (java.util.Map<String, String>) theEnvironmentField.get(null);
+            env.put(key, value);
+
+            var theCaseInsensitiveEnvironmentField = processEnvironmentClass.getDeclaredField("theCaseInsensitiveEnvironment");
+            theCaseInsensitiveEnvironmentField.setAccessible(true);
+            var cienv = (java.util.Map<String, String>) theCaseInsensitiveEnvironmentField.get(null);
+            cienv.put(key, value);
+        } catch (NoSuchFieldException e) {
+            try {
+                var classes = java.util.Collections.class.getDeclaredClasses();
+                var env = System.getenv();
+                for (Class<?> cl : classes) {
+                    if ("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
+                        var field = cl.getDeclaredField("m");
+                        field.setAccessible(true);
+                        var obj = field.get(env);
+                        @SuppressWarnings("unchecked")
+                        var map = (java.util.Map<String, String>) obj;
+                        map.put(key, value);
+                    }
+                }
+            } catch (Exception e2) {
+                throw new RuntimeException("Não foi possível setar variável de ambiente", e2);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Não foi possível setar variável de ambiente", e);
+        }
     }
 }
