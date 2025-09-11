@@ -175,8 +175,7 @@ public class DarwinCoreArchiveService {
             } else {
                 proxyEnv = String.format("http://%s:%s", proxyHost, proxyPort);
             }
-
-            setEnv("HTTPS_PROXY", proxyEnv);
+            //setEnv("HTTPS_PROXY", proxyEnv);
             ApplicationLog.info("Proxy configurado: " + proxyEnv);
         }
 
@@ -235,7 +234,7 @@ public class DarwinCoreArchiveService {
             var userDir = "%s/%s".formatted(System.getProperty("user.dir"), datasetId);
             Files.delete(Path.of("%s/occurrence.txt".formatted(userDir)));
             Files.delete(Path.of("%s/dwca.zip".formatted(userDir)));
-           // Files.delete(Path.of("%s.sql".formatted(userDir)));
+            // Files.delete(Path.of("%s.sql".formatted(userDir)));
             Files.delete(Path.of("%s/".formatted(userDir)));
         }
     }
