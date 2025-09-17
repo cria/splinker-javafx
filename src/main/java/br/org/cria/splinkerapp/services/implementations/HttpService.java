@@ -11,6 +11,8 @@ import java.util.Map;
 public class HttpService {
 
     public static Object getJson(String urlStr) throws Exception {
+        System.setProperty("http.nonProxyHosts", "*.specieslink.net|*.cria.org.br|localhost|127.0.0.1");
+        System.setProperty("https.nonProxyHosts", "*.specieslink.net|*.cria.org.br|localhost|127.0.0.1");
         // Faz a requisição GET
         URL url = new URL(urlStr);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
