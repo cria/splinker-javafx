@@ -135,8 +135,8 @@ public class ProxyConfigController extends AbstractController {
     }
 
     private boolean isValidProxyPassword(String password) {
-        if (password.length() < 2) {
-            showErrorModal("A senha do proxy deve ter pelo menos 2 caracteres.");
+        if (password.length() < 6) {
+            showErrorModal("A senha do proxy deve ter pelo menos 6 caracteres.");
             return false;
         }
         return true;
