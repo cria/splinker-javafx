@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import br.org.cria.splinkerapp.models.ProxyConfiguration;
 import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
 
 public class HttpService {
@@ -21,8 +22,8 @@ public class HttpService {
         var response = new StringBuffer();
         var isBehindProxy = ProxyConfigRepository.isBehindProxyServer();
         System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
-        if (isBehindProxy) {
-            var proxyConfig = ProxyConfigRepository.getConfiguration();
+        ProxyConfiguration proxyConfig = ProxyConfigRepository.getConfiguration();
+        if (isBehindProxy && !proxyConfig.getAddress().isEmpty()) {
             var proxyHost = proxyConfig.getAddress();
             var proxyPort = Integer.valueOf(proxyConfig.getPort());
             var proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));

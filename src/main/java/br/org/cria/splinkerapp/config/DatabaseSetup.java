@@ -56,9 +56,7 @@ public class DatabaseSetup {
         } catch (Exception e) {
             Sentry.captureException(e);
             e.printStackTrace();
-            LockFileManager.deleteLockfile();
             throw new RuntimeException(e);
-            //System.exit(1);
         }
         return null;
     }

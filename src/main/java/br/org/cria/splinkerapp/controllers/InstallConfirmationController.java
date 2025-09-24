@@ -1,11 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
-import java.io.File;
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import br.org.cria.splinkerapp.Router;
-import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import br.org.cria.splinkerapp.services.implementations.SpLinkerUpdateService;
@@ -15,10 +10,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
+import java.io.File;
+import java.net.URL;
+import java.util.ResourceBundle;
+
 public class InstallConfirmationController extends AbstractController {
 
-    @FXML
-    private Label lblTitle;
 
     @FXML
     private Label lblMessage;
@@ -67,7 +64,6 @@ public class InstallConfirmationController extends AbstractController {
                 lblMessage.setText("Iniciando processo de atualização...");
             }
 
-            LockFileManager.deleteLockfile();
             String os = System.getProperty("os.name").toLowerCase();
 
             if (os.contains("linux")) {
