@@ -3,7 +3,6 @@ package br.org.cria.splinkerapp.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.managers.EventBusManager;
@@ -28,7 +27,6 @@ public class DeleteDataSourceController extends AbstractController {
         try {
             DataSetService.deleteDataSet(token);
             if (DataSetService.getAllDataSets().isEmpty()) {
-                LockFileManager.deleteLockfile();
                 System.exit(0);
             }
             bus.post(token);

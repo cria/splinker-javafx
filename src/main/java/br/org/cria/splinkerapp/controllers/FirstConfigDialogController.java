@@ -1,21 +1,13 @@
 package br.org.cria.splinkerapp.controllers;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class FirstConfigDialogController extends AbstractController {
-
-    @FXML
-    Button btnNo;
-
-    @FXML
-    Button btnYes;
 
     boolean computerHasProxyConfigured;
 
@@ -30,17 +22,6 @@ public class FirstConfigDialogController extends AbstractController {
         }
     }
 
-    @FXML
-    void onNoButtonClicked() {
-        try {
-            LockFileManager.deleteLockfile();
-            System.exit(0);
-        } catch (Exception e) {
-            handleErrors(e);
-            System.exit(1);
-        }
-
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

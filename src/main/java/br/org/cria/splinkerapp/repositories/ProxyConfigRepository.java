@@ -67,7 +67,7 @@ public class ProxyConfigRepository extends BaseRepository {
             Sentry.captureException(e);
             e.printStackTrace();
         } finally {
-            return false;
+            return hasProxy;
         }
     }
 

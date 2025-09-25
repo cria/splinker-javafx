@@ -3,7 +3,6 @@ package br.org.cria.splinkerapp;
 import java.util.Objects;
 
 import br.org.cria.splinkerapp.config.DatabaseSetup;
-import br.org.cria.splinkerapp.config.LockFileManager;
 import br.org.cria.splinkerapp.config.SentryConfig;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import br.org.cria.splinkerapp.services.implementations.SpLinkerUpdateService;
@@ -21,11 +20,9 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         try {
             SentryConfig.setUp();
-            LockFileManager.verifyLockFile();
             Task<Void> initDb = DatabaseSetup.initDb();
             stage.setOnCloseRequest(event -> {
                 try {
-                    LockFileManager.deleteLockfile();
                     LogManager.shutdown();
                 } catch (Exception e) {
                     Sentry.captureException(e);
@@ -34,7 +31,6 @@ public class Main extends Application {
             });
             initDb.setOnFailed(event -> {
                 try {
-                    LockFileManager.deleteLockfile();
                     var exception = initDb.getException();
                     Sentry.captureException(exception);
                     throw new RuntimeException(exception);
@@ -80,7 +76,6 @@ public class Main extends Application {
             initDb.get();
         } catch (Exception ex) {
             Sentry.captureException(ex);
-            LockFileManager.deleteLockfile();
             throw new RuntimeException(ex);
         }
     }

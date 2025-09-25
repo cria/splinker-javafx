@@ -29,19 +29,19 @@ public class ProxyConfigController extends AbstractController {
     @FXML
     void onButtonSaveClicked() {
         try {
-            if (!validateData()) {
+            /*if (!validateData()) {
                 return;
-            }
+            }*/
 
             String address = proxyAddress.getText().trim();
             String port = proxyPort.getText().trim();
             String username = proxyUsername.getText().trim();
-            String password = proxyPassword.getText();
+            String password = proxyPassword.getText().trim();
 
-            if (!isValidProxyHost(address) || !isValidProxyPort(port) ||
+            /*if (!isValidProxyHost(address) || !isValidProxyPort(port) ||
                     !isValidProxyUsername(username) || !isValidProxyPassword(password)) {
                 return;
-            }
+            }*/
 
             var hasConfig = DataSetService.hasConfiguration();
             var routeName = hasConfig ? "home" : "central-service";
@@ -135,8 +135,8 @@ public class ProxyConfigController extends AbstractController {
     }
 
     private boolean isValidProxyPassword(String password) {
-        if (password.length() < 2) {
-            showErrorModal("A senha do proxy deve ter pelo menos 2 caracteres.");
+        if (password.length() < 6) {
+            showErrorModal("A senha do proxy deve ter pelo menos 6 caracteres.");
             return false;
         }
         return true;
