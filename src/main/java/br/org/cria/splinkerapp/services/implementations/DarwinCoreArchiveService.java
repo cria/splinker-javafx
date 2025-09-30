@@ -171,10 +171,10 @@ public class DarwinCoreArchiveService {
     }
 
     public void cleanData() throws Exception {
-        if (!SystemConfigurationUtil.runInDevelopment()) {
+        /*if (!SystemConfigurationUtil.runInDevelopment()) {
             dropDataTables();
             deleteSentFiles();
-        }
+        }*/
     }
 
     private void dropDataTables() throws Exception {
