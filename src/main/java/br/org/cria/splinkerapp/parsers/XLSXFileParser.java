@@ -60,9 +60,14 @@ public class XLSXFileParser extends FileParser {
                     String rawSheetName = it.getSheetName();
                     String tableName = StringStandards.normalizeString(rawSheetName);
 
+                    if (startsWithNumber(tableName)) {
+                        tableName = "_" + tableName;
+                    }
+
                     if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) {
                         continue;
                     }
+
                     List<String> headerCells = readHeaderRowSax(styles, sst, formatter, sheetIs);
                     if (headerCells == null || headerCells.isEmpty()) continue;
 
@@ -85,6 +90,13 @@ public class XLSXFileParser extends FileParser {
             }
         }
         return builder.toString().replace(",);", ");");
+    }
+
+    public static boolean startsWithNumber(String value) {
+        if (value == null || value.isEmpty()) {
+            return false;
+        }
+        return Character.isDigit(value.charAt(0));
     }
 
     private List<String> readHeaderRowSax(StylesTable styles,
@@ -179,6 +191,10 @@ public class XLSXFileParser extends FileParser {
                 try (InputStream sheetIs = it.next()) {
                     String rawSheetName = it.getSheetName();
                     String tableName = StringStandards.normalizeString(rawSheetName);
+
+                    if (startsWithNumber(tableName)) {
+                        tableName = "_" + tableName;
+                    }
 
                     if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) {
                         continue;
