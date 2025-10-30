@@ -318,7 +318,7 @@ public class XLSXFileParser extends FileParser {
         public void cell(String cellRef, String formattedValue, org.apache.poi.xssf.usermodel.XSSFComment comment) {
             int colIndex = colIndexFromCellRef(cellRef);
             for (int i = lastCol + 1; i < colIndex; i++) currentRow.add("");
-            currentRow.add(formattedValue == null ? "" : formattedValue);
+            currentRow.add(formattedValue == null ? "" : getCellValue(formattedValue));
             lastCol = colIndex;
         }
 
