@@ -167,7 +167,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.perlundq.yajsync</groupId>
+            <groupId>com.github.IrvayneMatheus.yajsync</groupId>
             <artifactId>yajsync-app</artifactId>
             <version>master</version> <!-- ou branch/tag/commit -->
         </dependency>
