@@ -166,7 +166,11 @@ public class DarwinCoreArchiveService {
 
         var args = new String[] {"client", "--port=%s".formatted(port), "-r", this.zipFile, destination };
         String[] arrayArgs = Arrays.copyOfRange(args, 1, args.length);
-        new YajsyncClient().start(arrayArgs);
+        String logsYajsysc = new YajsyncClient().startSplink(arrayArgs);
+        ApplicationLog.info(logsYajsysc);
+        if (logsYajsysc.contains("Error")) {
+            throw new IllegalArgumentException(logsYajsysc);
+        }
         return this;
     }
 

@@ -6,12 +6,12 @@ import org.apache.logging.log4j.Logger;
 public class ApplicationLog {
     protected static final Logger logger = LogManager.getLogger(ApplicationLog.class);
 
-    public static void error(String erroMessage) {
-        System.out.println(erroMessage);
+    public static void error(String errorMessage) {
+        logger.error(errorMessage);
     }
 
-    public static void info(String warningMessage) {
-        System.out.println(warningMessage);
+    public static void info(String infoMessage) {
+        logger.info("spLinker - " + infoMessage);
     }
 
     public static void debug(String message) {
