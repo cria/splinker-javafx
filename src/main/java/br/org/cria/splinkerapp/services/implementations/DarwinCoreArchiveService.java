@@ -168,7 +168,7 @@ public class DarwinCoreArchiveService {
         String[] arrayArgs = Arrays.copyOfRange(args, 1, args.length);
         String logsYajsysc = new YajsyncClient().startSplink(arrayArgs);
         ApplicationLog.info(logsYajsysc);
-        if (logsYajsysc.contains("Error")) {
+        if (logsYajsysc.contains("Error") || logsYajsysc.contains("ERROR")) {
             throw new IllegalArgumentException(logsYajsysc);
         }
         return this;
