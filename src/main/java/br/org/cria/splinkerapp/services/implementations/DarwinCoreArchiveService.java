@@ -168,7 +168,9 @@ public class DarwinCoreArchiveService {
         String[] arrayArgs = Arrays.copyOfRange(args, 1, args.length);
         String logsYajsysc = new YajsyncClient().startSplink(arrayArgs);
         ApplicationLog.info(logsYajsysc);
-        if (logsYajsysc.contains("Error") || logsYajsysc.contains("ERROR")) {
+        if (logsYajsysc.contains("socket open/close error")) {
+            throw new IllegalArgumentException("O sistema de recebimento de dados do CRIA está indisponível. Entre em contato com o suporte.");
+        } else if (logsYajsysc.contains("Error") || logsYajsysc.contains("ERROR")) {
             throw new IllegalArgumentException(logsYajsysc);
         }
         return this;
