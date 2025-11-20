@@ -143,13 +143,7 @@
             <version>2.1.6</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.perlundq</groupId>
-            <artifactId>yajsync</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/yajsync-app-0.9.1-SNAPSHOT-full.jar</systemPath>
-        </dependency>
+
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
@@ -167,9 +161,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.cria.yajsync</groupId>
-            <artifactId>yajsync-app</artifactId>
-            <version>master</version> <!-- ou branch/tag/commit -->
+            <groupId>com.github.cria</groupId>
+            <artifactId>yajsync</artifactId>
+            <version>v1</version>
         </dependency>
     </dependencies>
 
