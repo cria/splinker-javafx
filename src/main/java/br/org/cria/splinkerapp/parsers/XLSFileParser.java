@@ -77,10 +77,13 @@ public class XLSFileParser extends FileParser {
         try {
             conn = getConnection();
             conn.setAutoCommit(false);
-            var woorkbookIterator = workbook.sheetIterator();
+
+            var workbookIterator = workbook.sheetIterator();
             var formatter = new DataFormatter();
-            while (woorkbookIterator.hasNext()) {
-                var sheet = woorkbookIterator.next();
+            var evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+
+            while (workbookIterator.hasNext()) {
+                var sheet = workbookIterator.next();
                 totalRowCount = sheet.getLastRowNum();
                 var sheetIterator = sheet.iterator();
                 var headerRow = sheetIterator.next();
@@ -88,15 +91,15 @@ public class XLSFileParser extends FileParser {
 
                 if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) continue;
 
-                headerRow.forEach(e ->
-                {
+                headerRow.forEach(e -> {
                     if (StringUtils.isEmpty(e.getStringCellValue())) {
                         headerRow.removeCell(e);
                     }
                 });
+
                 totalColumnCount = headerRow.getLastCellNum();
                 List<String> columns = getRowAsStringList(headerRow, totalColumnCount).stream()
-                        .map((col) -> makeColumnName(col))
+                        .map(this::makeColumnName)
                         .toList();
 
                 var valuesStr = "?,".repeat(totalColumnCount);
@@ -104,6 +107,7 @@ public class XLSFileParser extends FileParser {
                 var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
                         .replace(",)", ")");
                 var statement = conn.prepareStatement(command);
+
                 while (sheetIterator.hasNext()) {
                     var row = sheetIterator.next();
                     if (row != null) {
@@ -111,21 +115,28 @@ public class XLSFileParser extends FileParser {
                             Cell cell = null;
                             try {
                                 cell = row.getCell(i);
-                            } catch (Exception e) {
-
+                            } catch (Exception ex) {
+                                // ignora célula ausente
                             }
-                            var isNullCell = cell == null;
-                            var value = isNullCell ? "" : getCellValue(formatter.formatCellValue(cell));
+
+                            String value;
+                            if (cell == null) {
+                                value = "";
+                            } else {
+                                String formatted = formatter.formatCellValue(cell, evaluator);
+                                value = getCellValue(formatted);
+                            }
+
                             statement.setString(i + 1, value);
                         }
                         statement.addBatch();
                     }
+
                     currentRow++;
                     if (currentRow % 10_000 == 0) {
                         statement.executeBatch();
                         conn.commit();
                         statement.clearBatch();
-
                     }
                     readRowEventBus.post(currentRow);
                 }
@@ -144,4 +155,5 @@ public class XLSFileParser extends FileParser {
             throw new RuntimeException(e);
         }
     }
+
 }

@@ -125,3 +125,33 @@ A versão da aplicação é definida no `pom.xml`. Para uma nova release:
 
 O código-fonte está disponível em:  
 [https://github.com/cria/splinker-javafx](https://github.com/cria/splinker-javafx)
+
+## Dependência Yajsync
+
+O **splinker-javafx** utiliza o componente **Yajsync** publicado no GitHub Packages sob o grupo:
+
+```
+com.github.cria
+```
+
+Caso seja necessário realizar ajustes no Yajsync (correções, melhorias ou novas funcionalidades), siga o fluxo abaixo:
+
+1. Acesse o repositório do Yajsync:  
+   🔗 https://github.com/cria/yajsync
+
+2. Faça suas alterações e **gere uma nova release** utilizando controle de versão semântico incremental:
+   - v1 → v2 → v3 → v4 …  
+     *(Atualmente, o `splinker-javafx` utiliza a versão `v1`)*
+
+3. Após gerar a nova release, atualize a dependência no `pom.xml` do **splinker-javafx**, conforme o exemplo:
+
+```xml
+<dependency>
+    <groupId>com.github.cria</groupId>
+    <artifactId>yajsync</artifactId>
+    <version>v2</version> <!-- Ajustar para a versão publicada -->
+</dependency>
+```
+
+> 💡 Sempre garanta que a release do Yajsync esteja publicada no GitHub Packages antes de atualizar a dependência no projeto.
+
