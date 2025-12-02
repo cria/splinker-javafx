@@ -5,7 +5,7 @@
 
     <groupId>br.org.cria</groupId>
     <artifactId>splinker</artifactId>
-    <version>7.0.14</version>
+    <version>7.0.15</version>
     <name>spLinker</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

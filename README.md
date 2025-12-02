@@ -155,3 +155,29 @@ Caso seja necessário realizar ajustes no Yajsync (correções, melhorias ou nov
 
 > 💡 Sempre garanta que a release do Yajsync esteja publicada no GitHub Packages antes de atualizar a dependência no projeto.
 
+## Instalação no macOS
+
+Para utilizar no macOS, gere o arquivo **.jar** da aplicação (via Maven, por exemplo):
+
+```sh
+mvn clean package
+```
+
+Após gerar o JAR na pasta `target/`, copie para qualquer lugar, e execute-o via terminal:
+
+```sh
+java -jar splinker.jar
+```
+
+> 💡 Certifique-se de que o Java está instalado e configurado no PATH. Caso necessário, instale via Homebrew:
+>
+> ```sh
+> brew install openjdk
+> ```
+>
+> E adicione ao PATH (se necessário):
+>
+> ```sh
+> export PATH="/usr/local/opt/openjdk/bin:$PATH"
+> ```
+

@@ -52,7 +52,7 @@ public class Main extends Application {
                         stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/cria-logo.png"))));
                     }
 
-                    if (SpLinkerUpdateService.hasNewVersion()) {
+                    if (!os.contains("mac") && SpLinkerUpdateService.hasNewVersion()) {
                         Router.navigateTo(stage, "splinker-update");
                     } else {
                         var hasConfig = DataSetService.hasConfiguration();
