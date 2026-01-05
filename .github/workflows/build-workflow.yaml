@@ -143,7 +143,7 @@ jobs:
 
   version-release:
     name: "Lançar nova versão"
-    needs: [build-on-windows, build-on-linux, build-jar]
+    needs: [ build-on-windows, build-on-linux, build-jar ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout de código
@@ -160,6 +160,12 @@ jobs:
         with:
           name: splinker-windows
           path: ./dist/windows
+
+      - name: Download do artefato JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: splinker-jar
+          path: dist/jar
 
       - name: Define versão
         id: version
@@ -206,3 +212,14 @@ jobs:
           asset_path: ./dist/windows/spLinker-${{ env.SPLINKER_VERSION }}.msi
           asset_name: spLinker-${{ env.SPLINKER_VERSION }}.msi
           asset_content_type: application/x-msdownload
+
+      - name: Upload JAR executável
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/jar/splinker-${{ env.SPLINKER_VERSION }}.jar
+          asset_name: splinker-${{ env.SPLINKER_VERSION }}.jar
+          asset_content_type: application/java-archive
+
