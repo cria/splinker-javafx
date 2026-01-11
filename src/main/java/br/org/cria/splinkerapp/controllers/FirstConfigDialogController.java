@@ -15,6 +15,7 @@ public class FirstConfigDialogController extends AbstractController {
     void onYesButtonClicked() {
         try {
             var routeName = computerHasProxyConfigured ? "proxy-config" : "token-login";
+            System.out.println(computerHasProxyConfigured);
             var stage = getStage();
             navigateTo(stage, routeName);
         } catch (Exception e) {
