@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 
 import br.org.cria.splinkerapp.Router;
 import br.org.cria.splinkerapp.enums.WindowSizes;
+import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import br.org.cria.splinkerapp.services.implementations.InstallerService;
 import br.org.cria.splinkerapp.services.implementations.SpLinkerUpdateService;
 import io.sentry.Sentry;
@@ -174,8 +175,7 @@ public class SpLinkerUpdateController extends AbstractController {
     void onBtnNoClicked() {
         try {
             executor.shutdownNow();
-            SpLinkerUpdateService.verifyOSVersion();
-            navigateToHome();
+            navigateToHomeOrFisrtConfig();
         } catch (Exception e) {
             Sentry.captureException(e);
             getStage().close();
@@ -190,14 +190,16 @@ public class SpLinkerUpdateController extends AbstractController {
             if (btnYes != null) {
                 btnYes.setText("Voltar");
                 btnYes.setVisible(true);
-                btnYes.setOnMouseClicked(__ -> navigateToHome());
+                btnYes.setOnMouseClicked(__ -> navigateToHomeOrFisrtConfig());
             }
         });
     }
 
-    private void navigateToHome() {
+    private void navigateToHomeOrFisrtConfig() {
         try {
-            Router.navigateTo(getStage(), "home");
+            var hasConfig = DataSetService.hasConfiguration();
+            var routeName = hasConfig ? "home" : "first-config-dialog";
+            Router.navigateTo(getStage(), routeName);
         } catch (Exception e) {
             Sentry.captureException(e);
             getStage().close();
