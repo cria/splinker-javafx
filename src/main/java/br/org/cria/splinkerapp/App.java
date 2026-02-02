@@ -73,7 +73,7 @@ public class App {
                 ApplicationLog.info("Importação finalizada");
 
                 DarwinCoreArchiveService service = new DarwinCoreArchiveService(ds);
-                service.readDataFromSource().generateTXTFile().generateZIPFile().transferData().cleanData();
+                service.readDataFromSource().generateZIPFile().transferData().cleanData();
                 ApplicationLog.info("Tranmissão finalizada com sucesso");
                 DataSetService.deleteDataSet(token);
             } catch (IOException e) {

@@ -27,7 +27,6 @@ public class GenerateDarwinCoreArchiveTask extends Task<DarwinCoreArchiveService
     @Override
     protected DarwinCoreArchiveService call() throws Exception {
         return service.readDataFromSource()
-                .generateTXTFile()
                 .generateZIPFile();
     }
 

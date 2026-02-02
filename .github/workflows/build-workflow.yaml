@@ -66,68 +66,6 @@ jobs:
           path: dist/windows
           retention-days: 3
 
-  # ✅ NOVO JOB: WINDOWS 32-bit (x86)
-  build-on-windows-x86:
-    name: "Compilação para Windows (32-bit)"
-    runs-on: windows-latest
-    env:
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Configurar Java (x86)
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: 'zulu'
-          architecture: x86
-
-      - name: Define versão
-        run: |
-          $version = Select-String -Path "pom.xml" -Pattern '<version>(.*?)</version>' | Select-Object -First 1
-          $matches = [regex]::Match($version.ToString(), "<version>(.*?)</version>")
-          $env:VERSION = $matches.Groups[1].Value
-          echo "VERSION=$env:VERSION" | Out-File -FilePath $env:GITHUB_ENV -Append
-
-      - name: Define nome do JAR
-        run: echo "SPLINKER_FILE=splinker-$env:VERSION.jar" | Out-File -FilePath $env:GITHUB_ENV -Append
-
-      - name: Exibe nome do JAR
-        run: echo $env:SPLINKER_FILE
-
-      - name: Maven - Instalar bibliotecas, compilar, executar testes automatizados e empacotar
-        run: mvn package -DskipTests
-
-      - name: Criar image jpackage (x86)
-        run: jpackage --type app-image --name spLinker --input target/ --main-jar $env:SPLINKER_FILE --icon .\src\main\resources\images\splinker.ico
-
-      - name: Copiar arquivo de configuração do Log4J/Sentry
-        run: cp .\src\main\resources\log4j2.xml .\spLinker\
-
-      - name: Empacotar para Windows 32-bit (MSI)
-        run: >
-          jpackage
-          --name spLinker
-          --app-image spLinker
-          --type msi
-          --dest dist\windows-x86
-          --app-version $env:VERSION
-          --win-upgrade-uuid "8b4f1b3a-1c21-4b2a-9d3a-6d8c7e1a2f11"
-          --win-shortcut
-          --win-dir-chooser
-          --win-per-user-install
-          --resource-dir .\src\main\resources\windows
-
-      - name: Renomear MSI com versão (x86)
-        run: Rename-Item -Path "dist\windows-x86\spLinker-*.msi" -NewName "spLinker-$env:VERSION-x86.msi"
-
-      - name: Upload artifacts (x86)
-        uses: actions/upload-artifact@v4
-        with:
-          name: splinker-windows-x86
-          path: dist/windows-x86
-          retention-days: 3
-
   build-on-linux:
     name: "Compilação para Linux (.deb e .rpm)"
     runs-on: ubuntu-latest
@@ -202,9 +140,10 @@ jobs:
           name: splinker-jar
           path: dist/jar
 
+
   version-release:
     name: "Lançar nova versão"
-    needs: [ build-on-windows, build-on-windows-x86, build-on-linux, build-jar ]
+    needs: [ build-on-windows, build-on-linux, build-jar ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout de código
@@ -216,17 +155,11 @@ jobs:
           name: splinker-linux
           path: dist/linux
 
-      - name: Download de artefatos Windows (x64)
+      - name: Download de artefatos Windows
         uses: actions/download-artifact@v4
         with:
           name: splinker-windows
           path: ./dist/windows
-
-      - name: Download de artefatos Windows (x86)
-        uses: actions/download-artifact@v4
-        with:
-          name: splinker-windows-x86
-          path: ./dist/windows-x86
 
       - name: Download do artefato JAR
         uses: actions/download-artifact@v4
@@ -270,7 +203,7 @@ jobs:
           asset_name: spLinker-${{ env.SPLINKER_VERSION }}.deb
           asset_content_type: application/x-deb
 
-      - name: Upload Windows x64 Artifacts
+      - name: Upload Windows Artifacts
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -278,16 +211,6 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./dist/windows/spLinker-${{ env.SPLINKER_VERSION }}.msi
           asset_name: spLinker-${{ env.SPLINKER_VERSION }}.msi
-          asset_content_type: application/x-msdownload
-
-      - name: Upload Windows x86 Artifacts
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/windows-x86/spLinker-${{ env.SPLINKER_VERSION }}-x86.msi
-          asset_name: spLinker-${{ env.SPLINKER_VERSION }}-x86.msi
           asset_content_type: application/x-msdownload
 
       - name: Upload JAR executável
@@ -299,3 +222,4 @@ jobs:
           asset_path: ./dist/jar/splinker-${{ env.SPLINKER_VERSION }}.jar
           asset_name: splinker-${{ env.SPLINKER_VERSION }}.jar
           asset_content_type: application/java-archive
+

@@ -29,8 +29,6 @@ public class DarwinCoreArchiveService {
     int totalRowCount = 0;
     String zipFile;
     String textFile;
-    String columns;
-    String rows;
     DataSet ds;
     EventBus writeDataEventBus = EventBusManager.getEvent(EventTypes.WRITE_ROW.name());
 
@@ -57,32 +55,21 @@ public class DarwinCoreArchiveService {
         this.textFile = "%s/occurrence.txt".formatted(userDir);
         Files.createDirectories(Paths.get(userDir));
 
-    }
-
-    public DarwinCoreArchiveService generateTXTFile() throws Exception {
-        var message = "Iniciando a geração do arquivo DWC";
-        ApplicationLog.info(message);
-
         var path = Path.of(this.textFile);
         if (Files.exists(path)) {
             Files.delete(path);
         }
-        var writer = new BufferedWriter(new FileWriter(this.textFile));
-        writer.write(columns);
-        writer.write(rows);
-        writer.flush();
-        writer.close();
-        return this;
+
     }
 
-    private String getDataSetRows(ResultSet data) throws Exception {
-        var dataSourceRows = new StringBuilder();
+    private void getDataSetRows(ResultSet data) throws Exception {
         var rowCount = 0;
         boolean firstRow = true;
+        var writer = new BufferedWriter(new FileWriter(this.textFile, true));
         while (data.next()) {
             var baseStr = "%s\t";
             if (!firstRow) {
-                dataSourceRows.append("\n");
+                writer.write("\n");
             } else {
                 firstRow = false;
             }
@@ -99,17 +86,17 @@ public class DarwinCoreArchiveService {
                     baseStr = "%s";
                 }
                 var content = baseStr.formatted(hasValue ? value : "");
-                dataSourceRows.append(content);
+                writer.write(content);
             }
 
             rowCount++;
             writeDataEventBus.post(rowCount);
         }
         totalRowCount = rowCount;
-        return dataSourceRows.toString();
+        writer.close();
     }
 
-    private String getColumnNames(ResultSet data) throws Exception {
+    private void getColumnNames(ResultSet data) throws Exception {
         var builder = new StringBuilder();
         var metaData = data.getMetaData();
         int count = metaData.getColumnCount();
@@ -123,7 +110,10 @@ public class DarwinCoreArchiveService {
         }
         builder.append("\n");
         var columns = builder.toString();
-        return columns;
+
+        var writer = new BufferedWriter(new FileWriter(this.textFile, true));
+        writer.write(columns);
+        writer.close();
     }
 
     public DarwinCoreArchiveService generateZIPFile() throws Exception {
@@ -150,8 +140,8 @@ public class DarwinCoreArchiveService {
         var statement = conn.createStatement();
 
         var data = statement.executeQuery(command);
-        columns = getColumnNames(data);
-        rows = getDataSetRows(data);
+        getColumnNames(data);
+        getDataSetRows(data);
         conn.close();
         return this;
     }
