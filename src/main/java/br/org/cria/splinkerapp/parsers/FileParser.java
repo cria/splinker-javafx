@@ -45,10 +45,17 @@ public abstract class FileParser {
     }
 
     @SuppressWarnings("null")
-    protected String getCellValue(String cell) {
+    public static String getCellValue(String cell) {
         var isNull = cell == null;
         var hasNullValue = isNull || cell.equalsIgnoreCase("null");
-        var value = hasNullValue ? "" : cell.replace("\r", " ").replace("\t", " ").replace("\n", " ").trim();
+        var value = hasNullValue ? "" :
+                cell.replace("\r", " ")
+                        .replace("\t", " ")
+                        .replace("\n", " ")
+                        .replaceAll("\\R", " ")
+                        .replace("\\n", " ")
+                        .replace("\\r", " ")
+                        .trim();
         return value;
     }
 

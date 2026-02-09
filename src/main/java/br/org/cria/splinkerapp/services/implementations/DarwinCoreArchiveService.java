@@ -5,6 +5,7 @@ import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.managers.LocalDbManager;
 import br.org.cria.splinkerapp.models.DataSet;
+import br.org.cria.splinkerapp.parsers.FileParser;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
 import br.org.cria.splinkerapp.utils.SystemConfigurationUtil;
@@ -79,6 +80,7 @@ public class DarwinCoreArchiveService {
 
             for (int i = 1; i <= count; i++) {
                 var value = data.getString(i);
+                value = FileParser.getCellValue(value);
                 var isNotNull = value != null && value.toLowerCase() != "null";
                 var isNotCRLF = isNotNull && value != "\r" && value != "\t";
                 var hasValue = isNotNull && isNotCRLF;
