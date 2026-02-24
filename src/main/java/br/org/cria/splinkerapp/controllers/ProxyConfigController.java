@@ -48,11 +48,22 @@ public class ProxyConfigController extends AbstractController {
             var config = new ProxyConfiguration(address, password, port, username);
 
             ProxyConfigRepository.saveProxyConfig(config);
+
+            // Limpar os campos após salvar
+            clearFields();
+
             navigateTo(getStage(), routeName);
 
         } catch (Exception e) {
             handleErrors(e);
         }
+    }
+
+    private void clearFields() {
+        proxyUsername.clear();
+        proxyPassword.clear();
+        proxyAddress.clear();
+        proxyPort.clear();
     }
 
     boolean validateData() {
@@ -146,17 +157,9 @@ public class ProxyConfigController extends AbstractController {
     public void initialize(URL location, ResourceBundle resources) {
         try {
             super.initialize(location, resources);
-            var config = ProxyConfigRepository.getConfiguration();
-            if (config != null) {
-                proxyUsername.setText(config.getUsername());
-                proxyAddress.setText(config.getAddress());
-                proxyPort.setText(config.getPort());
-                proxyPassword.setText(config.getPassword());
-            }
         } catch (Exception e) {
             handleErrors(e);
         }
-
     }
 
     @Override
