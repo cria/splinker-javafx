@@ -1,17 +1,23 @@
 package br.org.cria.splinkerapp.config;
 
 import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
 import io.sentry.Sentry;
 import io.sentry.SentryOptions.Proxy;
 
 public class SentryConfig {
 
     public static void setUp() {
-        var dsn = "https://cf699813548043f5c734471240b2ec6c@o4506639520104448.ingest.sentry.io/4506639532032000";
+        var dsn = "https://xxx@o4506639520104448.ingest.sentry.io/4506639532032000";
 
         Sentry.init(options -> {
             options.setDsn(dsn);
-            options.setEnvironment("development");
+            try {
+                options.setEnvironment(TokenRepository.getCurrentToken());
+            } catch (Exception e) {
+                options.setEnvironment("production");
+            }
+
             if (ProxyConfigRepository.isBehindProxyServer()) {
                 try {
                     var proxyConfig = ProxyConfigRepository.getConfiguration();

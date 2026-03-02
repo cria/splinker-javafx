@@ -43,7 +43,7 @@ public class TokenLoginController extends AbstractController {
 
             if (tokenIsNotEmpty && tokenExists) {
                 if (tokenToBeDeleted.equals(currentToken)) {
-                    ModalAlertUtil.show("Você não pode excluir o token que está logado!");
+                    ModalAlertUtil.show("Você não pode excluir o token que está logado!", null);
                     return;
                 }
                 DataSetService.deleteDataSet(tokenToBeDeleted);
@@ -52,7 +52,7 @@ public class TokenLoginController extends AbstractController {
                 TokenRepository.setCurrentToken(token);
                 navigateTo(getStage(), "home");
             } else {
-                ModalAlertUtil.show("Token inválido ou inexistente!");
+                ModalAlertUtil.show("Token inválido ou inexistente!", null);
             }
         } catch (Exception e) {
             handleErrors(e);

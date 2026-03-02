@@ -172,8 +172,7 @@ public class DataSet {
                 this.type.equals(DataSourceType.Excel) ||
                 this.type.equals(DataSourceType.LibreOfficeCalc) ||
                 this.type.equals(DataSourceType.Numbers) ||
-                this.type.equals(DataSourceType.dBase) ||
-                this.type.equals(DataSourceType.LibreOfficeCalc);
+                this.type.equals(DataSourceType.dBase);
     }
 
     public boolean isAccessDb() {

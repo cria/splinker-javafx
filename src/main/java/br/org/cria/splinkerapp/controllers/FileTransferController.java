@@ -92,7 +92,7 @@ public class FileTransferController extends AbstractController {
                         handleErrors(ex);
                     }*/
                 handleErrors(ex);
-                showErrorModal(msg);
+                //showErrorModal(msg);
                 navigateTo("home");
             });
 
@@ -128,7 +128,7 @@ public class FileTransferController extends AbstractController {
                     handleErrors(ex);
                 }*/
                 handleErrors(ex);
-                showErrorModal(msg);
+                //showErrorModal(msg);
                 navigateTo("home");
             }));
 
@@ -151,7 +151,7 @@ public class FileTransferController extends AbstractController {
             var msg = errMsg.formatted(task, errId);
             handleErrors(ex);
 
-            showErrorModal(msg);
+            //showErrorModal(msg);
             navigateTo("home");
         }));
 
@@ -234,7 +234,7 @@ public class FileTransferController extends AbstractController {
                     var task = "transferência do arquivo";
                     var msg = errMsg.formatted(task, errId);
                     handleErrors(ex);
-                    showErrorModal(msg);
+                    //showErrorModal(msg);
                     navigateTo("home");
                 });
             });

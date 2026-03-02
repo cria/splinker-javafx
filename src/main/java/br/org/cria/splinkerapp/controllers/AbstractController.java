@@ -1,14 +1,18 @@
 package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
+import java.nio.file.NoSuchFileException;
 import java.util.ResourceBundle;
 
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.Router;
+import br.org.cria.splinkerapp.models.DataSet;
+import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import br.org.cria.splinkerapp.utils.ModalAlertUtil;
 import com.google.common.eventbus.EventBus;
 import io.sentry.Sentry;
+import io.sentry.SentryLevel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -133,21 +137,61 @@ public abstract class AbstractController implements Initializable {
         });
     }
 
+    protected void showErrorModal(String errorMessage, String detalhe) {
+        ModalAlertUtil.show(errorMessage, detalhe);
+    }
+
     protected void showErrorModal(String errorMessage) {
-        ModalAlertUtil.show(errorMessage);
+        ModalAlertUtil.show(errorMessage, null);
     }
 
     protected void handleErrors(Throwable ex) {
-        String msg;
-        if (isConnectionError(ex)) {
-            msg = "Ausência de conexão com a Internet. Este software precisa de uma conexão para funcionar. Verifique sua conexão e tente novamente.";
-            showErrorModal(msg);
-        } else {
-            var sentryId = Sentry.captureException(ex);
-            //var sentryMsg = (sentryId != null) ? " - Error ID %s".formatted(sentryId.toString()) : "";
-           // msg = "Ocorreu um erro. Contate o administrador do spLinker%s".formatted(sentryMsg);
-            ApplicationLog.error(ex.getLocalizedMessage());
-            showErrorModal("Detalhe do erro: " +ex.getLocalizedMessage());
+        String msg = "";
+        try {
+            if (ex.getLocalizedMessage().contains("no such column")) {
+                String[] split = ex.getLocalizedMessage().split("no such column:");
+                if (split.length > 1) {
+                    DataSet dataSet = DataSetService.getDataSet(TokenRepository.getCurrentToken());
+                    if (dataSet.isFile()) {
+                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - não foi encontrada a coluna (" + split[1].replace(")", "") + " ) na planilha";
+                    } else {
+                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - não foi encontrada a coluna (" + split[1].replace(")", "") + " ) no banco de dados";
+                    }
+                    showErrorModal("Entre em contado com o time de suporte do CRIA e informe o erro:\n\n" + msg, ex.getLocalizedMessage());
+                }
+                Sentry.captureMessage(msg,SentryLevel.ERROR);
+            } else if (ex.getLocalizedMessage().contains("no such table")) {
+                String[] split = ex.getLocalizedMessage().split("no such table:");
+                if (split.length > 1) {
+                    DataSet dataSet = DataSetService.getDataSet(TokenRepository.getCurrentToken());
+                    if (dataSet.isFile()) {
+                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - não foi encontrada a aba (" + split[1].replace(")", "") + " ) na planilha";
+                    } else {
+                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - não foi encontrada a tabela (" + split[1].replace(")", "") + " ) no banco de dados";
+                    }
+                    showErrorModal("Entre em contado com o time de suporte do CRIA e informe o erro:\n\n" + msg, ex.getLocalizedMessage());
+                }
+                Sentry.captureMessage(msg, SentryLevel.ERROR);
+            } else if (ex.getLocalizedMessage().contains("Can't open the specified file input stream from file")) {
+                NoSuchFileException cause = (NoSuchFileException) ex.getCause();
+                msg = "Não foi possivel abrir o arquivo em: " + cause.getFile() + ".  Certifique se o arquivo está no local correto e ajuste na configuração. \n " +
+                        "Para ajustar, acesse a área de configuração para escolher corretamente o arquivo válido. Qualquer dúvida, entre em contato com o time de suporte CRIA";
+                showErrorModal(msg, "Para ajustar, acesse a área de configuração para escolher corretamente o arquivo válido");
+            } else if (ex.getLocalizedMessage().contains("br.org.cria.splinkerapp.models.DataSet.getDataSetFilePath()") && ex.getLocalizedMessage().contains("null")) {
+                msg = "Deve ser selecionado um arquivo para extrair os dados.";
+                showErrorModal(msg);
+            } else if (isConnectionError(ex)) {
+                msg = "Ausência de conexão com a Internet. Este software precisa de uma conexão para funcionar. Verifique sua conexão e tente novamente.";
+                showErrorModal(msg);
+            } else {
+                Sentry.captureException(ex);
+                ApplicationLog.error(ex.getLocalizedMessage());
+                showErrorModal("Erro no spLinker. Entre em contado com o time de suporte do CRIA relatando o problema.", ex.getLocalizedMessage());
+            }
+        } catch (Exception e) {
+            Sentry.captureException(e);
+            ApplicationLog.error(e.getLocalizedMessage());
+            showErrorModal("Erro no spLinker. Entre em contado com o time de suporte do CRIA relatando o problema.", e.getLocalizedMessage());
         }
 
     }
