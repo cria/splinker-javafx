@@ -23,6 +23,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public abstract class AbstractController implements Initializable {
 
@@ -185,13 +186,15 @@ public abstract class AbstractController implements Initializable {
                 showErrorModal(msg);
             } else {
                 Sentry.captureException(ex);
-                ApplicationLog.error(ex.getLocalizedMessage());
-                showErrorModal("Erro no spLinker. Entre em contado com o time de suporte do CRIA relatando o problema.", ex.getLocalizedMessage());
+                String stackTrace = ExceptionUtils.getStackTrace(ex);
+                ApplicationLog.error(stackTrace);
+                showErrorModal("Erro no spLinker. Entre em contado com o time de suporte do CRIA relatando o problema.", stackTrace);
             }
         } catch (Exception e) {
-            Sentry.captureException(e);
-            ApplicationLog.error(e.getLocalizedMessage());
-            showErrorModal("Erro no spLinker. Entre em contado com o time de suporte do CRIA relatando o problema.", e.getLocalizedMessage());
+            Sentry.captureException(ex);
+            String stackTrace = ExceptionUtils.getStackTrace(ex);
+            ApplicationLog.error(stackTrace);
+            showErrorModal("Erro no spLinker. Entre em contado com o time de suporte do CRIA relatando o problema.", stackTrace);
         }
 
     }
