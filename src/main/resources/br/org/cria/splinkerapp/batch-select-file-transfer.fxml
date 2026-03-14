@@ -24,7 +24,9 @@
 
         <CheckComboBox fx:id="cmbToken" layoutX="31.0" layoutY="88.0" prefHeight="30.0" prefWidth="476.0" />
 
-        <Button id="btnEnviar" fx:id="btnEnviar" layoutX="223.0" layoutY="271.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" styleClass="primary-button" text="Enviar" />
+        <Button id="btnEnviar" fx:id="btnEnviar" layoutX="269.0" layoutY="271.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" styleClass="primary-button" text="Enviar" />
+        <Button id="btnCancelar" fx:id="btnCancelar" layoutX="157.0" layoutY="272.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" styleClass="danger-button" text="Cancelar" />
+
 
         <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="20.0" layoutY="289.0" pickOnBounds="true" preserveRatio="true">
             <image>

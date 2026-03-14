@@ -9,23 +9,24 @@
 
     <children>
 
-        <Label layoutX="233.0" layoutY="14.0" text="Resultado do envio">
+        <Label layoutX="214.0" layoutY="14.0" text="Resultado do envio">
             <font>
                 <Font name="System Bold" size="18.0" />
             </font>
         </Label>
 
-        <TableView fx:id="tblResultados" layoutX="31.0" layoutY="47.0" prefHeight="316.0" prefWidth="580.0">
+        <TableView fx:id="tblResultados" layoutX="20.0" layoutY="78.0" prefHeight="286.0" prefWidth="599.0">
 
             <columns>
-                <TableColumn fx:id="colStatusIcon" prefWidth="40.0" text="" />
-                <TableColumn fx:id="colToken" prefWidth="88.39997100830078" text="Coleção" />
-                <TableColumn fx:id="colStatus" prefWidth="54.5999755859375" text="Status" />
-                <TableColumn fx:id="colMensagem" prefWidth="295.0" text="Mensagem" />
+                <TableColumn fx:id="colStatusIcon" prefWidth="35.0" text="" />
+                <TableColumn fx:id="colToken" prefWidth="88.40002059936523" text="Coleção" />
+                <TableColumn fx:id="colStatus" prefWidth="89.80001831054688" text="Status" />
+                <TableColumn fx:id="colMensagem" prefWidth="319.8000030517578" text="Mensagem" />
+                <TableColumn fx:id="colAcao" prefWidth="65.79998779296875" text="" />
             </columns>
         </TableView>
 
-        <Button fx:id="btnFechar" layoutX="276.0" layoutY="375.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" styleClass="primary-button" text="Fechar" />
+        <Button fx:id="btnFechar" layoutX="257.0" layoutY="378.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" styleClass="primary-button" text="Fechar" />
         <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="14.0" layoutY="381.0" pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="@../../../../images/cria-logo.png" />

@@ -18,6 +18,9 @@ public class BatchSelectFileTransferController extends AbstractController {
     private Button btnEnviar;
 
     @FXML
+    private Button btnCancelar;
+
+    @FXML
     private CheckComboBox<String> cmbToken;
     
 
@@ -39,6 +42,7 @@ public class BatchSelectFileTransferController extends AbstractController {
         }
 
         btnEnviar.setOnAction(e -> enviar());
+        btnCancelar.setOnAction(e ->  navigateTo("home"));
     }
 
     private void enviar() {

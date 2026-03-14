@@ -9,6 +9,7 @@ import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import br.org.cria.splinkerapp.tasks.GenerateDarwinCoreArchiveTask;
 import br.org.cria.splinkerapp.tasks.ImportDataTask;
 import br.org.cria.splinkerapp.tasks.TransferFileTask;
+import br.org.cria.splinkerapp.utils.ExceptionUtils;
 import io.sentry.Sentry;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -177,7 +178,14 @@ public class BatchFileTransferProgressController extends AbstractController {
                 resultado = processarColecao(colecao);
             } catch (Exception e) {
                 var errId = Sentry.captureException(e);
-                resultado = new TransferResult(colecao, false, "Falha inesperada. Error ID: " + errId, false);
+                String errorLog = br.org.cria.splinkerapp.utils.ExceptionUtils.getStackTraceAsString(e);
+                resultado = new TransferResult(
+                        colecao,
+                        false,
+                        "Falha inesperada. Error ID: " + errId,
+                        false,
+                        br.org.cria.splinkerapp.utils.ExceptionUtils.getStackTraceAsString(e)
+                );
             }
 
             if (resultado.isSuccess()) {
@@ -216,8 +224,8 @@ public class BatchFileTransferProgressController extends AbstractController {
                 return new TransferResult(
                         acronimo,
                         false,
-                        "Coleção não possui dataset configurado. Acesse Configuração -> Dados para realizar a configuração.",
-                        false
+                        "Coleção não possui dataset configurado.",
+                        false, "Coleção não possui dataset configurado. Acesse Configuração -> Dados para realizar a configuração."
                 );
             }
 
@@ -287,7 +295,13 @@ public class BatchFileTransferProgressController extends AbstractController {
             return new TransferResult(acronimo, true, "Envio realizado com sucesso.", false);
         } catch (Exception e) {
             var errId = Sentry.captureException(e);
-            return new TransferResult(acronimo, false, "Falha no envio. Error ID: " + errId, false);
+            return new TransferResult(
+                    acronimo,
+                    false,
+                    "Falha inesperada. Error ID: " + errId,
+                    false,
+                    br.org.cria.splinkerapp.utils.ExceptionUtils.getStackTraceAsString(e)
+            );
         }
     }
 
