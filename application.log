@@ -1,0 +1,69 @@
+[2025-11-16 16:32:58] [INFO] Memo .fpt anexado
+[2025-11-16 16:33:00] [INFO] DBF/JavaDBF: darwincore - 10000/23899 registros
+[2025-11-16 16:33:01] [INFO] DBF/JavaDBF: darwincore - 20000/23899 registros
+[2025-11-16 16:33:02] [INFO] spLinker - Iniciando leitura de dados do banco SQL.
+[2025-11-16 16:33:02] [INFO] spLinker - Iniciando a geração do arquivo DWC
+[2025-11-16 16:33:02] [INFO] spLinker - Iniciando a geração do arquivo ZIP
+[2025-11-16 16:33:03] [INFO] spLinker - Iniciando a transferência do arquivo
+[2025-11-16 16:33:06] [INFO] Yajsync - Iniciando processo rsync
+Yajsync - Dados enviados ao rsync: [--port=10000, -r, C:\Users\cria\Documents\workspace/203/dwca.zip, splink@35.208.69.21::9M99H58NJT]
+Yajsync -  REMOTE_SEND src: [C:\Users\cria\Documents\workspace\203\dwca.zip], dst: rsync://splink@35.208.69.21:10000/9M99H58NJT/
+Yajsycn - Number of files: 1
+Number of files transferred: 1
+Total file size: 936171 bytes
+Total transferred file size: 936171 bytes
+Literal data: 936171 bytes
+Matched data: 0 bytes
+File list size: 22
+File list generation time: 0,003 seconds
+File list transfer time: 0,000 seconds
+Total bytes sent: 937489
+Total bytes received: 5895
+Yajsync - Status: OK
+Yajsync - Processo do rsync finalizado!
+[2025-11-16 16:35:13] [INFO] spLinker - Memo .fpt anexado
+[2025-11-16 16:35:16] [INFO] spLinker - DBF/JavaDBF: darwincore - 10000/23899 registros
+[2025-11-16 16:35:17] [INFO] spLinker - DBF/JavaDBF: darwincore - 20000/23899 registros
+[2025-11-16 16:35:18] [INFO] spLinker - Iniciando leitura de dados do banco SQL.
+[2025-11-16 16:35:18] [INFO] spLinker - Iniciando a geração do arquivo DWC
+[2025-11-16 16:35:18] [INFO] spLinker - Iniciando a geração do arquivo ZIP
+[2025-11-16 16:35:19] [INFO] spLinker - Iniciando a transferência do arquivo
+[2025-11-16 16:35:21] [INFO] spLinker - Yajsync - Iniciando processo rsync
+Yajsync - Dados enviados ao rsync: [--port=10000, -r, C:\Users\cria\Documents\workspace/203/dwca.zip, splink@35.208.69.21::9M99H58NJT]
+Yajsync -  REMOTE_SEND src: [C:\Users\cria\Documents\workspace\203\dwca.zip], dst: rsync://splink@35.208.69.21:10000/9M99H58NJT/
+Yajsycn - Number of files: 1
+Number of files transferred: 1
+Total file size: 936177 bytes
+Total transferred file size: 936177 bytes
+Literal data: 936177 bytes
+Matched data: 0 bytes
+File list size: 22
+File list generation time: 0,003 seconds
+File list transfer time: 0,000 seconds
+Total bytes sent: 937495
+Total bytes received: 5895
+Yajsync - Status: OK
+Yajsync - Processo do rsync finalizado!
+[2025-11-16 18:23:49] [INFO] spLinker - Memo .fpt anexado
+[2025-11-16 18:23:51] [INFO] spLinker - DBF/JavaDBF: darwincore - 10000/23899 registros
+[2025-11-16 18:23:52] [INFO] spLinker - DBF/JavaDBF: darwincore - 20000/23899 registros
+[2025-11-16 18:23:53] [INFO] spLinker - Iniciando leitura de dados do banco SQL.
+[2025-11-16 18:23:53] [INFO] spLinker - Iniciando a geração do arquivo DWC
+[2025-11-16 18:23:53] [INFO] spLinker - Iniciando a geração do arquivo ZIP
+[2025-11-16 18:23:54] [INFO] spLinker - Iniciando a transferência do arquivo
+[2025-11-16 18:24:03] [INFO] spLinker - Yajsync - Iniciando processo rsync
+Yajsync - Dados enviados ao rsync: [--port=10000, -r, C:\Users\cria\Documents\workspace/203/dwca.zip, splink@35.208.69.21::9M99H58NJT]
+Yajsync -  REMOTE_SEND src: [C:\Users\cria\Documents\workspace\203\dwca.zip], dst: rsync://splink@35.208.69.21:10000/9M99H58NJT/
+Yajsycn - Number of files: 1
+Number of files transferred: 1
+Total file size: 936158 bytes
+Total transferred file size: 936158 bytes
+Literal data: 858398 bytes
+Matched data: 77760 bytes
+File list size: 22
+File list generation time: 0,004 seconds
+File list transfer time: 0,000 seconds
+Total bytes sent: 859944
+Total bytes received: 5895
+Yajsync - Status: OK
+Yajsync - Processo do rsync finalizado!

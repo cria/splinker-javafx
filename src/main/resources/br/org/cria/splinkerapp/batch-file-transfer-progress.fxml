@@ -21,7 +21,7 @@
             </font>
         </Label>
 
-        <Label fx:id="lblMessage" layoutX="20.0" layoutY="121.0" prefHeight="34.0" prefWidth="256.0" text="" wrapText="true" />
+        <Label fx:id="lblMessage" layoutX="20.0" layoutY="121.0" prefHeight="76.0" prefWidth="256.0" text="" wrapText="true" />
 
         <Label layoutX="20.0" layoutY="54.0" text="Processando coleção">
          <font>
@@ -29,27 +29,27 @@
          </font></Label>
         <Label fx:id="lblColecaoAtual" layoutX="21.0" layoutY="73.0" prefHeight="30.0" prefWidth="256.0" text="-" />
 
-        <ProgressBar fx:id="progressBar" layoutX="20.0" layoutY="161.0" prefHeight="18.0" prefWidth="256.0" progress="0.0" />
+        <ProgressBar fx:id="progressBar" layoutX="20.0" layoutY="234.0" prefHeight="18.0" prefWidth="256.0" progress="0.0" />
 
-        <ProgressIndicator fx:id="progressIndicator" layoutX="123.0" layoutY="233.0" prefHeight="40.0" prefWidth="72.0" progress="0.0" />
+        <ProgressIndicator fx:id="progressIndicator" layoutX="135.0" layoutY="202.0" prefHeight="30.0" prefWidth="29.0" progress="0.0" />
 
-        <Label layoutX="20.0" layoutY="191.0" text="Total:" />
-        <Label fx:id="lblTotal" layoutX="52.0" layoutY="191.0" text="0" />
+        <Label layoutX="20.0" layoutY="255.0" text="Total:" />
+        <Label fx:id="lblTotal" layoutX="52.0" layoutY="255.0" text="0" />
 
-        <Label layoutX="85.0" layoutY="190.0" text="Sucesso:" />
-        <Label fx:id="lblSucesso" layoutX="131.0" layoutY="191.0" text="0" />
+        <Label layoutX="85.0" layoutY="254.0" text="Sucesso:" />
+        <Label fx:id="lblSucesso" layoutX="131.0" layoutY="255.0" text="0" />
 
-        <Label layoutX="165.0" layoutY="190.0" text="Erro:" />
-        <Label fx:id="lblErro" layoutX="192.0" layoutY="191.0" text="0" />
+        <Label layoutX="165.0" layoutY="254.0" text="Erro:" />
+        <Label fx:id="lblErro" layoutX="192.0" layoutY="255.0" text="0" />
 
-        <Label layoutX="229.0" layoutY="190.0" text="Faltam:" />
-        <Label fx:id="lblFaltam" layoutX="271.0" layoutY="190.0" text="0" />
+        <Label layoutX="229.0" layoutY="254.0" text="Faltam:" />
+        <Label fx:id="lblFaltam" layoutX="271.0" layoutY="254.0" text="0" />
 
-        <TableView fx:id="tblResultadosParciais" layoutX="298.0" layoutY="38.0" prefHeight="221.0" prefWidth="206.0">
+        <TableView fx:id="tblResultadosParciais" layoutX="283.0" layoutY="38.0" prefHeight="232.0" prefWidth="230.0">
 
             <columns>
                 <TableColumn fx:id="colStatusIcon" prefWidth="44.4000244140625" text="" />
-                <TableColumn fx:id="colToken" prefWidth="161.199951171875" text="Coleção" />
+                <TableColumn fx:id="colToken" prefWidth="161.199951171875" text="Finalizadas" />
             </columns>
         </TableView>
 

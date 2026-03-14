@@ -49,7 +49,7 @@ public class PrincipalController extends AbstractController {
         if (tokens.size() == 1) {
             navigateTo("file-transfer");
         } else {
-            navigateTo("select-file-transfer");
+            navigateTo("batch-select-file-transfer");
         }
 
     }

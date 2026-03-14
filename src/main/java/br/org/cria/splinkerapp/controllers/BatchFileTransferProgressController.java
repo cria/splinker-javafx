@@ -97,7 +97,7 @@ public class BatchFileTransferProgressController extends AbstractController {
         total = colecoes.size();
 
         atualizarResumo();
-        atualizarMensagem("Preparando envio em lote...");
+        //atualizarMensagem("Preparando envio em lote...");
         lblColecaoAtual.setText("-");
 
         btnCancelar.setOnAction(e -> cancelarProcesso());
@@ -119,20 +119,29 @@ public class BatchFileTransferProgressController extends AbstractController {
 
         processing = true;
 
-        Thread worker = new Thread(() -> processarColecoes(colecoesSelecionadas));
+        Thread worker = new Thread(() -> {
+            try {
+                processarColecoes(colecoesSelecionadas);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
         worker.setDaemon(true);
         worker.start();
     }
 
-    private void processarColecoes(List<String> colecoesSelecionadas) {
+    private void processarColecoes(List<String> colecoesSelecionadas) throws InterruptedException {
         for (String colecao : colecoesSelecionadas) {
             if (cancelRequested) {
                 break;
             }
 
             atualizarColecaoAtual(colecao);
-            atualizarMensagem("Iniciando processo...");
-
+            atualizarMensagem("1 - Iniciando processo         -  Executando\n" +
+                              "2 - Importando dados         -  Pendente\n" +
+                              "3 - Gerando dwca                -  Pendente\n" +
+                              "4 - Enviando dwca               -  Pendente");
+            Thread.sleep(1000);
             TransferResult resultado;
 
             try {
@@ -178,7 +187,6 @@ public class BatchFileTransferProgressController extends AbstractController {
             boolean hasConfiguration = DataSetService.hasConfiguration(token);
 
             if (!hasConfiguration) {
-                Thread.sleep(5000);
                 return new TransferResult(
                         acronimo,
                         false,
@@ -194,7 +202,11 @@ public class BatchFileTransferProgressController extends AbstractController {
             }
 
             if (ds.isFile() || ds.isAccessDb()) {
-                atualizarMensagem("Importando dados...");
+                atualizarMensagem("1 - Iniciando processo         -  Concluído\n" +
+                        "2 - Importando dados         -  Executando\n" +
+                        "3 - Gerando dwca                -  Pendente\n" +
+                        "4 - Enviando dwca               -  Pendente");
+                Thread.sleep(1000);
                 importDataTask = new ImportDataTask(ds);
                 executor.submit(importDataTask);
                 importDataTask.get();
@@ -204,7 +216,11 @@ public class BatchFileTransferProgressController extends AbstractController {
                 return new TransferResult(acronimo, false, "Processo cancelado.");
             }
 
-            atualizarMensagem("Gerando arquivo...");
+            atualizarMensagem("1 - Iniciando processo         -  Concluído\n" +
+                    "2 - Importando dados         -  Concluído\n" +
+                    "3 - Gerando dwca                -  Executando\n" +
+                    "4 - Enviando dwca               -  Pendente");
+            Thread.sleep(1000);
             generateTask = new GenerateDarwinCoreArchiveTask(dwcService);
             executor.submit(generateTask);
             generateTask.get();
@@ -213,7 +229,11 @@ public class BatchFileTransferProgressController extends AbstractController {
                 return new TransferResult(acronimo, false, "Processo cancelado.");
             }
 
-            atualizarMensagem("Transferindo arquivo...");
+            atualizarMensagem("1 - Iniciando processo         -  Concluído\n" +
+                    "2 - Importando dados         -  Concluído\n" +
+                    "3 - Gerando dwca                -  Concluído\n" +
+                    "4 - Enviando dwca               -  Executando");
+            Thread.sleep(1000);
             transferTask = new TransferFileTask(dwcService);
             executor.submit(transferTask);
             transferTask.get();
@@ -230,6 +250,12 @@ public class BatchFileTransferProgressController extends AbstractController {
             DataSetService.updateDataSource(newData);
             DataSetService.insertTransferHistory(newData);
             dwcService.cleanData();
+
+            atualizarMensagem("1 - Iniciando processo         -  Concluído\n" +
+                    "2 - Importando dados         -  Concluído\n" +
+                    "3 - Gerando dwca                -  Concluído\n" +
+                    "4 - Enviando dwca               -  Concluído");
+            Thread.sleep(1000);
 
             return new TransferResult(acronimo, true, "Envio realizado com sucesso.");
         } catch (Exception e) {

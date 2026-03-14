@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class SelectFileTransferController extends AbstractController {
+public class BatchSelectFileTransferController extends AbstractController {
 
     @FXML
     private Button btnEnviar;
@@ -46,6 +46,14 @@ public class SelectFileTransferController extends AbstractController {
 
         if (colecoesSelecionadas.isEmpty()) {
             showAlert("Erro", "Por favor, selecione pelo menos uma coleção.");
+            return;
+        }
+
+        if (colecoesSelecionadas.size() == 1) {
+            String acrony = colecoesSelecionadas.getFirst();
+            String token = TokenRepository.getCurrentTokenByAcronym(acrony);
+            TokenRepository.setCurrentToken(token);
+            navigateTo("file-transfer");
             return;
         }
 
