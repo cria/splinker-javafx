@@ -59,4 +59,30 @@ public class TokenRepository extends BaseRepository {
         }
         return tokens;
     }
+
+    public static Collection<String> getAcronyms() throws Exception {
+        String query = "SELECT dataset_acronym FROM DataSetConfiguration;";
+        Collection<String> tokens = new ArrayList<>();
+        try (var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+             ResultSet rs = runQuery(query, conn)) {
+            while (rs.next()) {
+                tokens.add(rs.getString("dataset_acronym"));
+            }
+        }
+        return tokens;
+    }
+
+    public static String getCurrentTokenByAcronym(String acronym) {
+        try (Connection conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+             PreparedStatement stmt = conn.prepareStatement("SELECT token FROM DataSetConfiguration WHERE dataset_acronym = ?")) {
+            stmt.setString(1, acronym);
+            try (ResultSet result = stmt.executeQuery()) {
+                return result.next() ?
+                        result.getString("token") :
+                        "";
+            }
+        } catch (SQLException e) {
+            return "";
+        }
+    }
 }

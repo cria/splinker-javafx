@@ -2,6 +2,7 @@ package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
@@ -43,8 +44,14 @@ public class PrincipalController extends AbstractController {
     DataSet ds;
 
     @FXML
-    void onSyncServerBtnClicked() {
-        navigateTo("file-transfer");
+    void onSyncServerBtnClicked() throws Exception {
+        Collection<String> tokens = TokenRepository.getTokens();
+        if (tokens.size() == 1) {
+            navigateTo("file-transfer");
+        } else {
+            navigateTo("select-file-transfer");
+        }
+
     }
 
     @FXML
