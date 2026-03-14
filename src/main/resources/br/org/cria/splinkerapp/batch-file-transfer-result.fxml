@@ -5,47 +5,27 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="326.0" prefWidth="524.0"
-      xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="br.org.cria.splinkerapp.controllers.BatchFileTransferResultController">
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="524.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.BatchFileTransferResultController">
 
     <children>
 
-        <Label id="proxyLabel" layoutX="153.0" layoutY="14.0" text="Resultado do envio">
+        <Label layoutX="180.0" layoutY="14.0" text="Resultado do envio">
             <font>
                 <Font name="System Bold" size="18.0" />
             </font>
         </Label>
 
-        <Label layoutX="31.0" layoutY="50.0" text="Coleções processadas">
-            <font>
-                <Font size="16.0" />
-            </font>
-        </Label>
-
-        <TableView fx:id="tblResultados"
-                   layoutX="31.0"
-                   layoutY="78.0"
-                   prefHeight="175.0"
-                   prefWidth="476.0">
+        <TableView fx:id="tblResultados" layoutX="31.0" layoutY="47.0" prefHeight="216.0" prefWidth="476.0">
 
             <columns>
-                <TableColumn fx:id="colToken" prefWidth="150.0" text="Token" />
-                <TableColumn fx:id="colStatus" prefWidth="90.0" text="Status" />
-                <TableColumn fx:id="colMensagem" prefWidth="236.0" text="Mensagem" />
+                <TableColumn fx:id="colStatusIcon" prefWidth="40.0" text="" />
+                <TableColumn fx:id="colToken" prefWidth="130.0" text="Coleção" />
+                <TableColumn fx:id="colStatus" prefWidth="80.0" text="Status" />
+                <TableColumn fx:id="colMensagem" prefWidth="226.0" text="Mensagem" />
             </columns>
         </TableView>
 
-        <Button fx:id="btnFechar"
-                layoutX="223.0"
-                layoutY="271.0"
-                mnemonicParsing="false"
-                prefHeight="36.0"
-                prefWidth="77.0"
-                styleClass="primary-button"
-                text="Fechar" />
+        <Button fx:id="btnFechar" layoutX="223.0" layoutY="271.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" styleClass="primary-button" text="Fechar" />
 
         <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="20.0" layoutY="289.0" pickOnBounds="true" preserveRatio="true">
             <image>

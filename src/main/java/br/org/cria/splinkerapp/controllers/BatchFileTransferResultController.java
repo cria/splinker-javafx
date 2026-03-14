@@ -11,16 +11,15 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class BatchFileTransferResultController extends AbstractController {
 
-    private static final List<TransferResult> RESULTS = new ArrayList<>();
-
     @FXML
     private TableView<TransferResult> tblResultados;
+
+    @FXML
+    private TableColumn<TransferResult, String> colStatusIcon;
 
     @FXML
     private TableColumn<TransferResult, String> colToken;
@@ -34,32 +33,14 @@ public class BatchFileTransferResultController extends AbstractController {
     @FXML
     private Button btnFechar;
 
-    /**
-     * Recebe os resultados do batch antes da navegação para a tela
-     */
-    public static void setResults(List<TransferResult> results) {
-        RESULTS.clear();
-        RESULTS.addAll(results);
-    }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        colStatusIcon.setCellValueFactory(new PropertyValueFactory<>("statusIcon"));
         colToken.setCellValueFactory(new PropertyValueFactory<>("token"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         colMensagem.setCellValueFactory(new PropertyValueFactory<>("message"));
 
-        tblResultados.setItems(FXCollections.observableArrayList(RESULTS));
-
-        configurarCoresDasLinhas();
-
-        btnFechar.setOnAction(e -> navigateTo("home"));
-    }
-
-    /**
-     * Colore linhas de sucesso e erro
-     */
-    private void configurarCoresDasLinhas() {
+        tblResultados.setItems(FXCollections.observableArrayList(BatchTransferContext.getResults()));
 
         tblResultados.setRowFactory(tv -> new TableRow<>() {
             @Override
@@ -68,15 +49,17 @@ public class BatchFileTransferResultController extends AbstractController {
 
                 if (item == null || empty) {
                     setStyle("");
-                    return;
-                }
-
-                if (item.isSuccess()) {
+                } else if (item.isSuccess()) {
                     setStyle("-fx-background-color: #e8f5e9;");
                 } else {
                     setStyle("-fx-background-color: #fdecea;");
                 }
             }
+        });
+
+        btnFechar.setOnAction(e -> {
+            BatchTransferContext.clear();
+            navigateTo("home");
         });
     }
 

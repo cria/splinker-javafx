@@ -6,11 +6,7 @@
 <?import javafx.scene.text.*?>
 <?import org.controlsfx.control.*?>
 
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="326.0" prefWidth="524.0"
-      xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="br.org.cria.splinkerapp.controllers.SelectFileTransferController">
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="524.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.SelectFileTransferController">
 
     <children>
 
@@ -20,49 +16,15 @@
             </font>
         </Label>
 
-        <Label layoutX="31.0" layoutY="55.0" text="Coleções">
+        <Label layoutX="31.0" layoutY="59.0" text="Coleções">
             <font>
-                <Font size="16.0" />
+                <Font name="System Bold" size="14.0" />
             </font>
         </Label>
 
-        <CheckComboBox fx:id="cmbToken"
-                       layoutX="31.0"
-                       layoutY="80.0"
-                       prefHeight="30.0"
-                       prefWidth="476.0" />
+        <CheckComboBox fx:id="cmbToken" layoutX="31.0" layoutY="88.0" prefHeight="30.0" prefWidth="476.0" />
 
-        <Label fx:id="lblMessage"
-               layoutX="31.0"
-               layoutY="130.0"
-               prefHeight="36.0"
-               prefWidth="476.0"
-               text=""
-               wrapText="true" />
-
-        <ProgressBar fx:id="progressBar"
-                     layoutX="31.0"
-                     layoutY="180.0"
-                     prefHeight="18.0"
-                     prefWidth="476.0"
-                     progress="0.0" />
-
-        <ProgressIndicator fx:id="progressIndicator"
-                           layoutX="237.0"
-                           layoutY="205.0"
-                           prefHeight="28.0"
-                           prefWidth="28.0"
-                           progress="0.0" />
-
-        <Button id="btnEnviar"
-                fx:id="btnEnviar"
-                layoutX="223.0"
-                layoutY="271.0"
-                mnemonicParsing="false"
-                prefHeight="36.0"
-                prefWidth="77.0"
-                styleClass="primary-button"
-                text="Enviar" />
+        <Button id="btnEnviar" fx:id="btnEnviar" layoutX="223.0" layoutY="271.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" styleClass="primary-button" text="Enviar" />
 
         <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="20.0" layoutY="289.0" pickOnBounds="true" preserveRatio="true">
             <image>

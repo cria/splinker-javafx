@@ -21,7 +21,11 @@ public class TransferResult {
     }
 
     public String getStatus() {
-        return success ? "SUCESSO" : "ERRO";
+        return success ? "Sucesso" : "Erro";
+    }
+
+    public String getStatusIcon() {
+        return success ? "✔" : "✖";
     }
 
     public String getMessage() {
