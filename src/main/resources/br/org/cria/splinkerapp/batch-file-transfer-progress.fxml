@@ -5,63 +5,76 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="524.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.BatchFileTransferProgressController">
+<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="428.0" prefWidth="629.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.BatchFileTransferProgressController">
 
     <children>
 
-        <Label layoutX="170.0" layoutY="11.0" text="Progresso do envio">
+        <Label layoutX="233.0" layoutY="13.0" text="Progresso do envio">
             <font>
                 <Font name="System Bold" size="18.0" />
             </font>
         </Label>
 
-        <Label layoutX="20.0" layoutY="101.0" text="Etapa da transmissão">
+        <Separator layoutX="20.0" layoutY="39.0" prefHeight="0.0" prefWidth="601.0" />
+
+        <Label layoutX="20.0" layoutY="49.0" text="Processando coleção">
             <font>
                 <Font name="System Bold" size="14.0" />
             </font>
         </Label>
 
-        <Label fx:id="lblMessage" layoutX="20.0" layoutY="121.0" prefHeight="76.0" prefWidth="256.0" text="" wrapText="true" />
+        <Label fx:id="lblColecaoAtual" layoutX="20.0" layoutY="71.0" prefHeight="34.0" prefWidth="238.0" text="-" wrapText="true" />
 
-        <Label layoutX="20.0" layoutY="54.0" text="Processando coleção">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font></Label>
-        <Label fx:id="lblColecaoAtual" layoutX="21.0" layoutY="73.0" prefHeight="30.0" prefWidth="256.0" text="-" />
+        <Label layoutX="20.0" layoutY="114.0" text="Etapa da transmissão">
+            <font>
+                <Font name="System Bold" size="14.0" />
+            </font>
+        </Label>
 
-        <ProgressBar fx:id="progressBar" layoutX="20.0" layoutY="234.0" prefHeight="18.0" prefWidth="256.0" progress="0.0" />
+        <Label fx:id="lblMessage" layoutX="20.0" layoutY="136.0" prefHeight="95.0" prefWidth="284.0" text="" wrapText="true" />
 
-        <ProgressIndicator fx:id="progressIndicator" layoutX="135.0" layoutY="202.0" prefHeight="30.0" prefWidth="29.0" progress="0.0" />
+        <ProgressIndicator fx:id="progressIndicator" layoutX="131.0" layoutY="246.0" prefHeight="56.0" prefWidth="90.0" progress="0.0" />
 
-        <Label layoutX="20.0" layoutY="255.0" text="Total:" />
-        <Label fx:id="lblTotal" layoutX="52.0" layoutY="255.0" text="0" />
+        <ProgressBar fx:id="progressBar" layoutX="17.0" layoutY="298.0" prefHeight="18.0" prefWidth="284.0" progress="0.0" />
 
-        <Label layoutX="85.0" layoutY="254.0" text="Sucesso:" />
-        <Label fx:id="lblSucesso" layoutX="131.0" layoutY="255.0" text="0" />
+        <HBox layoutX="20.0" layoutY="343.0" prefHeight="20.0" prefWidth="284.0" spacing="14.0">
+            <children>
+                <Label text="Total:" />
+                <Label fx:id="lblTotal" text="0" />
+                <Label text="Sucesso:" />
+                <Label fx:id="lblSucesso" text="0" />
+                <Label text="Erro:" />
+                <Label fx:id="lblErro" text="0" />
+                <Label text="Faltam:" />
+                <Label fx:id="lblFaltam" text="0" />
+            </children>
+        </HBox>
 
-        <Label layoutX="165.0" layoutY="254.0" text="Erro:" />
-        <Label fx:id="lblErro" layoutX="192.0" layoutY="255.0" text="0" />
+        <Separator layoutX="311.0" layoutY="39.0" orientation="VERTICAL" prefHeight="341.0" prefWidth="7.0" />
 
-        <Label layoutX="229.0" layoutY="254.0" text="Faltam:" />
-        <Label fx:id="lblFaltam" layoutX="271.0" layoutY="254.0" text="0" />
+        <Label layoutX="328.0" layoutY="49.0" text="Resultados parciais">
+            <font>
+                <Font name="System Bold" size="14.0" />
+            </font>
+        </Label>
 
-        <TableView fx:id="tblResultadosParciais" layoutX="283.0" layoutY="38.0" prefHeight="232.0" prefWidth="230.0">
+        <TableView fx:id="tblResultadosParciais" layoutX="328.0" layoutY="73.0" prefHeight="301.0" prefWidth="284.0">
 
             <columns>
-                <TableColumn fx:id="colStatusIcon" prefWidth="44.4000244140625" text="" />
-                <TableColumn fx:id="colToken" prefWidth="161.199951171875" text="Finalizadas" />
+                <TableColumn fx:id="colStatusIcon" prefWidth="38.0" text="" />
+                <TableColumn fx:id="colToken" prefWidth="240.39999389648438" text="Coleções" />
             </columns>
         </TableView>
 
-        <Button fx:id="btnCancelar" layoutX="212.0" layoutY="286.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" styleClass="danger-button" text="Cancelar" />
+        <Button fx:id="btnCancelar" layoutX="265.0" layoutY="384.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" styleClass="danger-button" text="Cancelar" />
 
-        <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="20.0" layoutY="289.0" pickOnBounds="true" preserveRatio="true">
+        <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="14.0" layoutY="381.0" pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="@../../../../images/cria-logo.png" />
             </image>
         </ImageView>
 
-        <ImageView fitHeight="36.0" fitWidth="96.0" layoutX="378.0" layoutY="286.0" pickOnBounds="true" preserveRatio="true">
+        <ImageView fitHeight="36.0" fitWidth="96.0" layoutX="525.0" layoutY="381.0" pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="@../../../../images/splink-logo.gif" />
             </image>

@@ -58,7 +58,7 @@ public class BatchSelectFileTransferController extends AbstractController {
         }
 
         BatchTransferContext.setSelectedCollections(colecoesSelecionadas);
-        loadPage("batch-file-transfer-progress");
+        navigateTo("batch-file-transfer-progress");
     }
 
     private void showAlert(String title, String message) {

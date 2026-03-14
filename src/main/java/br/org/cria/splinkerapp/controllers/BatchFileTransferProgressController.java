@@ -96,8 +96,9 @@ public class BatchFileTransferProgressController extends AbstractController {
         List<String> colecoes = BatchTransferContext.getSelectedCollections();
         total = colecoes.size();
 
+        inicializarResultadosParciais(colecoes);
+
         atualizarResumo();
-        //atualizarMensagem("Preparando envio em lote...");
         lblColecaoAtual.setText("-");
 
         btnCancelar.setOnAction(e -> cancelarProcesso());
@@ -110,6 +111,33 @@ public class BatchFileTransferProgressController extends AbstractController {
         colToken.setCellValueFactory(new PropertyValueFactory<>("token"));
 
         tblResultadosParciais.setItems(resultados);
+
+        tblResultadosParciais.setRowFactory(tv -> new TableRow<>() {
+            @Override
+            protected void updateItem(TransferResult item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (item == null || empty) {
+                    setStyle("");
+                } else if (item.isPendent()) {
+                    setStyle("-fx-background-color: #fff8e1;");
+                } else if (item.isSuccess()) {
+                    setStyle("-fx-background-color: #e8f5e9;");
+                } else {
+                    setStyle("-fx-background-color: #fdecea;");
+                }
+            }
+        });
+    }
+
+    private void inicializarResultadosParciais(List<String> colecoesSelecionadas) {
+        resultados.clear();
+
+        for (String colecao : colecoesSelecionadas) {
+            resultados.add(new TransferResult(colecao, false, "", true));
+        }
+
+        Platform.runLater(() -> tblResultadosParciais.refresh());
     }
 
     private void iniciarProcessamento(List<String> colecoesSelecionadas) {
@@ -138,17 +166,18 @@ public class BatchFileTransferProgressController extends AbstractController {
 
             atualizarColecaoAtual(colecao);
             atualizarMensagem("1 - Iniciando processo         -  Executando\n" +
-                              "2 - Importando dados         -  Pendente\n" +
-                              "3 - Gerando dwca                -  Pendente\n" +
-                              "4 - Enviando dwca               -  Pendente");
+                    "2 - Importando dados         -  Pendente\n" +
+                    "3 - Gerando dwca                -  Pendente\n" +
+                    "4 - Enviando dwca               -  Pendente");
             Thread.sleep(1000);
+
             TransferResult resultado;
 
             try {
                 resultado = processarColecao(colecao);
             } catch (Exception e) {
                 var errId = Sentry.captureException(e);
-                resultado = new TransferResult(colecao, false, "Falha inesperada. Error ID: " + errId);
+                resultado = new TransferResult(colecao, false, "Falha inesperada. Error ID: " + errId, false);
             }
 
             if (resultado.isSuccess()) {
@@ -159,10 +188,7 @@ public class BatchFileTransferProgressController extends AbstractController {
 
             processadas++;
 
-            TransferResult finalResultado = resultado;
-            resultados.add(finalResultado);
-
-            atualizarListagem();
+            atualizarResultadoParcial(resultado);
             atualizarResumo();
             atualizarProgresso();
 
@@ -190,7 +216,8 @@ public class BatchFileTransferProgressController extends AbstractController {
                 return new TransferResult(
                         acronimo,
                         false,
-                        "Coleção não possui dataset configurado. Acesse Configuração -> Dados para realizar a configuração."
+                        "Coleção não possui dataset configurado. Acesse Configuração -> Dados para realizar a configuração.",
+                        false
                 );
             }
 
@@ -198,7 +225,7 @@ public class BatchFileTransferProgressController extends AbstractController {
             DarwinCoreArchiveService dwcService = new DarwinCoreArchiveService(ds);
 
             if (cancelRequested) {
-                return new TransferResult(acronimo, false, "Processo cancelado.");
+                return new TransferResult(acronimo, false, "Processo cancelado.", true);
             }
 
             if (ds.isFile() || ds.isAccessDb()) {
@@ -213,7 +240,7 @@ public class BatchFileTransferProgressController extends AbstractController {
             }
 
             if (cancelRequested) {
-                return new TransferResult(acronimo, false, "Processo cancelado.");
+                return new TransferResult(acronimo, false, "Processo cancelado.", true);
             }
 
             atualizarMensagem("1 - Iniciando processo         -  Concluído\n" +
@@ -226,7 +253,7 @@ public class BatchFileTransferProgressController extends AbstractController {
             generateTask.get();
 
             if (cancelRequested) {
-                return new TransferResult(acronimo, false, "Processo cancelado.");
+                return new TransferResult(acronimo, false, "Processo cancelado.", true);
             }
 
             atualizarMensagem("1 - Iniciando processo         -  Concluído\n" +
@@ -257,11 +284,24 @@ public class BatchFileTransferProgressController extends AbstractController {
                     "4 - Enviando dwca               -  Concluído");
             Thread.sleep(1000);
 
-            return new TransferResult(acronimo, true, "Envio realizado com sucesso.");
+            return new TransferResult(acronimo, true, "Envio realizado com sucesso.", false);
         } catch (Exception e) {
             var errId = Sentry.captureException(e);
-            return new TransferResult(acronimo, false, "Falha no envio. Error ID: " + errId);
+            return new TransferResult(acronimo, false, "Falha no envio. Error ID: " + errId, false);
         }
+    }
+
+    private void atualizarResultadoParcial(TransferResult resultado) {
+        for (int i = 0; i < resultados.size(); i++) {
+            TransferResult atual = resultados.get(i);
+            if (atual.getToken().equals(resultado.getToken())) {
+                resultados.set(i, resultado);
+                break;
+            }
+        }
+        Platform.runLater(() -> {
+            tblResultadosParciais.refresh();
+        });
     }
 
     private void cancelarProcesso() {
@@ -296,32 +336,10 @@ public class BatchFileTransferProgressController extends AbstractController {
 
     private void atualizarProgresso() {
         double progresso = total == 0 ? 0 : (double) processadas / total;
-        int percentual = (int) Math.round(progresso * 100);
 
         Platform.runLater(() -> {
             progressBar.setProgress(progresso);
             progressIndicator.setProgress(progresso);
-        });
-    }
-
-    private void atualizarListagem() {
-        Platform.runLater(() -> {
-            tblResultadosParciais.setItems(FXCollections.observableArrayList(resultados));
-
-            tblResultadosParciais.setRowFactory(tv -> new TableRow<>() {
-                @Override
-                protected void updateItem(TransferResult item, boolean empty) {
-                    super.updateItem(item, empty);
-
-                    if (item == null || empty) {
-                        setStyle("");
-                    } else if (item.isSuccess()) {
-                        setStyle("-fx-background-color: #e8f5e9;");
-                    } else {
-                        setStyle("-fx-background-color: #fdecea;");
-                    }
-                }
-            });
         });
     }
 
