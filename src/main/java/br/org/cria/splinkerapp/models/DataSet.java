@@ -1,10 +1,10 @@
 package br.org.cria.splinkerapp.models;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.time.LocalDateTime;
 
 import br.org.cria.splinkerapp.managers.LocalDbManager;
+import br.org.cria.splinkerapp.utils.DbConnectionUtil;
 
 public class DataSet {
     private int id;
@@ -37,7 +37,6 @@ public class DataSet {
         this.type = type;
     }
 
-    private Connection connection;
     private String connectionString;
     private String dbHost;
 
@@ -223,18 +222,14 @@ public class DataSet {
     }
 
     public Connection getDataSetConnection() throws Exception {
-        if (this.connection == null) {
-            var hasUserName = this.dbUser != null && this.dbUser.trim().length() > 0;
-            var passwordIsNull = this.dbPassword != null;
-            var hasPassword = this.isAccessDb() ? passwordIsNull && this.dbPassword.trim().length() > 0
-                    : true;
+        var hasUserName = this.dbUser != null && this.dbUser.trim().length() > 0;
+        var passwordIsNull = this.dbPassword != null;
+        var hasPassword = this.isAccessDb() ? passwordIsNull && this.dbPassword.trim().length() > 0
+                : true;
 
-            var hasUserNameAndPassword = hasUserName && hasPassword;
-            this.connection = hasUserNameAndPassword ?
-                    DriverManager.getConnection(connectionString, this.dbUser, this.dbPassword) :
-                    DriverManager.getConnection(connectionString);
-        }
-
-        return this.connection;
+        var hasUserNameAndPassword = hasUserName && hasPassword;
+        return hasUserNameAndPassword ?
+                DbConnectionUtil.getConnection(connectionString, this.dbUser, this.dbPassword) :
+                DbConnectionUtil.getConnection(connectionString);
     }
 }

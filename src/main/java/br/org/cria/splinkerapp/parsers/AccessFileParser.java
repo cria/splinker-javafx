@@ -22,10 +22,10 @@ public class AccessFileParser extends FileParser {
     String filePath;
     String password;
     Statement stmt;
+    Connection accessConnection;
 
     public AccessFileParser(String filePath, String password) throws Exception {
         super();
-        var conn = getConnection();
         this.filePath = filePath;
         this.password = password;
         var hasPassword = !StringUtils.isEmpty(password);
@@ -40,110 +40,116 @@ public class AccessFileParser extends FileParser {
                 tableNames.add(query.getName());
             }
         }
-        conn.close();
 
         String url = "jdbc:ucanaccess://" + filePath;
         hasPassword = !StringUtils.isEmpty(this.password);
         if (hasPassword) {
             url = url + ";password=" + this.password;
         }
-        Connection connection = DriverManager.getConnection(url);
-        stmt = connection.createStatement();
+        accessConnection = DriverManager.getConnection(url);
+        stmt = accessConnection.createStatement();
     }
 
     @Override
     public void insertDataIntoTable(Set<String> tabelas) throws Exception {
-        var conn = getConnection();
-        conn.setAutoCommit(false);
-        List<String> columns;
-        String valuesStr;
-        for (var name : tableNames) {
+        try (var conn = getConnection()) {
+            conn.setAutoCommit(false);
+            List<String> columns;
+            String valuesStr;
             try {
-                var finalTableName = StringStandards.normalizeString(name);
-                if (SQLKeywordChecker.isReservedSQLKeyword(finalTableName)) continue;
-                if (tabelas != null && !tabelas.contains(finalTableName.toLowerCase())) continue;
-                var table = db.getTable(name);
-                if (table == null) {
-                    DatabaseMetaData metaData = conn.getMetaData();
-                    ResultSet rs = metaData.getColumns(null, null, name, null);
-                    List<String> tempColumns = new ArrayList<>();
-                    while (rs.next()) {
-                        String columnName = rs.getString("COLUMN_NAME");
-                        tempColumns.add(makeColumnName(columnName));
-                    }
-                    columns = tempColumns;
-                    int numberOfColumns = columns.size();
-                    if (numberOfColumns == 0) {
-                        continue;
-                    }
-                    valuesStr = "?,".repeat(numberOfColumns);
-                } else {
-                    var headerRow = table.getColumns().stream().filter(e -> !StringUtils.isEmpty(e.getName())).toList();
-                    int numberOfColumns = headerRow.size();
-                    columns = getRowAsStringList(headerRow.stream().map(e -> e.getName()).toList(), numberOfColumns).stream()
-                            .map(col -> makeColumnName(col))
-                            .toList();
-                    valuesStr = "?,".repeat(numberOfColumns);
-                }
-                var columnNames = String.join(",", columns);
-                var command = insertIntoCommand.formatted(finalTableName, columnNames, valuesStr).replace(",)", ")");
-                var statement = conn.prepareStatement(command);
-                if (table == null) {
-                    List<Query> queries = db.getQueries();
-                    for (Query query : queries) {
-                        if (query.getName().equals(name)) {
-                            inserirDadosViaQuery(query.toSQLString(), statement, conn);
-                            break;
-                        }
-                    }
-                } else {
-                    var rows = table.iterator();
-                    currentRow = 0;
-                    totalRowCount = table.getRowCount();
-                    while (rows.hasNext()) {
-                        var row = rows.next();
-                        if (row != null) {
-                            var cells = row.values().iterator();
-                            var cellIndex = 1;
-                            while (cells.hasNext()) {
-                                var cell = cells.next();
-                                var isNullCell = cell == null;
-                                var value = getCellValue(isNullCell ? null : cell.toString());
-                                statement.setString(cellIndex, value);
-                                cellIndex++;
+                for (var name : tableNames) {
+                    try {
+                        var finalTableName = StringStandards.normalizeString(name);
+                        if (SQLKeywordChecker.isReservedSQLKeyword(finalTableName)) continue;
+                        if (tabelas != null && !tabelas.contains(finalTableName.toLowerCase())) continue;
+                        var table = db.getTable(name);
+                        if (table == null) {
+                            DatabaseMetaData metaData = conn.getMetaData();
+                            try (ResultSet rs = metaData.getColumns(null, null, name, null)) {
+                                List<String> tempColumns = new ArrayList<>();
+                                while (rs.next()) {
+                                    String columnName = rs.getString("COLUMN_NAME");
+                                    tempColumns.add(makeColumnName(columnName));
+                                }
+                                columns = tempColumns;
                             }
-                            statement.addBatch();
-                            if ((currentRow % 10_000 == 0)) {
+                            int numberOfColumns = columns.size();
+                            if (numberOfColumns == 0) {
+                                continue;
+                            }
+                            valuesStr = "?,".repeat(numberOfColumns);
+                        } else {
+                            var headerRow = table.getColumns().stream().filter(e -> !StringUtils.isEmpty(e.getName())).toList();
+                            int numberOfColumns = headerRow.size();
+                            columns = getRowAsStringList(headerRow.stream().map(e -> e.getName()).toList(), numberOfColumns).stream()
+                                    .map(this::makeColumnName)
+                                    .toList();
+                            valuesStr = "?,".repeat(numberOfColumns);
+                        }
+                        var columnNames = String.join(",", columns);
+                        var command = insertIntoCommand.formatted(finalTableName, columnNames, valuesStr).replace(",)", ")");
+                        try (var statement = conn.prepareStatement(command)) {
+                            if (table == null) {
+                                List<Query> queries = db.getQueries();
+                                for (Query query : queries) {
+                                    if (query.getName().equals(name)) {
+                                        inserirDadosViaQuery(query.toSQLString(), statement, conn);
+                                        break;
+                                    }
+                                }
+                            } else {
+                                var rows = table.iterator();
+                                currentRow = 0;
+                                totalRowCount = table.getRowCount();
+                                while (rows.hasNext()) {
+                                    var row = rows.next();
+                                    if (row != null) {
+                                        var cells = row.values().iterator();
+                                        var cellIndex = 1;
+                                        while (cells.hasNext()) {
+                                            var cell = cells.next();
+                                            var isNullCell = cell == null;
+                                            var value = getCellValue(isNullCell ? null : cell.toString());
+                                            statement.setString(cellIndex, value);
+                                            cellIndex++;
+                                        }
+                                        statement.addBatch();
+                                        if ((currentRow % 10_000 == 0)) {
+                                            statement.executeBatch();
+                                            conn.commit();
+                                            statement.clearBatch();
+                                        }
+                                        currentRow++;
+                                        readRowEventBus.post(currentRow);
+                                    }
+                                }
                                 statement.executeBatch();
                                 conn.commit();
                                 statement.clearBatch();
+                                totalColumnCount = currentRow;
                             }
-                            currentRow++;
-                            readRowEventBus.post(currentRow);
                         }
+                    } catch (FileNotFoundException fnfe) {
+                        continue;
+                    } catch (Exception e) {
+                        Sentry.captureException(e);
+                        e.printStackTrace();
                     }
-                    statement.executeBatch();
-                    conn.commit();
-                    statement.clearBatch();
-                    statement.close();
-                    totalColumnCount = currentRow;
                 }
-            } catch (FileNotFoundException fnfe) {
-                continue;
-            } catch (Exception e) {
-                Sentry.captureException(e);
-                e.printStackTrace();
+            } catch (Exception ex) {
+                conn.rollback();
+                throw ex;
+            } finally {
+                db.close();
+                closeAccessResources();
+                conn.setAutoCommit(true);
             }
         }
-        db.close();
-        conn.setAutoCommit(true);
-        conn.close();
     }
 
-    private void inserirDadosViaQuery(String query, PreparedStatement statement, Connection conn) {
-        try {
-            ResultSet rs = stmt.executeQuery(query);
 
+    private void inserirDadosViaQuery(String query, PreparedStatement statement, Connection conn) {
+        try (ResultSet rs = stmt.executeQuery(query)) {
             ResultSetMetaData metaData = rs.getMetaData();
             int columnCount = metaData.getColumnCount();
 
@@ -153,13 +159,11 @@ public class AccessFileParser extends FileParser {
             while (rs.next()) {
                 var cellIndex = 1;
                 for (int i = 1; i <= columnCount; i++) {
-                    //String columnName = metaData.getColumnName(i);
                     String columnValue = rs.getString(i);
                     var isNullCell = columnValue == null;
                     var value = getCellValue(isNullCell ? null : columnValue);
                     statement.setString(cellIndex, value);
                     cellIndex++;
-                    //System.out.print(columnName + ": " + columnValue + " | ");*/
                 }
                 statement.addBatch();
                 if ((currentRow % 10_000 == 0)) {
@@ -174,12 +178,12 @@ public class AccessFileParser extends FileParser {
             statement.executeBatch();
             conn.commit();
             statement.clearBatch();
-            statement.close();
             totalColumnCount = currentRow;
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     @Override
     protected List<String> getRowAsStringList(Object row, int numberOfColumns) {
@@ -237,9 +241,7 @@ public class AccessFileParser extends FileParser {
 
 
     public List<String> gerarColunasDasViews(String query) {
-        try {
-            ResultSet rs = stmt.executeQuery(query);
-
+        try (ResultSet rs = stmt.executeQuery(query)) {
             ResultSetMetaData metaData = rs.getMetaData();
             int columnCount = metaData.getColumnCount();
 
@@ -255,6 +257,22 @@ public class AccessFileParser extends FileParser {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private void closeAccessResources() {
+        try {
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (Exception ignored) {
+        }
+
+        try {
+            if (accessConnection != null) {
+                accessConnection.close();
+            }
+        } catch (Exception ignored) {
+        }
     }
 
 }

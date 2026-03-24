@@ -241,7 +241,7 @@ public class BatchFileTransferProgressController extends AbstractController {
                         "2 - Importando dados         -  Executando\n" +
                         "3 - Gerando dwca                -  Pendente\n" +
                         "4 - Enviando dwca               -  Pendente");
-                Thread.sleep(1000);
+                Thread.sleep(500);
                 importDataTask = new ImportDataTask(ds);
                 executor.submit(importDataTask);
                 importDataTask.get();
@@ -255,7 +255,7 @@ public class BatchFileTransferProgressController extends AbstractController {
                     "2 - Importando dados         -  Concluído\n" +
                     "3 - Gerando dwca                -  Executando\n" +
                     "4 - Enviando dwca               -  Pendente");
-            Thread.sleep(1000);
+            Thread.sleep(500);
             generateTask = new GenerateDarwinCoreArchiveTask(dwcService);
             executor.submit(generateTask);
             generateTask.get();
@@ -268,7 +268,7 @@ public class BatchFileTransferProgressController extends AbstractController {
                     "2 - Importando dados         -  Concluído\n" +
                     "3 - Gerando dwca                -  Concluído\n" +
                     "4 - Enviando dwca               -  Executando");
-            Thread.sleep(1000);
+            Thread.sleep(500);
             transferTask = new TransferFileTask(dwcService);
             executor.submit(transferTask);
             transferTask.get();
@@ -290,7 +290,7 @@ public class BatchFileTransferProgressController extends AbstractController {
                     "2 - Importando dados         -  Concluído\n" +
                     "3 - Gerando dwca                -  Concluído\n" +
                     "4 - Enviando dwca               -  Concluído");
-            Thread.sleep(1000);
+            Thread.sleep(500);
 
             return new TransferResult(acronimo, true, "Envio realizado com sucesso.", false);
         } catch (Exception e) {

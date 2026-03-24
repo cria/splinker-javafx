@@ -1,7 +1,6 @@
 package br.org.cria.splinkerapp.repositories;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,12 +13,11 @@ public class TokenRepository extends BaseRepository {
         var token = System.getProperty("splinker_token");
         if (token == null) {
             var cmd = "SELECT token FROM DataSetConfiguration LIMIT 1;";
-            var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-            var result = runQuery(cmd, conn);
-            var hasToken = result.getString("token") != null;
-            token = hasToken ? result.getString("token") : "";
-            result.close();
-            conn.close();
+            try (var conn = openLocalConnection();
+                 var statement = conn.prepareStatement(cmd);
+                 var result = statement.executeQuery()) {
+                token = result.next() && result.getString("token") != null ? result.getString("token") : "";
+            }
             setCurrentToken(token);
         }
 
@@ -35,7 +33,7 @@ public class TokenRepository extends BaseRepository {
         if (token == null) {
             return "";
         }
-        try (Connection conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+        try (Connection conn = openLocalConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT dataset_acronym FROM DataSetConfiguration WHERE token = ?")) {
             stmt.setString(1, token);
             try (ResultSet result = stmt.executeQuery()) {
@@ -45,14 +43,17 @@ public class TokenRepository extends BaseRepository {
             }
         } catch (SQLException e) {
             return "";
+        } catch (Exception e) {
+            return "";
         }
     }
 
     public static Collection<String> getTokens() throws Exception {
         String query = "SELECT dataset_acronym FROM DataSetConfiguration;";
         Collection<String> tokens = new ArrayList<>();
-        try (var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-             ResultSet rs = runQuery(query, conn)) {
+        try (var conn = openLocalConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 tokens.add(rs.getString("dataset_acronym"));
             }
@@ -63,8 +64,9 @@ public class TokenRepository extends BaseRepository {
     public static Collection<String> getAcronyms() throws Exception {
         String query = "SELECT dataset_acronym FROM DataSetConfiguration;";
         Collection<String> tokens = new ArrayList<>();
-        try (var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-             ResultSet rs = runQuery(query, conn)) {
+        try (var conn = openLocalConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 tokens.add(rs.getString("dataset_acronym"));
             }
@@ -73,7 +75,7 @@ public class TokenRepository extends BaseRepository {
     }
 
     public static String getCurrentTokenByAcronym(String acronym) {
-        try (Connection conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
+        try (Connection conn = openLocalConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT token FROM DataSetConfiguration WHERE dataset_acronym = ?")) {
             stmt.setString(1, acronym);
             try (ResultSet result = stmt.executeQuery()) {
@@ -81,7 +83,7 @@ public class TokenRepository extends BaseRepository {
                         result.getString("token") :
                         "";
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             return "";
         }
     }

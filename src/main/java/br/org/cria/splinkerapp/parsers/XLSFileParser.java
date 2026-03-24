@@ -73,87 +73,87 @@ public class XLSFileParser extends FileParser {
 
     @Override
     public void insertDataIntoTable(Set<String> tabelas) throws Exception {
-        Connection conn;
-        try {
-            conn = getConnection();
+        try (Connection conn = getConnection()) {
             conn.setAutoCommit(false);
 
             var workbookIterator = workbook.sheetIterator();
             var formatter = new DataFormatter();
             var evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 
-            while (workbookIterator.hasNext()) {
-                var sheet = workbookIterator.next();
-                totalRowCount = sheet.getLastRowNum();
-                var sheetIterator = sheet.iterator();
-                var headerRow = sheetIterator.next();
-                var tableName = StringStandards.normalizeString(sheet.getSheetName());
+            try {
+                while (workbookIterator.hasNext()) {
+                    var sheet = workbookIterator.next();
+                    totalRowCount = sheet.getLastRowNum();
+                    var sheetIterator = sheet.iterator();
+                    var headerRow = sheetIterator.next();
+                    var tableName = StringStandards.normalizeString(sheet.getSheetName());
 
-                if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) continue;
+                    if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) continue;
 
-                headerRow.forEach(e -> {
-                    if (StringUtils.isEmpty(e.getStringCellValue())) {
-                        headerRow.removeCell(e);
-                    }
-                });
-
-                totalColumnCount = headerRow.getLastCellNum();
-                List<String> columns = getRowAsStringList(headerRow, totalColumnCount).stream()
-                        .map(this::makeColumnName)
-                        .toList();
-
-                var valuesStr = "?,".repeat(totalColumnCount);
-                var columnNames = String.join(",", columns);
-                var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
-                        .replace(",)", ")");
-                var statement = conn.prepareStatement(command);
-
-                while (sheetIterator.hasNext()) {
-                    var row = sheetIterator.next();
-                    if (row != null) {
-                        for (int i = 0; i < columns.size(); i++) {
-                            Cell cell = null;
-                            try {
-                                cell = row.getCell(i);
-                            } catch (Exception ex) {
-                                // ignora célula ausente
-                            }
-
-                            String value;
-                            if (cell == null) {
-                                value = "";
-                            } else {
-                                String formatted = formatter.formatCellValue(cell, evaluator);
-                                value = getCellValue(formatted);
-                            }
-
-                            statement.setString(i + 1, value);
+                    headerRow.forEach(e -> {
+                        if (StringUtils.isEmpty(e.getStringCellValue())) {
+                            headerRow.removeCell(e);
                         }
-                        statement.addBatch();
-                    }
+                    });
 
-                    currentRow++;
-                    if (currentRow % 10_000 == 0) {
+                    totalColumnCount = headerRow.getLastCellNum();
+                    List<String> columns = getRowAsStringList(headerRow, totalColumnCount).stream()
+                            .map(this::makeColumnName)
+                            .toList();
+
+                    var valuesStr = "?,".repeat(totalColumnCount);
+                    var columnNames = String.join(",", columns);
+                    var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
+                            .replace(",)", ")");
+                    try (var statement = conn.prepareStatement(command)) {
+                        while (sheetIterator.hasNext()) {
+                            var row = sheetIterator.next();
+                            if (row != null) {
+                                for (int i = 0; i < columns.size(); i++) {
+                                    Cell cell = null;
+                                    try {
+                                        cell = row.getCell(i);
+                                    } catch (Exception ex) {
+                                        // ignora célula ausente
+                                    }
+
+                                    String value;
+                                    if (cell == null) {
+                                        value = "";
+                                    } else {
+                                        String formatted = formatter.formatCellValue(cell, evaluator);
+                                        value = getCellValue(formatted);
+                                    }
+
+                                    statement.setString(i + 1, value);
+                                }
+                                statement.addBatch();
+                            }
+
+                            currentRow++;
+                            if (currentRow % 10_000 == 0) {
+                                statement.executeBatch();
+                                conn.commit();
+                                statement.clearBatch();
+                            }
+                            readRowEventBus.post(currentRow);
+                        }
+
                         statement.executeBatch();
                         conn.commit();
                         statement.clearBatch();
                     }
-                    readRowEventBus.post(currentRow);
                 }
-
-                statement.executeBatch();
-                conn.commit();
-                statement.clearBatch();
-                statement.close();
+            } catch (Exception e) {
+                conn.rollback();
+                Sentry.captureException(e);
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            } finally {
+                conn.setAutoCommit(true);
             }
-
-            conn.setAutoCommit(true);
-            conn.close();
-        } catch (Exception e) {
-            Sentry.captureException(e);
-            e.printStackTrace();
-            throw new RuntimeException(e);
         }
     }
+
 
 }

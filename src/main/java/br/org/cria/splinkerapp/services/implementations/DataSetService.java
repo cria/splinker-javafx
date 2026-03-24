@@ -3,7 +3,6 @@ package br.org.cria.splinkerapp.services.implementations;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,25 +28,24 @@ public class DataSetService extends BaseRepository {
 
     public static void updateRowcount(String token, int rowCount) throws Exception {
         var cmd = "UPDATE DataSetConfiguration SET last_rowcount = ? WHERE token = ?;";
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var stm = conn.prepareStatement(cmd);
-        stm.setInt(1, rowCount);
-        stm.setString(2, token);
-        stm.executeUpdate();
-        stm.close();
-        conn.close();
+        try (var conn = openLocalConnection();
+             var stm = conn.prepareStatement(cmd)) {
+            stm.setInt(1, rowCount);
+            stm.setString(2, token);
+            stm.executeUpdate();
+        }
     }
 
     public static void deleteDataSet(String token) throws Exception {
         var cmd = "DELETE FROM DataSetConfiguration WHERE token = ?;";
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var stm = conn.prepareStatement(cmd);
-        stm.setString(1, token);
-        stm.executeUpdate();
-        stm.close();
-        conn.close();
+        try (var conn = openLocalConnection();
+             var stm = conn.prepareStatement(cmd)) {
+            stm.setString(1, token);
+            stm.executeUpdate();
+        }
     }
 
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> getConfigurationDataFromAPI(String token) throws Exception {
         var config = CentralServiceRepository.getCentralServiceData();
         var url = "%s?version=%s&token=%s".formatted(config.getCentralServiceUrl(), VersionService.getVersion(), token);
@@ -72,64 +70,62 @@ public class DataSetService extends BaseRepository {
         var cmd2 = """
                 SELECT COUNT(*) AS HAS_CONFIGURED_TOKENS
                 FROM DataSetConfiguration
-                WHERE TOKEN IS NOT NULL 
-                AND (datasource_filepath IS NOT NULL 
+                WHERE TOKEN IS NOT NULL
+                AND (datasource_filepath IS NOT NULL
                 OR db_host IS NOT NULL);
                 """;
 
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var result = runQuery(cmd1, conn);
-        var hasTokens = result.getInt("TOKEN_COUNT") > 0;
-        result = runQuery(cmd2, conn);
-        var hasConfiguredTokens = result.getInt("HAS_CONFIGURED_TOKENS") > 0;
-        var hasConfig = hasTokens && hasConfiguredTokens;
-
-        result.close();
-        conn.close();
-        return hasConfig;
+        try (var conn = openLocalConnection();
+             var stmt1 = conn.prepareStatement(cmd1);
+             var result1 = stmt1.executeQuery();
+             var stmt2 = conn.prepareStatement(cmd2);
+             var result2 = stmt2.executeQuery()) {
+            var hasTokens = result1.next() && result1.getInt("TOKEN_COUNT") > 0;
+            var hasConfiguredTokens = result2.next() && result2.getInt("HAS_CONFIGURED_TOKENS") > 0;
+            return hasTokens && hasConfiguredTokens;
+        }
     }
 
     public static boolean hasConfiguration(String token) throws Exception {
 
         var cmd2 = " SELECT COUNT(*) AS HAS_CONFIGURED_TOKENS " +
                 "FROM DataSetConfiguration " +
-                "WHERE TOKEN = '" + token + "' AND (datasource_filepath IS NOT NULL " +
+                "WHERE TOKEN = ? AND (datasource_filepath IS NOT NULL " +
                 "OR db_host IS NOT NULL); ";
 
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var result = runQuery(cmd2, conn);
-        var hasConfiguredTokens = result.getInt("HAS_CONFIGURED_TOKENS") > 0;
-
-        result.close();
-        conn.close();
-        return hasConfiguredTokens;
+        try (var conn = openLocalConnection();
+             var stm = conn.prepareStatement(cmd2)) {
+            stm.setString(1, token);
+            try (var result = stm.executeQuery()) {
+                return result.next() && result.getInt("HAS_CONFIGURED_TOKENS") > 0;
+            }
+        }
     }
 
     public static List<DataSet> getAllDataSets() throws Exception {
         var sources = new ArrayList<DataSet>();
         var cmd = "SELECT * FROM  DataSetConfiguration;";
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var results = runQuery(cmd, conn);
-        while (results.next()) {
-            var ds = buildFromResultSet(results);
-            sources.add(ds);
+        try (var conn = openLocalConnection();
+             var stm = conn.prepareStatement(cmd);
+             var results = stm.executeQuery()) {
+            while (results.next()) {
+                var ds = buildFromResultSet(results);
+                sources.add(ds);
+            }
         }
-        results.close();
-        conn.close();
         return sources;
     }
 
     public static DataSet getDataSetBy(String field, String value) throws Exception {
         var cmd = "SELECT * FROM  DataSetConfiguration WHERE %s = ? LIMIT 1;"
                 .formatted(field);
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var stm = conn.prepareStatement(cmd);
-        stm.setString(1, value);
-        var result = stm.executeQuery();
-        DataSet ds = buildFromResultSet(result);
-        result.close();
-        conn.close();
-        return ds;
+        try (var conn = openLocalConnection();
+             var stm = conn.prepareStatement(cmd)) {
+            stm.setString(1, value);
+            try (var result = stm.executeQuery()) {
+                return result.next() ? buildFromResultSet(result) : null;
+            }
+        }
     }
 
     private static DataSet buildFromResultSet(ResultSet result) throws Exception {
@@ -156,10 +152,8 @@ public class DataSetService extends BaseRepository {
                 : DataSourceType.valueOf(result.getString("datasource_type"));
         var strUpdatedAt = result.getString("updated_at");
         var updatedAt = strUpdatedAt == null ? null : LocalDateTime.parse(strUpdatedAt, dateFormatter);
-        var ds = DataSet.factory(token, type, filePath, host, dbName, user, pwd, port,
+        return DataSet.factory(token, type, filePath, host, dbName, user, pwd, port,
                 acronym, name, lastRowCount, id, updatedAt);
-
-        return ds;
     }
 
     public static DataSet getDataSet(String token) throws Exception {
@@ -185,8 +179,7 @@ public class DataSetService extends BaseRepository {
         var id = ds.getId();
         var fileName = "%s/%s.sql".formatted(System.getProperty("user.dir"), id);
         var lines = Files.readAllLines(Path.of(fileName));
-        String read = String.join(" ", lines);
-        return read;
+        return String.join(" ", lines);
     }
 
     public static String getSQLCommandFromApi(String token) throws Exception {
@@ -212,17 +205,16 @@ public class DataSetService extends BaseRepository {
                     dataset_acronym, dataset_name, last_rowcount, id)
                     VALUES(?,?,?,?,?,?);
                 """;
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var stm = conn.prepareStatement(cmd);
-        stm.setString(1, token);
-        stm.setString(2, type.name());
-        stm.setString(3, acronym);
-        stm.setString(4, name);
-        stm.setInt(5, 0);
-        stm.setInt(6, id);
-        stm.executeUpdate();
-        stm.close();
-        conn.close();
+        try (var conn = openLocalConnection();
+             var stm = conn.prepareStatement(cmd)) {
+            stm.setString(1, token);
+            stm.setString(2, type.name());
+            stm.setString(3, acronym);
+            stm.setString(4, name);
+            stm.setInt(5, 0);
+            stm.setInt(6, id);
+            stm.executeUpdate();
+        }
     }
 
     public static void saveAccessDataSource(String token, String filePath, String password) throws Exception {
@@ -231,15 +223,13 @@ public class DataSetService extends BaseRepository {
                     SET datasource_filepath = ?,
                     db_password = ? WHERE token = ?;
                 """;
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var stm = conn.prepareStatement(cmd);
-        stm.setString(1, filePath);
-        stm.setString(2, password);
-        stm.setString(3, token);
-
-        stm.executeUpdate();
-        stm.close();
-        conn.close();
+        try (var conn = openLocalConnection();
+             var stm = conn.prepareStatement(cmd)) {
+            stm.setString(1, filePath);
+            stm.setString(2, password);
+            stm.setString(3, token);
+            stm.executeUpdate();
+        }
 
     }
 
@@ -252,17 +242,16 @@ public class DataSetService extends BaseRepository {
                     db_host = ?, db_port = ?
                     WHERE token = ?;
                 """;
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var stm = conn.prepareStatement(cmd);
-        stm.setString(1, dbName);
-        stm.setString(2, userName);
-        stm.setString(3, password);
-        stm.setString(4, host);
-        stm.setString(5, port);
-        stm.setString(6, token);
-        stm.executeUpdate();
-        stm.close();
-        conn.close();
+        try (var conn = openLocalConnection();
+             var stm = conn.prepareStatement(cmd)) {
+            stm.setString(1, dbName);
+            stm.setString(2, userName);
+            stm.setString(3, password);
+            stm.setString(4, host);
+            stm.setString(5, port);
+            stm.setString(6, token);
+            stm.executeUpdate();
+        }
 
     }
 
@@ -272,80 +261,78 @@ public class DataSetService extends BaseRepository {
                     SET datasource_filepath = ?
                     WHERE token = ?;
                 """;
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var stm = conn.prepareStatement(cmd);
-        stm.setString(1, filePath);
-        stm.setString(2, token);
-
-        stm.executeUpdate();
-        stm.close();
-        conn.close();
+        try (var conn = openLocalConnection();
+             var stm = conn.prepareStatement(cmd)) {
+            stm.setString(1, filePath);
+            stm.setString(2, token);
+            stm.executeUpdate();
+        }
     }
 
     public static void updateDataSource(HashMap<String, String> args) throws Exception {
 
         var token = args.get("token");
-        var sqlFieldList = args.keySet().stream().filter(e -> e != "token").map(elem -> "%s = ?".formatted(elem))
+        var sqlFieldList = args.keySet().stream().filter(e -> !"token".equals(e)).map(elem -> "%s = ?".formatted(elem))
                 .toList();
         var fields = String.join(",", sqlFieldList);
         var cmd = "UPDATE  DataSetConfiguration SET %s WHERE token = ?;".formatted(fields);
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var stm = conn.prepareStatement(cmd);
-        var i = 1;
-        for (String field : sqlFieldList) {
-            var arg = field.split(" ")[0];
-            var value = args.get(arg);
-            stm.setString(i, value);
-            i++;
+        try (var conn = openLocalConnection();
+             var stm = conn.prepareStatement(cmd)) {
+            var i = 1;
+            for (String field : sqlFieldList) {
+                var arg = field.split(" ")[0];
+                var value = args.get(arg);
+                stm.setString(i, value);
+                i++;
+            }
+            stm.setString(i, token);
+            stm.executeUpdate();
         }
-        stm.setString(i, token);
-        stm.executeUpdate();
-        stm.close();
-        conn.close();
     }
 
     public static void insertTransferHistory(HashMap<String, String> args) throws Exception {
-        String cmd = "INSERT INTO TransferHistoryDataSet (token, rowcount, send_date) VALUES ('"
-                + args.get("token") + "', '"
-                + args.get("last_rowcount") + "', '"
-                + args.get("updated_at") + "');";
+        String cmd = "INSERT INTO TransferHistoryDataSet (token, rowcount, send_date) VALUES (?, ?, ?);";
 
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var stm = conn.prepareStatement(cmd);
-        stm.executeUpdate();
-        stm.close();
-        conn.close();
+        try (var conn = openLocalConnection();
+             var stm = conn.prepareStatement(cmd)) {
+            stm.setString(1, args.get("token"));
+            stm.setString(2, args.get("last_rowcount"));
+            stm.setString(3, args.get("updated_at"));
+            stm.executeUpdate();
+        }
     }
 
     public static List<TransferHistoryDataSet> getTransferHistory() throws Exception {
         String token = TokenRepository.getCurrentToken();
         var sources = new ArrayList<TransferHistoryDataSet>();
-        var cmd = "SELECT * FROM  TransferHistoryDataSet th WHERE th.token = '" + token + "' ORDER BY th.created_at DESC;";
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var results = runQuery(cmd, conn);
-        while (results.next()) {
-            TransferHistoryDataSet dataHistory= new TransferHistoryDataSet();
-            dataHistory.setDate(results.getString("send_date"));
-            dataHistory.setRowcount(results.getString("rowcount"));
-            sources.add(dataHistory);
+        var cmd = "SELECT * FROM  TransferHistoryDataSet th WHERE th.token = ? ORDER BY th.created_at DESC;";
+        try (var conn = openLocalConnection();
+             var stm = conn.prepareStatement(cmd)) {
+            stm.setString(1, token);
+            try (var results = stm.executeQuery()) {
+                while (results.next()) {
+                    TransferHistoryDataSet dataHistory= new TransferHistoryDataSet();
+                    dataHistory.setDate(results.getString("send_date"));
+                    dataHistory.setRowcount(results.getString("rowcount"));
+                    sources.add(dataHistory);
+                }
+            }
         }
-        results.close();
-        conn.close();
         return sources;
     }
 
     public static EmailConfiguration getEmailConfiguration() throws Exception {
         var cmd = "SELECT * FROM EmailConfiguration";
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
-        var results = runQuery(cmd, conn);
         EmailConfiguration emailConfiguration = new EmailConfiguration();
-        if (results.next()) {
-            emailConfiguration.setContact_email_recipient(results.getString("contact_email_recipient"));
-            emailConfiguration.setContact_email_send(results.getString("contact_email_send"));
-            emailConfiguration.setContact_email_token(results.getString("contact_email_token"));
+        try (var conn = openLocalConnection();
+             var stm = conn.prepareStatement(cmd);
+             var results = stm.executeQuery()) {
+            if (results.next()) {
+                emailConfiguration.setContact_email_recipient(results.getString("contact_email_recipient"));
+                emailConfiguration.setContact_email_send(results.getString("contact_email_send"));
+                emailConfiguration.setContact_email_token(results.getString("contact_email_token"));
+            }
         }
-        results.close();
-        conn.close();
         return emailConfiguration;
     }
 }

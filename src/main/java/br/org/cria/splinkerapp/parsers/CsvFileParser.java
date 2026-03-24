@@ -55,8 +55,6 @@ public class CsvFileParser extends FileParser {
     @Override
     public void insertDataIntoTable(Set<String> tabelas) throws Exception {
         String separator = detectSeparator(filePath);
-        var conn = getConnection();
-        conn.setAutoCommit(false);
         var tableName = getTableName();
 
         if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) return;
@@ -66,31 +64,39 @@ public class CsvFileParser extends FileParser {
         var columnCount = columns.size();
         var command = insertIntoCommand.formatted(tableName, columnNames, valuesStr)
                 .replace(",)", ")");
-        var statement = conn.prepareStatement(command);
 
-        while (iterator.hasNext()) {
-            var row = iterator.next();
-            String[] rowValues = row[0].split(separator, -1);
-            for (int j = 0; j < columnCount; j++) {
-                var value = (j < rowValues.length) ? getCellValue(rowValues[j]) : null;
-                statement.setString(j + 1, value);
-            }
-            statement.addBatch();
-            currentRow++;
+        try (var conn = getConnection();
+             var statement = conn.prepareStatement(command)) {
+            conn.setAutoCommit(false);
+            try {
+                while (iterator.hasNext()) {
+                    var row = iterator.next();
+                    String[] rowValues = row[0].split(separator, -1);
+                    for (int j = 0; j < columnCount; j++) {
+                        var value = (j < rowValues.length) ? getCellValue(rowValues[j]) : null;
+                        statement.setString(j + 1, value);
+                    }
+                    statement.addBatch();
+                    currentRow++;
 
-            if (currentRow % 10_000 == 0) {
+                    if (currentRow % 10_000 == 0) {
+                        statement.executeBatch();
+                        conn.commit();
+                        statement.clearBatch();
+                    }
+                    readRowEventBus.post(currentRow);
+                }
+                totalRowCount = currentRow;
                 statement.executeBatch();
                 conn.commit();
                 statement.clearBatch();
+            } catch (Exception ex) {
+                conn.rollback();
+                throw ex;
+            } finally {
+                conn.setAutoCommit(true);
             }
-            readRowEventBus.post(currentRow);
         }
-        totalRowCount = currentRow;
-        statement.executeBatch();
-        conn.commit();
-        statement.clearBatch();
-        conn.setAutoCommit(true);
-        conn.close();
     }
     public static String detectSeparator(String filePath) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {

@@ -4,8 +4,6 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.URI;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,37 +14,35 @@ import io.sentry.Sentry;
 public class ProxyConfigRepository extends BaseRepository {
 
     public static ProxyConfiguration getConfiguration() throws Exception {
-        ProxyConfiguration proxyConfig = null;
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         String sql = "SELECT * FROM ProxyConfiguration LIMIT 1;";
-        ResultSet rs = runQuery(sql, conn);
-        while (rs.next()) {
-            var address = rs.getString("proxy_address");
-            var password = rs.getString("proxy_password");
-            var port = rs.getString("proxy_port");
-            var username = rs.getString("proxy_username");
-
-            proxyConfig = new ProxyConfiguration(address, password, port, username);
+        try (var conn = openLocalConnection();
+             var statement = conn.prepareStatement(sql);
+             var rs = statement.executeQuery()) {
+            if (rs.next()) {
+                var address = rs.getString("proxy_address");
+                var password = rs.getString("proxy_password");
+                var port = rs.getString("proxy_port");
+                var username = rs.getString("proxy_username");
+                return new ProxyConfiguration(address, password, port, username);
+            }
+            return null;
         }
-        conn.close();
-        return proxyConfig;
     }
 
 
     public static void saveProxyConfig(ProxyConfiguration proxyConfig) throws Exception {
         cleanTable("ProxyConfiguration");
-        var conn = DriverManager.getConnection(LOCAL_DB_CONNECTION);
         var sql = """
                 INSERT INTO ProxyConfiguration (proxy_address, proxy_password, proxy_port, proxy_username)
                 VALUES (?,?,?,?);""";
-        var statement = conn.prepareStatement(sql);
-        statement.setString(1, proxyConfig.getAddress());
-        statement.setString(2, proxyConfig.getPassword());
-        statement.setString(3, proxyConfig.getPort());
-        statement.setString(4, proxyConfig.getUsername());
-        statement.executeUpdate();
-        statement.close();
-        conn.close();
+        try (var conn = openLocalConnection();
+             var statement = conn.prepareStatement(sql)) {
+            statement.setString(1, proxyConfig.getAddress());
+            statement.setString(2, proxyConfig.getPassword());
+            statement.setString(3, proxyConfig.getPort());
+            statement.setString(4, proxyConfig.getUsername());
+            statement.executeUpdate();
+        }
     }
 
     @SuppressWarnings("finally")

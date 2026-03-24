@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.DriverManager;
 
 import br.org.cria.splinkerapp.managers.LocalDbManager;
 import io.sentry.Sentry;
 import javafx.concurrent.Task;
+import br.org.cria.splinkerapp.utils.DbConnectionUtil;
 
 public class DatabaseSetup {
     public static void deleteLocalDatabase() throws IOException {
@@ -46,12 +46,10 @@ public class DatabaseSetup {
 
             var content = builder.toString();
             var url = System.getProperty("splinker.connection", LocalDbManager.getLocalDbConnectionString());
-            var conn = DriverManager.getConnection(url);
-            var statement = conn.createStatement();
-            statement.executeUpdate(content);
-
-            statement.close();
-            conn.close();
+            try (var conn = DbConnectionUtil.getConnection(url);
+                 var statement = conn.createStatement()) {
+                statement.executeUpdate(content);
+            }
 
         } catch (Exception e) {
             Sentry.captureException(e);

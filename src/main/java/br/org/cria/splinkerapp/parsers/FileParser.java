@@ -1,7 +1,6 @@
 package br.org.cria.splinkerapp.parsers;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +10,7 @@ import com.google.common.eventbus.EventBus;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.managers.LocalDbManager;
+import br.org.cria.splinkerapp.utils.DbConnectionUtil;
 import br.org.cria.splinkerapp.utils.StringStandards;
 
 public abstract class FileParser {
@@ -37,11 +37,10 @@ public abstract class FileParser {
         if (tableName == null) {
             tableName = getTableName();
         }
-        var conn = getConnection();
-        var statement = conn.createStatement();
-        statement.execute("DROP TABLE IF EXISTS %s;".formatted(tableName));
-        statement.close();
-        conn.close();
+        try (var conn = getConnection();
+             var statement = conn.createStatement()) {
+            statement.execute("DROP TABLE IF EXISTS %s;".formatted(tableName));
+        }
     }
 
     @SuppressWarnings("null")
@@ -63,7 +62,7 @@ public abstract class FileParser {
     protected static String insertIntoCommand = "INSERT INTO %s (%s) VALUES (%s);";
 
     protected Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(CONNECTION_STRING);
+        return DbConnectionUtil.getConnection(CONNECTION_STRING);
     }
 
     protected String getTableName() {
@@ -90,10 +89,9 @@ public abstract class FileParser {
 
     public void createTableBasedOnSheet(Set<String> tabelas) throws Exception {
         var command = buildCreateTableCommand(tabelas);
-        var conn = getConnection();
-        var statement = conn.createStatement();
-        statement.executeUpdate(command);
-        statement.close();
-        conn.close();
+        try (var conn = getConnection();
+             var statement = conn.createStatement()) {
+            statement.executeUpdate(command);
+        }
     }
 }

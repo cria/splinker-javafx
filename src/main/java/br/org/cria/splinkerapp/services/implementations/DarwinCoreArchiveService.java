@@ -16,11 +16,12 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Arrays;
+
+import br.org.cria.splinkerapp.utils.DbConnectionUtil;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import com.github.perlundq.yajsync.ui.YajsyncClient;
@@ -66,7 +67,7 @@ public class DarwinCoreArchiveService {
     private void getDataSetRows(ResultSet data) throws Exception {
         var rowCount = 0;
         boolean firstRow = true;
-        var writer = new BufferedWriter(new FileWriter(this.textFile, true));
+        try (var writer = new BufferedWriter(new FileWriter(this.textFile, true))) {
         while (data.next()) {
             var baseStr = "%s\t";
             if (!firstRow) {
@@ -95,7 +96,7 @@ public class DarwinCoreArchiveService {
             writeDataEventBus.post(rowCount);
         }
         totalRowCount = rowCount;
-        writer.close();
+        }
     }
 
     private void getColumnNames(ResultSet data) throws Exception {
@@ -113,9 +114,9 @@ public class DarwinCoreArchiveService {
         builder.append("\n");
         var columns = builder.toString();
 
-        var writer = new BufferedWriter(new FileWriter(this.textFile, true));
-        writer.write(columns);
-        writer.close();
+        try (var writer = new BufferedWriter(new FileWriter(this.textFile, true))) {
+            writer.write(columns);
+        }
     }
 
     public DarwinCoreArchiveService generateZIPFile() throws Exception {
@@ -138,13 +139,12 @@ public class DarwinCoreArchiveService {
         ApplicationLog.info(message);
 
         var command = DataSetService.getSQLCommandFromApi(ds.getToken());
-        var conn = ds.getDataSetConnection();
-        var statement = conn.createStatement();
-
-        var data = statement.executeQuery(command);
-        getColumnNames(data);
-        getDataSetRows(data);
-        conn.close();
+        try (var conn = ds.getDataSetConnection();
+             var statement = conn.createStatement();
+             var data = statement.executeQuery(command)) {
+            getColumnNames(data);
+            getDataSetRows(data);
+        }
         return this;
     }
 
@@ -184,37 +184,43 @@ public class DarwinCoreArchiveService {
                 'TransferConfiguration','ProxyConfiguration','TransferHistoryDataSet', 'EmailConfiguration');
                 """;
         var connString = System.getProperty("splinker.connection", LocalDbManager.getLocalDbConnectionString());
-        var conn = DriverManager.getConnection(connString);
-        var result = conn.createStatement().executeQuery(cmd);
-        conn.setAutoCommit(false);
-        var statement = conn.createStatement();
-        while (result.next()) {
-            var tableName = result.getString("name");
-            var dropCommand = "DROP TABLE %s;".formatted(tableName);
-            statement.addBatch(dropCommand);
+        try (var conn = DbConnectionUtil.getConnection(connString);
+             var selectStatement = conn.createStatement();
+             var result = selectStatement.executeQuery(cmd);
+             var statement = conn.createStatement()) {
+            conn.setAutoCommit(false);
+            try {
+                while (result.next()) {
+                    var tableName = result.getString("name");
+                    var dropCommand = "DROP TABLE %s;".formatted(tableName);
+                    statement.addBatch(dropCommand);
+                }
+                statement.executeBatch();
+                conn.commit();
+                statement.clearBatch();
+            } catch (Exception ex) {
+                conn.rollback();
+                throw ex;
+            } finally {
+                conn.setAutoCommit(true);
+            }
         }
-        statement.executeBatch();
-        conn.commit();
-        statement.clearBatch();
-        statement.close();
-        result.close();
-        conn.close();
     }
 
     private void deleteSentFiles() throws Exception {
         var token = TokenRepository.getCurrentToken();
         var cmd = "SELECT id FROM DataSetConfiguration WHERE token = '" + token + "';";
         var connString = LocalDbManager.getLocalDbConnectionString();
-        var conn = DriverManager.getConnection(connString);
-        var result = conn.createStatement().executeQuery(cmd);
-
-        while (result.next()) {
-            var datasetId = result.getString("id");
-            var userDir = "%s/%s".formatted(System.getProperty("user.dir"), datasetId);
-            Files.delete(Path.of("%s/occurrence.txt".formatted(userDir)));
-            Files.delete(Path.of("%s/dwca.zip".formatted(userDir)));
-           // Files.delete(Path.of("%s.sql".formatted(userDir)));
-            Files.delete(Path.of("%s/".formatted(userDir)));
+        try (var conn = DbConnectionUtil.getConnection(connString);
+             var statement = conn.prepareStatement(cmd);
+             var result = statement.executeQuery()) {
+            while (result.next()) {
+                var datasetId = result.getString("id");
+                var userDir = "%s/%s".formatted(System.getProperty("user.dir"), datasetId);
+                Files.deleteIfExists(Path.of("%s/occurrence.txt".formatted(userDir)));
+                Files.deleteIfExists(Path.of("%s/dwca.zip".formatted(userDir)));
+                Files.deleteIfExists(Path.of("%s/".formatted(userDir)));
+            }
         }
     }
 

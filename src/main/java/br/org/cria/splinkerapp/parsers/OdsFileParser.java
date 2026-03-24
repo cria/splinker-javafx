@@ -27,64 +27,68 @@ public class OdsFileParser extends FileParser {
     @Override
     public void insertDataIntoTable(Set<String> tabelas) throws Exception {
         int numberOfTabs = spreadSheet.getSheets().size();
-        var conn = getConnection();
         var commandBase = "INSERT INTO %s (%s) VALUES (%s);";
 
-        conn.setAutoCommit(false);
+        try (var conn = getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                for (int i = 0; i < numberOfTabs; i++) {
+                    var sheet = spreadSheet.getSheet(i);
+                    var tableName = StringStandards.normalizeString(sheet.getName());
+                    if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) continue;
+                    var columns = new ArrayList<String>();
+                    var numberOfColumns = sheet.getMaxColumns();
+                    var valuesStr = makeValueString(numberOfColumns);
 
-        for (int i = 0; i < numberOfTabs; i++) {
-            var sheet = spreadSheet.getSheet(i);
-            var tableName = StringStandards.normalizeString(sheet.getName());
-            if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) continue;
-            var columns = new ArrayList<String>();
-            var numberOfColumns = sheet.getMaxColumns();
-            var valuesStr = makeValueString(numberOfColumns);
+                    IntStream.range(0, numberOfColumns).forEach(n ->
+                    {
+                        var field = sheet.getRange(0, n);
+                        var value = field.getValue();
+                        if (value != null) {
+                            columns.add(makeColumnName(value.toString()));
+                        }
 
-            IntStream.range(0, numberOfColumns).forEach(n ->
-            {
-                var field = sheet.getRange(0, n);
-                var value = field.getValue();
-                if (value != null) {
-                    columns.add(makeColumnName(value.toString()));
+                    });
+
+                    var columnNames = String.join(",", columns);
+                    var command = commandBase.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
+                    try (var statement = conn.prepareStatement(command)) {
+                        totalRowCount = sheet.getMaxRows();
+                        numberOfColumns = columns.size();
+
+                        for (int j = 1; j < totalRowCount; j++) {
+                            currentRow = j;
+                            var sheetRow = new ArrayList<Range>();
+                            IntStream.range(0, numberOfColumns).forEach(n -> sheetRow.add(sheet.getRange(currentRow, n)));
+                            var row = getRowAsStringList(sheetRow, numberOfColumns);
+                            var valuesList = row.stream().toList();
+
+                            for (int k = 0; k < valuesList.size(); k++) {
+                                var currentItem = valuesList.get(k);
+                                var value = getCellValue(currentItem);
+                                statement.setString(k + 1, value);
+                            }
+                            statement.addBatch();
+
+                            if (currentRow % 10_000 == 0) {
+                                statement.executeBatch();
+                                conn.commit();
+                                statement.clearBatch();
+                            }
+                            readRowEventBus.post(currentRow);
+                        }
+
+                        statement.executeBatch();
+                        conn.commit();
+                        statement.clearBatch();
+                    }
                 }
-
-            });
-
-            var columnNames = String.join(",", columns);
-            var command = commandBase.formatted(tableName, columnNames, valuesStr).replace(",)", ")");
-            var statement = conn.prepareStatement(command);
-            totalRowCount = sheet.getMaxRows();
-
-
-            numberOfColumns = columns.size(); // número real de colunas
-
-            for (int j = 1; j < totalRowCount; j++) {
-                currentRow = j;
-                var sheetRow = new ArrayList<Range>();
-                IntStream.range(0, numberOfColumns).forEach(n -> sheetRow.add(sheet.getRange(currentRow, n)));
-                var row = getRowAsStringList(sheetRow, numberOfColumns);
-                var valuesList = row.stream().toList();
-
-                for (int k = 0; k < valuesList.size(); k++) {
-                    var currentItem = valuesList.get(k);
-                    var value = getCellValue(currentItem);
-                    statement.setString(k + 1, value);
-                }
-                statement.addBatch();
-
-                if (currentRow % 10_000 == 0) {
-                    statement.executeBatch();
-                    conn.commit();
-                    statement.clearBatch();
-                }
-                readRowEventBus.post(currentRow);
+            } catch (Exception ex) {
+                conn.rollback();
+                throw ex;
+            } finally {
+                conn.setAutoCommit(true);
             }
-
-            statement.executeBatch();
-            conn.commit();
-            statement.clearBatch();
-            conn.setAutoCommit(true);
-            conn.close();
         }
     }
 
