@@ -1,9 +1,7 @@
 package br.org.cria.splinkerapp.controllers;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import br.org.cria.splinkerapp.enums.WindowSizes;
+import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
@@ -11,6 +9,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import org.apache.poi.util.StringUtil;
+
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.Properties;
+import java.util.ResourceBundle;
 
 /*
  * Classe responsável pelo formulário de configuração de banco de dados
@@ -32,6 +36,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
     @FXML
     Button saveBtn;
 
+    private DataSourceType dataSourceType;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -45,6 +50,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
                 hostAddressField.setText(ds.getDbHost());
                 dbNameField.setText(ds.getDbName());
                 portField.setText(ds.getDbPort());
+                dataSourceType = ds.getType();
             }
 
         } catch (Exception e) {
@@ -52,29 +58,152 @@ public class CollectionLocalDatabaseController extends AbstractController {
         }
     }
 
-
     @FXML
     void onSaveButtonClicked() {
         try {
             if (!validateFields()) {
                 return;
             }
+
             var hasPassword = StringUtil.isNotBlank(passwordField.getText());
-            var username = usernameField.getText();
+            var username = usernameField.getText().trim();
             var password = hasPassword ? passwordField.getText() : "";
-            var hostName = hostAddressField.getText();
-            var databaseName = dbNameField.getText();
-            var port = portField.getText();
+            var hostName = hostAddressField.getText().trim();
+            var databaseName = dbNameField.getText().trim();
+            var port = portField.getText().trim();
 
             if (!isValidHost(hostName) || !isValidPort(port)) {
                 return;
             }
+
+            if (dataSourceType == null) {
+                var ds = DataSetService.getDataSet(token);
+                if (ds != null) {
+                    dataSourceType = ds.getType();
+                }
+            }
+
+            if (dataSourceType == null) {
+                showErrorModal("Não foi possível identificar o tipo do banco de dados.");
+                return;
+            }
+
+            boolean connected = testarConexaoComFallbackSsl(
+                    dataSourceType,
+                    hostName,
+                    port,
+                    databaseName,
+                    username,
+                    password
+            );
+
+            if (!connected) {
+                showErrorModal("Não foi possível se conectar ao banco de dados.");
+                return;
+            }
+
             DataSetService.saveSQLDataSource(token, hostName, port, databaseName, username, password);
             navigateTo(getStage(), "home");
 
         } catch (Exception e) {
             handleErrors(e);
         }
+    }
+
+    private boolean testarConexaoComFallbackSsl(DataSourceType dsType,
+                                                String hostName,
+                                                String port,
+                                                String databaseName,
+                                                String username,
+                                                String password) {
+        if (testarConexao(dsType, hostName, port, databaseName, username, password, true)) {
+            return true;
+        }
+
+        return testarConexao(dsType, hostName, port, databaseName, username, password, false);
+    }
+
+    private boolean testarConexao(DataSourceType dsType,
+                                  String hostName,
+                                  String port,
+                                  String databaseName,
+                                  String username,
+                                  String password,
+                                  boolean sslEnabled) {
+        try {
+            String jdbcUrl = montarJdbcUrl(dsType, hostName, port, databaseName, sslEnabled);
+            Properties props = montarPropriedadesConexao(dsType, username, password, sslEnabled);
+
+            try (Connection ignored = DriverManager.getConnection(jdbcUrl, props)) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private String montarJdbcUrl(DataSourceType dsType,
+                                 String hostName,
+                                 String port,
+                                 String databaseName,
+                                 boolean sslEnabled) {
+        switch (dsType) {
+            case PostgreSQL:
+                return "jdbc:postgresql://" + hostName + ":" + port + "/" + databaseName
+                        + "?sslmode=" + (sslEnabled ? "require" : "disable");
+
+            case MySQL:
+                return "jdbc:mysql://" + hostName + ":" + port + "/" + databaseName
+                        + "?useSSL=" + sslEnabled
+                        + "&requireSSL=" + sslEnabled
+                        + "&verifyServerCertificate=false";
+
+            case SQLServer:
+                return "jdbc:sqlserver://" + hostName + ":" + port
+                        + ";databaseName=" + databaseName
+                        + ";encrypt=" + sslEnabled
+                        + ";trustServerCertificate=true";
+
+            case Oracle:
+                return "jdbc:oracle:thin:@" + hostName + ":" + port + ":" + databaseName;
+
+            default:
+                throw new IllegalArgumentException("Tipo de banco não suportado para teste de conexão: " + dsType);
+        }
+    }
+
+    private Properties montarPropriedadesConexao(DataSourceType dsType,
+                                                 String username,
+                                                 String password,
+                                                 boolean sslEnabled) {
+        Properties props = new Properties();
+        props.setProperty("user", username);
+        props.setProperty("password", password);
+
+        if (dsType == DataSourceType.PostgreSQL) {
+            props.setProperty("loginTimeout", "5");
+            if (sslEnabled) {
+                props.setProperty("ssl", "true");
+            } else {
+                props.setProperty("ssl", "false");
+            }
+        }
+
+        if (dsType == DataSourceType.MySQL) {
+            props.setProperty("connectTimeout", "5000");
+            props.setProperty("socketTimeout", "5000");
+        }
+
+        if (dsType == DataSourceType.SQLServer) {
+            props.setProperty("loginTimeout", "5");
+        }
+
+        if (dsType == DataSourceType.Oracle) {
+            props.setProperty("oracle.net.CONNECT_TIMEOUT", "5000");
+            props.setProperty("oracle.jdbc.ReadTimeout", "5000");
+        }
+
+        return props;
     }
 
     private boolean isValidPort(String portStr) {
@@ -136,7 +265,6 @@ public class CollectionLocalDatabaseController extends AbstractController {
         }
         return true;
     }
-
 
     @Override
     protected void setScreensize() {

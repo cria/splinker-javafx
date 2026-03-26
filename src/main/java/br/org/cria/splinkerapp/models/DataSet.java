@@ -152,9 +152,6 @@ public class DataSet {
         this.type = type;
         this.dbHost = host;
         this.dbName = databaseName;
-        this.type = type;
-        this.dbHost = host;
-        this.dbName = databaseName;
         this.dbUser = username;
         this.dbPassword = password;
         this.dbPort = port;
