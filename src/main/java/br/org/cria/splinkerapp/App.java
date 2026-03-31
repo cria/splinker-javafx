@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 public class App {
 
     private static final String COMMAND_VERSION = "--version";
-    private static final String COMMAND_RELEASE_VERSION = "--release-version";
     private static final String COMMAND_CHECK_UPDATE = "--latest-version";
     private static final String COMMAND_UPDATE = "--update";
     private static final String COMMAND_HELP = "--help";
@@ -103,11 +102,8 @@ public class App {
                 case COMMAND_VERSION:
                     exibirVersaoLocal();
                     break;
-                case COMMAND_RELEASE_VERSION:
-                    exibirVersaoReleaseGithub();
-                    break;
                 case COMMAND_CHECK_UPDATE:
-                    verificarSeExisteAtualizacao();
+                    exibirVersaoReleaseGithub();
                     break;
                 case COMMAND_UPDATE:
                     atualizarAplicacao();
@@ -189,7 +185,6 @@ public class App {
         ApplicationLog.info("  java -jar splinker.jar <config-file.txt>");
         ApplicationLog.info("  java -jar splinker.jar <config-file.txt> --collections=collectionA,collectionB");
         ApplicationLog.info("  java -jar splinker.jar " + COMMAND_VERSION);
-        ApplicationLog.info("  java -jar splinker.jar " + COMMAND_RELEASE_VERSION);
         ApplicationLog.info("  java -jar splinker.jar " + COMMAND_CHECK_UPDATE);
         ApplicationLog.info("  java -jar splinker.jar " + COMMAND_UPDATE);
         ApplicationLog.info("  java -jar splinker.jar " + COMMAND_EXAMPLE);
