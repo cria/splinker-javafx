@@ -8,7 +8,7 @@ import io.sentry.SentryOptions.Proxy;
 public class SentryConfig {
 
     public static void setUp() {
-        var dsn = "https://hgf@o4506639520104448.ingest.sentry.io/4506639532032000";
+        var dsn = "https://cf699813548043f5c734471240b2ec6c@o4506639520104448.ingest.sentry.io/4506639532032000";
 
         Sentry.init(options -> {
             options.setDsn(dsn);
