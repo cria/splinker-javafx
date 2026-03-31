@@ -336,6 +336,5 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <finalName>spLinker</finalName>
     </build>
 </project>
