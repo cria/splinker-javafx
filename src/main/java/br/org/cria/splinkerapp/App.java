@@ -41,21 +41,21 @@ public class App {
         String filePath = args[0];
         Set<String> collectionsFilter = extractCollectionsFilter(args);
 
-        ApplicationLog.info("                BEM VINDO AO SPLINK                 ");
-        ApplicationLog.info("Iniciando processo de transmissão");
+        ApplicationLog.info("                WELCOME TO SPLINK                 ");
+        ApplicationLog.info("Starting transmission process");
 
         List<DataSetConfig> datasets;
         try {
             datasets = parseTxt(filePath);
         } catch (IOException e) {
-            ApplicationLog.error("Erro ao ler o arquivo: " + e.getMessage());
-            ApplicationLog.info("Use --example para ver o formato esperado do arquivo.");
+            ApplicationLog.error("Error reading file: " + e.getMessage());
+            ApplicationLog.info("Use --example to see the expected file format.");
             return;
         }
 
         if (datasets.isEmpty()) {
-            ApplicationLog.warn("Nenhum dataset encontrado no arquivo.");
-            ApplicationLog.info("Use --example para ver o formato esperado do arquivo.");
+            ApplicationLog.warn("No datasets found in the file.");
+            ApplicationLog.info("Use --example to see the expected file format.");
             return;
         }
 
@@ -86,11 +86,11 @@ public class App {
         }
 
         ApplicationLog.info("==========================================");
-        ApplicationLog.info("Processamento finalizado.");
-        ApplicationLog.info("Total lido(s): " + total);
-        ApplicationLog.info("Sucesso: " + sucesso);
-        ApplicationLog.info("Falha: " + falha);
-        ApplicationLog.info("Ignorado(s): " + ignorados);
+        ApplicationLog.info("Processing finished.");
+        ApplicationLog.info("Total processed: " + total);
+        ApplicationLog.info("Success: " + sucesso);
+        ApplicationLog.info("Failed: " + falha);
+        ApplicationLog.info("Ignored: " + ignorados);
     }
 
     private static boolean isCommandMode(String[] args) {
@@ -119,29 +119,29 @@ public class App {
                     exibirAjuda();
                     break;
                 default:
-                    ApplicationLog.warn("Comando inválido: " + command);
+                    ApplicationLog.warn("Invalid command: " + command);
                     exibirAjuda();
                     break;
             }
         } catch (Exception e) {
-            ApplicationLog.error("Erro ao processar comando " + command + ": " + e.getMessage());
+            ApplicationLog.error("Error processing command " + command + ": " + e.getMessage());
         }
     }
 
     private static void exibirVersaoLocal() {
         String version = VersionService.getVersion();
-        ApplicationLog.info("Versão local atual: " + version);
+        ApplicationLog.info(version);
     }
 
     private static void exibirVersaoReleaseGithub() throws Exception {
         String releaseVersion = VersionService.getReleaseCurrentVersion();
 
         if (releaseVersion == null || releaseVersion.isBlank()) {
-            ApplicationLog.warn("Não foi possível identificar a versão da release no GitHub.");
+            ApplicationLog.warn("Could not determine GitHub release version.");
             return;
         }
 
-        ApplicationLog.info("Versão atual da release no GitHub: " + releaseVersion);
+        ApplicationLog.info(releaseVersion);
     }
 
     private static void verificarSeExisteAtualizacao() throws Exception {
@@ -149,17 +149,17 @@ public class App {
         String versaoGithub = VersionService.getReleaseCurrentVersion();
 
         if (versaoGithub == null || versaoGithub.isBlank()) {
-            ApplicationLog.warn("Não foi possível consultar a versão da release no GitHub.");
+            ApplicationLog.warn("Could not fetch GitHub release version.");
             return;
         }
 
-        ApplicationLog.info("Versão local: " + versaoLocal);
-        ApplicationLog.info("Versão da release no GitHub: " + versaoGithub);
+        ApplicationLog.info("Local version: " + versaoLocal);
+        ApplicationLog.info("GitHub release version: " + versaoGithub);
 
         if (VersionService.isNewerVersion(versaoLocal, versaoGithub)) {
-            ApplicationLog.info("Há uma nova versão disponível.");
+            ApplicationLog.info("A new version is available.");
         } else {
-            ApplicationLog.info("Sua versão já está atualizada.");
+            ApplicationLog.info("Your version is up to date.");
         }
     }
 
@@ -168,26 +168,26 @@ public class App {
         String versaoGithub = VersionService.getReleaseCurrentVersion();
 
         if (versaoGithub == null || versaoGithub.isBlank()) {
-            ApplicationLog.warn("Não foi possível consultar a versão da release no GitHub.");
+            ApplicationLog.warn("Could not fetch GitHub release version.");
             return;
         }
 
-        ApplicationLog.info("Versão local: " + versaoLocal);
-        ApplicationLog.info("Versão da release no GitHub: " + versaoGithub);
+        ApplicationLog.info("Local version: " + versaoLocal);
+        ApplicationLog.info("GitHub release version: " + versaoGithub);
 
         if (!VersionService.isNewerVersion(versaoLocal, versaoGithub)) {
-            ApplicationLog.info("Sua versão já está atualizada. Nenhuma atualização será executada.");
+            ApplicationLog.info("Your version is already up to date. No update will be executed.");
             return;
         }
 
-        ApplicationLog.info("Nova versão encontrada. Iniciando atualização...");
+        ApplicationLog.info("New version found. Starting update...");
         LocalUpdateService.executeUpdateFromGithubRelease();
     }
 
     private static void exibirAjuda() {
-        ApplicationLog.info("Uso:");
-        ApplicationLog.info("  java -jar splinker.jar <arquivo-config.txt>");
-        ApplicationLog.info("  java -jar splinker.jar <arquivo-config.txt> --collections=colecaoA,colecaoB");
+        ApplicationLog.info("Usage:");
+        ApplicationLog.info("  java -jar splinker.jar <config-file.txt>");
+        ApplicationLog.info("  java -jar splinker.jar <config-file.txt> --collections=collectionA,collectionB");
         ApplicationLog.info("  java -jar splinker.jar " + COMMAND_VERSION);
         ApplicationLog.info("  java -jar splinker.jar " + COMMAND_RELEASE_VERSION);
         ApplicationLog.info("  java -jar splinker.jar " + COMMAND_CHECK_UPDATE);
@@ -198,24 +198,24 @@ public class App {
 
     private static void exibirExemploArquivo() {
         System.out.println("""
-                Exemplo de arquivo de configuração:
+                Example configuration file:
 
                 [dataset]
                 token=TOKEN
-                filePath=C:\\Users\\usuario\\Downloads\\arquivo.xlsx
+                filePath=C:\\Users\\user\\Downloads\\file.xlsx
 
                 [dataset]
                 token=TOKEN
                 host=localhost
                 port=5432
-                dbname=meu_banco
+                dbname=my_database
                 user=postgres
-                passwors=123456
+                password=123456
 
                 [dataset]
                 token=TOKEN
-                filePath=C:\\Users\\usuario\\Downloads\\base.accdb
-                password=1234576
+                filePath=C:\\Users\\user\\Downloads\\base.accdb
+                password=123456
 
                 Notes:
                 - Each [dataset] represents a configuration
@@ -229,12 +229,12 @@ public class App {
 
         try {
             if (token == null || token.isBlank()) {
-                ApplicationLog.error("Dataset ignorado: token não informado.");
+                ApplicationLog.error("Dataset ignored: token not provided.");
                 return ProcessamentoResultado.FALHA;
             }
 
             ApplicationLog.info("==========================================");
-            ApplicationLog.info("Processando token: " + token);
+            ApplicationLog.info("Processing token: " + token);
 
             var apiConfig = DataSetService.getConfigurationDataFromAPI(token);
             TokenRepository.setCurrentToken(token);
@@ -245,12 +245,12 @@ public class App {
             String collName = apiConfig.get("dataset_name").toString();
 
             if (!collectionsFilter.isEmpty() && !collectionsFilter.contains(collName)) {
-                ApplicationLog.info("Coleção ignorada pelo filtro: " + collName);
+                ApplicationLog.info("Collection ignored by filter: " + collName);
                 return ProcessamentoResultado.IGNORADO;
             }
 
-            ApplicationLog.info("Tipo: " + datasouceType);
-            ApplicationLog.info("Coleção: " + collName);
+            ApplicationLog.info("Type: " + datasouceType);
+            ApplicationLog.info("Collection: " + collName);
 
             String datasetAcronym = apiConfig.get("dataset_acronym").toString();
             int id = (int) Double.parseDouble(apiConfig.get("dataset_id").toString());
@@ -263,14 +263,14 @@ public class App {
 
             DataSet ds = DataSetService.getDataSet(token);
 
-            ApplicationLog.info("Iniciando importação de dados.");
+            ApplicationLog.info("Starting data import. Please wait...");
             FileSourceManager fileSourceManager = new FileSourceManager(ds);
             fileSourceManager.importData(
                     SQLiteTableExtractor.extrairTabelas(
                             DataSetService.getSQLCommandFromApi(ds.getToken())
                     )
             );
-            ApplicationLog.info("Importação finalizada");
+            ApplicationLog.info("Import finished");
 
             DarwinCoreArchiveService service = new DarwinCoreArchiveService(ds);
             service.readDataFromSource()
@@ -278,12 +278,12 @@ public class App {
                     .transferData()
                     .cleanData();
 
-            ApplicationLog.info("Transmissão finalizada com sucesso");
+            ApplicationLog.info("Transmission completed successfully");
             DataSetService.deleteDataSet(token);
             return ProcessamentoResultado.SUCESSO;
 
         } catch (Exception e) {
-            ApplicationLog.error("Erro ao processar token " + token + ": " + e.getMessage());
+            ApplicationLog.error("Error processing token " + token + ": " + e.getMessage());
             return ProcessamentoResultado.FALHA;
         }
     }
@@ -292,11 +292,7 @@ public class App {
         switch (dsType) {
             case Access:
                 validar(cfg, "filePath");
-                DataSetService.saveAccessDataSource(
-                        token,
-                        cfg.get("filePath"),
-                        cfg.get("paswword")
-                );
+                DataSetService.saveAccessDataSource(token, cfg.get("filePath"), cfg.get("password"));
                 break;
 
             case dBase:
@@ -305,10 +301,7 @@ public class App {
             case CSV:
             case Numbers:
                 validar(cfg, "filePath");
-                DataSetService.saveSpreadsheetDataSource(
-                        token,
-                        cfg.get("filePath")
-                );
+                DataSetService.saveSpreadsheetDataSource(token, cfg.get("filePath"));
                 break;
 
             case MySQL:
@@ -316,18 +309,11 @@ public class App {
             case SQLServer:
             case Oracle:
                 validar(cfg, "host", "port", "dbname", "user", "password");
-                DataSetService.saveSQLDataSource(
-                        token,
-                        cfg.get("host"),
-                        cfg.get("port"),
-                        cfg.get("dbname"),
-                        cfg.get("user"),
-                        cfg.get("password")
-                );
+                DataSetService.saveSQLDataSource(token, cfg.get("host"), cfg.get("port"), cfg.get("dbname"), cfg.get("user"), cfg.get("password"));
                 break;
 
             default:
-                ApplicationLog.warn("Tipo de fonte não tratado: " + dsType);
+                ApplicationLog.warn("Unhandled data source type: " + dsType);
                 break;
         }
     }
@@ -342,14 +328,10 @@ public class App {
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
 
-                if (line.isEmpty()) {
-                    continue;
-                }
+                if (line.isEmpty()) continue;
 
                 if (line.equalsIgnoreCase("[dataset]")) {
-                    if (current != null) {
-                        datasets.add(current);
-                    }
+                    if (current != null) datasets.add(current);
                     current = new DataSetConfig();
                     continue;
                 }
@@ -367,9 +349,7 @@ public class App {
                 }
             }
 
-            if (current != null) {
-                datasets.add(current);
-            }
+            if (current != null) datasets.add(current);
         }
 
         return datasets;
@@ -390,7 +370,7 @@ public class App {
         for (String campo : campos) {
             String valor = cfg.get(campo);
             if (valor == null || valor.isBlank()) {
-                throw new IllegalArgumentException("Campo obrigatório não informado: " + campo);
+                throw new IllegalArgumentException("Required field not provided: " + campo);
             }
         }
     }
@@ -405,16 +385,8 @@ public class App {
         private String token;
         private final Map<String, String> config = new HashMap<>();
 
-        public String getToken() {
-            return token;
-        }
-
-        public void setToken(String token) {
-            this.token = token;
-        }
-
-        public Map<String, String> getConfig() {
-            return config;
-        }
+        public String getToken() { return token; }
+        public void setToken(String token) { this.token = token; }
+        public Map<String, String> getConfig() { return config; }
     }
 }
