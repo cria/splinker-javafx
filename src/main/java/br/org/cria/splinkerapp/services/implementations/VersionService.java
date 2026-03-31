@@ -19,17 +19,106 @@ public class VersionService {
 
     private static final String GITHUB_RELEASES_URL = "https://api.github.com/repos/cria/splinker-javafx/releases";
 
-
-    public static String getVersion() throws IOException {
+    public static String getVersion() {
         InputStream in = VersionService.class.getResourceAsStream("/version.properties");
         Properties props = new Properties();
-        props.load(in);
+        try {
+            props.load(in);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         String version = props.getProperty("app.version");
 
         return version;
     }
 
     public static String getReleaseCurrentVersion() throws Exception {
+        Map<String, Object> latestRelease = getLatestRelease();
+        if (latestRelease == null) {
+            return null;
+        }
+
+        String releaseName = getString(latestRelease.get("name"));
+        if (releaseName == null || releaseName.isBlank()) {
+            releaseName = getString(latestRelease.get("tag_name"));
+        }
+
+        if (releaseName == null || releaseName.isBlank()) {
+            return null;
+        }
+
+        return normalizeVersion(releaseName);
+    }
+
+    public static String getLatestReleaseDownloadUrlForCurrentOS() throws Exception {
+        Map<String, Object> latestRelease = getLatestRelease();
+        if (latestRelease == null) {
+            return null;
+        }
+
+        Object assetsObject = latestRelease.get("assets");
+        if (!(assetsObject instanceof List)) {
+            return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> assets = (List<Map<String, Object>>) assetsObject;
+
+        String osName = System.getProperty("os.name").toLowerCase();
+
+        if (osName.contains("win")) {
+            return selectWindowsAsset(assets);
+        }
+
+        if (osName.contains("linux") || osName.contains("nux") || osName.contains("nix")) {
+            return selectLinuxAsset(assets);
+        }
+
+        return null;
+    }
+
+    public static boolean isNewerVersion(String localVersion, String remoteVersion) {
+        String safeLocal = normalizeVersion(localVersion);
+        String safeRemote = normalizeVersion(remoteVersion);
+
+        String[] localParts = safeLocal.split("\\.");
+        String[] remoteParts = safeRemote.split("\\.");
+
+        int length = Math.max(localParts.length, remoteParts.length);
+
+        for (int i = 0; i < length; i++) {
+            int localPart = i < localParts.length ? parseVersionPart(localParts[i]) : 0;
+            int remotePart = i < remoteParts.length ? parseVersionPart(remoteParts[i]) : 0;
+
+            if (remotePart > localPart) {
+                return true;
+            }
+            if (remotePart < localPart) {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    private static int parseVersionPart(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    private static String normalizeVersion(String version) {
+        if (version == null || version.isBlank()) {
+            return "0.0.0";
+        }
+
+        String normalized = version.replaceAll("[^0-9.]", "");
+        return normalized.isBlank() ? "0.0.0" : normalized;
+    }
+
+    private static Map<String, Object> getLatestRelease() throws Exception {
         URL url = new URL(GITHUB_RELEASES_URL);
         HttpURLConnection connection;
 
@@ -47,6 +136,13 @@ public class VersionService {
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Accept", "application/json");
         connection.setRequestProperty("User-Agent", "SpLinker-App");
+        connection.setConnectTimeout(10000);
+        connection.setReadTimeout(20000);
+
+        int statusCode = connection.getResponseCode();
+        if (statusCode < 200 || statusCode >= 300) {
+            throw new IllegalStateException("Falha ao consultar releases no GitHub. HTTP " + statusCode);
+        }
 
         StringBuilder responseStr = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
@@ -70,23 +166,58 @@ public class VersionService {
             return null;
         }
 
-        Map<String, Object> latestRelease = releases.get(0);
+        return releases.get(0);
+    }
 
-        String releaseName = latestRelease.get("name") != null
-                ? latestRelease.get("name").toString()
-                : null;
-
-        if (releaseName == null || releaseName.isBlank()) {
-            Object tagName = latestRelease.get("tag_name");
-            if (tagName != null) {
-                releaseName = tagName.toString();
+    private static String selectWindowsAsset(List<Map<String, Object>> assets) {
+        for (Map<String, Object> asset : assets) {
+            String url = getString(asset.get("browser_download_url"));
+            if (url == null) {
+                continue;
+            }
+            if (url.endsWith(".jar")) {
+                return url;
             }
         }
 
-        if (releaseName == null || releaseName.isBlank()) {
-            return null;
+        for (Map<String, Object> asset : assets) {
+            String url = getString(asset.get("browser_download_url"));
+            if (url == null) {
+                continue;
+            }
+            if (url.endsWith(".msi") || url.endsWith(".exe")) {
+                return url;
+            }
         }
 
-        return releaseName.replaceAll("[^0-9.]", "");
+        return null;
+    }
+
+    private static String selectLinuxAsset(List<Map<String, Object>> assets) {
+        for (Map<String, Object> asset : assets) {
+            String url = getString(asset.get("browser_download_url"));
+            if (url == null) {
+                continue;
+            }
+            if (url.endsWith(".jar")) {
+                return url;
+            }
+        }
+
+        for (Map<String, Object> asset : assets) {
+            String url = getString(asset.get("browser_download_url"));
+            if (url == null) {
+                continue;
+            }
+            if (url.endsWith(".deb") || url.endsWith(".rpm") || url.endsWith(".AppImage")) {
+                return url;
+            }
+        }
+
+        return null;
+    }
+
+    private static String getString(Object value) {
+        return value != null ? value.toString() : null;
     }
 }

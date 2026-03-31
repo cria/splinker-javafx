@@ -130,8 +130,8 @@ jobs:
         run: |
           VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
           mkdir -p dist/jar
-          mv target/splinker-$VERSION.jar dist/jar/splinker-$VERSION.jar
-          echo "SPLINKER_FILE=splinker-$VERSION.jar" >> $GITHUB_ENV
+          mv target/splinker-$VERSION.jar dist/jar/splinker.jar
+          echo "SPLINKER_FILE=splinker.jar" >> $GITHUB_ENV
           echo "SPLINKER_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Upload do JAR
@@ -219,7 +219,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/jar/splinker-${{ env.SPLINKER_VERSION }}.jar
-          asset_name: splinker-${{ env.SPLINKER_VERSION }}.jar
+          asset_path: ./dist/jar/splinker.jar
+          asset_name: splinker.jar
           asset_content_type: application/java-archive
-

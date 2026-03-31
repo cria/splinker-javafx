@@ -8,6 +8,7 @@ import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
+import br.org.cria.splinkerapp.services.implementations.LocalUpdateService;
 import br.org.cria.splinkerapp.services.implementations.VersionService;
 import br.org.cria.splinkerapp.utils.SQLiteTableExtractor;
 
@@ -21,6 +22,8 @@ public class App {
 
     private static final String COMMAND_VERSION = "--version";
     private static final String COMMAND_RELEASE_VERSION = "--release-version";
+    private static final String COMMAND_CHECK_UPDATE = "--latest-version";
+    private static final String COMMAND_UPDATE = "--update";
     private static final String COMMAND_HELP = "--help";
     private static final String COMMAND_EXAMPLE = "--example";
 
@@ -46,21 +49,48 @@ public class App {
             datasets = parseTxt(filePath);
         } catch (IOException e) {
             ApplicationLog.error("Erro ao ler o arquivo: " + e.getMessage());
+            ApplicationLog.info("Use --example para ver o formato esperado do arquivo.");
             return;
         }
 
         if (datasets.isEmpty()) {
             ApplicationLog.warn("Nenhum dataset encontrado no arquivo.");
+            ApplicationLog.info("Use --example para ver o formato esperado do arquivo.");
             return;
         }
 
         DatabaseSetup.iniciarDB();
 
+        int total = 0;
+        int sucesso = 0;
+        int falha = 0;
+        int ignorados = 0;
+
         for (DataSetConfig dataSetConfig : datasets) {
-            processarDataset(dataSetConfig, collectionsFilter);
+            total++;
+            ProcessamentoResultado resultado = processarDataset(dataSetConfig, collectionsFilter);
+
+            switch (resultado) {
+                case SUCESSO:
+                    sucesso++;
+                    break;
+                case FALHA:
+                    falha++;
+                    break;
+                case IGNORADO:
+                    ignorados++;
+                    break;
+                default:
+                    break;
+            }
         }
 
+        ApplicationLog.info("==========================================");
         ApplicationLog.info("Processamento finalizado.");
+        ApplicationLog.info("Total lido(s): " + total);
+        ApplicationLog.info("Sucesso: " + sucesso);
+        ApplicationLog.info("Falha: " + falha);
+        ApplicationLog.info("Ignorado(s): " + ignorados);
     }
 
     private static boolean isCommandMode(String[] args) {
@@ -76,11 +106,17 @@ public class App {
                 case COMMAND_RELEASE_VERSION:
                     exibirVersaoReleaseGithub();
                     break;
-                case COMMAND_HELP:
-                    exibirAjuda();
+                case COMMAND_CHECK_UPDATE:
+                    verificarSeExisteAtualizacao();
+                    break;
+                case COMMAND_UPDATE:
+                    atualizarAplicacao();
                     break;
                 case COMMAND_EXAMPLE:
                     exibirExemploArquivo();
+                    break;
+                case COMMAND_HELP:
+                    exibirAjuda();
                     break;
                 default:
                     ApplicationLog.warn("Comando inválido: " + command);
@@ -92,37 +128,9 @@ public class App {
         }
     }
 
-    private static void exibirExemploArquivo() {
-        System.out.println("""
-                Exemplo de arquivo de configuração (config.txt):
-                
-                [dataset]
-                token=SEU_TOKEN_AQUI
-                caminhoArquivo=C:\\caminho\\arquivo.xlsx
-                
-                [dataset]
-                token=SEU_TOKEN_AQUI
-                enderecoHost=localhost
-                porta=5432
-                nomeBanco=meu_banco
-                usuario=postgres
-                senha=123456
-                
-                [dataset]
-                token=SEU_TOKEN_AQUI
-                caminhoArquivo=C:\\caminho\\base.accdb
-                senha=senha_access
-                
-                Observações:
-                - Cada [dataset] representa uma configuração
-                - O token é obrigatório
-                - Os campos variam conforme o tipo da fonte
-                """);
-    }
-
-    private static void exibirVersaoLocal() throws IOException {
+    private static void exibirVersaoLocal() {
         String version = VersionService.getVersion();
-        ApplicationLog.info("Versão atual: " + version);
+        ApplicationLog.info("Versão local atual: " + version);
     }
 
     private static void exibirVersaoReleaseGithub() throws Exception {
@@ -136,23 +144,93 @@ public class App {
         ApplicationLog.info("Versão atual da release no GitHub: " + releaseVersion);
     }
 
+    private static void verificarSeExisteAtualizacao() throws Exception {
+        String versaoLocal = VersionService.getVersion();
+        String versaoGithub = VersionService.getReleaseCurrentVersion();
+
+        if (versaoGithub == null || versaoGithub.isBlank()) {
+            ApplicationLog.warn("Não foi possível consultar a versão da release no GitHub.");
+            return;
+        }
+
+        ApplicationLog.info("Versão local: " + versaoLocal);
+        ApplicationLog.info("Versão da release no GitHub: " + versaoGithub);
+
+        if (VersionService.isNewerVersion(versaoLocal, versaoGithub)) {
+            ApplicationLog.info("Há uma nova versão disponível.");
+        } else {
+            ApplicationLog.info("Sua versão já está atualizada.");
+        }
+    }
+
+    private static void atualizarAplicacao() throws Exception {
+        String versaoLocal = VersionService.getVersion();
+        String versaoGithub = VersionService.getReleaseCurrentVersion();
+
+        if (versaoGithub == null || versaoGithub.isBlank()) {
+            ApplicationLog.warn("Não foi possível consultar a versão da release no GitHub.");
+            return;
+        }
+
+        ApplicationLog.info("Versão local: " + versaoLocal);
+        ApplicationLog.info("Versão da release no GitHub: " + versaoGithub);
+
+        if (!VersionService.isNewerVersion(versaoLocal, versaoGithub)) {
+            ApplicationLog.info("Sua versão já está atualizada. Nenhuma atualização será executada.");
+            return;
+        }
+
+        ApplicationLog.info("Nova versão encontrada. Iniciando atualização...");
+        LocalUpdateService.executeUpdateFromGithubRelease();
+    }
+
     private static void exibirAjuda() {
         ApplicationLog.info("Uso:");
         ApplicationLog.info("  java -jar splinker.jar <arquivo-config.txt>");
-        ApplicationLog.info("  java -jar splinker.jar <arquivo-config.txt> --collections=acronimoColecaoA,acronimoColecaoA");
+        ApplicationLog.info("  java -jar splinker.jar <arquivo-config.txt> --collections=colecaoA,colecaoB");
         ApplicationLog.info("  java -jar splinker.jar " + COMMAND_VERSION);
         ApplicationLog.info("  java -jar splinker.jar " + COMMAND_RELEASE_VERSION);
-        ApplicationLog.info("  java -jar splinker.jar " + COMMAND_HELP);
+        ApplicationLog.info("  java -jar splinker.jar " + COMMAND_CHECK_UPDATE);
+        ApplicationLog.info("  java -jar splinker.jar " + COMMAND_UPDATE);
         ApplicationLog.info("  java -jar splinker.jar " + COMMAND_EXAMPLE);
+        ApplicationLog.info("  java -jar splinker.jar " + COMMAND_HELP);
     }
 
-    private static void processarDataset(DataSetConfig dataSetConfig, Set<String> collectionsFilter) {
+    private static void exibirExemploArquivo() {
+        System.out.println("""
+                Exemplo de arquivo de configuração:
+
+                [dataset]
+                token=TOKEN
+                filePath=C:\\Users\\usuario\\Downloads\\arquivo.xlsx
+
+                [dataset]
+                token=TOKEN
+                host=localhost
+                port=5432
+                dbname=meu_banco
+                user=postgres
+                passwors=123456
+
+                [dataset]
+                token=TOKEN
+                filePath=C:\\Users\\usuario\\Downloads\\base.accdb
+                password=1234576
+
+                Notes:
+                - Each [dataset] represents a configuration
+                - The token is required
+                - The remaining fields vary according to the data source type identified by the API
+                """);
+    }
+
+    private static ProcessamentoResultado processarDataset(DataSetConfig dataSetConfig, Set<String> collectionsFilter) {
         String token = dataSetConfig.getToken();
 
         try {
             if (token == null || token.isBlank()) {
                 ApplicationLog.error("Dataset ignorado: token não informado.");
-                return;
+                return ProcessamentoResultado.FALHA;
             }
 
             ApplicationLog.info("==========================================");
@@ -167,8 +245,8 @@ public class App {
             String collName = apiConfig.get("dataset_name").toString();
 
             if (!collectionsFilter.isEmpty() && !collectionsFilter.contains(collName)) {
-                ApplicationLog.info("Coleção ignorada: " + collName);
-                return;
+                ApplicationLog.info("Coleção ignorada pelo filtro: " + collName);
+                return ProcessamentoResultado.IGNORADO;
             }
 
             ApplicationLog.info("Tipo: " + datasouceType);
@@ -185,7 +263,7 @@ public class App {
 
             DataSet ds = DataSetService.getDataSet(token);
 
-            ApplicationLog.info("Iniciando importação de dados...");
+            ApplicationLog.info("Iniciando importação de dados.");
             FileSourceManager fileSourceManager = new FileSourceManager(ds);
             fileSourceManager.importData(
                     SQLiteTableExtractor.extrairTabelas(
@@ -201,24 +279,23 @@ public class App {
                     .cleanData();
 
             ApplicationLog.info("Transmissão finalizada com sucesso");
-
             DataSetService.deleteDataSet(token);
+            return ProcessamentoResultado.SUCESSO;
 
         } catch (Exception e) {
             ApplicationLog.error("Erro ao processar token " + token + ": " + e.getMessage());
+            return ProcessamentoResultado.FALHA;
         }
     }
 
     private static void salvarFonte(String token, DataSourceType dsType, Map<String, String> cfg) throws Exception {
-
         switch (dsType) {
-
             case Access:
-                validar(cfg, "caminhoArquivo");
+                validar(cfg, "filePath");
                 DataSetService.saveAccessDataSource(
                         token,
-                        cfg.get("caminhoArquivo"),
-                        cfg.get("senha")
+                        cfg.get("filePath"),
+                        cfg.get("paswword")
                 );
                 break;
 
@@ -227,10 +304,10 @@ public class App {
             case LibreOfficeCalc:
             case CSV:
             case Numbers:
-                validar(cfg, "caminhoArquivo");
+                validar(cfg, "filePath");
                 DataSetService.saveSpreadsheetDataSource(
                         token,
-                        cfg.get("caminhoArquivo")
+                        cfg.get("filePath")
                 );
                 break;
 
@@ -238,15 +315,14 @@ public class App {
             case PostgreSQL:
             case SQLServer:
             case Oracle:
-                validar(cfg, "enderecoHost", "porta", "nomeBanco", "usuario", "senha");
-
+                validar(cfg, "host", "port", "dbname", "user", "password");
                 DataSetService.saveSQLDataSource(
                         token,
-                        cfg.get("enderecoHost"),
-                        cfg.get("porta"),
-                        cfg.get("nomeBanco"),
-                        cfg.get("usuario"),
-                        cfg.get("senha")
+                        cfg.get("host"),
+                        cfg.get("port"),
+                        cfg.get("dbname"),
+                        cfg.get("user"),
+                        cfg.get("password")
                 );
                 break;
 
@@ -266,7 +342,9 @@ public class App {
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
 
-                if (line.isEmpty()) continue;
+                if (line.isEmpty()) {
+                    continue;
+                }
 
                 if (line.equalsIgnoreCase("[dataset]")) {
                     if (current != null) {
@@ -317,9 +395,15 @@ public class App {
         }
     }
 
+    private enum ProcessamentoResultado {
+        SUCESSO,
+        FALHA,
+        IGNORADO
+    }
+
     static class DataSetConfig {
         private String token;
-        private Map<String, String> config = new HashMap<>();
+        private final Map<String, String> config = new HashMap<>();
 
         public String getToken() {
             return token;
