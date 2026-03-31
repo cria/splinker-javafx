@@ -40,7 +40,7 @@ public class LocalUpdateService {
         String currentName = currentExecutable.getFileName().toString();
         String downloadedSuffix = getFileExtension(fileName);
 
-        Path downloadedFile = appDir.resolve("splinker_update_download" + downloadedSuffix);
+        Path downloadedFile = appDir.resolve("splinker" + downloadedSuffix);
 
         ApplicationLog.info("Baixando nova versão a partir do GitHub...");
         downloadFile(downloadUrl, downloadedFile);
