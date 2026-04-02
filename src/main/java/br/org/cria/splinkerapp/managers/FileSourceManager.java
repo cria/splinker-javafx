@@ -31,7 +31,7 @@ public class FileSourceManager {
     }
 
     void buildFileParser() throws Exception {
-        var isAccessDb = filePath.endsWith("mdb");
+        var isAccessDb = filePath.endsWith(".mdb") || filePath.endsWith(".accdb");
         var isXLS = filePath.endsWith(".xls");
         var isXLSX = filePath.endsWith(".xlsx");
         var isCsv = filePath.endsWith(".csv") || filePath.endsWith(".tsv") || filePath.endsWith(".txt");
