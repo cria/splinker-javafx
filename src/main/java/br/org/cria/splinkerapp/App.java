@@ -258,14 +258,16 @@ public class App {
 
             DataSet ds = DataSetService.getDataSet(token);
 
-            ApplicationLog.info("Starting data import. Please wait...");
-            FileSourceManager fileSourceManager = new FileSourceManager(ds);
-            fileSourceManager.importData(
-                    SQLiteTableExtractor.extrairTabelas(
-                            DataSetService.getSQLCommandFromApi(ds.getToken())
-                    )
-            );
-            ApplicationLog.info("Import finished");
+            if (ds.isFile() || ds.isAccessDb()) {
+                ApplicationLog.info("Starting data import. Please wait...");
+                FileSourceManager fileSourceManager = new FileSourceManager(ds);
+                fileSourceManager.importData(
+                        SQLiteTableExtractor.extrairTabelas(
+                                DataSetService.getSQLCommandFromApi(ds.getToken())
+                        )
+                );
+                ApplicationLog.info("Import finished");
+            }
 
             DarwinCoreArchiveService service = new DarwinCoreArchiveService(ds);
             service.readDataFromSource()
