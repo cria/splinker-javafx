@@ -22,8 +22,11 @@ public class FileSourceManager {
 
     public FileSourceManager(DataSet ds) throws Exception {
         this.ds = ds;
-        this.filePath = ds.getDataSetFilePath().toLowerCase();
+        if (ds.getDataSetFilePath() != null) {
+            this.filePath = ds.getDataSetFilePath().toLowerCase();
+        }
         buildFileParser();
+
     }
 
     public FileParser getParser() {
