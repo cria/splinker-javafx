@@ -258,7 +258,8 @@ public class App {
 
             DataSet ds = DataSetService.getDataSet(token);
 
-            if (ds.isFile() || ds.isAccessDb()) {
+            if ((ds.isFile() || ds.isAccessDb()) && !ds.isSQLDatabase()) {
+
                 ApplicationLog.info("Starting data import. Please wait...");
                 FileSourceManager fileSourceManager = new FileSourceManager(ds);
                 fileSourceManager.importData(
