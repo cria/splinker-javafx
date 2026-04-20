@@ -149,40 +149,44 @@ public abstract class AbstractController implements Initializable {
     protected void handleErrors(Throwable ex) {
         String msg = "";
         try {
-            if (ex.getLocalizedMessage().contains("no such column")) {
-                String[] split = ex.getLocalizedMessage().split("no such column:");
+            String localizedMessage = ex != null && ex.getLocalizedMessage() != null ? ex.getLocalizedMessage() : "";
+
+            if (isUserFacingValidationError(ex, localizedMessage)) {
+                showErrorModal(localizedMessage);
+            } else if (localizedMessage.contains("no such column")) {
+                String[] split = localizedMessage.split("no such column:");
                 if (split.length > 1) {
                     DataSet dataSet = DataSetService.getDataSet(TokenRepository.getCurrentToken());
                     if (dataSet.isFile()) {
-                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - não foi encontrada a coluna (" + split[1].replace(")", "") + " ) na planilha";
+                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - nÃ£o foi encontrada a coluna (" + split[1].replace(")", "") + " ) na planilha";
                     } else {
-                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - não foi encontrada a coluna (" + split[1].replace(")", "") + " ) no banco de dados";
+                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - nÃ£o foi encontrada a coluna (" + split[1].replace(")", "") + " ) no banco de dados";
                     }
-                    showErrorModal("Entre em contado com o time de suporte do CRIA e informe o erro:\n\n" + msg, ex.getLocalizedMessage());
-                }
-                Sentry.captureMessage(msg,SentryLevel.ERROR);
-            } else if (ex.getLocalizedMessage().contains("no such table")) {
-                String[] split = ex.getLocalizedMessage().split("no such table:");
-                if (split.length > 1) {
-                    DataSet dataSet = DataSetService.getDataSet(TokenRepository.getCurrentToken());
-                    if (dataSet.isFile()) {
-                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - não foi encontrada a aba (" + split[1].replace(")", "") + " ) na planilha";
-                    } else {
-                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - não foi encontrada a tabela (" + split[1].replace(")", "") + " ) no banco de dados";
-                    }
-                    showErrorModal("Entre em contado com o time de suporte do CRIA e informe o erro:\n\n" + msg, ex.getLocalizedMessage());
+                    showErrorModal("Entre em contado com o time de suporte do CRIA e informe o erro:\n\n" + msg, localizedMessage);
                 }
                 Sentry.captureMessage(msg, SentryLevel.ERROR);
-            } else if (ex.getLocalizedMessage().contains("Can't open the specified file input stream from file")) {
+            } else if (localizedMessage.contains("no such table")) {
+                String[] split = localizedMessage.split("no such table:");
+                if (split.length > 1) {
+                    DataSet dataSet = DataSetService.getDataSet(TokenRepository.getCurrentToken());
+                    if (dataSet.isFile()) {
+                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - nÃ£o foi encontrada a aba (" + split[1].replace(")", "") + " ) na planilha";
+                    } else {
+                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - nÃ£o foi encontrada a tabela (" + split[1].replace(")", "") + " ) no banco de dados";
+                    }
+                    showErrorModal("Entre em contado com o time de suporte do CRIA e informe o erro:\n\n" + msg, localizedMessage);
+                }
+                Sentry.captureMessage(msg, SentryLevel.ERROR);
+            } else if (localizedMessage.contains("Can't open the specified file input stream from file")) {
                 NoSuchFileException cause = (NoSuchFileException) ex.getCause();
-                msg = "Não foi possivel abrir o arquivo em: " + cause.getFile() + ".  Certifique se o arquivo está no local correto e ajuste na configuração. \n " +
-                        "Para ajustar, acesse a área de configuração para escolher corretamente o arquivo válido. Qualquer dúvida, entre em contato com o time de suporte CRIA";
-                showErrorModal(msg, "Para ajustar, acesse a área de configuração para escolher corretamente o arquivo válido");
-            } else if (ex.getLocalizedMessage().contains("br.org.cria.splinkerapp.models.DataSet.getDataSetFilePath()") && ex.getLocalizedMessage().contains("null")) {
+                msg = "NÃ£o foi possivel abrir o arquivo em: " + cause.getFile() + ".  Certifique se o arquivo estÃ¡ no local correto e ajuste na configuraÃ§Ã£o. \n " +
+                        "Para ajustar, acesse a Ã¡rea de configuraÃ§Ã£o para escolher corretamente o arquivo vÃ¡lido. Qualquer dÃºvida, entre em contato com o time de suporte CRIA";
+                showErrorModal(msg, "Para ajustar, acesse a Ã¡rea de configuraÃ§Ã£o para escolher corretamente o arquivo vÃ¡lido");
+            } else if (localizedMessage.contains("br.org.cria.splinkerapp.models.DataSet.getDataSetFilePath()") && localizedMessage.contains("null")) {
                 msg = "Deve ser selecionado um arquivo para extrair os dados.";
                 showErrorModal(msg);
             } else if (isConnectionError(ex)) {
-                msg = "Ausência de conexão com a Internet. Este software precisa de uma conexão para funcionar. Verifique sua conexão e tente novamente.";
+                msg = "AusÃªncia de conexÃ£o com a Internet. Este software precisa de uma conexÃ£o para funcionar. Verifique sua conexÃ£o e tente novamente.";
                 showErrorModal(msg);
             } else {
                 Sentry.captureException(ex);
@@ -197,6 +201,12 @@ public abstract class AbstractController implements Initializable {
             showErrorModal("Erro no spLinker. Entre em contado com o time de suporte do CRIA relatando o problema.", stackTrace);
         }
 
+    }
+
+    private boolean isUserFacingValidationError(Throwable ex, String localizedMessage) {
+        return ex instanceof IllegalArgumentException &&
+                localizedMessage != null &&
+                !localizedMessage.isBlank();
     }
 
     private boolean isConnectionError(Throwable ex) {
