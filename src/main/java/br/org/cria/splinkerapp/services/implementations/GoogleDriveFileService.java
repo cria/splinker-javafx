@@ -45,10 +45,10 @@ public final class GoogleDriveFileService {
         if (!isRemotePath(trimmed)) {
             Path localPath = Path.of(trimmed);
             if (!Files.exists(localPath)) {
-                throw new IllegalArgumentException("O arquivo informado nao foi encontrado.");
+                throw new IllegalArgumentException("O arquivo informado não foi encontrado.");
             }
             if (!Files.isReadable(localPath)) {
-                throw new IllegalArgumentException("Sem permissao para leitura do arquivo informado.");
+                throw new IllegalArgumentException("Sem permissão para leitura do arquivo informado.");
             }
             return;
         }
@@ -104,14 +104,14 @@ public final class GoogleDriveFileService {
 
         String fileId = extractFileId(googleDriveUrl);
         if (fileId == null || fileId.isBlank()) {
-            throw new IllegalArgumentException("Nao foi possivel identificar o arquivo no link do Google Drive informado.");
+            throw new IllegalArgumentException("Não foi possível identificar o arquivo no link do Google Drive informado.");
         }
 
         if (isGoogleSheetsUrl(googleDriveUrl)) {
             HttpResponse exportResponse = executeRequest(buildGoogleSheetsExportUrl(fileId), null);
             if (!isBinaryResponse(exportResponse)) {
                 throw new IllegalArgumentException(
-                        "Nao foi possivel exportar a planilha do Google Sheets. Verifique se ela esta compartilhada para acesso."
+                        "Não foi possível exportar a planilha do Google Sheets. Verifique se ela está compartilhada para acesso."
                 );
             }
             return persistBinaryResponse(exportResponse);
@@ -130,7 +130,7 @@ public final class GoogleDriveFileService {
 
         if (confirmToken == null || confirmToken.isBlank()) {
             throw new IllegalArgumentException(
-                    "Nao foi possivel baixar a planilha do Google Drive. Verifique se o arquivo esta compartilhado para acesso."
+                    "Não foi possível baixar a planilha do Google Drive. Verifique se o arquivo está compartilhado para acesso."
             );
         }
 
@@ -145,7 +145,7 @@ public final class GoogleDriveFileService {
         HttpResponse confirmedResponse = executeRequest(confirmedUrl.toString(), firstResponse.cookieHeader);
         if (!isBinaryResponse(confirmedResponse)) {
             throw new IllegalArgumentException(
-                    "O Google Drive nao retornou um arquivo Excel valido. Verifique se o link aponta para um .xls ou .xlsx."
+                    "O Google Drive não retornou um arquivo Excel válido. Verifique se o link aponta para um .xls ou .xlsx."
             );
         }
 
@@ -282,13 +282,13 @@ public final class GoogleDriveFileService {
 
     private static IllegalArgumentException buildRequestException(int statusCode) {
         if (statusCode == 401) {
-            return new IllegalArgumentException("Voce nao tem permissao de leitura deste arquivo no Google Drive. Verifique se o link esta compartilhado corretamente.");
+            return new IllegalArgumentException("Você não tem permissão de leitura deste arquivo no Google Drive. Verifique se o link está compartilhado corretamente.");
         }
         if (statusCode == 403) {
-            return new IllegalArgumentException("Sem permissao para acessar este arquivo no Google Drive. Verifique se o link esta compartilhado.");
+            return new IllegalArgumentException("Sem permissão para acessar este arquivo no Google Drive. Verifique se o link está compartilhado.");
         }
         if (statusCode == 404) {
-            return new IllegalArgumentException("Arquivo nao encontrado no Google Drive. Verifique se o link esta correto.");
+            return new IllegalArgumentException("Arquivo não encontrado no Google Drive. Verifique se o link está correto.");
         }
         return new IllegalArgumentException("Falha ao acessar o arquivo remoto no Google Drive. HTTP " + statusCode);
     }
