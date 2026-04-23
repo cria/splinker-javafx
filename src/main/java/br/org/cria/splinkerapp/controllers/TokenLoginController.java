@@ -98,6 +98,7 @@ public class TokenLoginController extends AbstractController {
                         break;
                     case dBase:
                     case Excel:
+                    case GoogleSheets:
                     case LibreOfficeCalc:
                     case CSV:
                     case Numbers:

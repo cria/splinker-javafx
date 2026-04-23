@@ -8,7 +8,9 @@ public enum DataSourceType {
     Oracle,
     dBase,
     Excel,
+    GoogleSheets,
     LibreOfficeCalc,
     CSV,
     Numbers,
+
 }

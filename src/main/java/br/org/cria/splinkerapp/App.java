@@ -295,6 +295,7 @@ public class App {
 
             case dBase:
             case Excel:
+            case GoogleSheets:
             case LibreOfficeCalc:
             case CSV:
             case Numbers:

@@ -45,6 +45,10 @@ public class FileSourceManager {
     }
 
     void buildFileParser() throws Exception {
+        if (ds.getType() == DataSourceType.GoogleSheets && !GoogleDriveFileService.isRemotePath(filePath)) {
+            throw new IllegalArgumentException("Para fontes GoogleSheets, informe um link do Google Drive ou Google Sheets.");
+        }
+
         var remoteSpreadsheet = resolveGoogleDriveSpreadsheetIfNeeded();
         if (remoteSpreadsheet != null) {
             configureGoogleDriveSpreadsheetParser(remoteSpreadsheet);
@@ -114,11 +118,15 @@ public class FileSourceManager {
             throw new IllegalArgumentException("Links remotos para planilhas devem ser informados via Google Drive.");
         }
 
-        if (ds.getType() != DataSourceType.Excel) {
-            throw new IllegalArgumentException("Links do Google Drive sao suportados apenas para arquivos Excel (.xls e .xlsx).");
+        if (!isGoogleDriveSpreadsheetSource()) {
+            throw new IllegalArgumentException("Links do Google Drive sao suportados apenas para fontes Excel ou GoogleSheets.");
         }
 
         return GoogleDriveFileService.downloadSpreadsheet(filePath);
+    }
+
+    private boolean isGoogleDriveSpreadsheetSource() {
+        return ds.getType() == DataSourceType.Excel || ds.getType() == DataSourceType.GoogleSheets;
     }
 
     private void configureGoogleDriveSpreadsheetParser(SpreadsheetRemoteFile remoteFile) throws Exception {

@@ -13,31 +13,25 @@ import br.org.cria.splinkerapp.services.implementations.GoogleDriveFileService;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 
 public class FileSelectionController extends AbstractController {
 
-    @FXML
-    RadioButton localOption;
-    @FXML
-    RadioButton remoteOption;
-    @FXML
-    HBox localBox;
-    @FXML
-    HBox remoteBox;
     @FXML
     Label sourceTypeTitle;
     @FXML
     Label sourceTypeDescription;
     @FXML
     Label remoteHelpLabel;
+    @FXML
+    HBox localBox;
+    @FXML
+    HBox remoteBox;
     @FXML
     TextField localFilePath;
     @FXML
@@ -50,7 +44,6 @@ public class FileSelectionController extends AbstractController {
     File file;
     FileChooser fileChooser = new FileChooser();
     DataSet ds;
-    ToggleGroup sourceTypeGroup = new ToggleGroup();
 
     @FXML
     void onButtonSelectFileClicked() {
@@ -79,15 +72,13 @@ public class FileSelectionController extends AbstractController {
         }
     }
 
-    @FXML
-    void onSourceTypeChanged() {
-        updateSourceTypeView();
-        updateSaveButtonState();
-    }
-
     private void validateBeforeSave(String datasourcePath) throws Exception {
-        if (GoogleDriveFileService.isRemotePath(datasourcePath) && ds.getType() != DataSourceType.Excel) {
-            throw new IllegalArgumentException("Links remotos sao suportados apenas para fontes Excel.");
+        if (ds.getType() == DataSourceType.GoogleSheets && !GoogleDriveFileService.isRemotePath(datasourcePath)) {
+            throw new IllegalArgumentException("Para fontes GoogleSheets, informe um link do Google Drive ou Google Sheets.");
+        }
+
+        if (GoogleDriveFileService.isRemotePath(datasourcePath) && ds.getType() != DataSourceType.GoogleSheets) {
+            throw new IllegalArgumentException("Links remotos sao suportados apenas para fontes GoogleSheets.");
         }
 
         GoogleDriveFileService.validateAccess(datasourcePath);
@@ -101,71 +92,43 @@ public class FileSelectionController extends AbstractController {
         btnSelectFile.setPadding(Insets.EMPTY);
     }
 
-    private void configureSourceTypeOptions() {
-        localOption.setToggleGroup(sourceTypeGroup);
-        remoteOption.setToggleGroup(sourceTypeGroup);
+    private void configureViewByDataSetType() {
+        boolean googleSheetsSource = ds.getType() == DataSourceType.GoogleSheets;
 
-        boolean excelSource = ds.getType() == DataSourceType.Excel;
-        remoteOption.setDisable(!excelSource);
-        remoteUrl.setTooltip(new Tooltip("Cole aqui um link publico do Google Drive ou Google Sheets."));
+        localBox.setVisible(!googleSheetsSource);
+        localBox.setManaged(!googleSheetsSource);
 
-        localFilePath.textProperty().addListener((__, ___, ____) -> updateSaveButtonState());
-        remoteUrl.textProperty().addListener((__, ___, ____) -> updateSaveButtonState());
+        remoteBox.setVisible(googleSheetsSource);
+        remoteBox.setManaged(googleSheetsSource);
 
-        if (!excelSource) {
-            localOption.setSelected(true);
-            localOption.setVisible(false);
-            localOption.setManaged(false);
-            remoteOption.setVisible(false);
-            remoteOption.setManaged(false);
-            sourceTypeTitle.setVisible(false);
-            sourceTypeTitle.setManaged(false);
-            sourceTypeDescription.setVisible(false);
-            sourceTypeDescription.setManaged(false);
-            remoteHelpLabel.setVisible(false);
-            remoteHelpLabel.setManaged(false);
-            remoteBox.setVisible(false);
-            remoteBox.setManaged(false);
+        remoteHelpLabel.setVisible(googleSheetsSource);
+        remoteHelpLabel.setManaged(googleSheetsSource);
+
+        if (googleSheetsSource) {
+            sourceTypeTitle.setText("Link da Planilha");
+            sourceTypeDescription.setText("Informe o link da planilha com os dados para envio à rede speciesLink.");
+            remoteUrl.setTooltip(new Tooltip("Cole aqui um link publico do Google Drive ou Google Sheets."));
+            return;
         }
+
+        sourceTypeTitle.setText("Caminho do arquivo");
+        sourceTypeDescription.setText("Selecione o arquivo com os dados para envio à rede speciesLink.");
     }
 
     private void loadExistingValue() {
         String savedPath = ds.getDataSetFilePath();
         if (savedPath == null || savedPath.trim().isEmpty()) {
-            localOption.setSelected(true);
-            updateSourceTypeView();
             updateSaveButtonState();
             return;
         }
 
-        if (ds.getType() == DataSourceType.Excel && GoogleDriveFileService.isRemotePath(savedPath)) {
-            remoteOption.setSelected(true);
+        if (ds.getType() == DataSourceType.GoogleSheets) {
             remoteUrl.setText(savedPath);
         } else {
-            localOption.setSelected(true);
             localFilePath.setText(savedPath);
         }
 
-        updateSourceTypeView();
         updateSaveButtonState();
-    }
-
-    private void updateSourceTypeView() {
-        if (ds.getType() != DataSourceType.Excel) {
-            localBox.setVisible(true);
-            localBox.setManaged(true);
-            remoteBox.setVisible(false);
-            remoteBox.setManaged(false);
-            return;
-        }
-
-        boolean remoteSelected = remoteOption.isSelected();
-
-        localBox.setVisible(!remoteSelected);
-        localBox.setManaged(!remoteSelected);
-
-        remoteBox.setVisible(remoteSelected);
-        remoteBox.setManaged(remoteSelected);
     }
 
     private void updateSaveButtonState() {
@@ -174,7 +137,7 @@ public class FileSelectionController extends AbstractController {
     }
 
     private String getSelectedPath() {
-        return remoteOption.isSelected() ? remoteUrl.getText() : localFilePath.getText();
+        return ds.getType() == DataSourceType.GoogleSheets ? remoteUrl.getText() : localFilePath.getText();
     }
 
     @Override
@@ -185,7 +148,11 @@ public class FileSelectionController extends AbstractController {
             ds = DataSetService.getDataSet(token);
 
             configureButtons();
-            configureSourceTypeOptions();
+            configureViewByDataSetType();
+
+            localFilePath.textProperty().addListener((__, ___, ____) -> updateSaveButtonState());
+            remoteUrl.textProperty().addListener((__, ___, ____) -> updateSaveButtonState());
+
             loadExistingValue();
         } catch (Exception e) {
             handleErrors(e);
