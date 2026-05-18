@@ -109,7 +109,7 @@ public class DarwinCoreArchiveService {
             if (i==count) {
                 baseStr = "%s";
             }
-            builder.append(baseStr.formatted(metaData.getColumnName(i)));
+            builder.append(baseStr.formatted(metaData.getColumnLabel(i)));
         }
         builder.append("\n");
         var columns = builder.toString();
