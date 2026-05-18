@@ -197,9 +197,11 @@ public class AccessFileParser extends FileParser {
         for (var name : tableNames) {
             List<String> columns = new ArrayList<>();
             try {
-                Table table = db.getTable(name);
                 var finalTableName = StringStandards.normalizeString(name);
                 if (SQLKeywordChecker.isReservedSQLKeyword(finalTableName)) continue;
+                if (tabelas != null && !tabelas.contains(finalTableName.toLowerCase())) continue;
+
+                Table table = db.getTable(name);
                 if (table == null) {
                     List<Query> queries = db.getQueries();
                     for (Query query : queries) {
@@ -216,8 +218,6 @@ public class AccessFileParser extends FileParser {
                     }
                 }
                 dropTable(finalTableName);
-
-                if (tabelas != null && !tabelas.contains(finalTableName.toLowerCase())) continue;
 
                 if (columns.isEmpty()) continue;
                 builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(finalTableName));

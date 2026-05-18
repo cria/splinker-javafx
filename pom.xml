@@ -5,7 +5,7 @@
 
     <groupId>br.org.cria</groupId>
     <artifactId>splinker</artifactId>
-    <version>7.3.0</version>
+    <version>7.4.0</version>
     <name>spLinker</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -123,6 +123,12 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>8.2.0</version>
         </dependency>
+        <!-- MariaDB JDBC driver dependency - https://mariadb.com/kb/en/about-mariadb-connector-j/ -->
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.5.8</version>
+        </dependency>
         <!-- SQL Server JDBC driver dependency -
         https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
         <dependency>
@@ -134,7 +140,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.6.1</version>
+            <version>42.7.11</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

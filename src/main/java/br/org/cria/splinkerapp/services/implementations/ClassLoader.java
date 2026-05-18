@@ -10,6 +10,9 @@ public class ClassLoader {
             case MySQL:
                 name = "com.mysql.cj.jdbc.Driver";
                 break;
+            case MariaDB:
+                name = "org.mariadb.jdbc.Driver";
+                break;
             case PostgreSQL:
                 name = "org.postgresql.Driver";
                 break;

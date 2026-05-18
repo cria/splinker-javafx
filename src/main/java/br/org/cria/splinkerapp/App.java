@@ -304,6 +304,7 @@ public class App {
                 break;
 
             case MySQL:
+            case MariaDB:
             case PostgreSQL:
             case SQLServer:
             case Oracle:

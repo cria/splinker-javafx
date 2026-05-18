@@ -178,6 +178,7 @@ public class DataSet {
 
     public boolean isSQLDatabase() {
         return this.type.equals(DataSourceType.MySQL) ||
+                this.type.equals(DataSourceType.MariaDB) ||
                 this.type.equals(DataSourceType.Oracle) ||
                 this.type.equals(DataSourceType.PostgreSQL) ||
                 this.type.equals(DataSourceType.SQLServer);
@@ -195,6 +196,10 @@ public class DataSet {
                 case MySQL:
                     connectionString = "jdbc:%s://%s/%s?user=%s&password=%s"//&allowPublicKeyRetrieval=true&useSSL=false"
                             .formatted(type.name().toLowerCase(), host, databaseName, username, password);
+                    break;
+                case MariaDB:
+                    connectionString = "jdbc:mariadb://%s:%s/%s?user=%s&password=%s"
+                            .formatted(host, port, databaseName, username, password);
                     break;
                 case PostgreSQL:
                     connectionString = "jdbc:%s://%s/%s?user=%s&password=%s"

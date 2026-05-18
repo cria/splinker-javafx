@@ -158,6 +158,10 @@ public class CollectionLocalDatabaseController extends AbstractController {
                         + "&requireSSL=" + sslEnabled
                         + "&verifyServerCertificate=false";
 
+            case MariaDB:
+                return "jdbc:mariadb://" + hostName + ":" + port + "/" + databaseName
+                        + "?sslMode=" + (sslEnabled ? "trust" : "disable");
+
             case SQLServer:
                 return "jdbc:sqlserver://" + hostName + ":" + port
                         + ";databaseName=" + databaseName
@@ -189,7 +193,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
             }
         }
 
-        if (dsType == DataSourceType.MySQL) {
+        if (dsType == DataSourceType.MySQL || dsType == DataSourceType.MariaDB) {
             props.setProperty("connectTimeout", "5000");
             props.setProperty("socketTimeout", "5000");
         }
