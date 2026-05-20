@@ -1,7 +1,10 @@
 package br.org.cria.splinkerapp.models;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import br.org.cria.splinkerapp.managers.LocalDbManager;
 import br.org.cria.splinkerapp.utils.DbConnectionUtil;
@@ -202,8 +205,8 @@ public class DataSet {
                             .formatted(host, port, databaseName, username, password);
                     break;
                 case PostgreSQL:
-                    connectionString = "jdbc:%s://%s/%s?user=%s&password=%s"
-                            .formatted(type.name().toLowerCase(), host, databaseName, username, password);
+                    connectionString = "jdbc:%s://%s:%s/%s?user=%s&password=%s"
+                            .formatted(type.name().toLowerCase(), host, port, databaseName, username, password);
                     break;
                 case Oracle:
                     connectionString = "jdbc:%s:thin:%s/%s@%s:%s:%s"
@@ -225,6 +228,10 @@ public class DataSet {
     }
 
     public Connection getDataSetConnection() throws Exception {
+        if (this.type == DataSourceType.PostgreSQL) {
+            return getPostgreSqlConnectionWithSslFallback();
+        }
+
         var hasUserName = this.dbUser != null && this.dbUser.trim().length() > 0;
         var passwordIsNull = this.dbPassword != null;
         var hasPassword = this.isAccessDb() ? passwordIsNull && this.dbPassword.trim().length() > 0
@@ -234,5 +241,50 @@ public class DataSet {
         return hasUserNameAndPassword ?
                 DbConnectionUtil.getConnection(connectionString, this.dbUser, this.dbPassword) :
                 DbConnectionUtil.getConnection(connectionString);
+    }
+
+    private Connection getPostgreSqlConnectionWithSslFallback() throws SQLException {
+        SQLException firstException;
+
+        try {
+            return getConnection(withPostgreSqlSslMode("require"));
+        } catch (SQLException e) {
+            firstException = e;
+        }
+
+        try {
+            return getConnection(withPostgreSqlSslMode("disable"));
+        } catch (SQLException e) {
+            e.addSuppressed(firstException);
+            throw e;
+        }
+    }
+
+    private Connection getConnection(String url) throws SQLException {
+        var hasUserName = this.dbUser != null && !this.dbUser.trim().isEmpty();
+        return hasUserName ?
+                DbConnectionUtil.getConnection(url, this.dbUser, this.dbPassword) :
+                DbConnectionUtil.getConnection(url);
+    }
+
+    private String withPostgreSqlSslMode(String sslMode) {
+        String url = removeJdbcQueryParameter(connectionString, "sslmode");
+        return url + (url.contains("?") ? "&" : "?") + "sslmode=" + sslMode;
+    }
+
+    private String removeJdbcQueryParameter(String url, String parameterName) {
+        int queryStart = url.indexOf('?');
+        if (queryStart < 0) {
+            return url;
+        }
+
+        String baseUrl = url.substring(0, queryStart);
+        String query = url.substring(queryStart + 1);
+        String filteredQuery = Arrays.stream(query.split("&"))
+                .filter(parameter -> !parameter.equals(parameterName)
+                        && !parameter.startsWith(parameterName + "="))
+                .collect(Collectors.joining("&"));
+
+        return filteredQuery.isEmpty() ? baseUrl : baseUrl + "?" + filteredQuery;
     }
 }
