@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
@@ -9,8 +10,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.poi.util.StringUtil;
 
 import java.net.URL;
@@ -24,7 +23,6 @@ import java.util.ResourceBundle;
  * Classe responsável pelo formulário de configuração de banco de dados
  */
 public class CollectionLocalDatabaseController extends AbstractController {
-    private static final Log log = LogFactory.getLog(CollectionLocalDatabaseController.class);
 
     @FXML
     TextField usernameField;
@@ -51,7 +49,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
             var ds = DataSetService.getDataSet(token);
             if (ds != null) {
                 if (ds.getType() == DataSourceType.PostgreSQL) {
-                    log.info("[POSTGRES] Inicializando tela de configuracao PostgreSQL com dados locais. %s"
+                    ApplicationLog.info("[POSTGRES] Inicializando tela de configuracao PostgreSQL com dados locais. %s"
                             .formatted(DatabaseLogUtil.describeDataSet(ds)));
                 }
                 usernameField.setText(ds.getDbUser());
@@ -98,7 +96,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
             }
 
             if (dataSourceType == DataSourceType.PostgreSQL) {
-                log.info("[POSTGRES] Iniciando fluxo de teste/salvamento PostgreSQL. token=%s, host=%s, port=%s, dbName=%s, user=%s, hasPassword=%s"
+                ApplicationLog.info("[POSTGRES] Iniciando fluxo de teste/salvamento PostgreSQL. token=%s, host=%s, port=%s, dbName=%s, user=%s, hasPassword=%s"
                         .formatted(token, hostName, port, databaseName, username, password != null && !password.isBlank()));
             }
 
@@ -113,7 +111,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
 
             if (!connected) {
                 if (dataSourceType == DataSourceType.PostgreSQL) {
-                    log.info("[POSTGRES] Teste inicial de conexao PostgreSQL falhou em todas as tentativas. token=%s, host=%s, port=%s, dbName=%s, user=%s"
+                    ApplicationLog.info("[POSTGRES] Teste inicial de conexao PostgreSQL falhou em todas as tentativas. token=%s, host=%s, port=%s, dbName=%s, user=%s"
                             .formatted(token, hostName, port, databaseName, username));
                 }
                 showErrorModal("Não foi possível se conectar ao banco de dados.");
@@ -121,12 +119,12 @@ public class CollectionLocalDatabaseController extends AbstractController {
             }
 
             if (dataSourceType == DataSourceType.PostgreSQL) {
-                log.info("[POSTGRES] Teste inicial de conexao PostgreSQL aprovado. Salvando configuracao local. token=%s"
+                ApplicationLog.info("[POSTGRES] Teste inicial de conexao PostgreSQL aprovado. Salvando configuracao local. token=%s"
                         .formatted(token));
             }
             DataSetService.saveSQLDataSource(token, hostName, port, databaseName, username, password);
             if (dataSourceType == DataSourceType.PostgreSQL) {
-                log.info("[POSTGRES] Configuracao PostgreSQL salva com sucesso. token=%s, host=%s, port=%s, dbName=%s, user=%s"
+                ApplicationLog.info("[POSTGRES] Configuracao PostgreSQL salva com sucesso. token=%s, host=%s, port=%s, dbName=%s, user=%s"
                         .formatted(token, hostName, port, databaseName, username));
             }
             navigateTo(getStage(), "home");
@@ -143,7 +141,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
                                                 String username,
                                                 String password) {
         if (dsType == DataSourceType.PostgreSQL) {
-            log.info("[POSTGRES] Iniciando teste inicial com fallback SSL. Primeiro sslmode=require, depois sslmode=disable.");
+            ApplicationLog.info("[POSTGRES] Iniciando teste inicial com fallback SSL. Primeiro sslmode=require, depois sslmode=disable.");
         }
         if (testarConexao(dsType, hostName, port, databaseName, username, password, true)) {
             return true;
@@ -163,28 +161,28 @@ public class CollectionLocalDatabaseController extends AbstractController {
             String jdbcUrl = montarJdbcUrl(dsType, hostName, port, databaseName, sslEnabled);
             Properties props = montarPropriedadesConexao(dsType, username, password, sslEnabled);
             if (dsType == DataSourceType.PostgreSQL) {
-                log.info("[POSTGRES] Testando conexao inicial. sslEnabled=%s, url=%s, props=%s"
+                ApplicationLog.info("[POSTGRES] Testando conexao inicial. sslEnabled=%s, url=%s, props=%s"
                         .formatted(sslEnabled, DatabaseLogUtil.showJdbcUrlWithCredentials(jdbcUrl),
                                 DatabaseLogUtil.describeConnectionProperties(props)));
             }
 
             try (Connection ignored = DriverManager.getConnection(jdbcUrl, props)) {
                 if (dsType == DataSourceType.PostgreSQL) {
-                    log.info("[POSTGRES] Teste de conexao inicial bem-sucedido. sslEnabled=%s, url=%s"
+                    ApplicationLog.info("[POSTGRES] Teste de conexao inicial bem-sucedido. sslEnabled=%s, url=%s"
                             .formatted(sslEnabled, DatabaseLogUtil.showJdbcUrlWithCredentials(jdbcUrl)));
                 }
                 return true;
             }
         } catch (SQLException e) {
             if (dsType == DataSourceType.PostgreSQL) {
-                log.info("[POSTGRES] Teste de conexao inicial falhou. sslEnabled=%s, host=%s, port=%s, dbName=%s, user=%s, erro=%s"
+                ApplicationLog.info("[POSTGRES] Teste de conexao inicial falhou. sslEnabled=%s, host=%s, port=%s, dbName=%s, user=%s, erro=%s"
                         .formatted(sslEnabled, hostName, port, databaseName, username,
                                 DatabaseLogUtil.describeSqlException(e)));
             }
             return false;
         } catch (Exception e) {
             if (dsType == DataSourceType.PostgreSQL) {
-                log.info("[POSTGRES] Teste de conexao inicial falhou com erro nao-SQL. sslEnabled=%s, host=%s, port=%s, dbName=%s, user=%s, erro=%s: %s"
+                ApplicationLog.info("[POSTGRES] Teste de conexao inicial falhou com erro nao-SQL. sslEnabled=%s, host=%s, port=%s, dbName=%s, user=%s, erro=%s: %s"
                         .formatted(sslEnabled, hostName, port, databaseName, username,
                                 e.getClass().getName(), e.getMessage()));
             }

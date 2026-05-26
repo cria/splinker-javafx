@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.models.EmailConfiguration;
@@ -19,13 +20,8 @@ import br.org.cria.splinkerapp.repositories.BaseRepository;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.utils.DatabaseLogUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 public class DataSetService extends BaseRepository {
-
-
-    private static final Log log = LogFactory.getLog(DataSetService.class);
 
     public static void updateRowcount(String token, int rowCount) throws Exception {
         var cmd = "UPDATE DataSetConfiguration SET last_rowcount = ? WHERE token = ?;";
@@ -156,7 +152,7 @@ public class DataSetService extends BaseRepository {
         var ds = DataSet.factory(token, type, filePath, host, dbName, user, pwd, port,
                 acronym, name, lastRowCount, id, updatedAt);
         if (type == DataSourceType.PostgreSQL) {
-            log.info("[POSTGRES] Configuracao PostgreSQL carregada do banco local. %s"
+            ApplicationLog.info("[POSTGRES] Configuracao PostgreSQL carregada do banco local. %s"
                     .formatted(DatabaseLogUtil.describeDataSet(ds)));
         }
         return ds;
@@ -166,7 +162,7 @@ public class DataSetService extends BaseRepository {
 
         var ds = getDataSetBy("token", token);
         if (ds != null && ds.getType() == DataSourceType.PostgreSQL) {
-            log.info("[POSTGRES] DataSet PostgreSQL encontrado. %s".formatted(DatabaseLogUtil.describeDataSet(ds)));
+            ApplicationLog.info("[POSTGRES] DataSet PostgreSQL encontrado. %s".formatted(DatabaseLogUtil.describeDataSet(ds)));
         }
         return ds;
     }
@@ -247,7 +243,7 @@ public class DataSetService extends BaseRepository {
                                          String dbName, String userName, String password) throws Exception {
         var currentDataSet = getDataSet(token);
         if (currentDataSet != null && currentDataSet.getType() == DataSourceType.PostgreSQL) {
-            log.info("[POSTGRES] Salvando configuracao PostgreSQL no banco local. token=%s, host=%s, port=%s, dbName=%s, user=%s, hasPassword=%s"
+            ApplicationLog.info("[POSTGRES] Salvando configuracao PostgreSQL no banco local. token=%s, host=%s, port=%s, dbName=%s, user=%s, hasPassword=%s"
                     .formatted(token, host, port, dbName, userName, password != null && !password.isBlank()));
         }
         var cmd = """
@@ -267,7 +263,7 @@ public class DataSetService extends BaseRepository {
             stm.setString(6, token);
             int updatedRows = stm.executeUpdate();
             if (currentDataSet != null && currentDataSet.getType() == DataSourceType.PostgreSQL) {
-                log.info("[POSTGRES] Configuracao PostgreSQL gravada no banco local. token=%s, updatedRows=%s"
+                ApplicationLog.info("[POSTGRES] Configuracao PostgreSQL gravada no banco local. token=%s, updatedRows=%s"
                         .formatted(token, updatedRows));
             }
         }

@@ -1,8 +1,7 @@
 package br.org.cria.splinkerapp.utils;
 
+import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.managers.LocalDbManager;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,7 +9,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public final class DbConnectionUtil {
-    private static final Log log = LogFactory.getLog(DbConnectionUtil.class);
     private static final int SQLITE_BUSY_TIMEOUT_MS = 10000;
 
     private DbConnectionUtil() {
@@ -58,7 +56,7 @@ public final class DbConnectionUtil {
             return;
         }
 
-        log.info("[POSTGRES] DbConnectionUtil chamando DriverManager. url=%s, withCredentials=%s, user=%s"
+        ApplicationLog.info("[POSTGRES] DbConnectionUtil chamando DriverManager. url=%s, withCredentials=%s, user=%s"
                 .formatted(DatabaseLogUtil.showJdbcUrlWithCredentials(url), withCredentials, username));
     }
 
@@ -67,7 +65,7 @@ public final class DbConnectionUtil {
             return;
         }
 
-        log.info("[POSTGRES] DbConnectionUtil recebeu conexao do DriverManager. url=%s, autoCommit=%s, catalog=%s, schema=%s, readOnly=%s"
+        ApplicationLog.info("[POSTGRES] DbConnectionUtil recebeu conexao do DriverManager. url=%s, autoCommit=%s, catalog=%s, schema=%s, readOnly=%s"
                 .formatted(DatabaseLogUtil.showJdbcUrlWithCredentials(url), connection.getAutoCommit(),
                         connection.getCatalog(), connection.getSchema(), connection.isReadOnly()));
     }
