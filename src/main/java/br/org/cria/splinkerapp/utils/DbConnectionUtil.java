@@ -1,6 +1,8 @@
 package br.org.cria.splinkerapp.utils;
 
 import br.org.cria.splinkerapp.managers.LocalDbManager;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,20 +10,25 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public final class DbConnectionUtil {
+    private static final Log log = LogFactory.getLog(DbConnectionUtil.class);
     private static final int SQLITE_BUSY_TIMEOUT_MS = 10000;
 
     private DbConnectionUtil() {
     }
 
     public static Connection getConnection(String url) throws SQLException {
+        logPostgreSqlAttempt(url, false, null);
         Connection connection = DriverManager.getConnection(url);
         configure(connection, url);
+        logPostgreSqlSuccess(connection, url);
         return connection;
     }
 
     public static Connection getConnection(String url, String username, String password) throws SQLException {
+        logPostgreSqlAttempt(url, true, username);
         Connection connection = DriverManager.getConnection(url, username, password);
         configure(connection, url);
+        logPostgreSqlSuccess(connection, url);
         return connection;
     }
 
@@ -44,5 +51,28 @@ public final class DbConnectionUtil {
 
         return url.startsWith("jdbc:sqlite:")
                 && url.contains(LocalDbManager.getDbFilePath());
+    }
+
+    private static void logPostgreSqlAttempt(String url, boolean withCredentials, String username) {
+        if (!isPostgreSql(url)) {
+            return;
+        }
+
+        log.info("[POSTGRES] DbConnectionUtil chamando DriverManager. url=%s, withCredentials=%s, user=%s"
+                .formatted(DatabaseLogUtil.showJdbcUrlWithCredentials(url), withCredentials, username));
+    }
+
+    private static void logPostgreSqlSuccess(Connection connection, String url) throws SQLException {
+        if (!isPostgreSql(url)) {
+            return;
+        }
+
+        log.info("[POSTGRES] DbConnectionUtil recebeu conexao do DriverManager. url=%s, autoCommit=%s, catalog=%s, schema=%s, readOnly=%s"
+                .formatted(DatabaseLogUtil.showJdbcUrlWithCredentials(url), connection.getAutoCommit(),
+                        connection.getCatalog(), connection.getSchema(), connection.isReadOnly()));
+    }
+
+    private static boolean isPostgreSql(String url) {
+        return url != null && url.startsWith("jdbc:postgresql:");
     }
 }

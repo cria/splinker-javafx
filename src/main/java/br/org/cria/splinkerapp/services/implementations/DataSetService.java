@@ -18,6 +18,7 @@ import br.org.cria.splinkerapp.models.TransferHistoryDataSet;
 import br.org.cria.splinkerapp.repositories.BaseRepository;
 import br.org.cria.splinkerapp.repositories.CentralServiceRepository;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
+import br.org.cria.splinkerapp.utils.DatabaseLogUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -152,13 +153,22 @@ public class DataSetService extends BaseRepository {
                 : DataSourceType.valueOf(result.getString("datasource_type"));
         var strUpdatedAt = result.getString("updated_at");
         var updatedAt = strUpdatedAt == null ? null : LocalDateTime.parse(strUpdatedAt, dateFormatter);
-        return DataSet.factory(token, type, filePath, host, dbName, user, pwd, port,
+        var ds = DataSet.factory(token, type, filePath, host, dbName, user, pwd, port,
                 acronym, name, lastRowCount, id, updatedAt);
+        if (type == DataSourceType.PostgreSQL) {
+            log.info("[POSTGRES] Configuracao PostgreSQL carregada do banco local. %s"
+                    .formatted(DatabaseLogUtil.describeDataSet(ds)));
+        }
+        return ds;
     }
 
     public static DataSet getDataSet(String token) throws Exception {
 
-        return getDataSetBy("token", token);
+        var ds = getDataSetBy("token", token);
+        if (ds != null && ds.getType() == DataSourceType.PostgreSQL) {
+            log.info("[POSTGRES] DataSet PostgreSQL encontrado. %s".formatted(DatabaseLogUtil.describeDataSet(ds)));
+        }
+        return ds;
     }
 
     public static void saveSQLCommand(String token, List<Double> cmd) throws Exception {
@@ -235,6 +245,11 @@ public class DataSetService extends BaseRepository {
 
     public static void saveSQLDataSource(String token, String host, String port,
                                          String dbName, String userName, String password) throws Exception {
+        var currentDataSet = getDataSet(token);
+        if (currentDataSet != null && currentDataSet.getType() == DataSourceType.PostgreSQL) {
+            log.info("[POSTGRES] Salvando configuracao PostgreSQL no banco local. token=%s, host=%s, port=%s, dbName=%s, user=%s, hasPassword=%s"
+                    .formatted(token, host, port, dbName, userName, password != null && !password.isBlank()));
+        }
         var cmd = """
                     UPDATE DataSetConfiguration
                     SET db_name = ?,
@@ -250,7 +265,11 @@ public class DataSetService extends BaseRepository {
             stm.setString(4, host);
             stm.setString(5, port);
             stm.setString(6, token);
-            stm.executeUpdate();
+            int updatedRows = stm.executeUpdate();
+            if (currentDataSet != null && currentDataSet.getType() == DataSourceType.PostgreSQL) {
+                log.info("[POSTGRES] Configuracao PostgreSQL gravada no banco local. token=%s, updatedRows=%s"
+                        .formatted(token, updatedRows));
+            }
         }
 
     }

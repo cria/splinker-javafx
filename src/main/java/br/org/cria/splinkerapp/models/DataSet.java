@@ -7,9 +7,14 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import br.org.cria.splinkerapp.managers.LocalDbManager;
+import br.org.cria.splinkerapp.utils.DatabaseLogUtil;
 import br.org.cria.splinkerapp.utils.DbConnectionUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class DataSet {
+    private static final Log log = LogFactory.getLog(DataSet.class);
+
     private int id;
 
     public int getId() {
@@ -147,6 +152,10 @@ public class DataSet {
         this.datasetAcronym = datasetAcronym;
     }
 
+    public String getConnectionString() {
+        return connectionString;
+    }
+
     private DataSet(String token, DataSourceType type, String filePath, String host, String databaseName,
                     String username, String password, String port, String connectionString, String datasetAcronym,
                     String datasetName, int lastRowCount, int id, LocalDateTime updatedAt) {
@@ -194,6 +203,11 @@ public class DataSet {
         DataSet ds;
         String connectionString = null;
 
+        if (type == DataSourceType.PostgreSQL) {
+            log.info("[POSTGRES] Construindo DataSet. token=%s, id=%s, type=%s, host=%s, port=%s, dbName=%s, user=%s, hasPassword=%s"
+                    .formatted(token, id, type, host, port, databaseName, username, password != null && !password.isBlank()));
+        }
+
         if (type != null) {
             switch (type) {
                 case MySQL:
@@ -207,6 +221,8 @@ public class DataSet {
                 case PostgreSQL:
                     connectionString = "jdbc:%s://%s:%s/%s?user=%s&password=%s"
                             .formatted(type.name().toLowerCase(), host, port, databaseName, username, password);
+                    log.info("[POSTGRES] String JDBC base gerada para PostgreSQL: %s"
+                            .formatted(DatabaseLogUtil.showJdbcUrlWithCredentials(connectionString)));
                     break;
                 case Oracle:
                     connectionString = "jdbc:%s:thin:%s/%s@%s:%s:%s"
@@ -224,11 +240,16 @@ public class DataSet {
         ds = new DataSet(token, type, filePath, host, databaseName,
                 username, password, port, connectionString, datasetAcronym,
                 datasetName, lastRowCount, id, updated_at);
+        if (type == DataSourceType.PostgreSQL) {
+            log.info("[POSTGRES] DataSet PostgreSQL construido: %s".formatted(DatabaseLogUtil.describeDataSet(ds)));
+        }
         return ds;
     }
 
     public Connection getDataSetConnection() throws Exception {
         if (this.type == DataSourceType.PostgreSQL) {
+            log.info("[POSTGRES] Abrindo conexao do DataSet PostgreSQL com fallback SSL. %s"
+                    .formatted(DatabaseLogUtil.describeDataSet(this)));
             return getPostgreSqlConnectionWithSslFallback();
         }
 
@@ -247,14 +268,20 @@ public class DataSet {
         SQLException firstException;
 
         try {
+            log.info("[POSTGRES] Tentativa 1/2 de conexao PostgreSQL usando sslmode=require.");
             return getConnection(withPostgreSqlSslMode("require"));
         } catch (SQLException e) {
             firstException = e;
+            log.info("[POSTGRES] Falha na tentativa PostgreSQL com sslmode=require. %s"
+                    .formatted(DatabaseLogUtil.describeSqlException(e)));
         }
 
         try {
+            log.info("[POSTGRES] Tentativa 2/2 de conexao PostgreSQL usando sslmode=disable.");
             return getConnection(withPostgreSqlSslMode("disable"));
         } catch (SQLException e) {
+            log.info("[POSTGRES] Falha na tentativa PostgreSQL com sslmode=disable. %s"
+                    .formatted(DatabaseLogUtil.describeSqlException(e)));
             e.addSuppressed(firstException);
             throw e;
         }
@@ -262,9 +289,16 @@ public class DataSet {
 
     private Connection getConnection(String url) throws SQLException {
         var hasUserName = this.dbUser != null && !this.dbUser.trim().isEmpty();
-        return hasUserName ?
+        log.info("[POSTGRES] Tentando abrir conexao JDBC. url=%s, hasUserName=%s, user=%s, hasPassword=%s"
+                .formatted(DatabaseLogUtil.showJdbcUrlWithCredentials(url), hasUserName, this.dbUser,
+                        this.dbPassword != null && !this.dbPassword.isBlank()));
+        Connection connection = hasUserName ?
                 DbConnectionUtil.getConnection(url, this.dbUser, this.dbPassword) :
                 DbConnectionUtil.getConnection(url);
+        log.info("[POSTGRES] Conexao JDBC aberta com sucesso. url=%s, autoCommit=%s, catalog=%s, schema=%s"
+                .formatted(DatabaseLogUtil.showJdbcUrlWithCredentials(url), connection.getAutoCommit(),
+                        connection.getCatalog(), connection.getSchema()));
+        return connection;
     }
 
     private String withPostgreSqlSslMode(String sslMode) {
