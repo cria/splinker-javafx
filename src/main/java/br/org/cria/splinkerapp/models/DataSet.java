@@ -263,6 +263,7 @@ public class DataSet {
 
     private Connection getPostgreSqlConnectionWithSslFallback() throws SQLException {
         SQLException firstException;
+        DatabaseLogUtil.logTcpProbe("conexao-real", this.dbHost, this.dbPort, 5000);
 
         try {
             ApplicationLog.info("[POSTGRES] Tentativa 1/2 de conexao PostgreSQL usando sslmode=require.");
@@ -300,7 +301,9 @@ public class DataSet {
 
     private String withPostgreSqlSslMode(String sslMode) {
         String url = removeJdbcQueryParameter(connectionString, "sslmode");
-        return url + (url.contains("?") ? "&" : "?") + "sslmode=" + sslMode;
+        url = removeJdbcQueryParameter(url, "socketFactory");
+        return url + (url.contains("?") ? "&" : "?") + "sslmode=" + sslMode
+                + "&socketFactory=br.org.cria.splinkerapp.utils.DirectSocketFactory";
     }
 
     private String removeJdbcQueryParameter(String url, String parameterName) {

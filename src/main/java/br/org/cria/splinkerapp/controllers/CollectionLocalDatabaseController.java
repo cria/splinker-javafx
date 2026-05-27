@@ -142,6 +142,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
                                                 String password) {
         if (dsType == DataSourceType.PostgreSQL) {
             ApplicationLog.info("[POSTGRES] Iniciando teste inicial com fallback SSL. Primeiro sslmode=require, depois sslmode=disable.");
+            DatabaseLogUtil.logTcpProbe("teste-inicial", hostName, port, 5000);
         }
         if (testarConexao(dsType, hostName, port, databaseName, username, password, true)) {
             return true;
@@ -198,7 +199,8 @@ public class CollectionLocalDatabaseController extends AbstractController {
         switch (dsType) {
             case PostgreSQL:
                 return "jdbc:postgresql://" + hostName + ":" + port + "/" + databaseName
-                        + "?sslmode=" + (sslEnabled ? "require" : "disable");
+                        + "?sslmode=" + (sslEnabled ? "require" : "disable")
+                        + "&socketFactory=br.org.cria.splinkerapp.utils.DirectSocketFactory";
 
             case MySQL:
                 return "jdbc:mysql://" + hostName + ":" + port + "/" + databaseName
