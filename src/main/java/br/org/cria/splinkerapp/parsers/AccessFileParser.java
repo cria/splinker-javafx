@@ -11,6 +11,7 @@ import io.sentry.Sentry;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,15 +65,9 @@ public class AccessFileParser extends FileParser {
                         if (tabelas != null && !tabelas.contains(finalTableName.toLowerCase())) continue;
                         var table = db.getTable(name);
                         if (table == null) {
-                            DatabaseMetaData metaData = conn.getMetaData();
-                            try (ResultSet rs = metaData.getColumns(null, null, name, null)) {
-                                List<String> tempColumns = new ArrayList<>();
-                                while (rs.next()) {
-                                    String columnName = rs.getString("COLUMN_NAME");
-                                    tempColumns.add(makeColumnName(columnName));
-                                }
-                                columns = tempColumns;
-                            }
+                            columns = gerarColunasDasViewsPorNome(name).stream()
+                                    .map(this::makeColumnName)
+                                    .toList();
                             int numberOfColumns = columns.size();
                             if (numberOfColumns == 0) {
                                 continue;
@@ -245,18 +240,25 @@ public class AccessFileParser extends FileParser {
             ResultSetMetaData metaData = rs.getMetaData();
             int columnCount = metaData.getColumnCount();
 
-            while (rs.next()) {
-                List<String> colunas = new ArrayList<>();
-                for (int i = 1; i <= columnCount; i++) {
-                    String columnName = metaData.getColumnName(i);
-                    colunas.add(columnName);
-                }
-                return colunas;
+            List<String> colunas = new ArrayList<>();
+            for (int i = 1; i <= columnCount; i++) {
+                String columnAlias = metaData.getColumnLabel(i);
+                colunas.add(columnAlias);
             }
+            return colunas;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return List.of();
+    }
+
+    private List<String> gerarColunasDasViewsPorNome(String queryName) throws IOException {
+        for (Query query : db.getQueries()) {
+            if (query.getName().equals(queryName)) {
+                return gerarColunasDasViews(query.toSQLString());
+            }
+        }
+        return List.of();
     }
 
     private void closeAccessResources() {

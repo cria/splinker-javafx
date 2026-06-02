@@ -85,10 +85,11 @@ public class XLSFileParser extends FileParser {
                     var sheet = workbookIterator.next();
                     totalRowCount = sheet.getLastRowNum();
                     var sheetIterator = sheet.iterator();
-                    var headerRow = sheetIterator.next();
                     var tableName = StringStandards.normalizeString(sheet.getSheetName());
 
                     if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) continue;
+
+                    var headerRow = sheetIterator.next();
 
                     headerRow.forEach(e -> {
                         if (StringUtils.isEmpty(e.getStringCellValue())) {
