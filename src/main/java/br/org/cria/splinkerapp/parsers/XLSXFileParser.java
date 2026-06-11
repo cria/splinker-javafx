@@ -37,7 +37,7 @@ public class XLSXFileParser extends FileParser {
 
     public XLSXFileParser(String fileSourcePath) throws Exception {
         super();
-        this.formatter = new DataFormatter(Locale.getDefault());
+        this.formatter = new FullDateDataFormatter();
         this.fileSourcePath = fileSourcePath;
         org.apache.poi.openxml4j.util.ZipSecureFile.setMinInflateRatio(0.0);
     }
@@ -52,7 +52,7 @@ public class XLSXFileParser extends FileParser {
             ReadOnlySharedStringsTable sst = new ReadOnlySharedStringsTable(pkg);
             XSSFReader reader = new XSSFReader(pkg);
             StylesTable styles = reader.getStylesTable();
-            DataFormatter formatter = new DataFormatter(Locale.getDefault());
+            DataFormatter formatter = new FullDateDataFormatter();
 
             XSSFReader.SheetIterator it = (XSSFReader.SheetIterator) reader.getSheetsData();
             while (it.hasNext()) {
@@ -184,7 +184,7 @@ public class XLSXFileParser extends FileParser {
             ReadOnlySharedStringsTable sst = new ReadOnlySharedStringsTable(pkg);
             XSSFReader reader = new XSSFReader(pkg);
             StylesTable styles = reader.getStylesTable();
-            DataFormatter formatter = new DataFormatter();
+            DataFormatter formatter = new FullDateDataFormatter();
 
             XSSFReader.SheetIterator it = (XSSFReader.SheetIterator) reader.getSheetsData();
             while (it.hasNext()) {
@@ -414,5 +414,20 @@ public class XLSXFileParser extends FileParser {
         return bd.stripTrailingZeros().toPlainString();
     }
 
+    private static class FullDateDataFormatter extends DataFormatter {
+        private final SimpleDateFormat fullDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
+        FullDateDataFormatter() {
+            super(Locale.getDefault());
+        }
+
+        @Override
+        public String formatRawCellContents(double value, int formatIndex, String formatString,
+                                            boolean use1904Windowing) {
+            if (DateUtil.isADateFormat(formatIndex, formatString)) {
+                return fullDateFormat.format(DateUtil.getJavaDate(value, use1904Windowing));
+            }
+            return super.formatRawCellContents(value, formatIndex, formatString, use1904Windowing);
+        }
+    }
 }

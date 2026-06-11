@@ -2,9 +2,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.sql.DriverManager;
+import java.util.Calendar;
 import java.util.HashSet;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -48,6 +52,48 @@ public class XLSXFileParserTest extends ParserBaseTest {
             assertNotNull(bDate);
         }
         assertEquals(rowCount, numberOfInsertedRows);
+    }
+
+    @Test
+    public void formatsExcelDatesUsingFullDayMonthAndYear() throws Exception {
+        File file = tempFolder.newFile("dates.xlsx");
+        String connString = baseConnectionString.formatted(tempFolder.getRoot().getAbsolutePath(), "xlsx_dates");
+        System.setProperty("splinker.dbname", connString);
+
+        try (Workbook workbook = new XSSFWorkbook();
+             FileOutputStream outputStream = new FileOutputStream(file)) {
+            Sheet sheet = workbook.createSheet("Dates");
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("Date Value");
+
+            CreationHelper creationHelper = workbook.getCreationHelper();
+            CellStyle shortDateStyle = workbook.createCellStyle();
+            shortDateStyle.setDataFormat(creationHelper.createDataFormat().getFormat("m/d/yy"));
+
+            Calendar date = Calendar.getInstance();
+            date.clear();
+            date.set(2020, Calendar.FEBRUARY, 18);
+
+            Cell excelDate = sheet.createRow(1).createCell(0);
+            excelDate.setCellValue(date);
+            excelDate.setCellStyle(shortDateStyle);
+            sheet.createRow(2).createCell(0).setCellValue("23/04/2015");
+
+            workbook.write(outputStream);
+        }
+
+        XLSXFileParser parser = new XLSXFileParser(file.getAbsolutePath());
+        parser.createTableBasedOnSheet(null);
+        parser.insertDataIntoTable(null);
+
+        try (var connection = DriverManager.getConnection(connString);
+             var statement = connection.createStatement();
+             var result = statement.executeQuery("SELECT date_value FROM dates ORDER BY rowid")) {
+            result.next();
+            assertEquals("18/02/2020", result.getString("date_value"));
+            result.next();
+            assertEquals("23/04/2015", result.getString("date_value"));
+        }
     }
 
     @BeforeClass
