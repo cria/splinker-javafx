@@ -191,7 +191,62 @@ public class DataSetService extends BaseRepository {
     public static String getSQLCommandFromApi(String token) throws Exception {
         Map config = DataSetService.getConfigurationDataFromAPI(token);
         var cmd = (List<Double>) config.get("sql_command");
+        if (cmd == null) {
+            return null;
+        }
         return BaseRepository.byteArrayToString(cmd);
+    }
+
+    public static List<Map<String, Object>> getDwcDpFromApi(String token) throws Exception {
+        Map<String, Object> config = DataSetService.getConfigurationDataFromAPI(token);
+        Object rawDwcDp = config.get("dwc_dp");
+
+        if (!(rawDwcDp instanceof List<?> dwcDpList)) {
+            return List.of();
+        }
+
+        var resources = new ArrayList<Map<String, Object>>();
+        for (Object item : dwcDpList) {
+            if (!(item instanceof Map<?, ?> resource)) {
+                continue;
+            }
+
+            Object name = resource.get("name");
+            Object sql = resource.get("sql");
+            if (name == null || sql == null) {
+                continue;
+            }
+
+            var dwcDpResource = new java.util.LinkedHashMap<String, Object>();
+            dwcDpResource.put("name", name.toString());
+            dwcDpResource.put("sql", sql.toString());
+
+            if (resource.containsKey("primaryKey")) {
+                dwcDpResource.put("primaryKey", resource.get("primaryKey"));
+            }
+
+            if (resource.containsKey("foreignKeys")) {
+                dwcDpResource.put("foreignKeys", resource.get("foreignKeys"));
+            }
+
+            resources.add(dwcDpResource);
+        }
+
+        return resources;
+    }
+
+    public static List<String> getDataSourceTableNamesFromApi(String token) throws Exception {
+        String sqlCommand = getSQLCommandFromApi(token);
+        if (sqlCommand != null && !sqlCommand.isBlank()) {
+            return new ArrayList<>(br.org.cria.splinkerapp.utils.SQLiteTableExtractor.extrairTabelas(sqlCommand));
+        }
+
+        var tables = new java.util.LinkedHashSet<String>();
+        for (Map<String, Object> resource : getDwcDpFromApi(token)) {
+            tables.addAll(br.org.cria.splinkerapp.utils.SQLiteTableExtractor.extrairTabelas(resource.get("sql").toString()));
+        }
+
+        return new ArrayList<>(tables);
     }
 
     /**

@@ -263,9 +263,7 @@ public class App {
                 ApplicationLog.info("Starting data import. Please wait...");
                 FileSourceManager fileSourceManager = new FileSourceManager(ds);
                 fileSourceManager.importData(
-                        SQLiteTableExtractor.extrairTabelas(
-                                DataSetService.getSQLCommandFromApi(ds.getToken())
-                        )
+                        new java.util.LinkedHashSet<>(DataSetService.getDataSourceTableNamesFromApi(ds.getToken()))
                 );
                 ApplicationLog.info("Import finished");
             }
