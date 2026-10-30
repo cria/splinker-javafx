@@ -7,7 +7,7 @@
 
 <Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="310.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FirstConfigDialogController">
    <children>
-      <MenuButton fx:id="languageSelector" layoutX="410.0" layoutY="5.0" prefWidth="60.0" prefHeight="30.0" accessibleText="%language" />
+      <MenuButton fx:id="languageSelector" layoutX="414.0" layoutY="5.0" minWidth="-1.0" prefWidth="56.0" prefHeight="24.0" style="-fx-font-size: 11px; -fx-padding: 2 4;" accessibleText="%language" />
       <Button id="btnAddToken" fx:id="btnAddIniciar" layoutX="198.0" layoutY="246.0" mnemonicParsing="false" onMouseClicked="#onYesButtonClicked" prefHeight="34.0" prefWidth="85.0" styleClass="primary-button" text="%button.start" />
 
       <Label alignment="CENTER" layoutX="9.0" layoutY="33.0" prefHeight="49.0" prefWidth="460.0" text="%welcome" textAlignment="CENTER" wrapText="true">

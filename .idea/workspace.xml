@@ -9,53 +9,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="51b6b81a-06d2-4832-921b-ae8b390b0fd9" name="Changes" comment="geracao do dwc-dp">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="51b6b81a-06d2-4832-921b-ae8b390b0fd9" name="Changes" comment="internacionalizacao">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/Router.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/Router.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/AbstractController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/AbstractController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/AccessDbController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/AccessDbController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/BatchFileTransferProgressController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/BatchFileTransferProgressController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/BatchFileTransferResultController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/BatchFileTransferResultController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/BatchSelectFileTransferController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/BatchSelectFileTransferController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/CentralServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/CentralServiceController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/CollectionLocalDatabaseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/CollectionLocalDatabaseController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/ConfigurationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/ConfigurationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/EmailController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/EmailController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FileSelectionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FileSelectionController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FileTransferController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FileTransferController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/InstallConfirmationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/InstallConfirmationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/ProxyConfigController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/ProxyConfigController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/SpLinkerUpdateController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/SpLinkerUpdateController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/TokenLoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/TokenLoginController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/managers/EventBusManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/managers/EventBusManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/models/TransferResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/models/TransferResult.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/GoogleDriveFileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/GoogleDriveFileService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/utils/ModalAlertUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/utils/ModalAlertUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/access-db-modal.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/access-db-modal.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/batch-file-transfer-progress.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/batch-file-transfer-progress.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/batch-file-transfer-result.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/batch-file-transfer-result.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/batch-select-file-transfer.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/batch-select-file-transfer.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/central-service.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/central-service.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/collection-database.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/collection-database.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/configuration.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/configuration.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/delete-dataset.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/delete-dataset.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/email-sending.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/email-sending.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/email.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/email.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/file-selection.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/file-selection.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/file-transfer.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/file-transfer.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/i18n/CountryFlag.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/first-config-dialog.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/first-config-dialog.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/help.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/help.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/home.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/home.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/install-confirmation.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/install-confirmation.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/principal.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/principal.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/proxy-config.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/proxy-config.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/report.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/report.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/splinker-update.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/splinker-update.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/token-login.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/token-login.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/GoogleDriveFileServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/GoogleDriveFileServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/LocalizedViewsTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/LocalizedViewsTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,6 +63,65 @@
     <commands />
     <urls />
   </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0000002544756061" />
+      <entry key="S2" value="1.0239854763187588" />
+      <entry key="S5" value="1.2941800211001118" />
+      <entry key="S10" value="1.7789038282306788" />
+      <entry key="S30" value="3.471413217704585" />
+      <entry key="S60" value="5.76584122406639" />
+      <entry key="M2" value="9.051309784306326" />
+      <entry key="M5" value="13.238775585747446" />
+      <entry key="M10" value="15.614610573496634" />
+      <entry key="M15" value="16.9987802142916" />
+      <entry key="M30" value="19.63249491667739" />
+      <entry key="H1" value="22.0626945275992" />
+      <entry key="H2" value="23.787072651476482" />
+      <entry key="H4" value="24.823639337197413" />
+      <entry key="D1" value="25.793376813803174" />
+      <entry key="W1" value="25.970211769051932" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.7071067811865476" />
+      <entry key="MS500" value="0.9330332400852951" />
+      <entry key="S2" value="1.0066646483924238" />
+      <entry key="S5" value="1.2865696928950383" />
+      <entry key="S10" value="1.7745042067479702" />
+      <entry key="S30" value="3.469191898167883" />
+      <entry key="S60" value="5.764101918627625" />
+      <entry key="M2" value="9.049896634985293" />
+      <entry key="M5" value="13.237898940928195" />
+      <entry key="M10" value="15.614081978479762" />
+      <entry key="M15" value="16.998395571133063" />
+      <entry key="M30" value="19.632274549362045" />
+      <entry key="H1" value="22.06257210194128" />
+      <entry key="H2" value="23.787007187655156" />
+      <entry key="H4" value="24.823605339014325" />
+      <entry key="D1" value="25.793370950973134" />
+      <entry key="W1" value="25.97021092639919" />
+    </decayedShown>
+  </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="ProjectErrors" />
   </component>
@@ -114,34 +133,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/ingles-espanho&quot;,
-    &quot;git.auto.fetch.suggestion.counter&quot;: &quot;2&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/brunobemfica/IdeaProjects/SPlinkerApp/splinker&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.1150748&quot;,
-    &quot;python.packages.toolwindow.project.migrated.to.right.top.v2&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.AcpAgentsConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Application.Main.executor": "Run",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "feature/ingles-espanho",
+    "git.auto.fetch.suggestion.counter": "2",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/brunobemfica/IdeaProjects/SPlinkerApp/splinker",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.1150748",
+    "python.packages.toolwindow.project.migrated.to.right.top.v2": "true",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/libs" />
@@ -346,7 +365,8 @@
     <MESSAGE value="gerando versao 7.4.4" />
     <MESSAGE value="gerando versao 7.4.5" />
     <MESSAGE value="geracao do dwc-dp" />
-    <option name="LAST_COMMIT_MESSAGE" value="geracao do dwc-dp" />
+    <MESSAGE value="internacionalizacao" />
+    <option name="LAST_COMMIT_MESSAGE" value="internacionalizacao" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

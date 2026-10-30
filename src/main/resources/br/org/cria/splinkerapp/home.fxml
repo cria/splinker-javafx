@@ -10,13 +10,13 @@
       <Button id="btnPrincipal" fx:id="btnPrincipal" layoutX="25.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onPrincipalItemClick" prefHeight="38.0" prefWidth="38.0" />
       <Button id="btnSettings" fx:id="btnSettings" layoutX="77.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onSettingsItemClick" prefHeight="38.0" prefWidth="38.0" />
       <Button id="btnHelp" fx:id="btnHelp" layoutX="226.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onHelpItemClick" prefHeight="38.0" prefWidth="38.0" />
-      <ImageView fitHeight="65.0" fitWidth="120.0" layoutX="292.0" layoutY="-7.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="65.0" fitWidth="120.0" layoutX="310.0" layoutY="0.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../../../images/splinker.png" />
          </image>
       </ImageView>
       <Button id="btnEmail" fx:id="btnEmail" layoutX="130.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onEmailItemClick" prefHeight="38.0" prefWidth="38.0" />
       <Button id="btnReport" fx:id="btnReport" layoutX="176.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onReportItemClick" prefHeight="38.0" prefWidth="38.0" />
-      <MenuButton fx:id="languageSelector" layoutX="450.0" layoutY="14.0" prefWidth="60.0" prefHeight="30.0" accessibleText="%language" />
+      <MenuButton fx:id="languageSelector" layoutX="454.0" layoutY="20.0" minWidth="-1.0" prefWidth="56.0" prefHeight="24.0" style="-fx-font-size: 11px; -fx-padding: 2 4;" accessibleText="%language" />
    </children>
 </Pane>

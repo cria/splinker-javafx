@@ -3,7 +3,6 @@ package br.org.cria.splinkerapp.controllers;
 import br.org.cria.splinkerapp.i18n.I18n;
 import br.org.cria.splinkerapp.i18n.Language;
 import br.org.cria.splinkerapp.i18n.LocalizedViews;
-import br.org.cria.splinkerapp.i18n.CountryFlag;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
@@ -49,11 +48,12 @@ public abstract class AbstractController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         if (languageSelector != null) {
-            languageSelector.setGraphic(new CountryFlag(I18n.getLanguage()));
+            languageSelector.setText(I18n.getLanguage().code().toUpperCase(java.util.Locale.ROOT));
             languageSelector.setAccessibleText(I18n.text("language") + ": " + I18n.getLanguage());
             languageSelector.setTooltip(new Tooltip(I18n.text("language") + ": " + I18n.getLanguage()));
             for (Language selected : Language.values()) {
-                MenuItem item = new MenuItem(selected.toString(), new CountryFlag(selected));
+                MenuItem item = new MenuItem(selected.toString());
+                item.setStyle("-fx-font-size: 11px; -fx-padding: 3 8;");
                 item.setOnAction(event -> {
                 if (selected == I18n.getLanguage()) return;
                 Language previous = I18n.getLanguage();
