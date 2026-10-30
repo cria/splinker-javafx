@@ -1,13 +1,13 @@
 package br.org.cria.splinkerapp.controllers;
 
 import java.net.URL;
+import br.org.cria.splinkerapp.i18n.LocalizedViews;
 import java.util.ResourceBundle;
 
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
@@ -57,10 +57,11 @@ public class ConfigurationController extends AbstractController {
     protected void loadPage(String pageName) {
         try {
             var template = basePath.formatted(pageName);
-            loader = new FXMLLoader(getClass().getResource(template));
-            Node childNode = loader.load();
+            loader = LocalizedViews.loader(getClass().getResource(template));
+            Node childNode = LocalizedViews.load(loader);
 
             var children = content.getChildren();
+            children.forEach(LocalizedViews::dispose);
             children.clear();
             children.add(childNode);
         } catch (Exception e) {

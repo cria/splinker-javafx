@@ -6,29 +6,29 @@
 
 <Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="310.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.ProxyConfigController">
    <children>
-      <TextField id="proxyAddress" fx:id="proxyAddress" layoutX="15.0" layoutY="78.0" prefHeight="30.0" prefWidth="305.0" promptText="Endereço" />
-      <PasswordField id="proxyPassword" fx:id="proxyPassword" layoutX="15.0" layoutY="204.0" prefHeight="30.0" prefWidth="450.0" promptText="Senha" />
-      <TextField id="proxyPort" fx:id="proxyPort" layoutX="329.0" layoutY="78.0" prefHeight="30.0" prefWidth="136.0" promptText="Porta" />
-      <TextField id="proxyUsername" fx:id="proxyUsername" layoutX="15.0" layoutY="141.0" prefHeight="30.0" prefWidth="450.0" promptText="Usuário" />
-      <Button id="saveBtn" fx:id="saveBtn" layoutX="194.0" layoutY="252.0" mnemonicParsing="false" onMouseClicked="#onButtonSaveClicked" prefHeight="36.0" prefWidth="77.0" styleClass="success-button" text="Salvar" />
-      <Label layoutX="139.0" layoutY="14.0" text="Configuração Proxy" textAlignment="CENTER">
+      <TextField id="proxyAddress" fx:id="proxyAddress" layoutX="15.0" layoutY="78.0" prefHeight="30.0" prefWidth="305.0" promptText="%address" />
+      <PasswordField id="proxyPassword" fx:id="proxyPassword" layoutX="15.0" layoutY="204.0" prefHeight="30.0" prefWidth="450.0" promptText="%password" />
+      <TextField id="proxyPort" fx:id="proxyPort" layoutX="329.0" layoutY="78.0" prefHeight="30.0" prefWidth="136.0" promptText="%port" />
+      <TextField id="proxyUsername" fx:id="proxyUsername" layoutX="15.0" layoutY="141.0" prefHeight="30.0" prefWidth="450.0" promptText="%username" />
+      <Button id="saveBtn" fx:id="saveBtn" layoutX="194.0" layoutY="252.0" mnemonicParsing="false" onMouseClicked="#onButtonSaveClicked" prefHeight="36.0" prefWidth="77.0" styleClass="success-button" text="%button.save" />
+      <Label layoutX="139.0" layoutY="14.0" text="%proxy.config" textAlignment="CENTER">
          <font>
             <Font size="18.0" />
          </font></Label>
 
-      <Label layoutX="15.0" layoutY="51.0" text="Endereço" textAlignment="CENTER">
+      <Label layoutX="15.0" layoutY="51.0" text="%address" textAlignment="CENTER">
          <font>
             <Font size="18.0" />
          </font></Label>
-      <Label alignment="CENTER" layoutX="15.0" layoutY="174.0" text="Senha">
+      <Label alignment="CENTER" layoutX="15.0" layoutY="174.0" text="%password">
          <font>
             <Font size="18.0" />
          </font></Label>
-      <Label layoutX="15.0" layoutY="113.0" text="Usuário">
+      <Label layoutX="15.0" layoutY="113.0" text="%username">
          <font>
             <Font size="18.0" />
          </font></Label>
-      <Label layoutX="329.0" layoutY="51.0" text="Porta">
+      <Label layoutX="329.0" layoutY="51.0" text="%port">
          <font>
             <Font size="18.0" />
          </font></Label>

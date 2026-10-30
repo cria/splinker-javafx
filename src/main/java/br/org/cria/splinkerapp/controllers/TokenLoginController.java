@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -43,7 +44,7 @@ public class TokenLoginController extends AbstractController {
 
             if (tokenIsNotEmpty && tokenExists) {
                 if (tokenToBeDeleted.equals(currentToken)) {
-                    ModalAlertUtil.show("Você não pode excluir o token que está logado!", null);
+                    ModalAlertUtil.show(I18n.text("token.delete.current"), null);
                     return;
                 }
                 DataSetService.deleteDataSet(tokenToBeDeleted);
@@ -52,7 +53,7 @@ public class TokenLoginController extends AbstractController {
                 TokenRepository.setCurrentToken(token);
                 navigateTo(getStage(), "home");
             } else {
-                ModalAlertUtil.show("Token inválido ou inexistente!", null);
+                ModalAlertUtil.show(I18n.text("token.invalid"), null);
             }
         } catch (Exception e) {
             handleErrors(e);
@@ -65,13 +66,13 @@ public class TokenLoginController extends AbstractController {
 
             var newToken = tokenField.getText().trim();
             if (newToken == null || newToken.trim().isEmpty()) {
-                showErrorModal("Token não pode ser vazio!");
+                showErrorModal(I18n.text("token.empty"));
                 return;
             }
             var tokenExists = DataSetService.getDataSet(newToken) != null;
             var hasConfig = DataSetService.hasConfiguration();
             if (tokenExists && hasConfig) {
-                showErrorModal("Token já existente!");
+                showErrorModal(I18n.text("token.exists"));
                 return;
             }
             var apiConfig = DataSetService.getConfigurationDataFromAPI(newToken);
@@ -82,7 +83,7 @@ public class TokenLoginController extends AbstractController {
                 var id = (int) Double.parseDouble(apiConfig.get("dataset_id").toString());
                 TokenRepository.setCurrentToken(newToken);
                 if (apiConfig.get("data_source_type") == null) {
-                    showErrorModal("Esta coleção ainda não foi configurada no servidor. Favor entrar em contato com o CRIA.");
+                    showErrorModal(I18n.text("token.unconfigured"));
                     return;
                 }
                 String datasouceType = apiConfig.get("data_source_type").toString();
@@ -125,7 +126,7 @@ public class TokenLoginController extends AbstractController {
 
         bus = new EventBus();
 
-        Tooltip tooltip = new Tooltip("Token é um código único fornecido pelo CRIA para sua coleção poder enviar dados. Entre em contato com o CRIA se não tiver ainda recebido seu token.");
+        Tooltip tooltip = new Tooltip(I18n.text("token.tooltip"));
 
         tokenField.setOnMouseEntered(event -> {
             tooltip.show(tokenField, event.getScreenX(), event.getScreenY() + 15);

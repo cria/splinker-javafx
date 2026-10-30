@@ -1,5 +1,12 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.i18n.I18n;
+import br.org.cria.splinkerapp.i18n.Language;
+import br.org.cria.splinkerapp.i18n.LocalizedViews;
+import br.org.cria.splinkerapp.i18n.CountryFlag;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tooltip;
 import java.net.URL;
 import java.nio.file.NoSuchFileException;
 import java.util.ResourceBundle;
@@ -33,13 +40,34 @@ public abstract class AbstractController implements Initializable {
     protected Stage modalStage = new Stage();
     @FXML
     Pane pane;
+    @FXML
+    private MenuButton languageSelector;
     Alert dialog = new Alert(AlertType.INFORMATION);
     String basePath = "/br/org/cria/splinkerapp/%s.fxml";
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        //throw new NotImplementedException("Not implemented");
+        if (languageSelector != null) {
+            languageSelector.setGraphic(new CountryFlag(I18n.getLanguage()));
+            languageSelector.setAccessibleText(I18n.text("language") + ": " + I18n.getLanguage());
+            languageSelector.setTooltip(new Tooltip(I18n.text("language") + ": " + I18n.getLanguage()));
+            for (Language selected : Language.values()) {
+                MenuItem item = new MenuItem(selected.toString(), new CountryFlag(selected));
+                item.setOnAction(event -> {
+                if (selected == I18n.getLanguage()) return;
+                Language previous = I18n.getLanguage();
+                try {
+                    I18n.setLanguage(selected);
+                    Router.navigateTo(getStage(), this instanceof HomeController ? "home" : "first-config-dialog");
+                } catch (Exception e) {
+                    I18n.setLanguage(previous);
+                    handleErrors(e);
+                }
+                });
+                languageSelector.getItems().add(item);
+            }
+        }
     }
 
     protected abstract void setScreensize();
@@ -66,6 +94,7 @@ public abstract class AbstractController implements Initializable {
         }
 
         dialog.setTitle(title);
+        dialog.setHeaderText(null);
         dialog.setContentText(message);
         dialog.show();
     }
@@ -107,10 +136,11 @@ public abstract class AbstractController implements Initializable {
     protected void loadPage(String pageName) {
         try {
             var template = basePath.formatted(pageName);
-            loader = new FXMLLoader(getClass().getResource(template));
-            Node childNode = loader.load();
+            loader = LocalizedViews.loader(getClass().getResource(template));
+            Node childNode = LocalizedViews.load(loader);
 
             var children = pane.getChildren();
+            children.forEach(LocalizedViews::dispose);
             children.clear();
             children.add(childNode);
         } catch (Exception e) {
@@ -158,11 +188,11 @@ public abstract class AbstractController implements Initializable {
                 if (split.length > 1) {
                     DataSet dataSet = DataSetService.getDataSet(TokenRepository.getCurrentToken());
                     if (dataSet.isFile()) {
-                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - nÃ£o foi encontrada a coluna (" + split[1].replace(")", "") + " ) na planilha";
+                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + I18n.text("error.column") + split[1].replace(")", "") + I18n.text("error.in.spreadsheet");
                     } else {
-                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - nÃ£o foi encontrada a coluna (" + split[1].replace(")", "") + " ) no banco de dados";
+                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + I18n.text("error.column") + split[1].replace(")", "") + I18n.text("error.in.database");
                     }
-                    showErrorModal("Entre em contado com o time de suporte do CRIA e informe o erro:\n\n" + msg, localizedMessage);
+                    showErrorModal(I18n.text("error.support") + msg, localizedMessage);
                 }
                 Sentry.captureMessage(msg, SentryLevel.ERROR);
             } else if (localizedMessage.contains("no such table")) {
@@ -170,35 +200,35 @@ public abstract class AbstractController implements Initializable {
                 if (split.length > 1) {
                     DataSet dataSet = DataSetService.getDataSet(TokenRepository.getCurrentToken());
                     if (dataSet.isFile()) {
-                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - nÃ£o foi encontrada a aba (" + split[1].replace(")", "") + " ) na planilha";
+                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + I18n.text("error.sheet") + split[1].replace(")", "") + I18n.text("error.in.spreadsheet");
                     } else {
-                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + ") - nÃ£o foi encontrada a tabela (" + split[1].replace(")", "") + " ) no banco de dados";
+                        msg = dataSet.getDataSetName() + " (" + dataSet.getToken() + I18n.text("error.table") + split[1].replace(")", "") + I18n.text("error.in.database");
                     }
-                    showErrorModal("Entre em contado com o time de suporte do CRIA e informe o erro:\n\n" + msg, localizedMessage);
+                    showErrorModal(I18n.text("error.support") + msg, localizedMessage);
                 }
                 Sentry.captureMessage(msg, SentryLevel.ERROR);
             } else if (localizedMessage.contains("Can't open the specified file input stream from file")) {
                 NoSuchFileException cause = (NoSuchFileException) ex.getCause();
-                msg = "NÃ£o foi possivel abrir o arquivo em: " + cause.getFile() + ".  Certifique se o arquivo estÃ¡ no local correto e ajuste na configuraÃ§Ã£o. \n " +
-                        "Para ajustar, acesse a Ã¡rea de configuraÃ§Ã£o para escolher corretamente o arquivo vÃ¡lido. Qualquer dÃºvida, entre em contato com o time de suporte CRIA";
-                showErrorModal(msg, "Para ajustar, acesse a Ã¡rea de configuraÃ§Ã£o para escolher corretamente o arquivo vÃ¡lido");
+                msg = I18n.text("error.file.open") + cause.getFile() + I18n.text("error.file.location") +
+                        I18n.text("error.file.help");
+                showErrorModal(msg, I18n.text("error.file.settings"));
             } else if (localizedMessage.contains("br.org.cria.splinkerapp.models.DataSet.getDataSetFilePath()") && localizedMessage.contains("null")) {
-                msg = "Deve ser selecionado um arquivo para extrair os dados.";
+                msg = I18n.text("error.file.select");
                 showErrorModal(msg);
             } else if (isConnectionError(ex)) {
-                msg = "AusÃªncia de conexÃ£o com a Internet. Este software precisa de uma conexÃ£o para funcionar. Verifique sua conexÃ£o e tente novamente.";
+                msg = I18n.text("error.connection");
                 showErrorModal(msg);
             } else {
                 Sentry.captureException(ex);
                 String stackTrace = ExceptionUtils.getStackTrace(ex);
                 ApplicationLog.error(stackTrace);
-                showErrorModal("Erro no spLinker. Entre em contado com o time de suporte do CRIA relatando o problema.", stackTrace);
+                showErrorModal(I18n.text("error.application"), stackTrace);
             }
         } catch (Exception e) {
             Sentry.captureException(ex);
             String stackTrace = ExceptionUtils.getStackTrace(ex);
             ApplicationLog.error(stackTrace);
-            showErrorModal("Erro no spLinker. Entre em contado com o time de suporte do CRIA relatando o problema.", stackTrace);
+            showErrorModal(I18n.text("error.application"), stackTrace);
         }
 
     }

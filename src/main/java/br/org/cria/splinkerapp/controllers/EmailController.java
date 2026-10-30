@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javax.mail.MessagingException;
@@ -40,7 +41,7 @@ public class EmailController extends AbstractController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        cmbAssunto.getItems().addAll("Sugestões", "Erro na transmissão", "Outros");
+        cmbAssunto.getItems().addAll(I18n.text("email.subject.suggestions"), I18n.text("email.subject.transfer"), I18n.text("email.subject.other"));
         try {
             cmbToken.getItems().addAll(TokenRepository.getTokens());
             cmbToken.setValue(TokenRepository.getCurrentTokenSigla());
@@ -57,19 +58,19 @@ public class EmailController extends AbstractController {
         String token = cmbToken.getValue();
 
         if (assunto == null || assunto.isEmpty()) {
-            showAlert("Erro", "Por favor, selecione um assunto.");
+            showAlert(I18n.text("error"), I18n.text("email.validation.subject"));
             return;
         }
         if (mensagem == null || mensagem.isEmpty()) {
-            showAlert("Erro", "Por favor, preencha o campo de mensagem.");
+            showAlert(I18n.text("error"), I18n.text("email.validation.message"));
             return;
         }
         if (emailUsuario == null || emailUsuario.isEmpty()) {
-            showAlert("Erro", "Por favor, informe o seu email.");
+            showAlert(I18n.text("error"), I18n.text("email.validation.address"));
             return;
         }
         if (token == null || token.isEmpty()) {
-            showAlert("Erro", "Por favor, escolha um token.");
+            showAlert(I18n.text("error"), I18n.text("email.validation.token"));
             return;
         }
         try {
@@ -78,7 +79,7 @@ public class EmailController extends AbstractController {
                 try {
                     emailService.sendEmail(assunto, mensagem,emailUsuario, token);
                     Platform.runLater(() -> {
-                        showAlert("Sucesso", "Email enviado com sucesso!");
+                        showAlert(I18n.text("success"), I18n.text("email.sent"));
                         cmbAssunto.setValue(null);
                         urlField.clear();
                         emailField.clear();
@@ -87,15 +88,15 @@ public class EmailController extends AbstractController {
                     });
                 } catch (MessagingException me) {
                     me.printStackTrace();
-                    Platform.runLater(() -> showAlert("Erro", "Falha ao enviar o email: " + me.getMessage()));
+                    Platform.runLater(() -> showAlert(I18n.text("error"), I18n.text("email.failed") + me.getMessage()));
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Platform.runLater(() -> showAlert("Erro", "Ocorreu um erro: " + e.getMessage()));
+                    Platform.runLater(() -> showAlert(I18n.text("error"), I18n.text("error.occurred") + e.getMessage()));
                 }
             }).start();
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Erro", "Ocorreu um erro ao iniciar o envio: " + e.getMessage());
+            showAlert(I18n.text("error"), I18n.text("email.start.failed") + e.getMessage());
         }
     }
 

@@ -23,6 +23,16 @@ public class EventBusManager {
         events.put(eventName, new EventBus(eventName));
     }
 
+    public static void unregister(Object subscriber) {
+        for (EventBus event : events.values()) {
+            try {
+                event.unregister(subscriber);
+            } catch (IllegalArgumentException ignored) {
+                // The controller does not subscribe to this event bus.
+            }
+        }
+    }
+
     private EventBusManager() {
     } // Prevent instantiation
 }

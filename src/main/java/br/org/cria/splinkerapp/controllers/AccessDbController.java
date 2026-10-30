@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -33,7 +34,7 @@ public class AccessDbController extends AbstractController {
             var path = file.getAbsolutePath();
             var pathIsNull = path.trim().isEmpty();
             if (pathIsNull) {
-                showErrorModal("Caminho do arquivo não pode ser vazio");
+                showErrorModal(I18n.text("validation.file.empty"));
                 return;
             }
             var password = accessPasswordField.getText();

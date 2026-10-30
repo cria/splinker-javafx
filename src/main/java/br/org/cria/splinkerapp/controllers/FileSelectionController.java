@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -59,7 +60,7 @@ public class FileSelectionController extends AbstractController {
         try {
             String datasourcePath = getSelectedPath();
             if (datasourcePath == null || datasourcePath.trim().isEmpty()) {
-                showErrorModal("Campo obrigatorio");
+                showErrorModal(I18n.text("validation.field.required"));
                 return;
             }
 
@@ -74,11 +75,11 @@ public class FileSelectionController extends AbstractController {
 
     private void validateBeforeSave(String datasourcePath) throws Exception {
         if (ds.getType() == DataSourceType.GoogleSheets && !GoogleDriveFileService.isRemotePath(datasourcePath)) {
-            throw new IllegalArgumentException("Para fontes GoogleSheets, informe um link do Google Drive ou Google Sheets.");
+            throw new IllegalArgumentException(I18n.text("file.google.required"));
         }
 
         if (GoogleDriveFileService.isRemotePath(datasourcePath) && ds.getType() != DataSourceType.GoogleSheets) {
-            throw new IllegalArgumentException("Links remotos sao suportados apenas para fontes GoogleSheets.");
+            throw new IllegalArgumentException(I18n.text("file.google.only"));
         }
 
         GoogleDriveFileService.validateAccess(datasourcePath);
@@ -105,14 +106,14 @@ public class FileSelectionController extends AbstractController {
         remoteHelpLabel.setManaged(googleSheetsSource);
 
         if (googleSheetsSource) {
-            sourceTypeTitle.setText("Link da Planilha");
-            sourceTypeDescription.setText("Informe o link da planilha com os dados para envio à rede speciesLink.");
-            remoteUrl.setTooltip(new Tooltip("Cole aqui um link publico do Google Drive ou Google Sheets."));
+            sourceTypeTitle.setText(I18n.text("file.link.title"));
+            sourceTypeDescription.setText(I18n.text("file.link.description"));
+            remoteUrl.setTooltip(new Tooltip(I18n.text("file.link.tooltip")));
             return;
         }
 
-        sourceTypeTitle.setText("Caminho do arquivo");
-        sourceTypeDescription.setText("Selecione o arquivo com os dados para envio à rede speciesLink.");
+        sourceTypeTitle.setText(I18n.text("file.path"));
+        sourceTypeDescription.setText(I18n.text("file.description"));
     }
 
     private void loadExistingValue() {

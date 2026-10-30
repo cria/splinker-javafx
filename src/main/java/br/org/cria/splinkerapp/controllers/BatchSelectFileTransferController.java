@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import javafx.collections.ListChangeListener;
@@ -33,14 +34,14 @@ public class BatchSelectFileTransferController extends AbstractController {
         stage.setHeight(WindowSizes.LARGE_RECTANGULAR_SCREEN_HEIGHT);
     }
 
-    private static final String SELECT_ALL = "Selecionar todas";
+    private final String SELECT_ALL = I18n.text("collections.all");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
             cmbToken.getItems().add(SELECT_ALL);
             cmbToken.getItems().addAll(TokenRepository.getAcronyms());
-            cmbToken.setTitle("Selecione as coleções ("+0+"/"+(cmbToken.getItems().size()-1)+")");
+            cmbToken.setTitle(I18n.text("collections.select")+0+"/"+(cmbToken.getItems().size()-1)+")");
             cmbToken.setShowCheckedCount(false);
 
             configurarSelectAll();
@@ -80,7 +81,7 @@ public class BatchSelectFileTransferController extends AbstractController {
                         .count();
 
                 //cmbToken.setTitle(count + " coleções selecionadas");
-                cmbToken.setTitle("Selecione as coleções ("+count+"/"+(cmbToken.getItems().size()-1)+")");
+                cmbToken.setTitle(I18n.text("collections.select")+count+"/"+(cmbToken.getItems().size()-1)+")");
                 atualizarSelectAll();
             } finally {
                 updating = false;
@@ -107,7 +108,7 @@ public class BatchSelectFileTransferController extends AbstractController {
 
         colecoesSelecionadas.remove(SELECT_ALL);
         if (colecoesSelecionadas.isEmpty()) {
-            showAlert("Erro", "Por favor, selecione pelo menos uma coleção.");
+            showAlert(I18n.text("error"), I18n.text("collections.required"));
             return;
         }
 

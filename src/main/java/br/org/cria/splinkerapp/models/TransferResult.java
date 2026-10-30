@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.models;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 public class TransferResult {
 
     private final String token;
@@ -33,8 +34,8 @@ public class TransferResult {
     }
 
     public String getStatus() {
-        if (pendente) return "Pendente";
-        return success ? "Sucesso" : "Erro";
+        if (pendente) return I18n.text("pending");
+        return success ? I18n.text("success") : I18n.text("error");
     }
 
     public String getStatusIcon() {

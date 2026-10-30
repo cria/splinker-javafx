@@ -1,11 +1,12 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.i18n.I18n;
+import br.org.cria.splinkerapp.i18n.LocalizedViews;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
@@ -69,9 +70,10 @@ public class HomeController extends AbstractController {
     protected void loadPage(String pageName) {
         try {
             var template = basePath.formatted(pageName);
-            loader = new FXMLLoader(getClass().getResource(template));
-            Node childNode = loader.load();
+            loader = LocalizedViews.loader(getClass().getResource(template));
+            Node childNode = LocalizedViews.load(loader);
             var children = content.getChildren();
+            children.forEach(LocalizedViews::dispose);
             children.clear();
             children.add(childNode);
         } catch (Exception e) {
@@ -112,23 +114,23 @@ public class HomeController extends AbstractController {
 
         btnPrincipal.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
         btnPrincipal.setGraphic(principalImg);
-        btnPrincipal.setTooltip(new Tooltip("Principal"));
+        btnPrincipal.setTooltip(new Tooltip(I18n.text("home")));
 
         btnSettings.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
         btnSettings.setGraphic(settingsImg);
-        btnSettings.setTooltip(new Tooltip("Configurações"));
+        btnSettings.setTooltip(new Tooltip(I18n.text("settings")));
 
         btnHelp.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
         btnHelp.setGraphic(helpImg);
-        btnHelp.setTooltip(new Tooltip("Ajuda"));
+        btnHelp.setTooltip(new Tooltip(I18n.text("help")));
 
         btnEmail.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
         btnEmail.setGraphic(emailImg);
-        btnEmail.setTooltip(new Tooltip("Email"));
+        btnEmail.setTooltip(new Tooltip(I18n.text("email")));
 
         btnReport.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
         btnReport.setGraphic(reportImg);
-        btnReport.setTooltip(new Tooltip("Relatório"));
+        btnReport.setTooltip(new Tooltip(I18n.text("report")));
     }
 
     @Override
