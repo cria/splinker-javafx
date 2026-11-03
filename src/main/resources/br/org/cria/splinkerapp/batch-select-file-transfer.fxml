@@ -10,13 +10,13 @@
 
     <children>
 
-        <Label id="proxyLabel" fx:id="proxyLabel" layoutX="235.0" layoutY="14.0" text="Enviar">
+        <Label id="proxyLabel" fx:id="proxyLabel" layoutX="235.0" layoutY="14.0" text="%button.send">
             <font>
                 <Font name="System Bold" size="18.0" />
             </font>
         </Label>
 
-        <Label layoutX="31.0" layoutY="59.0" text="Coleções">
+        <Label layoutX="31.0" layoutY="59.0" text="%collections">
             <font>
                 <Font name="System Bold" size="14.0" />
             </font>
@@ -24,8 +24,8 @@
 
         <CheckComboBox fx:id="cmbToken" layoutX="31.0" layoutY="88.0" prefHeight="30.0" prefWidth="476.0" />
 
-        <Button id="btnEnviar" fx:id="btnEnviar" layoutX="269.0" layoutY="271.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" styleClass="primary-button" text="Enviar" />
-        <Button id="btnCancelar" fx:id="btnCancelar" layoutX="157.0" layoutY="272.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" styleClass="danger-button" text="Cancelar" />
+        <Button id="btnEnviar" fx:id="btnEnviar" layoutX="269.0" layoutY="271.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" styleClass="primary-button" text="%button.send" />
+        <Button id="btnCancelar" fx:id="btnCancelar" layoutX="157.0" layoutY="272.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" styleClass="danger-button" text="%button.cancel" />
 
 
         <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="20.0" layoutY="289.0" pickOnBounds="true" preserveRatio="true">

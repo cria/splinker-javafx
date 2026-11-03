@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 import br.org.cria.splinkerapp.Router;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
@@ -61,14 +62,14 @@ public class InstallConfirmationController extends AbstractController {
             if (btnNo != null) btnNo.setDisable(true);
 
             if (lblMessage != null) {
-                lblMessage.setText("Iniciando processo de atualização...");
+                lblMessage.setText(I18n.text("update.start"));
             }
 
             String os = System.getProperty("os.name").toLowerCase();
 
             if (os.contains("linux")) {
                 if (lblMessage != null) {
-                    lblMessage.setText("Iniciando o processo de atualização para Linux...");
+                    lblMessage.setText(I18n.text("update.linux"));
                 }
                 SpLinkerUpdateService.runSoftwareUpdate();
                 return;
@@ -77,14 +78,14 @@ public class InstallConfirmationController extends AbstractController {
             File installerFile = new File(installerPath);
             if (!installerFile.exists()) {
                 if (lblMessage != null) {
-                    lblMessage.setText("Instalador não encontrado. Iniciando download...");
+                    lblMessage.setText(I18n.text("update.installer.missing"));
                 }
                 SpLinkerUpdateService.runSoftwareUpdate();
                 return;
             }
 
             if (lblMessage != null) {
-                lblMessage.setText("Iniciando instalação. O aplicativo será fechado...");
+                lblMessage.setText(I18n.text("update.installing"));
             }
 
             ProcessBuilder processBuilder = new ProcessBuilder();
@@ -108,7 +109,7 @@ public class InstallConfirmationController extends AbstractController {
             if (btnNo != null) btnNo.setDisable(false);
 
             if (lblMessage != null) {
-                lblMessage.setText("Erro ao iniciar a instalação: " + e.getMessage());
+                lblMessage.setText(I18n.text("update.install.error") + e.getMessage());
             }
         }
     }

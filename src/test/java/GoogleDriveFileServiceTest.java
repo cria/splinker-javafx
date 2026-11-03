@@ -2,6 +2,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import br.org.cria.splinkerapp.services.implementations.GoogleDriveFileService;
+import br.org.cria.splinkerapp.i18n.I18n;
 import br.org.cria.splinkerapp.services.implementations.GoogleDriveFileService.SpreadsheetFormat;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -54,7 +55,7 @@ public class GoogleDriveFileServiceTest {
             GoogleDriveFileService.validateAccess(tempFolder.getRoot().getAbsolutePath() + File.separator + "missing.xlsx");
             fail("Expected validation to fail for missing file");
         } catch (IllegalArgumentException ex) {
-            assertEquals("O arquivo informado nao foi encontrado.", ex.getMessage());
+            assertEquals(I18n.text("file.not.found"), ex.getMessage());
         }
     }
 

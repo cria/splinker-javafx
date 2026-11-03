@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.services.implementations;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,17 +39,17 @@ public final class GoogleDriveFileService {
 
     public static void validateAccess(String pathOrUrl) throws Exception {
         if (pathOrUrl == null || pathOrUrl.isBlank()) {
-            throw new IllegalArgumentException("Informe um caminho ou URL.");
+            throw new IllegalArgumentException(I18n.text("file.required.path"));
         }
 
         String trimmed = pathOrUrl.trim();
         if (!isRemotePath(trimmed)) {
             Path localPath = Path.of(trimmed);
             if (!Files.exists(localPath)) {
-                throw new IllegalArgumentException("O arquivo informado não foi encontrado.");
+                throw new IllegalArgumentException(I18n.text("file.not.found"));
             }
             if (!Files.isReadable(localPath)) {
-                throw new IllegalArgumentException("Sem permissão para leitura do arquivo informado.");
+                throw new IllegalArgumentException(I18n.text("file.not.readable"));
             }
             return;
         }
@@ -99,19 +100,19 @@ public final class GoogleDriveFileService {
 
     public static SpreadsheetRemoteFile downloadSpreadsheet(String googleDriveUrl) throws Exception {
         if (!isGoogleDriveUrl(googleDriveUrl)) {
-            throw new IllegalArgumentException("O link remoto informado deve ser um link do Google Drive.");
+            throw new IllegalArgumentException(I18n.text("file.google.link"));
         }
 
         String fileId = extractFileId(googleDriveUrl);
         if (fileId == null || fileId.isBlank()) {
-            throw new IllegalArgumentException("Não foi possível identificar o arquivo no link do Google Drive informado.");
+            throw new IllegalArgumentException(I18n.text("file.google.id"));
         }
 
         if (isGoogleSheetsUrl(googleDriveUrl)) {
             HttpResponse exportResponse = executeRequest(buildGoogleSheetsExportUrl(fileId), null);
             if (!isBinaryResponse(exportResponse)) {
                 throw new IllegalArgumentException(
-                        "Não foi possível exportar a planilha do Google Sheets. Verifique se ela está compartilhada para acesso."
+                        I18n.text("file.google.export")
                 );
             }
             return persistBinaryResponse(exportResponse);
@@ -130,7 +131,7 @@ public final class GoogleDriveFileService {
 
         if (confirmToken == null || confirmToken.isBlank()) {
             throw new IllegalArgumentException(
-                    "Não foi possível baixar a planilha do Google Drive. Verifique se o arquivo está compartilhado para acesso."
+                    I18n.text("file.google.download")
             );
         }
 
@@ -145,7 +146,7 @@ public final class GoogleDriveFileService {
         HttpResponse confirmedResponse = executeRequest(confirmedUrl.toString(), firstResponse.cookieHeader);
         if (!isBinaryResponse(confirmedResponse)) {
             throw new IllegalArgumentException(
-                    "O Google Drive não retornou um arquivo Excel válido. Verifique se o link aponta para um .xls ou .xlsx."
+                    I18n.text("file.google.invalid")
             );
         }
 
@@ -183,7 +184,7 @@ public final class GoogleDriveFileService {
         SpreadsheetFormat format = detectSpreadsheetFormat(tempFile);
         if (format == SpreadsheetFormat.UNKNOWN) {
             Files.deleteIfExists(tempFile);
-            throw new IllegalArgumentException("O arquivo remoto do Google Drive deve estar em formato .xls ou .xlsx.");
+            throw new IllegalArgumentException(I18n.text("file.google.format"));
         }
 
         return new SpreadsheetRemoteFile(tempFile, format);

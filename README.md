@@ -3,6 +3,29 @@
 
 Este software foi desenvolvido pelo CRIA ([Centro de Referência em Informação Ambiental](https://www.cria.org.br/index)) com o objetivo de facilitar o envio de dados para a rede [speciesLink](https://specieslink.net/) de forma rápida e eficiente a partir de bases de dados locais (planilhas ou sistemas de gerenciamento de coleções biológicas).
 
+## Idiomas da interface
+
+A interface está disponível em português (padrão), espanhol e inglês. O seletor de
+idioma usa as bandeiras do Brasil, Espanha e Estados Unidos no canto superior
+direito da tela de boas-vindas e da janela principal. A mudança é imediata,
+e a preferência é salva para as próximas execuções do aplicativo.
+
+As traduções ficam em um único arquivo UTF-8:
+[`src/main/resources/messages.properties`](src/main/resources/messages.properties).
+Cada mensagem tem as variantes `pt.<chave>`, `es.<chave>` e `en.<chave>`. Por exemplo:
+
+```properties
+pt.button.save=Salvar
+es.button.save=Guardar
+en.button.save=Save
+```
+
+Nos FXML, use `text="%button.save"`; no Java, use `I18n.text("button.save")`.
+Carregue as telas com `LocalizedViews.loader(...)` e `LocalizedViews.load(...)`
+para disponibilizar o catálogo também nas páginas internas. Preserve os parâmetros
+`%s` e as quebras de linha `\n` ao editar traduções. Textos dos dados das coleções,
+identificadores técnicos e detalhes de erros externos mantêm seus valores originais.
+
 ## Tecnologias Utilizadas
 
 - **Java 21**: linguagem principal.

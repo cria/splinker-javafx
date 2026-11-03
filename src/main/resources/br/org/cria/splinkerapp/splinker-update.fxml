@@ -7,12 +7,12 @@
 
 <Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="174.0" prefWidth="365.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.SpLinkerUpdateController">
    <children>
-      <Label id="lblMessage" fx:id="lblMessage" alignment="CENTER" contentDisplay="CENTER" layoutX="4.0" layoutY="45.0" prefHeight="49.0" prefWidth="358.0" text="Uma nova versão está disponível. Deseja atualizar agora?" textAlignment="CENTER" wrapText="true">
+      <Label id="lblMessage" fx:id="lblMessage" alignment="CENTER" contentDisplay="CENTER" layoutX="4.0" layoutY="45.0" prefHeight="49.0" prefWidth="358.0" text="%update.available" textAlignment="CENTER" wrapText="true">
          <font>
             <Font size="14.0" />
          </font></Label>
-      <Button id="btnYes" fx:id="btnYes" layoutX="75.0" layoutY="109.0" mnemonicParsing="false" onMouseClicked="#onBtnYesClicked" prefHeight="25.0" prefWidth="72.0" styleClass="success-button" text="Sim" />
-      <Button id="btnNo" fx:id="btnNo" layoutX="213.0" layoutY="109.0" mnemonicParsing="false" onMouseClicked="#onBtnNoClicked" prefHeight="25.0" prefWidth="72.0" styleClass="danger-button" text="Não" />
+      <Button id="btnYes" fx:id="btnYes" layoutX="75.0" layoutY="109.0" mnemonicParsing="false" onMouseClicked="#onBtnYesClicked" prefHeight="25.0" prefWidth="72.0" styleClass="success-button" text="%button.yes" />
+      <Button id="btnNo" fx:id="btnNo" layoutX="213.0" layoutY="109.0" mnemonicParsing="false" onMouseClicked="#onBtnNoClicked" prefHeight="25.0" prefWidth="72.0" styleClass="danger-button" text="%button.no" />
       <ProgressBar fx:id="progressBar" layoutX="83.0" layoutY="112.0" prefWidth="200.0" progress="0.0" visible="false" />
       <ProgressIndicator fx:id="progressIndicator" layoutX="170.0" layoutY="82.0" prefHeight="25.0" prefWidth="25.0" progress="0.0" visible="false" />
       <ImageView fitHeight="123.0" fitWidth="278.0" layoutX="106.0" layoutY="-29.0" pickOnBounds="true" preserveRatio="true">
