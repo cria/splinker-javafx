@@ -86,6 +86,9 @@ public class FileSourceManager {
         if (isDbf) {
             fileParser = new DbfFileParser(filePath);
         }
+        if (isNumbers) {
+            fileParser = new NumbersFileParser();
+        }
     }
 
     public void importData(Set<String> tabelas) throws Exception {
@@ -95,15 +98,11 @@ public class FileSourceManager {
                 fileParser.createTableBasedOnSheet(tabelas);
                 fileParser.insertDataIntoTable(tabelas);
 
-                var token = ds.getToken();
-                var totalRowCount = fileParser.getTotalRowCount();
-                DataSetService.updateRowcount(token, totalRowCount);
-
             } else {
-                var fp = new NumbersFileParser();
                 var finalFile = NumbersFileParser.numbersToXLSX(filePath);
-                fp.parseFile(finalFile);
+                ((NumbersFileParser) fileParser).parseFile(finalFile, tabelas);
             }
+            DataSetService.updateRowcount(ds.getToken(), fileParser.getTotalRowCount());
         } finally {
             cleanupTemporaryResolvedFile();
         }

@@ -191,7 +191,7 @@ public final class GoogleDriveFileService {
     }
 
     private static HttpResponse executeRequest(String url, String cookieHeader) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        HttpURLConnection connection = openConnection(url);
         connection.setInstanceFollowRedirects(true);
         connection.setRequestMethod("GET");
         connection.setRequestProperty("User-Agent", USER_AGENT);
@@ -207,6 +207,10 @@ public final class GoogleDriveFileService {
         }
 
         return new HttpResponse(connection, extractCookies(connection));
+    }
+
+    static HttpURLConnection openConnection(String url) throws IOException {
+        return (HttpURLConnection) new URL(url).openConnection();
     }
 
     private static boolean isBinaryResponse(HttpResponse response) {

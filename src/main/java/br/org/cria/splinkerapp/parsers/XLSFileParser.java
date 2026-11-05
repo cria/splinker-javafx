@@ -23,8 +23,9 @@ public class XLSFileParser extends FileParser {
     public XLSFileParser(String fileSourcePath) throws Exception {
         this.fileSourcePath = fileSourcePath;
         var excelFile = new File(fileSourcePath);
-        var stream = new FileInputStream(excelFile);
-        workbook = new HSSFWorkbook(stream);
+        try (var stream = new FileInputStream(excelFile)) {
+            workbook = new HSSFWorkbook(stream);
+        }
     }
 
     @Override
@@ -35,9 +36,8 @@ public class XLSFileParser extends FileParser {
             var sheet = workbook.getSheetAt(i);
             Row headerRow = sheet.getRow(0);
             var tableName = StringStandards.normalizeString(sheet.getSheetName());
-            dropTable(tableName);
-
             if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) continue;
+            dropTable(tableName);
 
             builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
 
@@ -145,6 +145,7 @@ public class XLSFileParser extends FileParser {
                         statement.clearBatch();
                     }
                 }
+                totalRowCount = currentRow;
             } catch (Exception e) {
                 conn.rollback();
                 Sentry.captureException(e);

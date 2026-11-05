@@ -103,6 +103,11 @@ public class DbfFileParser extends FileParser {
             conn.commit();
             conn.setAutoCommit(true);
         } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackFailure) {
+                e.addSuppressed(rollbackFailure);
+            }
             Sentry.captureException(e);
             throw e;
         } finally {

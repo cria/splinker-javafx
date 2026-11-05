@@ -283,7 +283,6 @@ public class XLSXFileParser extends FileParser {
                     ps = conn.prepareStatement(command);
                     headerProcessed = true;
                     countInBatch = 0;
-                    totalRowCount = 0;
                     return;
                 }
 

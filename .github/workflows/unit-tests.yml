@@ -1,0 +1,28 @@
+name: Testes unitarios e cobertura
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  unit-tests:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Executar testes e verificar cobertura do nucleo de dados
+        run: .\mvnw.cmd -B clean test "-Dsentry.skipSourceBundle=true"
+      - name: Publicar relatorios
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testes-e-cobertura
+          path: |
+            target/surefire-reports/
+            target/site/jacoco/
+          if-no-files-found: warn

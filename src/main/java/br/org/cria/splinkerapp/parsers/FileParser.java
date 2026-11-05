@@ -89,6 +89,9 @@ public abstract class FileParser {
 
     public void createTableBasedOnSheet(Set<String> tabelas) throws Exception {
         var command = buildCreateTableCommand(tabelas);
+        if (command == null || command.isBlank()) {
+            return;
+        }
         try (var conn = getConnection();
              var statement = conn.createStatement()) {
             statement.executeUpdate(command);

@@ -21,7 +21,9 @@ public class OdsFileParser extends FileParser {
         this.filePath = filePath;
         var file = new File(this.filePath);
         //this.spreadSheet = new SpreadSheet(file);
-        this.spreadSheet = new SpreadSheet(new FileInputStream(file));
+        try (var input = new FileInputStream(file)) {
+            this.spreadSheet = new SpreadSheet(input);
+        }
     }
 
     @Override
@@ -57,9 +59,9 @@ public class OdsFileParser extends FileParser {
                         numberOfColumns = columns.size();
 
                         for (int j = 1; j < totalRowCount; j++) {
-                            currentRow = j;
+                            final int rowIndex = j;
                             var sheetRow = new ArrayList<Range>();
-                            IntStream.range(0, numberOfColumns).forEach(n -> sheetRow.add(sheet.getRange(currentRow, n)));
+                            IntStream.range(0, numberOfColumns).forEach(n -> sheetRow.add(sheet.getRange(rowIndex, n)));
                             var row = getRowAsStringList(sheetRow, numberOfColumns);
                             var valuesList = row.stream().toList();
 
@@ -69,6 +71,7 @@ public class OdsFileParser extends FileParser {
                                 statement.setString(k + 1, value);
                             }
                             statement.addBatch();
+                            currentRow++;
 
                             if (currentRow % 10_000 == 0) {
                                 statement.executeBatch();
@@ -83,6 +86,7 @@ public class OdsFileParser extends FileParser {
                         statement.clearBatch();
                     }
                 }
+                totalRowCount = currentRow;
             } catch (Exception ex) {
                 conn.rollback();
                 throw ex;
@@ -114,9 +118,8 @@ public class OdsFileParser extends FileParser {
         for (Sheet sheet : spreadSheet.getSheets()) {
             var numberOfColumns = sheet.getMaxColumns();
             var tableName = StringStandards.normalizeString(sheet.getName());
-            dropTable(tableName);
-
             if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) continue;
+            dropTable(tableName);
 
             builder.append("CREATE TABLE IF NOT EXISTS %s (".formatted(tableName));
 

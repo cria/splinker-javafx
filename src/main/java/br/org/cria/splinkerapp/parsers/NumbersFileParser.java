@@ -1,88 +1,64 @@
 package br.org.cria.splinkerapp.parsers;
 
+import java.io.IOException;
 import java.util.List;
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.Set;
+import java.util.Locale;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-
+/** Converts Numbers using the macOS application, then uses the standard XLSX importer. */
 public class NumbersFileParser extends FileParser {
-
-    public NumbersFileParser() throws Exception {
-        super();
-    }
+    public NumbersFileParser() throws Exception { super(); }
 
     public static String numbersToXLSX(String path) throws Exception {
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        var finalFile = path.replace(".numbers", ".xlsx");
-        // var manager = new ScriptEngineManager();
-        // var engine = manager.getEngineByName("AppleScript");
-        // if(engine == null)
-        // {
-        //     engine = manager.getEngineByName("AppleScriptEngine");
-        // }
-        String cmd = """
-                'set inputFilePath to "%s"
-                set outputFilePath to "%s"
-                tell application "Numbers"
-                    open document inputFilePath
-                end tell
-                tell application "Numbers"
-                    export document active document as type "Microsoft Excel" to outputFilePath
-                end tell
-                tell application "Numbers"
-                    close document active document
-                end tell'
-                """.formatted(path, finalFile);
-        processBuilder.command("osascript", "-e", cmd);
-        Process process = processBuilder.start();
-        var result = process.waitFor();
-        var exit = process.exitValue();
-        var z = new byte[]{};
-        var bla = process.getOutputStream();
-        bla.write(z);
-        var asd = bla.toString();
-        process.destroy();
-        // engine.eval(cmd);
-        return finalFile;
-    }
-
-    public void parseFile(String filePath) throws Exception {
-        var file = new File(filePath);
-        FileInputStream fis = new FileInputStream(file);
-        Workbook workbook = WorkbookFactory.create(fis);
-        Sheet sheet = workbook.getSheet("");// workbook.getSheetAt(0);
-        for (Row row : sheet) {
-            for (Cell cell : row) {
-                // Get the cell value
-                String cellValue = cell.getStringCellValue();
-                // Do something with the cell value
-                System.out.println("Cell Value: " + cellValue);
-            }
+        if (path == null || !path.toLowerCase(Locale.ROOT).endsWith(".numbers")) {
+            throw new IllegalArgumentException("Informe um arquivo .numbers.");
         }
-        // Close the workbook and input stream
-        workbook.close();
-        fis.close();
+        String finalFile = path.substring(0, path.length() - ".numbers".length()) + ".xlsx";
+        String input = path.replace("\\", "\\\\").replace("\"", "\\\"");
+        String output = finalFile.replace("\\", "\\\\").replace("\"", "\\\"");
+        String script = """
+                set inputFilePath to POSIX file "%s"
+                set outputFilePath to POSIX file "%s"
+                tell application "Numbers"
+                    set sourceDocument to open inputFilePath
+                    try
+                        export sourceDocument to outputFilePath as Microsoft Excel
+                    on error errorMessage
+                        close sourceDocument saving no
+                        error errorMessage
+                    end try
+                    close sourceDocument saving no
+                end tell
+                """.formatted(input, output);
+        Process process = new ProcessBuilder("osascript", "-e", script)
+                .redirectErrorStream(true).redirectOutput(ProcessBuilder.Redirect.DISCARD).start();
+        try {
+            int exit = process.waitFor();
+            if (exit != 0) throw new IOException("Falha ao converter arquivo Numbers. Codigo de saida: " + exit);
+            return finalFile;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw e;
+        } finally { process.destroy(); }
     }
 
-    @Override
-    public void insertDataIntoTable(Set<String> tabelas) throws Exception {
-        throw new UnsupportedOperationException("Unimplemented method 'insertDataIntoTable'");
+    public void parseFile(String filePath) throws Exception { parseFile(filePath, null); }
+
+    public void parseFile(String filePath, Set<String> tables) throws Exception {
+        var parser = new XLSXFileParser(filePath);
+        parser.createTableBasedOnSheet(tables);
+        parser.insertDataIntoTable(tables);
+        currentRow = parser.getCurrentRow();
+        totalRowCount = parser.getTotalRowCount();
     }
 
-    @Override
-    protected List<String> getRowAsStringList(Object row, int numberOfColumns) {
-        throw new UnsupportedOperationException("Unimplemented method 'getRowAsStringList'");
+    @Override public void insertDataIntoTable(Set<String> tables) {
+        throw new UnsupportedOperationException("Converta o arquivo Numbers antes de importar.");
     }
-
-    @Override
-    protected String buildCreateTableCommand(Set<String> tabelas) throws Exception {
-        throw new UnsupportedOperationException("Unimplemented method 'buildCreateTableCommand'");
+    @Override protected List<String> getRowAsStringList(Object row, int numberOfColumns) {
+        throw new UnsupportedOperationException("Converta o arquivo Numbers antes de importar.");
     }
-
+    @Override protected String buildCreateTableCommand(Set<String> tables) {
+        throw new UnsupportedOperationException("Converta o arquivo Numbers antes de importar.");
+    }
 }

@@ -25,7 +25,8 @@ public class CsvFileParser extends FileParser {
         this.filePath = filePath;
         var settings = new CsvParserSettings();
         settings.setDelimiterDetectionEnabled(true);
-        var parser = new CsvParser(settings);
+        settings.setLineSeparatorDetectionEnabled(true);
+        parser = new CsvParser(settings);
         iterator = parser.iterate(new File(filePath)).iterator();
         columns = normalizeAllColumns(Arrays.asList(iterator.next()));
     }
@@ -42,10 +43,10 @@ public class CsvFileParser extends FileParser {
 
     @Override
     protected String buildCreateTableCommand(Set<String> tabelas) throws Exception {
-        dropTable("spLinker");
         var tableName = getTableName();
 
         if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) return null;
+        dropTable(tableName);
 
         var columnNames = String.join(",", columns.stream().map((e) -> "%s VARCHAR(1)".formatted(e)).toList());
         var command = createTableCommand.formatted(tableName, columnNames).replace(",)", " );");
@@ -54,10 +55,12 @@ public class CsvFileParser extends FileParser {
 
     @Override
     public void insertDataIntoTable(Set<String> tabelas) throws Exception {
-        String separator = detectSeparator(filePath);
         var tableName = getTableName();
 
-        if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) return;
+        if (tabelas != null && !tabelas.contains(tableName.toLowerCase())) {
+            parser.stopParsing();
+            return;
+        }
 
         var valuesStr = makeValueString(columns.size());
         var columnNames = String.join(",", columns);
@@ -71,7 +74,7 @@ public class CsvFileParser extends FileParser {
             try {
                 while (iterator.hasNext()) {
                     var row = iterator.next();
-                    String[] rowValues = row[0].split(separator, -1);
+                    String[] rowValues = row;
                     for (int j = 0; j < columnCount; j++) {
                         var value = (j < rowValues.length) ? getCellValue(rowValues[j]) : null;
                         statement.setString(j + 1, value);
@@ -96,6 +99,8 @@ public class CsvFileParser extends FileParser {
             } finally {
                 conn.setAutoCommit(true);
             }
+        } finally {
+            parser.stopParsing();
         }
     }
     public static String detectSeparator(String filePath) throws IOException {

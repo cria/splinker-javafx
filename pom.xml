@@ -10,8 +10,16 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>4.13.1</junit.version>
+        <argLine></argLine>
+        <sentry.skipSourceBundle>true</sentry.skipSourceBundle>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.14.2</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
@@ -38,12 +46,6 @@
             <groupId>com.univocity</groupId>
             <artifactId>univocity-parsers</artifactId>
             <version>2.9.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.javafaker</groupId>
-            <artifactId>javafaker</artifactId>
-            <version>1.0.2</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -183,12 +185,45 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.jacoco</groupId><artifactId>jacoco-maven-plugin</artifactId><version>0.8.12</version>
+                <executions>
+                    <execution><goals><goal>prepare-agent</goal></goals></execution>
+                    <execution><id>coverage-report</id><phase>test</phase><goals><goal>report</goal></goals></execution>
+                    <execution>
+                        <id>data-source-coverage</id>
+                        <phase>test</phase>
+                        <goals><goal>check</goal></goals>
+                        <configuration>
+                            <includes>
+                                <include>br/org/cria/splinkerapp/parsers/*.class</include>
+                                <include>br/org/cria/splinkerapp/managers/*.class</include>
+                                <include>br/org/cria/splinkerapp/repositories/*.class</include>
+                                <include>br/org/cria/splinkerapp/models/DataSet.class</include>
+                                <include>br/org/cria/splinkerapp/models/DataSourceType.class</include>
+                                <include>br/org/cria/splinkerapp/services/implementations/DataSetService*.class</include>
+                                <include>br/org/cria/splinkerapp/services/implementations/GoogleDriveFileService*.class</include>
+                                <include>br/org/cria/splinkerapp/services/implementations/DarwinCoreArchiveService*.class</include>
+                            </includes>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit><counter>LINE</counter><value>COVEREDRATIO</value><minimum>0.90</minimum></limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>io.sentry</groupId>
                 <artifactId>sentry-maven-plugin</artifactId>
                 <version>0.0.6</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <skipTelemetry>true</skipTelemetry>        
+                    <skipTelemetry>true</skipTelemetry>
+                    <skipSourceBundle>${sentry.skipSourceBundle}</skipSourceBundle>
                     <debugSentryCli>true</debugSentryCli>
                     <org>cria-specieslink</org>
                     <project>java-log4j2</project>
@@ -216,12 +251,7 @@
                 </dependencies>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
-                    <!-- <forkCount>5</forkCount>
-                <reuseForks>true</reuseForks> -->
-                    <argLine>-Xmx4G -XX:MaxMetaspaceSize=8G -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90</argLine>
-                    <parallel>all</parallel>
-                    <useUnlimitedThreads>true</useUnlimitedThreads>
-                    <!-- <threadCount>10</threadCount> -->
+                    <argLine>@{argLine} -Xmx1G</argLine>
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
@@ -338,4 +368,11 @@
             </resource>
         </resources>
     </build>
+    <profiles>
+        <profile>
+            <id>sentry-source-upload</id>
+            <activation><property><name>env.SENTRY_AUTH_TOKEN</name></property></activation>
+            <properties><sentry.skipSourceBundle>false</sentry.skipSourceBundle></properties>
+        </profile>
+    </profiles>
 </project>
