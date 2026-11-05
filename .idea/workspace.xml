@@ -9,39 +9,26 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="51b6b81a-06d2-4832-921b-ae8b390b0fd9" name="Changes" comment="Testando yajsync">
+    <list default="true" id="51b6b81a-06d2-4832-921b-ae8b390b0fd9" name="Changes" comment="internacionalizacao">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/AccessDbModalController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/AccessDbModalController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/CentralServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/CentralServiceController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/CollectionLocalDatabaseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/CollectionLocalDatabaseController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FileSelectionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FileSelectionController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FirstConfigDialogController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FirstConfigDialogController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/ProxyConfigController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/ProxyConfigController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/TokenLoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/TokenLoginController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/managers/DatabaseSourceManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/managers/DatabaseSourceManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/managers/FileSourceManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/managers/FileSourceManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/models/DataSource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/models/DataSource.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/parsers/ExcelFileParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/parsers/ExcelFileParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/parsers/FileParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/parsers/FileParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/CentralServiceRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/CentralServiceRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/DataSourceRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/DataSourceRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/ProxyConfigRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/ProxyConfigRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/TokenRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/repositories/TokenRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/BaseService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/DarwinCoreArchiveService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/DarwinCoreArchiveService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/access-db-modal.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/access-db-modal.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/central-service.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/central-service.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/collection-database.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/collection-database.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/AbstractController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/AbstractController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/i18n/CountryFlag.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/first-config-dialog.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/first-config-dialog.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/home.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/home.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/proxy-config.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/proxy-config.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/token-login.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/br/org/cria/splinkerapp/token-login.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/LocalizedViewsTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/LocalizedViewsTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_C:/Users/cria/Documents/workspace" value="2PZNmbrcMrUT1Qbo5BCDpZe0Mag" />
+    </persistenceIdMap>
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="1268" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -53,7 +40,87 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="feature/dwc-dp" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;IrvayneMatheus&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/cria/splinker-javafx&quot;,
+    &quot;accountId&quot;: &quot;b07ade9c-8d55-4718-a6d6-e90c57ca2af8&quot;
+  }
+}</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0000002544756061" />
+      <entry key="S2" value="1.0239854763187588" />
+      <entry key="S5" value="1.2941800211001118" />
+      <entry key="S10" value="1.7789038282306788" />
+      <entry key="S30" value="3.471413217704585" />
+      <entry key="S60" value="5.76584122406639" />
+      <entry key="M2" value="9.051309784306326" />
+      <entry key="M5" value="13.238775585747446" />
+      <entry key="M10" value="15.614610573496634" />
+      <entry key="M15" value="16.9987802142916" />
+      <entry key="M30" value="19.63249491667739" />
+      <entry key="H1" value="22.0626945275992" />
+      <entry key="H2" value="23.787072651476482" />
+      <entry key="H4" value="24.823639337197413" />
+      <entry key="D1" value="25.793376813803174" />
+      <entry key="W1" value="25.970211769051932" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.7071067811865476" />
+      <entry key="MS500" value="0.9330332400852951" />
+      <entry key="S2" value="1.0066646483924238" />
+      <entry key="S5" value="1.2865696928950383" />
+      <entry key="S10" value="1.7745042067479702" />
+      <entry key="S30" value="3.469191898167883" />
+      <entry key="S60" value="5.764101918627625" />
+      <entry key="M2" value="9.049896634985293" />
+      <entry key="M5" value="13.237898940928195" />
+      <entry key="M10" value="15.614081978479762" />
+      <entry key="M15" value="16.998395571133063" />
+      <entry key="M30" value="19.632274549362045" />
+      <entry key="H1" value="22.06257210194128" />
+      <entry key="H2" value="23.787007187655156" />
+      <entry key="H4" value="24.823605339014325" />
+      <entry key="D1" value="25.793370950973134" />
+      <entry key="W1" value="25.97021092639919" />
+    </decayedShown>
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="ProjectErrors" />
@@ -62,7 +129,6 @@
   &quot;associatedIndex&quot;: 2
 }</component>
   <component name="ProjectId" id="2PZNmbrcMrUT1Qbo5BCDpZe0Mag" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -70,13 +136,29 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Application.Main.executor": "Run",
+    "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "feature/ingles-espanho",
+    "git.auto.fetch.suggestion.counter": "2",
+    "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/brunobemfica/IdeaProjects/SPlinkerApp/splinker",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Artifacts",
     "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.1150748"
+    "project.structure.side.proportion": "0.1150748",
+    "python.packages.toolwindow.project.migrated.to.right.top.v2": "true",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -104,12 +186,24 @@
       <option name="JAR_PATH" value="$PROJECT_DIR$/src/libs/esproc-bin-20230621.jar" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Application.Main" />
+      <item itemvalue="JAR Application.esproc-bin-20230621.jar" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.Main" />
         <item itemvalue="JAR Application.esproc-bin-20230621.jar" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-a203e0a19954-intellij.indexing.shared.core-IU-262.10968.63" />
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-IU-262.10968.63" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -119,6 +213,21 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1683660804227</updated>
+      <workItem from="1779538508157" duration="206000" />
+      <workItem from="1779539067825" duration="16421000" />
+      <workItem from="1780947387944" duration="792000" />
+      <workItem from="1781108075446" duration="6489000" />
+      <workItem from="1781544417328" duration="4000" />
+      <workItem from="1781786365168" duration="3185000" />
+      <workItem from="1784674565828" duration="2479000" />
+      <workItem from="1789689315846" duration="1543000" />
+      <workItem from="1791484983662" duration="5790000" />
+      <workItem from="1791900316557" duration="3817000" />
+      <workItem from="1791975481877" duration="7706000" />
+      <workItem from="1793101989084" duration="260000" />
+      <workItem from="1793102270509" duration="387000" />
+      <workItem from="1793102673912" duration="208000" />
+      <workItem from="1793103044028" duration="1000" />
     </task>
     <task id="LOCAL-00001" summary="Adicionando yajsync&#10;- Comentando dependência com falha de segurança.">
       <created>1690848288216</created>
@@ -162,8 +271,67 @@
       <option name="project" value="LOCAL" />
       <updated>1690857880222</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Adicionando logs do postgres">
+      <option name="closed" value="true" />
+      <created>1779806349677</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1779806349678</updated>
+    </task>
+    <task id="LOCAL-00008" summary="ajustes nos logs">
+      <option name="closed" value="true" />
+      <created>1779807618520</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1779807618520</updated>
+    </task>
+    <task id="LOCAL-00009" summary="criando socket factory sem proxy no postgres">
+      <option name="closed" value="true" />
+      <created>1779881735156</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1779881735156</updated>
+    </task>
+    <task id="LOCAL-00010" summary="gerando versao 7.4.3">
+      <option name="closed" value="true" />
+      <created>1780074263521</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1780074263521</updated>
+    </task>
+    <task id="LOCAL-00011" summary="gerando versao 7.4.4">
+      <option name="closed" value="true" />
+      <created>1780405318752</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1780405318752</updated>
+    </task>
+    <task id="LOCAL-00012" summary="gerando versao 7.4.5">
+      <option name="closed" value="true" />
+      <created>1781183023601</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1781183023601</updated>
+    </task>
+    <task id="LOCAL-00013" summary="geracao do dwc-dp">
+      <option name="closed" value="true" />
+      <created>1793102042506</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1793102042506</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -190,7 +358,15 @@
     <MESSAGE value="Corrigindo estrutura de dados" />
     <MESSAGE value="Corrigindo interface" />
     <MESSAGE value="Testando yajsync" />
-    <option name="LAST_COMMIT_MESSAGE" value="Testando yajsync" />
+    <MESSAGE value="Adicionando logs do postgres" />
+    <MESSAGE value="ajustes nos logs" />
+    <MESSAGE value="criando socket factory sem proxy no postgres" />
+    <MESSAGE value="gerando versao 7.4.3" />
+    <MESSAGE value="gerando versao 7.4.4" />
+    <MESSAGE value="gerando versao 7.4.5" />
+    <MESSAGE value="geracao do dwc-dp" />
+    <MESSAGE value="internacionalizacao" />
+    <option name="LAST_COMMIT_MESSAGE" value="internacionalizacao" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -201,44 +377,79 @@
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/Router.java</url>
-          <line>22</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>jar://$PROJECT_DIR$/src/libs/yajsync-app-0.9.0-SNAPSHOT-full.jar!/com/github/perlundq/yajsync/ui/YajsyncClient.class</url>
           <line>510</line>
           <option name="timeStamp" value="11" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java</url>
-          <line>61</line>
+          <line>62</line>
           <option name="timeStamp" value="21" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java</url>
-          <line>37</line>
+          <line>38</line>
           <option name="timeStamp" value="37" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java</url>
-          <line>60</line>
+          <line>61</line>
           <option name="timeStamp" value="41" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java</url>
-          <line>29</line>
+          <line>30</line>
           <option name="timeStamp" value="43" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/HomeController.java</url>
-          <line>44</line>
+          <line>45</line>
           <option name="timeStamp" value="44" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/controllers/FileSelectionController.java</url>
-          <line>37</line>
+          <line>38</line>
           <option name="timeStamp" value="52" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/DarwinCoreArchiveService.java</url>
+          <line>137</line>
+          <option name="timeStamp" value="53" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/DarwinCoreArchiveService.java</url>
+          <line>82</line>
+          <option name="timeStamp" value="55" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/DarwinCoreArchiveService.java</url>
+          <line>93</line>
+          <option name="timeStamp" value="56" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/models/DataSet.java</url>
+          <line>246</line>
+          <option name="timeStamp" value="57" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/parsers/XLSFileParser.java</url>
+          <line>84</line>
+          <option name="timeStamp" value="58" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/parsers/AccessFileParser.java</url>
+          <line>56</line>
+          <option name="timeStamp" value="59" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/DarwinCoreArchiveService.java</url>
+          <line>181</line>
+          <option name="timeStamp" value="60" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/implementations/DarwinCoreArchiveService.java</url>
+          <line>122</line>
+          <option name="timeStamp" value="61" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/br/org/cria/splinkerapp/services/interfaces/IDarwinCoreArchiveService.java</url>
@@ -251,5 +462,18 @@
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>

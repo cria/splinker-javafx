@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.utils;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -11,7 +12,7 @@ public class ModalAlertUtil {
     public static void show(String conteudo, String detalhe) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.initModality(Modality.APPLICATION_MODAL);
-        alert.setTitle("Erro");
+        alert.setTitle(I18n.text("error"));
         alert.setHeaderText(null);
         alert.setContentText(conteudo);
 

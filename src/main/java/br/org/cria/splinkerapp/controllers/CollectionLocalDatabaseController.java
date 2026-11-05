@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.models.DataSourceType;
@@ -91,7 +92,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
             }
 
             if (dataSourceType == null) {
-                showErrorModal("Não foi possível identificar o tipo do banco de dados.");
+                showErrorModal(I18n.text("validation.database.type"));
                 return;
             }
 
@@ -114,7 +115,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
                     ApplicationLog.info("[POSTGRES] Teste inicial de conexao PostgreSQL falhou em todas as tentativas. token=%s, host=%s, port=%s, dbName=%s, user=%s"
                             .formatted(token, hostName, port, databaseName, username));
                 }
-                showErrorModal("Não foi possível se conectar ao banco de dados.");
+                showErrorModal(I18n.text("validation.database.connection"));
                 return;
             }
 
@@ -222,7 +223,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
                 return "jdbc:oracle:thin:@" + hostName + ":" + port + ":" + databaseName;
 
             default:
-                throw new IllegalArgumentException("Tipo de banco não suportado para teste de conexão: " + dsType);
+                throw new IllegalArgumentException(I18n.text("validation.database.unsupported") + dsType);
         }
     }
 
@@ -264,11 +265,11 @@ public class CollectionLocalDatabaseController extends AbstractController {
         try {
             int port = Integer.parseInt(portStr);
             if (port < 1 || port > 65535) {
-                showErrorModal("Porta inválida. Informe um número inteiro entre 1 e 65535.");
+                showErrorModal(I18n.text("validation.port"));
                 return false;
             }
         } catch (NumberFormatException e) {
-            showErrorModal("Porta inválida. Informe um número inteiro entre 1 e 65535.");
+            showErrorModal(I18n.text("validation.port"));
             return false;
         }
         return true;
@@ -285,11 +286,11 @@ public class CollectionLocalDatabaseController extends AbstractController {
                 try {
                     int num = Integer.parseInt(part);
                     if (num < 0 || num > 255) {
-                        showErrorModal("Endereço IPv4 inválido: cada octeto deve estar entre 0 e 255.");
+                        showErrorModal(I18n.text("validation.ip.range"));
                         return false;
                     }
                 } catch (NumberFormatException e) {
-                    showErrorModal("Endereço IPv4 inválido: formato incorreto.");
+                    showErrorModal(I18n.text("validation.ip.format"));
                     return false;
                 }
             }
@@ -303,7 +304,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
         if (host.matches(hostnamePattern)) {
             return true;
         }
-        showErrorModal("Endereço de host inválido. Verifique se o valor informado é um hostname, endereço IP (IPv4 ou IPv6) ou 'localhost'.");
+        showErrorModal(I18n.text("validation.host"));
         return false;
     }
 
@@ -314,7 +315,7 @@ public class CollectionLocalDatabaseController extends AbstractController {
         var hasPort = StringUtil.isNotBlank(portField.getText());
 
         if (!hasUserName || !hasHostName || !hasDBName || !hasPort) {
-            showErrorModal("Todos os campos são obrigatórios");
+            showErrorModal(I18n.text("validation.required"));
             return false;
         }
         return true;

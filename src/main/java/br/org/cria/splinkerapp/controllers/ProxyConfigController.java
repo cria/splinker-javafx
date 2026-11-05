@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -62,7 +63,7 @@ public class ProxyConfigController extends AbstractController {
         var hasPort = StringUtil.isNotBlank(proxyPort.getText());
 
         if (!hasAddress || !hasPassword || !hasUsername || !hasPort) {
-            showErrorModal("Todos os campos são obrigatórios");
+            showErrorModal(I18n.text("validation.required"));
             return false;
         }
         return true;
@@ -80,11 +81,11 @@ public class ProxyConfigController extends AbstractController {
                 try {
                     int num = Integer.parseInt(part);
                     if (num < 0 || num > 255) {
-                        showErrorModal("Endereço IPv4 inválido: cada octeto deve estar entre 0 e 255.");
+                        showErrorModal(I18n.text("validation.ip.range"));
                         return false;
                     }
                 } catch (NumberFormatException e) {
-                    showErrorModal("Endereço IPv4 inválido: formato incorreto.");
+                    showErrorModal(I18n.text("validation.ip.format"));
                     return false;
                 }
             }
@@ -101,7 +102,7 @@ public class ProxyConfigController extends AbstractController {
             return true;
         }
 
-        showErrorModal("Endereço de proxy inválido. Verifique se o valor informado é um hostname, endereço IP (IPv4 ou IPv6) ou 'localhost'.");
+        showErrorModal(I18n.text("validation.proxy.host"));
         return false;
     }
 
@@ -109,11 +110,11 @@ public class ProxyConfigController extends AbstractController {
         try {
             int port = Integer.parseInt(portStr);
             if (port < 1 || port > 65535) {
-                showErrorModal("Porta do proxy inválida. Informe um número inteiro entre 1 e 65535.");
+                showErrorModal(I18n.text("validation.proxy.port"));
                 return false;
             }
         } catch (NumberFormatException e) {
-            showErrorModal("Porta do proxy inválida. Informe um número inteiro entre 1 e 65535.");
+            showErrorModal(I18n.text("validation.proxy.port"));
             return false;
         }
         return true;
@@ -121,13 +122,13 @@ public class ProxyConfigController extends AbstractController {
 
     private boolean isValidProxyUsername(String username) {
         if (username.length() < 3) {
-            showErrorModal("Nome de usuário do proxy deve ter pelo menos 3 caracteres.");
+            showErrorModal(I18n.text("validation.proxy.username.length"));
             return false;
         }
 
         String usernamePattern = "^[a-zA-Z0-9._-]+$";
         if (!username.matches(usernamePattern)) {
-            showErrorModal("Nome de usuário do proxy contém caracteres inválidos. Use apenas letras, números, pontos, hífens e sublinhados.");
+            showErrorModal(I18n.text("validation.proxy.username"));
             return false;
         }
 
@@ -136,7 +137,7 @@ public class ProxyConfigController extends AbstractController {
 
     private boolean isValidProxyPassword(String password) {
         if (password.length() < 6) {
-            showErrorModal("A senha do proxy deve ter pelo menos 6 caracteres.");
+            showErrorModal(I18n.text("validation.proxy.password"));
             return false;
         }
         return true;

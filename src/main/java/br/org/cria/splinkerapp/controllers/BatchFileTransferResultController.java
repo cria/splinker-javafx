@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.models.TransferResult;
 import javafx.collections.FXCollections;
@@ -78,7 +79,7 @@ public class BatchFileTransferResultController extends AbstractController {
 
     private void configurarColunaAcao() {
         colAcao.setCellFactory(param -> new TableCell<>() {
-            private final Button btn = new Button("Logs");
+            private final Button btn = new Button(I18n.text("button.details"));
 
             {
                 btn.setOnAction(event -> {
@@ -111,8 +112,8 @@ public class BatchFileTransferResultController extends AbstractController {
 
     private void exibirLogErro(TransferResult result) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Log do erro");
-        alert.setHeaderText("Coleção: " + result.getToken());
+        alert.setTitle(I18n.text("error.log"));
+        alert.setHeaderText(I18n.text("collection.label") + result.getToken());
 
         TextArea textArea = new TextArea(result.getErrorLog());
         textArea.setEditable(false);

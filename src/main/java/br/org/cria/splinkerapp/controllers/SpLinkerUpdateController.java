@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -72,7 +73,7 @@ public class SpLinkerUpdateController extends AbstractController {
             }
 
             if (lblMessage != null) {
-                lblMessage.setText("Preparando download da atualização.");
+                lblMessage.setText(I18n.text("update.preparing"));
                 lblMessage.getStyleClass().add("update-message");
             }
 
@@ -103,7 +104,7 @@ public class SpLinkerUpdateController extends AbstractController {
 
                         Platform.runLater(() -> {
                             if (lblMessage != null) {
-                                lblMessage.setText("Download da atualização em progresso.");
+                                lblMessage.setText(I18n.text("update.downloading"));
                                 lblMessage.getStyleClass().add("update-message");
                             }
                         });
@@ -132,7 +133,7 @@ public class SpLinkerUpdateController extends AbstractController {
 
                     Platform.runLater(() -> {
                         if (lblMessage != null) {
-                            lblMessage.setText("Download concluído!");
+                            lblMessage.setText(I18n.text("update.complete"));
                         }
                         if (progressBar != null) progressBar.setProgress(1.0);
                         if (progressIndicator != null) progressIndicator.setProgress(1.0);
@@ -147,27 +148,27 @@ public class SpLinkerUpdateController extends AbstractController {
                             Router.navigateTo(getStage(), "install-confirmation");
                         } catch (Exception e) {
                             Sentry.captureException(e);
-                            showError("Erro ao exibir tela de confirmação: " + e.getMessage());
+                            showError(I18n.text("update.confirm.error") + e.getMessage());
                         }
                     });
 
                 } catch (Exception e) {
                     Sentry.captureException(e);
-                    showError("Erro ao processar download: " + e.getMessage());
+                    showError(I18n.text("update.process.error") + e.getMessage());
                 }
             });
 
             downloadTask.setOnFailed(event -> {
                 Throwable ex = downloadTask.getException();
                 Sentry.captureException(ex);
-                showError("Falha ao baixar a atualização: " + ex.getMessage());
+                showError(I18n.text("update.download.error") + ex.getMessage());
             });
 
             executor.execute(downloadTask);
 
         } catch (Exception e) {
             Sentry.captureException(e);
-            showError("Erro ao iniciar o download: " + e.getMessage());
+            showError(I18n.text("update.start.error") + e.getMessage());
         }
     }
 
@@ -188,7 +189,7 @@ public class SpLinkerUpdateController extends AbstractController {
             if (progressBar != null) progressBar.setVisible(false);
             if (progressIndicator != null) progressIndicator.setVisible(false);
             if (btnYes != null) {
-                btnYes.setText("Voltar");
+                btnYes.setText(I18n.text("button.back"));
                 btnYes.setVisible(true);
                 btnYes.setOnMouseClicked(__ -> navigateToHomeOrFisrtConfig());
             }

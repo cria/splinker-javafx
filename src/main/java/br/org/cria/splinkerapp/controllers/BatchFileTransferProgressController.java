@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.TransferResult;
@@ -166,10 +167,10 @@ public class BatchFileTransferProgressController extends AbstractController {
             }
 
             atualizarColecaoAtual(colecao);
-            atualizarMensagem("1 - Iniciando processo         -  Executando\n" +
-                    "2 - Importando dados         -  Pendente\n" +
-                    "3 - Gerando dwca                -  Pendente\n" +
-                    "4 - Enviando dwca               -  Pendente");
+            atualizarMensagem(I18n.text("stage.start.running") +
+                    I18n.text("stage.import.pending") +
+                    I18n.text("stage.generate.pending") +
+                    I18n.text("stage.send.pending"));
             Thread.sleep(1000);
 
             TransferResult resultado;
@@ -182,7 +183,7 @@ public class BatchFileTransferProgressController extends AbstractController {
                 resultado = new TransferResult(
                         colecao,
                         false,
-                        "Falha inesperada. Error ID: " + errId,
+                        I18n.text("transfer.unexpected") + errId,
                         false,
                         br.org.cria.splinkerapp.utils.ExceptionUtils.getStackTraceAsString(e)
                 );
@@ -224,8 +225,8 @@ public class BatchFileTransferProgressController extends AbstractController {
                 return new TransferResult(
                         acronimo,
                         false,
-                        "Coleção não possui dataset configurado.",
-                        false, "Coleção não possui dataset configurado. Acesse Configuração -> Dados para realizar a configuração."
+                        I18n.text("dataset.unconfigured"),
+                        false, I18n.text("dataset.configure")
                 );
             }
 
@@ -233,14 +234,14 @@ public class BatchFileTransferProgressController extends AbstractController {
             DarwinCoreArchiveService dwcService = new DarwinCoreArchiveService(ds);
 
             if (cancelRequested) {
-                return new TransferResult(acronimo, false, "Processo cancelado.", true);
+                return new TransferResult(acronimo, false, I18n.text("transfer.cancelled"), true);
             }
 
             if (ds.isFile() || ds.isAccessDb()) {
-                atualizarMensagem("1 - Iniciando processo         -  Concluído\n" +
-                        "2 - Importando dados         -  Executando\n" +
-                        "3 - Gerando dwca                -  Pendente\n" +
-                        "4 - Enviando dwca               -  Pendente");
+                atualizarMensagem(I18n.text("stage.start.done") +
+                        I18n.text("stage.import.running") +
+                        I18n.text("stage.generate.pending") +
+                        I18n.text("stage.send.pending"));
                 Thread.sleep(500);
                 importDataTask = new ImportDataTask(ds);
                 executor.submit(importDataTask);
@@ -248,26 +249,26 @@ public class BatchFileTransferProgressController extends AbstractController {
             }
 
             if (cancelRequested) {
-                return new TransferResult(acronimo, false, "Processo cancelado.", true);
+                return new TransferResult(acronimo, false, I18n.text("transfer.cancelled"), true);
             }
 
-            atualizarMensagem("1 - Iniciando processo         -  Concluído\n" +
-                    "2 - Importando dados         -  Concluído\n" +
-                    "3 - Gerando dwca                -  Executando\n" +
-                    "4 - Enviando dwca               -  Pendente");
+            atualizarMensagem(I18n.text("stage.start.done") +
+                    I18n.text("stage.import.done") +
+                    I18n.text("stage.generate.running") +
+                    I18n.text("stage.send.pending"));
             Thread.sleep(500);
             generateTask = new GenerateDarwinCoreArchiveTask(dwcService);
             executor.submit(generateTask);
             generateTask.get();
 
             if (cancelRequested) {
-                return new TransferResult(acronimo, false, "Processo cancelado.", true);
+                return new TransferResult(acronimo, false, I18n.text("transfer.cancelled"), true);
             }
 
-            atualizarMensagem("1 - Iniciando processo         -  Concluído\n" +
-                    "2 - Importando dados         -  Concluído\n" +
-                    "3 - Gerando dwca                -  Concluído\n" +
-                    "4 - Enviando dwca               -  Executando");
+            atualizarMensagem(I18n.text("stage.start.done") +
+                    I18n.text("stage.import.done") +
+                    I18n.text("stage.generate.done") +
+                    I18n.text("stage.send.running"));
             Thread.sleep(500);
             transferTask = new TransferFileTask(dwcService);
             executor.submit(transferTask);
@@ -286,19 +287,19 @@ public class BatchFileTransferProgressController extends AbstractController {
             DataSetService.insertTransferHistory(newData);
             dwcService.cleanData();
 
-            atualizarMensagem("1 - Iniciando processo         -  Concluído\n" +
-                    "2 - Importando dados         -  Concluído\n" +
-                    "3 - Gerando dwca                -  Concluído\n" +
-                    "4 - Enviando dwca               -  Concluído");
+            atualizarMensagem(I18n.text("stage.start.done") +
+                    I18n.text("stage.import.done") +
+                    I18n.text("stage.generate.done") +
+                    I18n.text("stage.send.done"));
             Thread.sleep(500);
 
-            return new TransferResult(acronimo, true, "Envio realizado com sucesso.", false);
+            return new TransferResult(acronimo, true, I18n.text("transfer.success"), false);
         } catch (Exception e) {
             var errId = Sentry.captureException(e);
             return new TransferResult(
                     acronimo,
                     false,
-                    "Falha inesperada. Error ID: " + errId,
+                    I18n.text("transfer.unexpected") + errId,
                     false,
                     br.org.cria.splinkerapp.utils.ExceptionUtils.getStackTraceAsString(e)
             );
@@ -321,7 +322,7 @@ public class BatchFileTransferProgressController extends AbstractController {
     private void cancelarProcesso() {
         cancelRequested = true;
         btnCancelar.setDisable(true);
-        atualizarMensagem("Cancelando processamento...");
+        atualizarMensagem(I18n.text("transfer.cancelling"));
         cancelarTasksAtuais();
     }
 

@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -55,7 +56,7 @@ public class FileTransferController extends AbstractController {
     GenerateDarwinCoreArchiveTask generateDWCATask;
     CheckRecordCountTask checkRecordCountTask;
     TransferFileTask transferFileTask;
-    String errMsg = "Erro na %s. Contate o administrador do spLinker: Error ID %s";
+    String errMsg = I18n.text("transfer.error");
 
     void bindProgress(ReadOnlyDoubleProperty prop) {
         progressBar.progressProperty().bind(prop);
@@ -69,7 +70,7 @@ public class FileTransferController extends AbstractController {
 
     void configureImportDataTask() {
         if (!ds.isSQLDatabase()) {
-            lblMessage.setText("Importando dados da coleção. Isso pode levar alguns minutos.");
+            lblMessage.setText(I18n.text("transfer.importing"));
             importDataTask.setOnSucceeded((handler) -> {
                 System.gc();
                 Platform.runLater(() ->
@@ -83,11 +84,11 @@ public class FileTransferController extends AbstractController {
             importDataTask.setOnFailed((handler) -> {
                 var ex = importDataTask.getException();
                 var errId = Sentry.captureException(ex);
-                var task = "importação dos dados";
+                var task = I18n.text("transfer.import");
                 var msg = errMsg.formatted(task, errId);
                 /*    if (ex.getMessage() != null && ex.getMessage().contains("return value of \"org.dhatim.fastexcel.reader.Row.getCell(int)\" is null")) {
-                         msg = "Erro ao processar o arquivo Excel. Uma célula obrigatória está vazia ou ausente. "
-                                + "Por favor, verifique o arquivo e preencha todas as células necessárias.";
+                         msg = I18n.text("transfer.excel.error")
+                                + I18n.text("transfer.excel.fix");
                     } else {
                         handleErrors(ex);
                     }*/
@@ -102,7 +103,7 @@ public class FileTransferController extends AbstractController {
 
     void configureGenerateDWCTask() {
         try {
-            lblMessage.setText("Gerando arquivo com os dados da coleção, por favor aguarde...");
+            lblMessage.setText(I18n.text("transfer.generating"));
             generateDWCATask.setOnSucceeded((handler) -> {
                 System.gc();
                 Platform.runLater(() ->
@@ -116,14 +117,14 @@ public class FileTransferController extends AbstractController {
             generateDWCATask.setOnFailed((handler) -> Platform.runLater(() -> {
                 var ex = generateDWCATask.getException();
                 var errId = Sentry.captureException(ex);
-                var task = "geração do arquivo";
+                var task = I18n.text("transfer.generate");
                 var msg = errMsg.formatted(task, errId);
                 /*if(ex.getMessage().contains("no such table")) {
                     String tableName = ex.getMessage().split(":")[1].replace(")", "").trim();
-                    msg = "Erro na configuração da query Sql da coleção. A query está configurada para a tabela (" + tableName + ") que não está configurada no data source.";
+                    msg = I18n.text("transfer.query.error") + tableName + I18n.text("transfer.query.missing");
                 } else if(ex.getMessage().contains("no such column")) {
                     String columnName = ex.getMessage().split(":")[1].replace(")", "").trim();
-                    msg = "Erro no arquivo a coluna (" + columnName + ") não existe ou está com o nome errado. Corrija e tente novamente.";
+                    msg = I18n.text("transfer.column.error") + columnName + I18n.text("transfer.column.missing");
                 } else {
                     handleErrors(ex);
                 }*/
@@ -139,7 +140,7 @@ public class FileTransferController extends AbstractController {
     }
 
     void configureCheckRecordCountTask() {
-        var msgLbl = "Verificando integridade dos dados da coleção, por favor aguarde...";
+        var msgLbl = I18n.text("transfer.checking");
         lblMessage.setText(msgLbl);
         progressBar.setVisible(false);
         progressIndicator.setVisible(false);
@@ -147,7 +148,7 @@ public class FileTransferController extends AbstractController {
         checkRecordCountTask.setOnFailed((handler) -> Platform.runLater(() -> {
             var ex = checkRecordCountTask.getException();
             var errId = Sentry.captureException(ex);
-            var task = "verificação de registros";
+            var task = I18n.text("transfer.check");
             var msg = errMsg.formatted(task, errId);
             handleErrors(ex);
 
@@ -170,10 +171,10 @@ public class FileTransferController extends AbstractController {
                         return;
                     }
 
-                    var newMsg = "A quantidade de registros é menor do que no último envio.";
+                    var newMsg = I18n.text("transfer.fewer");
                     btnCancelTransfer.setVisible(false);
                     lblMessage.setText(newMsg);
-                    btnYes.setText("Continuar");
+                    btnYes.setText(I18n.text("button.continue"));
 
                     btnNo.setOnMouseClicked((__) -> navigateTo("home"));
                     btnYes.setOnMouseClicked((__) -> {
@@ -195,7 +196,7 @@ public class FileTransferController extends AbstractController {
 
     void configureTransferFileTask() {
         try {
-            lblMessage.setText("Transferindo arquivo com dados da coleção. Não feche o spLinker.");
+            lblMessage.setText(I18n.text("transfer.sending"));
             transferFileTask.setOnSucceeded((handler) ->
             {
                 System.gc();
@@ -205,7 +206,7 @@ public class FileTransferController extends AbstractController {
                         progressBar.setVisible(false);
                         var fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                         var updatedAt = LocalDateTime.now().format(fmt);
-                        lblMessage.setText("Dados da coleção transferido com sucesso!");
+                        lblMessage.setText(I18n.text("transfer.sent"));
                         var newData = new HashMap<String, String>() {{
                             put("last_rowcount", String.valueOf(rowCount));
                             put("updated_at", updatedAt);
@@ -216,7 +217,7 @@ public class FileTransferController extends AbstractController {
                         DataSetService.insertTransferHistory(newData);
                         dwcService.cleanData();
                         executor.close();
-                        btnCancelTransfer.setText("Finalizar");
+                        btnCancelTransfer.setText(I18n.text("button.finish"));
                         btnCancelTransfer.getStyleClass().add("primary-button");
                         btnCancelTransfer.setOnMouseClicked((__) ->
                                 navigateTo("home"));
@@ -231,7 +232,7 @@ public class FileTransferController extends AbstractController {
                 Platform.runLater(() -> {
                     var ex = transferFileTask.getException();
                     var errId = Sentry.captureException(ex);
-                    var task = "transferência do arquivo";
+                    var task = I18n.text("transfer.file");
                     var msg = errMsg.formatted(task, errId);
                     handleErrors(ex);
                     //showErrorModal(msg);
@@ -251,7 +252,7 @@ public class FileTransferController extends AbstractController {
         try {
             boolean hasConfiguration = DataSetService.hasConfiguration(TokenRepository.getCurrentToken());
             if (!hasConfiguration) {
-                showErrorModal("Coleção não possui dataset configurado. Acesse Configuração -> Dados para realizar a configuração.");
+                showErrorModal(I18n.text("dataset.configure"));
                 navigateTo("home");
                 return;
             }

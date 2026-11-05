@@ -9,7 +9,7 @@
 
     <children>
 
-        <Label layoutX="233.0" layoutY="13.0" text="Progresso do envio">
+        <Label layoutX="233.0" layoutY="13.0" text="%transfer.progress">
             <font>
                 <Font name="System Bold" size="18.0" />
             </font>
@@ -17,7 +17,7 @@
 
         <Separator layoutX="20.0" layoutY="39.0" prefHeight="0.0" prefWidth="601.0" />
 
-        <Label layoutX="20.0" layoutY="49.0" text="Processando coleção">
+        <Label layoutX="20.0" layoutY="49.0" text="%transfer.processing">
             <font>
                 <Font name="System Bold" size="14.0" />
             </font>
@@ -25,7 +25,7 @@
 
         <Label fx:id="lblColecaoAtual" layoutX="20.0" layoutY="71.0" prefHeight="34.0" prefWidth="238.0" text="-" wrapText="true" />
 
-        <Label layoutX="20.0" layoutY="114.0" text="Etapa da transmissão">
+        <Label layoutX="20.0" layoutY="114.0" text="%transfer.stage">
             <font>
                 <Font name="System Bold" size="14.0" />
             </font>
@@ -39,34 +39,35 @@
 
         <HBox layoutX="20.0" layoutY="343.0" prefHeight="20.0" prefWidth="284.0" spacing="14.0">
             <children>
-                <Label text="Total:" />
+                <Label text="%total.label" />
                 <Label fx:id="lblTotal" text="0" />
-                <Label text="Sucesso:" />
+                <Label text="%success.label" />
                 <Label fx:id="lblSucesso" text="0" />
-                <Label text="Erro:" />
+                <Label text="%error.label" />
                 <Label fx:id="lblErro" text="0" />
-                <Label text="Faltam:" />
+                <Label text="%remaining.label" />
                 <Label fx:id="lblFaltam" text="0" />
             </children>
         </HBox>
 
         <Separator layoutX="311.0" layoutY="39.0" orientation="VERTICAL" prefHeight="341.0" prefWidth="7.0" />
 
-        <Label layoutX="328.0" layoutY="49.0" text="Resultados parciais">
+        <Label layoutX="328.0" layoutY="49.0" text="%transfer.partial">
             <font>
                 <Font name="System Bold" size="14.0" />
             </font>
         </Label>
 
         <TableView fx:id="tblResultadosParciais" layoutX="328.0" layoutY="73.0" prefHeight="301.0" prefWidth="284.0">
+            <placeholder><Label text="%table.empty" /></placeholder>
 
             <columns>
                 <TableColumn fx:id="colStatusIcon" prefWidth="38.0" text="" />
-                <TableColumn fx:id="colToken" prefWidth="240.39999389648438" text="Coleções" />
+                <TableColumn fx:id="colToken" prefWidth="240.39999389648438" text="%collections" />
             </columns>
         </TableView>
 
-        <Button fx:id="btnCancelar" layoutX="265.0" layoutY="384.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" styleClass="danger-button" text="Cancelar" />
+        <Button fx:id="btnCancelar" layoutX="265.0" layoutY="384.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" styleClass="danger-button" text="%button.cancel" />
 
         <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="14.0" layoutY="381.0" pickOnBounds="true" preserveRatio="true">
             <image>

@@ -1,5 +1,6 @@
 package br.org.cria.splinkerapp.controllers;
 
+import br.org.cria.splinkerapp.i18n.I18n;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -23,7 +24,7 @@ public class CentralServiceController extends AbstractController {
             var centralServiceURL = urlField.getText();
             var isUrlEmpty = (centralServiceURL == null) || centralServiceURL.trim().isEmpty();
             if (isUrlEmpty) {
-                showErrorModal("URL do serviço central não pode ser vazia");
+                showErrorModal(I18n.text("validation.central.empty"));
                 return;
             }
             var hasConfig = DataSetService.hasConfiguration();
