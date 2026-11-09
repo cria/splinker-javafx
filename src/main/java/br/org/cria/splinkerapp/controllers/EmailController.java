@@ -1,6 +1,7 @@
 package br.org.cria.splinkerapp.controllers;
 
 import br.org.cria.splinkerapp.i18n.I18n;
+import br.org.cria.splinkerapp.utils.AppTheme;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javax.mail.MessagingException;
@@ -101,7 +102,7 @@ public class EmailController extends AbstractController {
     }
 
     private void showAlert(String title, String message) {
-        Alert alert = new Alert(AlertType.INFORMATION);
+        Alert alert = AppTheme.apply(new Alert(AlertType.INFORMATION));
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);

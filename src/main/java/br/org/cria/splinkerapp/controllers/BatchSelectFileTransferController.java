@@ -1,6 +1,7 @@
 package br.org.cria.splinkerapp.controllers;
 
 import br.org.cria.splinkerapp.i18n.I18n;
+import br.org.cria.splinkerapp.utils.AppTheme;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import javafx.collections.ListChangeListener;
@@ -139,7 +140,7 @@ public class BatchSelectFileTransferController extends AbstractController {
     }
 
     private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = AppTheme.apply(new Alert(Alert.AlertType.INFORMATION));
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);

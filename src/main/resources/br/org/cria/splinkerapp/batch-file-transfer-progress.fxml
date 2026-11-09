@@ -1,85 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="428.0" prefWidth="629.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.BatchFileTransferProgressController">
-
-    <children>
-
-        <Label layoutX="233.0" layoutY="13.0" text="%transfer.progress">
-            <font>
-                <Font name="System Bold" size="18.0" />
-            </font>
-        </Label>
-
-        <Separator layoutX="20.0" layoutY="39.0" prefHeight="0.0" prefWidth="601.0" />
-
-        <Label layoutX="20.0" layoutY="49.0" text="%transfer.processing">
-            <font>
-                <Font name="System Bold" size="14.0" />
-            </font>
-        </Label>
-
-        <Label fx:id="lblColecaoAtual" layoutX="20.0" layoutY="71.0" prefHeight="34.0" prefWidth="238.0" text="-" wrapText="true" />
-
-        <Label layoutX="20.0" layoutY="114.0" text="%transfer.stage">
-            <font>
-                <Font name="System Bold" size="14.0" />
-            </font>
-        </Label>
-
-        <Label fx:id="lblMessage" layoutX="20.0" layoutY="136.0" prefHeight="95.0" prefWidth="284.0" text="" wrapText="true" />
-
-        <ProgressIndicator fx:id="progressIndicator" layoutX="131.0" layoutY="246.0" prefHeight="56.0" prefWidth="90.0" progress="0.0" />
-
-        <ProgressBar fx:id="progressBar" layoutX="17.0" layoutY="298.0" prefHeight="18.0" prefWidth="284.0" progress="0.0" />
-
-        <HBox layoutX="20.0" layoutY="343.0" prefHeight="20.0" prefWidth="284.0" spacing="14.0">
-            <children>
-                <Label text="%total.label" />
-                <Label fx:id="lblTotal" text="0" />
-                <Label text="%success.label" />
-                <Label fx:id="lblSucesso" text="0" />
-                <Label text="%error.label" />
-                <Label fx:id="lblErro" text="0" />
-                <Label text="%remaining.label" />
-                <Label fx:id="lblFaltam" text="0" />
-            </children>
-        </HBox>
-
-        <Separator layoutX="311.0" layoutY="39.0" orientation="VERTICAL" prefHeight="341.0" prefWidth="7.0" />
-
-        <Label layoutX="328.0" layoutY="49.0" text="%transfer.partial">
-            <font>
-                <Font name="System Bold" size="14.0" />
-            </font>
-        </Label>
-
-        <TableView fx:id="tblResultadosParciais" layoutX="328.0" layoutY="73.0" prefHeight="301.0" prefWidth="284.0">
-            <placeholder><Label text="%table.empty" /></placeholder>
-
-            <columns>
-                <TableColumn fx:id="colStatusIcon" prefWidth="38.0" text="" />
-                <TableColumn fx:id="colToken" prefWidth="240.39999389648438" text="%collections" />
-            </columns>
-        </TableView>
-
-        <Button fx:id="btnCancelar" layoutX="265.0" layoutY="384.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" styleClass="danger-button" text="%button.cancel" />
-
-        <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="14.0" layoutY="381.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@../../../../images/cria-logo.png" />
-            </image>
-        </ImageView>
-
-        <ImageView fitHeight="36.0" fitWidth="96.0" layoutX="525.0" layoutY="381.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@../../../../images/splink-logo.gif" />
-            </image>
-        </ImageView>
-
-    </children>
-</Pane>
+<?import org.controlsfx.control.CheckComboBox?>
+<VBox fx:id="pane" spacing="20" prefWidth="820" styleClass="modern-view,dialog-page" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.BatchFileTransferProgressController">
+    <Label text="%transfer.progress" styleClass="page-heading"/>
+    <HBox spacing="24">
+        <VBox spacing="16" prefWidth="330" HBox.hgrow="ALWAYS" styleClass="form-card">
+            <Label text="%transfer.processing" styleClass="field-label"/>
+            <Label fx:id="lblColecaoAtual" text="—" wrapText="true" styleClass="section-heading"/>
+            <Label text="%transfer.stage" styleClass="field-label"/>
+            <Label fx:id="lblMessage" text="" wrapText="true" minHeight="80"/>
+            <ProgressIndicator fx:id="progressIndicator" prefWidth="48" prefHeight="48" maxWidth="48" progress="0"/>
+            <ProgressBar fx:id="progressBar" maxWidth="Infinity" progress="0"/>
+        </VBox>
+        <VBox spacing="14" prefWidth="340" HBox.hgrow="ALWAYS">
+            <Label text="%transfer.partial" styleClass="section-heading"/>
+            <TableView fx:id="tblResultadosParciais" prefHeight="300" VBox.vgrow="ALWAYS">
+                <placeholder><Label text="%table.empty" styleClass="muted-label"/></placeholder>
+                <columns><TableColumn fx:id="colStatusIcon" prefWidth="40" text=""/><TableColumn fx:id="colToken" prefWidth="290" text="%collections"/></columns>
+                <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+            </TableView>
+        </VBox>
+    </HBox>
+    <HBox spacing="24" styleClass="summary-strip">
+        <VBox spacing="6"><Label text="%total.label"/><Label fx:id="lblTotal" text="0" styleClass="summary-value"/></VBox>
+        <VBox spacing="6"><Label text="%success.label"/><Label fx:id="lblSucesso" text="0" styleClass="summary-value"/></VBox>
+        <VBox spacing="6"><Label text="%error.label"/><Label fx:id="lblErro" text="0" styleClass="summary-value"/></VBox>
+        <VBox spacing="6"><Label text="%remaining.label"/><Label fx:id="lblFaltam" text="0" styleClass="summary-value"/></VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnCancelar" text="%button.cancel" styleClass="danger-button"/>
+    </HBox>
+</VBox>

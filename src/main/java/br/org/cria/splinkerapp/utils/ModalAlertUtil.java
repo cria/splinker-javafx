@@ -10,7 +10,7 @@ import javafx.stage.Modality;
 public class ModalAlertUtil {
 
     public static void show(String conteudo, String detalhe) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+        Alert alert = AppTheme.apply(new Alert(Alert.AlertType.ERROR));
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.setTitle(I18n.text("error"));
         alert.setHeaderText(null);

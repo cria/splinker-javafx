@@ -11,7 +11,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 
 public class ConfigurationController extends AbstractController {
 
@@ -67,26 +66,6 @@ public class ConfigurationController extends AbstractController {
         } catch (Exception e) {
             handleErrors(e);
         }
-    }
-
-    void paintItBlue(String lblName) {
-        var lbls = pane.getScene().getRoot().lookupAll(".label");
-        lbls.forEach((lbl) -> {
-            var id = lbl.getId();
-            var isSelected = lblName.equals(id);
-            Label label = (Label) lbl;
-            if (isSelected) {
-                label.setTextFill(Color.rgb(14, 85, 220));
-                label.setStyle(
-                        "-fx-font-weight: bold;" +
-                                "-fx-border-color: transparent;" +
-                                "-fx-border-width: 0 0 1.7px 0;"
-                );
-            } else {
-                label.setTextFill(Color.BLACK);
-                label.setStyle("");
-            }
-        });
     }
 
     @FXML

@@ -5,13 +5,11 @@ import br.org.cria.splinkerapp.i18n.LocalizedViews;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import br.org.cria.splinkerapp.enums.WindowSizes;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 
 public class HomeController extends AbstractController {
@@ -34,11 +32,8 @@ public class HomeController extends AbstractController {
     @FXML
     Button btnPrincipal;
 
-    ImageView principalImg;
-    ImageView settingsImg;
-    ImageView helpImg;
-    ImageView emailImg;
-    ImageView reportImg;
+    @FXML
+    Label pageTitle;
 
     String basePath = "/br/org/cria/splinkerapp/%s.fxml";
 
@@ -76,63 +71,36 @@ public class HomeController extends AbstractController {
             children.forEach(LocalizedViews::dispose);
             children.clear();
             children.add(childNode);
+            selectPage(pageName);
         } catch (Exception e) {
             handleErrors(e);
         }
     }
 
     void configureButtons() {
-        principalImg = new ImageView(new Image("images/home.png"));
-        principalImg.setFitHeight(32);
-        principalImg.setFitWidth(32);
-        principalImg.setSmooth(true);
-        principalImg.setPreserveRatio(true);
-
-        settingsImg = new ImageView(new Image("images/settings.png"));
-        settingsImg.setFitHeight(32);
-        settingsImg.setFitWidth(32);
-        settingsImg.setSmooth(true);
-        settingsImg.setPreserveRatio(true);
-
-        helpImg = new ImageView(new Image("images/help.png"));
-        helpImg.setFitHeight(32);
-        helpImg.setFitWidth(32);
-        helpImg.setSmooth(true);
-        helpImg.setPreserveRatio(true);
-
-        emailImg = new ImageView(new Image("images/email.png"));
-        emailImg.setFitHeight(32);
-        emailImg.setFitWidth(32);
-        emailImg.setSmooth(true);
-        emailImg.setPreserveRatio(true);
-
-        reportImg = new ImageView(new Image("images/report.png"));
-        reportImg.setFitHeight(32);
-        reportImg.setFitWidth(32);
-        reportImg.setSmooth(true);
-        reportImg.setPreserveRatio(true);
-
-        btnPrincipal.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
-        btnPrincipal.setGraphic(principalImg);
-        btnPrincipal.setTooltip(new Tooltip(I18n.text("home")));
-
-        btnSettings.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
-        btnSettings.setGraphic(settingsImg);
-        btnSettings.setTooltip(new Tooltip(I18n.text("settings")));
-
-        btnHelp.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
-        btnHelp.setGraphic(helpImg);
-        btnHelp.setTooltip(new Tooltip(I18n.text("help")));
-
-        btnEmail.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
-        btnEmail.setGraphic(emailImg);
-        btnEmail.setTooltip(new Tooltip(I18n.text("email")));
-
-        btnReport.setStyle("-fx-background-color: #f0f0f0; -fx-background-insets: 0;");
-        btnReport.setGraphic(reportImg);
-        btnReport.setTooltip(new Tooltip(I18n.text("report")));
+        configureButton(btnPrincipal, "home", "⌂");
+        configureButton(btnSettings, "settings", "⚙");
+        configureButton(btnReport, "report", "▤");
+        configureButton(btnEmail, "email", "✉");
+        configureButton(btnHelp, "help", "?");
     }
 
+    private void configureButton(Button button, String key, String symbol) {
+        var icon = new Label(symbol);
+        icon.setMinWidth(22);
+        icon.setStyle("-fx-font-size: 19px; -fx-text-fill: #326ba3;");
+        button.setGraphic(icon);
+        button.setTooltip(new Tooltip(I18n.text(key)));
+    }
+
+    private void selectPage(String pageName) {
+        var buttons = java.util.Map.of(
+                "principal", btnPrincipal, "configuration", btnSettings,
+                "report", btnReport, "email", btnEmail, "help", btnHelp);
+        buttons.forEach((page, button) -> button.pseudoClassStateChanged(
+                javafx.css.PseudoClass.getPseudoClass("selected"), page.equals(pageName)));
+        pageTitle.setText(buttons.get(pageName).getText());
+    }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -148,7 +116,7 @@ public class HomeController extends AbstractController {
     @Override
     protected void setScreensize() {
         var stage = getStage();
-        stage.setWidth(WindowSizes.SMALL_RECTANGULAR_SCREEN_WIDTH);
-        stage.setHeight(WindowSizes.SMALL_RECTANGULAR_SCREEN_HEIGHT + 150);
+        stage.setWidth(940);
+        stage.setHeight(660);
     }
 }

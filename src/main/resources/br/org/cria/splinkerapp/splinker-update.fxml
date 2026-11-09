@@ -1,23 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="174.0" prefWidth="365.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.SpLinkerUpdateController">
-   <children>
-      <Label id="lblMessage" fx:id="lblMessage" alignment="CENTER" contentDisplay="CENTER" layoutX="4.0" layoutY="45.0" prefHeight="49.0" prefWidth="358.0" text="%update.available" textAlignment="CENTER" wrapText="true">
-         <font>
-            <Font size="14.0" />
-         </font></Label>
-      <Button id="btnYes" fx:id="btnYes" layoutX="75.0" layoutY="109.0" mnemonicParsing="false" onMouseClicked="#onBtnYesClicked" prefHeight="25.0" prefWidth="72.0" styleClass="success-button" text="%button.yes" />
-      <Button id="btnNo" fx:id="btnNo" layoutX="213.0" layoutY="109.0" mnemonicParsing="false" onMouseClicked="#onBtnNoClicked" prefHeight="25.0" prefWidth="72.0" styleClass="danger-button" text="%button.no" />
-      <ProgressBar fx:id="progressBar" layoutX="83.0" layoutY="112.0" prefWidth="200.0" progress="0.0" visible="false" />
-      <ProgressIndicator fx:id="progressIndicator" layoutX="170.0" layoutY="82.0" prefHeight="25.0" prefWidth="25.0" progress="0.0" visible="false" />
-      <ImageView fitHeight="123.0" fitWidth="278.0" layoutX="106.0" layoutY="-29.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../images/splinker.png" />
-         </image></ImageView>
-   </children>
-</Pane>
+<?import org.controlsfx.control.CheckComboBox?>
+<VBox fx:id="pane" spacing="20" prefWidth="560" styleClass="modern-view,dialog-page" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.SpLinkerUpdateController">
+    <ImageView fitWidth="150" fitHeight="40" preserveRatio="true" smooth="true" accessibleText="spLinker">
+    <image><Image url="@../../../../images/splinker.png"/></image>
+    <viewport><Rectangle2D minX="580" minY="1940" width="4320" height="850"/></viewport>
+</ImageView>
+    <Label fx:id="lblMessage" text="%update.available" wrapText="true" styleClass="body-copy"/>
+    <ProgressIndicator fx:id="progressIndicator" prefWidth="44" prefHeight="44" maxWidth="44" progress="0" visible="false" managed="${progressIndicator.visible}"/>
+    <ProgressBar fx:id="progressBar" maxWidth="Infinity" progress="0" visible="false" managed="${progressBar.visible}"/>
+    <HBox alignment="CENTER_RIGHT" spacing="12">
+        <Button fx:id="btnNo" text="%button.no" onAction="#onBtnNoClicked" managed="${btnNo.visible}"/>
+        <Button fx:id="btnYes" text="%button.yes" onAction="#onBtnYesClicked" styleClass="primary-button" managed="${btnYes.visible}"/>
+    </HBox>
+</VBox>

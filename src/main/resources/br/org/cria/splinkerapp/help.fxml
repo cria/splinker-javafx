@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="524.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FirstConfigDialogController">
-    <children>
-        <Label alignment="CENTER" layoutX="24.0" layoutY="63.0" prefHeight="173.0" prefWidth="460.0" text="%help.description" textAlignment="JUSTIFY" wrapText="true">
-            <font>
-                <Font size="16.0" />
-            </font></Label>
-        <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="20.0" layoutY="289.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@../../../../images/cria-logo.png" />
-            </image>
-        </ImageView>
-        <ImageView fitHeight="36.0" fitWidth="96.0" layoutX="378.0" layoutY="286.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@../../../../images/splink-logo.gif" />
-            </image>
-        </ImageView>
-    </children>
-</Pane>
+<?import org.controlsfx.control.CheckComboBox?>
+<VBox fx:id="pane" spacing="20" prefWidth="650" styleClass="modern-view,page-view" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FirstConfigDialogController">
+    <Label text="%help" styleClass="page-heading"/>
+    <VBox spacing="22" styleClass="form-card">
+        <ImageView fitWidth="150" fitHeight="40" preserveRatio="true" smooth="true" accessibleText="spLinker">
+    <image><Image url="@../../../../images/splinker.png"/></image>
+    <viewport><Rectangle2D minX="580" minY="1940" width="4320" height="850"/></viewport>
+</ImageView>
+        <Label text="%help.description" wrapText="true" styleClass="body-copy"/>
+        <Separator/>
+        <HBox alignment="CENTER_LEFT" spacing="16" styleClass="institution-footer">
+    <ImageView fitWidth="70" fitHeight="30" preserveRatio="true"><image><Image url="@../../../../images/cria-logo.png"/></image></ImageView>
+    <Region HBox.hgrow="ALWAYS"/>
+    <ImageView fitWidth="86" fitHeight="30" preserveRatio="true"><image><Image url="@../../../../images/splink-logo.gif"/></image></ImageView>
+</HBox>
+    </VBox>
+</VBox>

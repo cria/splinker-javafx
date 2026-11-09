@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="252.0" prefWidth="380.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.InstallConfirmationController">
-    <children>
-          <Label id="lblMessage" fx:id="lblMessage" alignment="CENTER" layoutX="20.0" layoutY="58.0" prefHeight="130.0" prefWidth="340.0" text="%update.downloaded" textAlignment="CENTER" wrapText="true">
-              <font>
-                  <Font size="15.0" />
-              </font>
-          </Label>
-            <Button id="btnNo" fx:id="btnNo" layoutX="223.0" layoutY="187.0" mnemonicParsing="false" onMouseClicked="#onBtnNoClicked" prefHeight="30.0" prefWidth="112.0" styleClass="danger-button" text="%button.later" />
-            <Button id="btnYes" fx:id="btnYes" layoutX="45.0" layoutY="187.0" mnemonicParsing="false" onMouseClicked="#onBtnYesClicked" prefHeight="30.0" prefWidth="112.0" styleClass="success-button" text="%button.install" />
-      <ImageView fitHeight="154.0" fitWidth="178.0" layoutX="101.0" layoutY="-33.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../images/splinker.png" />
-         </image></ImageView>
-    </children>
-</Pane>
+<?import org.controlsfx.control.CheckComboBox?>
+<VBox fx:id="pane" spacing="20" prefWidth="580" styleClass="modern-view,dialog-page" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.InstallConfirmationController">
+    <ImageView fitWidth="150" fitHeight="40" preserveRatio="true" smooth="true" accessibleText="spLinker">
+    <image><Image url="@../../../../images/splinker.png"/></image>
+    <viewport><Rectangle2D minX="580" minY="1940" width="4320" height="850"/></viewport>
+</ImageView>
+    <Label fx:id="lblMessage" text="%update.downloaded" wrapText="true" styleClass="body-copy"/>
+    <HBox alignment="CENTER_RIGHT" spacing="12">
+        <Button fx:id="btnNo" text="%button.later" onAction="#onBtnNoClicked"/>
+        <Button fx:id="btnYes" text="%button.install" onAction="#onBtnYesClicked" styleClass="primary-button"/>
+    </HBox>
+</VBox>

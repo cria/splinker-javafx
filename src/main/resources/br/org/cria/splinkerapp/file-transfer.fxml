@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="234.0" prefWidth="407.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FileTransferController">
-   <children>
-      <Button id="btnCancelTransfer" fx:id="btnCancelTransfer" layoutX="169.0" layoutY="188.0" mnemonicParsing="false" onMouseClicked="#onButtonCancelClicked" prefHeight="30.0" prefWidth="75.0" styleClass="danger-button" text="%button.cancel" />
-      <ProgressBar id="progressBar" fx:id="progressBar" layoutX="22.0" layoutY="160.0" prefHeight="20.0" prefWidth="362.0" progress="0.0" />
-      <Label fx:id="lblMessage" layoutX="79.0" layoutY="29.0" prefHeight="57.0" prefWidth="255.0" text="%transfer.confirm" textAlignment="CENTER" wrapText="true">
-         <font>
-            <Font size="16.0" />
-         </font></Label>
-      <Button id="btnYes" fx:id="btnYes" layoutX="94.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#onBtnYesClicked" prefHeight="30.0" prefWidth="75.0" styleClass="primary-button" text="%button.start" />
-      <Button id="btnNo" fx:id="btnNo" layoutX="239.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#onBtnNoClicked" prefHeight="30.0" prefWidth="75.0" styleClass="danger-button" text="%button.cancel" />
-      <ProgressIndicator id="progressIndicator" fx:id="progressIndicator" layoutX="179.0" layoutY="96.0" progress="0.0" />
-      <ImageView fitHeight="91.0" fitWidth="116.0" layoutX="147.0" layoutY="-33.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../images/splinker.png" />
-         </image>
-      </ImageView>
-   </children>
-</Pane>
+<?import org.controlsfx.control.CheckComboBox?>
+<VBox fx:id="pane" spacing="20" prefWidth="600" styleClass="modern-view,dialog-page" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FileTransferController">
+    <ImageView fitWidth="150" fitHeight="40" preserveRatio="true" smooth="true" accessibleText="spLinker">
+    <image><Image url="@../../../../images/splinker.png"/></image>
+    <viewport><Rectangle2D minX="580" minY="1940" width="4320" height="850"/></viewport>
+</ImageView>
+    <Label fx:id="lblMessage" text="%transfer.confirm" wrapText="true" styleClass="body-copy"/>
+    <ProgressIndicator fx:id="progressIndicator" prefWidth="48" prefHeight="48" maxWidth="48" progress="0" managed="${progressIndicator.visible}"/>
+    <ProgressBar fx:id="progressBar" maxWidth="Infinity" progress="0" managed="${progressBar.visible}"/>
+    <HBox alignment="CENTER_RIGHT" spacing="12">
+        <Button fx:id="btnNo" text="%button.cancel" onAction="#onBtnNoClicked" managed="${btnNo.visible}"/>
+        <Button fx:id="btnYes" text="%button.start" onAction="#onBtnYesClicked" styleClass="primary-button" managed="${btnYes.visible}"/>
+        <Button fx:id="btnCancelTransfer" text="%button.cancel" onAction="#onButtonCancelClicked" styleClass="danger-button" managed="${btnCancelTransfer.visible}"/>
+    </HBox>
+</VBox>

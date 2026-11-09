@@ -1,22 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="405.0" prefWidth="520.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.HomeController">
-   <children>
-      <Pane id="content" fx:id="content" layoutX="5.0" layoutY="58.0" prefHeight="340.0" prefWidth="506.0" />
-      <Button id="btnPrincipal" fx:id="btnPrincipal" layoutX="25.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onPrincipalItemClick" prefHeight="38.0" prefWidth="38.0" />
-      <Button id="btnSettings" fx:id="btnSettings" layoutX="77.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onSettingsItemClick" prefHeight="38.0" prefWidth="38.0" />
-      <Button id="btnHelp" fx:id="btnHelp" layoutX="226.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onHelpItemClick" prefHeight="38.0" prefWidth="38.0" />
-      <ImageView fitHeight="65.0" fitWidth="120.0" layoutX="310.0" layoutY="0.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../images/splinker.png" />
-         </image>
-      </ImageView>
-      <Button id="btnEmail" fx:id="btnEmail" layoutX="130.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onEmailItemClick" prefHeight="38.0" prefWidth="38.0" />
-      <Button id="btnReport" fx:id="btnReport" layoutX="176.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onReportItemClick" prefHeight="38.0" prefWidth="38.0" />
-      <MenuButton fx:id="languageSelector" layoutX="454.0" layoutY="20.0" minWidth="-1.0" prefWidth="56.0" prefHeight="24.0" style="-fx-font-size: 11px; -fx-padding: 2 4;" accessibleText="%language" />
-   </children>
-</Pane>
+<BorderPane fx:id="pane" prefWidth="940" prefHeight="620" styleClass="modern-shell" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.HomeController">
+    <left>
+        <VBox prefWidth="206" spacing="8" styleClass="sidebar">
+            <padding><Insets top="28" right="16" bottom="22" left="16"/></padding>
+            <VBox spacing="4">
+                <padding><Insets top="5" bottom="33" left="12"/></padding>
+                <ImageView fitWidth="150" fitHeight="40" preserveRatio="true" smooth="true" accessibleText="spLinker">
+                    <image><Image url="@../../../../images/splinker.png"/></image>
+                    <viewport><Rectangle2D minX="580" minY="1940" width="4320" height="850"/></viewport>
+                </ImageView>
+                <Label text="CRIA · speciesLink" styleClass="brand-caption"/>
+            </VBox>
+            <Button fx:id="btnPrincipal" text="%home" onAction="#onPrincipalItemClick" maxWidth="Infinity" styleClass="nav-button"/>
+            <Button fx:id="btnSettings" text="%settings" onAction="#onSettingsItemClick" maxWidth="Infinity" styleClass="nav-button"/>
+            <Button fx:id="btnReport" text="%report" onAction="#onReportItemClick" maxWidth="Infinity" styleClass="nav-button"/>
+            <Button fx:id="btnEmail" text="%email" onAction="#onEmailItemClick" maxWidth="Infinity" styleClass="nav-button"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button fx:id="btnHelp" text="%help" onAction="#onHelpItemClick" maxWidth="Infinity" styleClass="nav-button"/>
+            <Separator><VBox.margin><Insets top="10" bottom="12"/></VBox.margin></Separator>
+            <HBox alignment="CENTER_LEFT" spacing="14">
+                <ImageView fitWidth="62" fitHeight="30" preserveRatio="true"><image><Image url="@../../../../images/cria-logo.png"/></image></ImageView>
+                <ImageView fitWidth="72" fitHeight="30" preserveRatio="true"><image><Image url="@../../../../images/splink-logo.gif"/></image></ImageView>
+            </HBox>
+        </VBox>
+    </left>
+    <center>
+        <BorderPane>
+            <top>
+                <HBox alignment="CENTER_LEFT" spacing="16" styleClass="topbar">
+                    <padding><Insets top="20" right="28" bottom="20" left="28"/></padding>
+                    <Label fx:id="pageTitle" text="%home" styleClass="topbar-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="%language" styleClass="muted-label"/>
+                    <MenuButton fx:id="languageSelector" accessibleText="%language" styleClass="language-button"/>
+                </HBox>
+            </top>
+            <center>
+                <ScrollPane fitToWidth="true" styleClass="page-scroll" hbarPolicy="NEVER">
+                    <content><StackPane fx:id="content" alignment="TOP_LEFT"><padding><Insets top="26" right="28" bottom="26" left="28"/></padding></StackPane></content>
+                </ScrollPane>
+            </center>
+        </BorderPane>
+    </center>
+</BorderPane>
