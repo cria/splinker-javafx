@@ -20,8 +20,9 @@
             <Button fx:id="btnSettings" text="%settings" onAction="#onSettingsItemClick" maxWidth="Infinity" styleClass="nav-button"/>
             <Button fx:id="btnReport" text="%report" onAction="#onReportItemClick" maxWidth="Infinity" styleClass="nav-button"/>
             <Button fx:id="btnEmail" text="%email" onAction="#onEmailItemClick" maxWidth="Infinity" styleClass="nav-button"/>
+            <Button fx:id="btnAbout" text="%about" onAction="#onAboutItemClick" maxWidth="Infinity" styleClass="nav-button"/>
             <Region VBox.vgrow="ALWAYS"/>
-            <Button fx:id="btnHelp" text="%help" onAction="#onHelpItemClick" maxWidth="Infinity" styleClass="nav-button"/>
+            <Button fx:id="btnSupport" text="%support" onAction="#onSupportItemClick" maxWidth="Infinity" styleClass="nav-button"/>
             <Separator><VBox.margin><Insets top="10" bottom="12"/></VBox.margin></Separator>
             <HBox alignment="CENTER_LEFT" spacing="14">
                 <ImageView fitWidth="62" fitHeight="30" preserveRatio="true"><image><Image url="@../../../../images/cria-logo.png"/></image></ImageView>

@@ -2,6 +2,8 @@ package br.org.cria.splinkerapp.controllers;
 
 import br.org.cria.splinkerapp.i18n.I18n;
 import br.org.cria.splinkerapp.i18n.LocalizedViews;
+import java.awt.Desktop;
+import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -18,7 +20,10 @@ public class HomeController extends AbstractController {
     Pane content;
 
     @FXML
-    Button btnHelp;
+    Button btnAbout;
+
+    @FXML
+    Button btnSupport;
 
     @FXML
     Button btnReport;
@@ -48,8 +53,17 @@ public class HomeController extends AbstractController {
     }
 
     @FXML
-    void onHelpItemClick() {
+    void onAboutItemClick() {
         loadPage("help");
+    }
+
+    @FXML
+    void onSupportItemClick() {
+        try {
+            Desktop.getDesktop().browse(URI.create("https://doacao.cria.org.br/?utm_source=sitecria&ref=cria.org.br"));
+        } catch (Exception e) {
+            handleErrors(e);
+        }
     }
 
     @FXML
@@ -82,7 +96,8 @@ public class HomeController extends AbstractController {
         configureButton(btnSettings, "settings", "⚙");
         configureButton(btnReport, "report", "▤");
         configureButton(btnEmail, "email", "✉");
-        configureButton(btnHelp, "help", "?");
+        configureButton(btnAbout, "about", "ⓘ");
+        configureButton(btnSupport, "support", "♥");
     }
 
     private void configureButton(Button button, String key, String symbol) {
@@ -96,7 +111,7 @@ public class HomeController extends AbstractController {
     private void selectPage(String pageName) {
         var buttons = java.util.Map.of(
                 "principal", btnPrincipal, "configuration", btnSettings,
-                "report", btnReport, "email", btnEmail, "help", btnHelp);
+                "report", btnReport, "email", btnEmail, "help", btnAbout);
         buttons.forEach((page, button) -> button.pseudoClassStateChanged(
                 javafx.css.PseudoClass.getPseudoClass("selected"), page.equals(pageName)));
         pageTitle.setText(buttons.get(pageName).getText());
