@@ -41,6 +41,22 @@
 .button:hover, .menu-button:hover { -fx-background-color: #f0f6ff; -fx-border-color: #b8cfea; }
 .button:pressed { -fx-background-color: #e7f1ff; }
 .button:focused, .menu-button:focused { -fx-border-color: #007bff; }
+.button.reload-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 8;
+    -fx-min-width: 36;
+}
+.button.reload-button:hover { -fx-background-color: #e7f1ff; }
+.button.reload-button:pressed { -fx-background-color: #d4e6ff; }
+.button.reload-button:focused { -fx-border-color: #007bff; }
+.reload-icon {
+    -fx-fill: transparent;
+    -fx-stroke: #007bff;
+    -fx-stroke-width: 2;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+}
 .button.primary-button, .button.success-button {
     -fx-background-color: #007bff;
     -fx-border-color: transparent;

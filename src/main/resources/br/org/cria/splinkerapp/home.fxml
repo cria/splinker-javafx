@@ -42,8 +42,8 @@
                 </HBox>
             </top>
             <center>
-                <ScrollPane fitToWidth="true" styleClass="page-scroll" hbarPolicy="NEVER">
-                    <content><StackPane fx:id="content" alignment="TOP_LEFT"><padding><Insets top="26" right="28" bottom="26" left="28"/></padding></StackPane></content>
+                <ScrollPane fx:id="pageScroll" fitToWidth="true" styleClass="page-scroll" hbarPolicy="NEVER">
+                    <content><StackPane fx:id="content" alignment="TOP_LEFT"><padding><Insets top="10" right="28" bottom="26" left="28"/></padding></StackPane></content>
                 </ScrollPane>
             </center>
         </BorderPane>

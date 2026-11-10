@@ -2,8 +2,7 @@ package br.org.cria.splinkerapp.controllers;
 
 import br.org.cria.splinkerapp.i18n.I18n;
 import br.org.cria.splinkerapp.i18n.LocalizedViews;
-import java.awt.Desktop;
-import java.net.URI;
+import br.org.cria.splinkerapp.utils.SupportBrowser;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -12,12 +11,18 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 
 public class HomeController extends AbstractController {
 
+    private SupportBrowser supportBrowser;
+
     @FXML
     Pane content;
+
+    @FXML
+    ScrollPane pageScroll;
 
     @FXML
     Button btnAbout;
@@ -59,11 +64,7 @@ public class HomeController extends AbstractController {
 
     @FXML
     void onSupportItemClick() {
-        try {
-            Desktop.getDesktop().browse(URI.create("https://doacao.cria.org.br/?utm_source=sitecria&ref=cria.org.br"));
-        } catch (Exception e) {
-            handleErrors(e);
-        }
+        if (supportBrowser == null) loadPage("support");
     }
 
     @FXML
@@ -78,14 +79,28 @@ public class HomeController extends AbstractController {
 
     protected void loadPage(String pageName) {
         try {
-            var template = basePath.formatted(pageName);
-            loader = LocalizedViews.loader(getClass().getResource(template));
-            Node childNode = LocalizedViews.load(loader);
+            Node childNode;
+            if (pageName.equals("support")) {
+                childNode = new SupportBrowser();
+            } else {
+                var template = basePath.formatted(pageName);
+                loader = LocalizedViews.loader(getClass().getResource(template));
+                childNode = LocalizedViews.load(loader);
+            }
+            if (supportBrowser != null) {
+                supportBrowser.close();
+                supportBrowser = null;
+            }
             var children = content.getChildren();
             children.forEach(LocalizedViews::dispose);
             children.clear();
             children.add(childNode);
+            pageScroll.setFitToHeight(pageName.equals("support"));
             selectPage(pageName);
+            if (childNode instanceof SupportBrowser browser) {
+                supportBrowser = browser;
+                browser.openDonationPage();
+            }
         } catch (Exception e) {
             handleErrors(e);
         }
@@ -111,7 +126,8 @@ public class HomeController extends AbstractController {
     private void selectPage(String pageName) {
         var buttons = java.util.Map.of(
                 "principal", btnPrincipal, "configuration", btnSettings,
-                "report", btnReport, "email", btnEmail, "help", btnAbout);
+                "report", btnReport, "email", btnEmail, "help", btnAbout,
+                "support", btnSupport);
         buttons.forEach((page, button) -> button.pseudoClassStateChanged(
                 javafx.css.PseudoClass.getPseudoClass("selected"), page.equals(pageName)));
         pageTitle.setText(buttons.get(pageName).getText());
