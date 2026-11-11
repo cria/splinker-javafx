@@ -35,7 +35,11 @@ public class LocalizedViewsTest {
     @BeforeClass
     public static void startJavaFx() throws Exception {
         var started = new CompletableFuture<Void>();
-        Platform.startup(() -> started.complete(null));
+        try {
+            Platform.startup(() -> started.complete(null));
+        } catch (IllegalStateException alreadyStarted) {
+            Platform.runLater(() -> started.complete(null));
+        }
         started.get(15, TimeUnit.SECONDS);
         Platform.setImplicitExit(false);
     }

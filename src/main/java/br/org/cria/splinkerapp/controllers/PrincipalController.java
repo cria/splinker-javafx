@@ -3,7 +3,6 @@ package br.org.cria.splinkerapp.controllers;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
@@ -12,12 +11,13 @@ import com.google.common.eventbus.Subscribe;
 import br.org.cria.splinkerapp.config.DatabaseSetup;
 import br.org.cria.splinkerapp.enums.EventTypes;
 import br.org.cria.splinkerapp.enums.WindowSizes;
-import br.org.cria.splinkerapp.facade.ConfigFacade;
+import br.org.cria.splinkerapp.i18n.I18n;
 import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.DataSet;
-import br.org.cria.splinkerapp.models.DataSourceType;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DataSetService;
+import br.org.cria.splinkerapp.services.implementations.MetadataSyncService;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,9 +39,13 @@ public class PrincipalController extends AbstractController {
     Label lblLastUpdate;
     @FXML
     Label lblRecordsSent;
+    @FXML
+    Label lblMetadataStatus;
     EventBus addDatasetBus;
 
     DataSet ds;
+    private boolean populatingCollections;
+    private long refreshSequence;
 
     @FXML
     void onSyncServerBtnClicked() throws Exception {
@@ -65,27 +69,30 @@ public class PrincipalController extends AbstractController {
     }
 
     void syncMetaData() {
-        try {
-            var map = new HashMap<String, String>();
-            var token = TokenRepository.getCurrentToken();
-            var config = DataSetService.getConfigurationDataFromAPI(token);
-            var collName = config.get("dataset_name").toString();
-            var datasetAcronym = config.get("dataset_acronym").toString();
-            var id = (int) Double.parseDouble(config.get("dataset_id").toString());
-            var dsType = DataSourceType.valueOf(config.get("data_source_type").toString());
-
-            map.put("token", token);
-            map.put("id", String.valueOf(id));
-            map.put("dataset_name", collName);
-            map.put("dataset_acronym", datasetAcronym);
-            map.put("datasource_type", dsType.name());
-
-            DataSetService.updateDataSource(map);
-
-            ConfigFacade.HandleBackendData(token, config);
-        } catch (Exception e) {
-            handleErrors(e);
-        }
+        if (ds == null) return;
+        var requestedToken = ds.getToken();
+        long sequence = ++refreshSequence;
+        lblMetadataStatus.setText(I18n.text("dashboard.refreshing"));
+        MetadataSyncService.getInstance().refresh(requestedToken, false)
+                .whenComplete((unused, error) -> Platform.runLater(() -> {
+                    // A previous collection's response must never replace the current one.
+                    if (sequence != refreshSequence || !requestedToken.equals(token)
+                            || pane.getScene() == null) return;
+                    if (error != null) {
+                        lblMetadataStatus.setText(I18n.text("dashboard.refresh.failed"));
+                        return;
+                    }
+                    try {
+                        ds = DataSetService.getDataSet(requestedToken);
+                        if (ds != null) {
+                            updateDisplayedData();
+                            populateDatasetCombo();
+                        }
+                        lblMetadataStatus.setText("");
+                    } catch (Exception e) {
+                        lblMetadataStatus.setText(I18n.text("dashboard.refresh.failed"));
+                    }
+                }));
     }
 
     @FXML
@@ -95,15 +102,15 @@ public class PrincipalController extends AbstractController {
 
     @FXML
     void onCmbCollectionChange(ActionEvent event) {
-
+        if (populatingCollections) return;
         try {
             var acronym = cmbCollection.getValue();
             if (acronym != null) {
                 ds = DataSetService.getDataSetBy("dataset_acronym", acronym);
                 token = ds.getToken();
                 TokenRepository.setCurrentToken(token);
-                syncMetaData();
                 updateDisplayedData();
+                syncMetaData();
             }
         } catch (Exception e) {
             handleErrors(e);
@@ -112,21 +119,39 @@ public class PrincipalController extends AbstractController {
 
     @Subscribe
     void reloadDatasetListAfterChange(String eventToken) {
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(() -> reloadDatasetListAfterChange(eventToken));
+            return;
+        }
         try {
             var currentDataset = DataSetService.getDataSet(eventToken);
-            var datasetWasDeleted = currentDataset.getId() <= 0;
+            var datasetWasDeleted = currentDataset == null || currentDataset.getId() <= 0;
             if (datasetWasDeleted) {
-                cmbCollection.getItems().remove(currentDataset.getDataSetAcronym());
-                var size = cmbCollection.getItems().size();
-                var acronym = cmbCollection.getItems().get(size - 1);
-                ds = DataSetService.getDataSetBy("dataset_acronym", acronym);
-                var newToken = ds.getToken();
-                TokenRepository.setCurrentToken(newToken);
-                cmbCollection.setValue(acronym);
+                var remaining = DataSetService.getAllDataSets().stream()
+                        .filter(java.util.Objects::nonNull).toList();
+                ds = remaining.stream().filter(item -> item.getToken().equals(token))
+                        .findFirst().orElse(remaining.isEmpty() ? null : remaining.getLast());
             } else {
-                populateDatasetCombo();
-                cmbCollection.setValue(currentDataset.getDataSetAcronym());
+                ds = currentDataset;
             }
+            ++refreshSequence;
+            if (ds == null) {
+                token = "";
+                TokenRepository.setCurrentToken(token);
+                cmbCollection.getItems().clear();
+                lblCollectionName.setText("-");
+                lblLastUpdate.setText("-");
+                lblRecordsSent.setText("-");
+                lblMetadataStatus.setText("");
+                syncServerBtn.setDisable(true);
+                return;
+            }
+            syncServerBtn.setDisable(false);
+            token = ds.getToken();
+            TokenRepository.setCurrentToken(token);
+            populateDatasetCombo();
+            updateDisplayedData();
+            syncMetaData();
         } catch (Exception e) {
             handleErrors(e);
         }
@@ -140,6 +165,7 @@ public class PrincipalController extends AbstractController {
     }
 
     void addOptionsToDataset(Stream<DataSet> sources) {
+        populatingCollections = true;
         try {
 
             var options = sources.map(DataSet::getDataSetAcronym).toList();
@@ -147,6 +173,8 @@ public class PrincipalController extends AbstractController {
             cmbCollection.setValue(ds.getDataSetAcronym());
         } catch (Exception e) {
             handleErrors(e);
+        } finally {
+            populatingCollections = false;
         }
     }
 
@@ -167,25 +195,23 @@ public class PrincipalController extends AbstractController {
     public void initialize(URL location, ResourceBundle resources) {
 
         try {
+            lblMetadataStatus.visibleProperty().bind(lblMetadataStatus.textProperty().isNotEmpty());
+            lblMetadataStatus.managedProperty().bind(lblMetadataStatus.visibleProperty());
             addDatasetBus = EventBusManager.getEvent(EventTypes.ADD_DATASET.name());
             bus = EventBusManager.getEvent(EventTypes.DELETE_DATASET.name());
             addDatasetBus.register(this);
             bus.register(this);
             token = TokenRepository.getCurrentToken();
             ds = DataSetService.getDataSet(token);
-            var isDatasetNull = ds == null;
-            var datasetWasUpdatedAtLeastOnce = !isDatasetNull && ds.getUpdatedAt() != null;
-            if (datasetWasUpdatedAtLeastOnce) {
+            if (ds != null) {
                 updateDisplayedData();
+                populateDatasetCombo();
             }
-            syncMetaData();
-            populateDatasetCombo();
-            var collName = DataSetService.getDataSet(token).getDataSetName();
-            lblCollectionName.setText(collName);
             super.initialize(location, resources);
             lblCollectionName.setWrapText(true);
             lblCollectionName.setTextOverrun(OverrunStyle.CLIP);
             lblCollectionName.setEllipsisString("");
+            syncMetaData();
         } catch (Exception e) {
             handleErrors(e);
         }

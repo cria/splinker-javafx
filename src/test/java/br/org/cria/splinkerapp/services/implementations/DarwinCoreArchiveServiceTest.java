@@ -1,6 +1,7 @@
 package br.org.cria.splinkerapp.services.implementations;
 
 import br.org.cria.splinkerapp.models.*;
+import br.org.cria.splinkerapp.facade.ConfigFacade;
 import br.org.cria.splinkerapp.repositories.*;
 import br.org.cria.splinkerapp.managers.LocalDbManager;
 import br.org.cria.splinkerapp.utils.SystemConfigurationUtil;
@@ -73,10 +74,21 @@ public class DarwinCoreArchiveServiceTest extends RepositoryTestBase {
             } finally { if (previous == null) System.clearProperty("splinker.connection"); else System.setProperty("splinker.connection", previous); }
         }
     }
-    @Test public void resolvesTransferDestinationWithoutContactingServer() throws Exception {
-        try (var config = mockStatic(TransferConfigRepository.class)) {
-            config.when(TransferConfigRepository::getRSyncConfig).thenReturn(new RSyncConfig(873, "rsync.invalid"));
+    @Test public void refreshesTransferConfigurationIndependentlyOfHomeCache() throws Exception {
+        try (var api = mockStatic(DataSetService.class); var backend = mockStatic(ConfigFacade.class)) {
+            Map<String, Object> config = Map.of("rsync_port", 873.0, "rsync_destination", "rsync.invalid");
+            api.when(() -> DataSetService.getConfigurationDataFromAPI("test-token")).thenReturn(config);
             var service = new DarwinCoreArchiveService(source()); assertSame(service, service.transferData());
+            api.verify(() -> DataSetService.getConfigurationDataFromAPI("test-token"));
+            backend.verify(() -> ConfigFacade.HandleBackendData("test-token", config));
+        }
+    }
+    @Test public void stopsTransferWhenCurrentConfigurationCannotBeLoaded() throws Exception {
+        try (var api = mockStatic(DataSetService.class)) {
+            api.when(() -> DataSetService.getConfigurationDataFromAPI("test-token"))
+                    .thenThrow(new java.io.IOException("offline"));
+            var service = new DarwinCoreArchiveService(source());
+            assertThrows(java.io.IOException.class, service::transferData);
         }
     }
 }

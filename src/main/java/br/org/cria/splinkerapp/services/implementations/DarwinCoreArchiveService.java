@@ -2,12 +2,12 @@ package br.org.cria.splinkerapp.services.implementations;
 
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.enums.EventTypes;
+import br.org.cria.splinkerapp.facade.ConfigFacade;
 import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.managers.LocalDbManager;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.parsers.FileParser;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
-import br.org.cria.splinkerapp.repositories.TransferConfigRepository;
 import br.org.cria.splinkerapp.utils.DbConnectionUtil;
 import br.org.cria.splinkerapp.utils.SystemConfigurationUtil;
 import com.github.perlundq.yajsync.ui.YajsyncClient;
@@ -339,9 +339,11 @@ public class DarwinCoreArchiveService {
         var message = "Iniciando a transferencia do arquivo";
         ApplicationLog.info(message);
 
-        var rSyncConfig = TransferConfigRepository.getRSyncConfig();
-        var port = rSyncConfig.getrSyncPort();
-        var destination = "%s::%s".formatted(rSyncConfig.getrSyncDestination(), ds.getToken());
+        // Transfers always fetch current settings, independently of the home cache.
+        var config = DataSetService.getConfigurationDataFromAPI(ds.getToken());
+        ConfigFacade.HandleBackendData(ds.getToken(), config);
+        var port = ((Number) config.get("rsync_port")).intValue();
+        var destination = "%s::%s".formatted(config.get("rsync_destination"), ds.getToken());
 
         var args = new String[] {"client", "--port=%s".formatted(port), "-r", this.zipFile, destination };
         /*String[] arrayArgs = Arrays.copyOfRange(args, 1, args.length);

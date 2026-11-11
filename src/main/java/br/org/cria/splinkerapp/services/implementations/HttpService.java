@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,8 @@ import br.org.cria.splinkerapp.models.ProxyConfiguration;
 import br.org.cria.splinkerapp.repositories.ProxyConfigRepository;
 
 public class HttpService {
+    private static final int CONNECT_TIMEOUT_MS = 5_000;
+    private static final int READ_TIMEOUT_MS = 15_000;
 
     public static Object getJson(String url) throws Exception {
         String line;
@@ -34,14 +37,16 @@ public class HttpService {
         }
 
         connection.setRequestMethod("GET");
-        var reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-        while ((line = reader.readLine()) != null) {
-            response.append(line);
+        connection.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        connection.setReadTimeout(READ_TIMEOUT_MS);
+        try (var reader = new BufferedReader(new InputStreamReader(
+                connection.getInputStream(), StandardCharsets.UTF_8))) {
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+        } finally {
+            connection.disconnect();
         }
-
-        reader.close();
-        connection.disconnect();
         var stringResponse = response.toString();
 
         // Configurar Gson para ser leniente com JSON mal formatado
