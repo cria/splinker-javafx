@@ -103,7 +103,6 @@ public abstract class AbstractController implements Initializable {
         try {
             var scene = pane.getScene();
             var stage = (Stage) scene.getWindow();
-            stage.setResizable(false);
             return stage;
         } catch (Exception ex) {
             Sentry.captureException(ex);

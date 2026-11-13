@@ -346,14 +346,14 @@ public class DarwinCoreArchiveService {
         var destination = "%s::%s".formatted(config.get("rsync_destination"), ds.getToken());
 
         var args = new String[] {"client", "--port=%s".formatted(port), "-r", this.zipFile, destination };
-        /*String[] arrayArgs = Arrays.copyOfRange(args, 1, args.length);
+        String[] arrayArgs = Arrays.copyOfRange(args, 1, args.length);
         String logsYajsysc = new YajsyncClient().startSplink(arrayArgs);
         ApplicationLog.info(logsYajsysc);
         if (logsYajsysc.contains("socket open/close error")) {
             throw new IllegalArgumentException("O sistema de recebimento de dados do CRIA esta indisponivel. Entre em contato com o suporte.");
         } else if (logsYajsysc.contains("Error") || logsYajsysc.contains("ERROR")) {
             throw new IllegalArgumentException(logsYajsysc);
-        }*/
+        }
         return this;
     }
 

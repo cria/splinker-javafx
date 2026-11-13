@@ -18,7 +18,7 @@ import javafx.scene.web.WebView;
 
 /** Donation page embedded in the main application's content area. */
 public final class SupportBrowser extends BorderPane implements AutoCloseable {
-    public static final String DONATION_URL = "https://doacao.cria.org.br/?utm_source=sitecria&ref=cria.org.br";
+    public static final String DONATION_URL = "https://doacao.cria.org.br";
 
     private final WebView webView = new WebView();
 

@@ -7,12 +7,15 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 
 public class HomeController extends AbstractController {
 
@@ -136,6 +139,14 @@ public class HomeController extends AbstractController {
     public void initialize(URL location, ResourceBundle resources) {
 
         try {
+            // FXML initialization runs before Router attaches the scene to the stage.
+            pane.sceneProperty().addListener((observable, previous, scene) -> {
+                if (scene == null) return;
+                scene.windowProperty().addListener((property, oldWindow, newWindow) -> {
+                    if (newWindow instanceof Stage stage) configureWindow(stage);
+                });
+                if (scene.getWindow() instanceof Stage stage) configureWindow(stage);
+            });
             configureButtons();
             loadPage("principal");
             super.initialize(location, resources);
@@ -144,10 +155,26 @@ public class HomeController extends AbstractController {
         }
     }
 
+    private void configureWindow(Stage stage) {
+        stage.setResizable(false);
+        // Apply dimensions after the scene switch and the resizable-state change.
+        Platform.runLater(() -> {
+            if (stage.getScene() != null && stage.getScene().getRoot() == pane) {
+                setScreensize();
+            }
+        });
+    }
+
     @Override
     protected void setScreensize() {
         var stage = getStage();
-        stage.setWidth(940);
-        stage.setHeight(660);
+        var bounds = Screen.getScreensForRectangle(stage.getX(), stage.getY(), 1, 1)
+                .stream().findFirst().orElse(Screen.getPrimary()).getVisualBounds();
+        stage.setMinWidth(0);
+        stage.setMinHeight(0);
+        stage.setWidth(Math.min(940, bounds.getWidth()));
+        stage.setHeight(Math.min(660, bounds.getHeight()));
+        stage.setX(Math.max(bounds.getMinX(), Math.min(stage.getX(), bounds.getMaxX() - stage.getWidth())));
+        stage.setY(Math.max(bounds.getMinY(), Math.min(stage.getY(), bounds.getMaxY() - stage.getHeight())));
     }
 }
