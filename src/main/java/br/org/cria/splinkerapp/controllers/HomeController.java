@@ -14,6 +14,8 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.SVGPath;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -110,19 +112,37 @@ public class HomeController extends AbstractController {
     }
 
     void configureButtons() {
-        configureButton(btnPrincipal, "home", "⌂");
-        configureButton(btnSettings, "settings", "⚙");
-        configureButton(btnReport, "report", "▤");
-        configureButton(btnEmail, "email", "✉");
-        configureButton(btnAbout, "about", "ⓘ");
-        configureButton(btnSupport, "support", "♥");
+        configureVectorButton(btnPrincipal, "home",
+                "M2 10 L11 2 L20 10 M4 9 V20 H8 V13 H14 V20 H18 V9");
+        configureVectorButton(btnSettings, "settings",
+                "M2 5 H5 M9 5 H20 M2 11 H13 M17 11 H20 M2 17 H5 M9 17 H20 "
+                + "M9 5 A2 2 0 1 0 5 5 A2 2 0 1 0 9 5 "
+                + "M17 11 A2 2 0 1 0 13 11 A2 2 0 1 0 17 11 "
+                + "M9 17 A2 2 0 1 0 5 17 A2 2 0 1 0 9 17");
+        configureVectorButton(btnReport, "report",
+                "M13 2 H4 V20 H18 V7 Z M13 2 V7 H18 "
+                + "M7 16 V13 M11 16 V10 M15 16 V12");
+        configureVectorButton(btnEmail, "email",
+                "M4 4 H18 Q20 4 20 6 V16 Q20 18 18 18 H4 Q2 18 2 16 V6 Q2 4 4 4 Z "
+                + "M2 6 L11 12 L20 6");
+        configureVectorButton(btnAbout, "about",
+                "M20 11 A9 9 0 1 0 2 11 A9 9 0 1 0 20 11 Z "
+                + "M11 10 V16 M11 6 V6.2");
+        configureVectorButton(btnSupport, "support",
+                "M11 20 L3.5 12.5 C-2 7 5 0 11 6 "
+                + "C17 0 24 7 18.5 12.5 Z");
     }
 
-    private void configureButton(Button button, String key, String symbol) {
-        var icon = new Label(symbol);
-        icon.setMinWidth(22);
-        icon.setStyle("-fx-font-size: 19px; -fx-text-fill: #326ba3;");
-        button.setGraphic(icon);
+    private void configureVectorButton(Button button, String key, String path) {
+        var icon = new SVGPath();
+        icon.setContent(path);
+        icon.getStyleClass().add("nav-icon");
+        var graphic = new StackPane(icon);
+        graphic.setMinSize(22, 22);
+        graphic.setPrefSize(22, 22);
+        graphic.setMaxSize(22, 22);
+        graphic.setMouseTransparent(true);
+        button.setGraphic(graphic);
         button.setTooltip(new Tooltip(I18n.text(key)));
     }
 

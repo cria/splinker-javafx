@@ -24,6 +24,15 @@
 .modern-shell .nav-button:hover { -fx-background-color: #f0f6ff; -fx-border-color: transparent; -fx-text-fill: #0056b3; }
 .modern-shell .nav-button:selected { -fx-background-color: #e7f1ff; -fx-text-fill: #0056b3; -fx-font-weight: bold; }
 .modern-shell .nav-button:focused { -fx-border-color: #007bff; -fx-border-radius: 9; }
+.modern-shell .nav-icon {
+    -fx-fill: transparent;
+    -fx-stroke: #326ba3;
+    -fx-stroke-width: 1;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+}
+.modern-shell .nav-button:hover .nav-icon,
+.modern-shell .nav-button:selected .nav-icon { -fx-stroke: #0056b3; }
 .topbar { -fx-background-color: white; -fx-border-color: #e5eaf0; -fx-border-width: 0 0 1 0; }
 .modern-shell .topbar-title { -fx-font-size: 16px; -fx-font-weight: bold; }
 .page-scroll, .page-scroll > .viewport { -fx-background-color: transparent; }
