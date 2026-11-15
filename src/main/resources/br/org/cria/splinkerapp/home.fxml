@@ -14,7 +14,7 @@
                     <image><Image url="@../../../../images/splinker.png"/></image>
                     <viewport><Rectangle2D minX="580" minY="1940" width="4320" height="850"/></viewport>
                 </ImageView>
-                <Label text="CRIA · speciesLink" styleClass="brand-caption"/>
+                <Label text="CRIA · speciesLink" alignment="CENTER" maxWidth="Infinity" styleClass="brand-caption"/>
             </VBox>
             <Button fx:id="btnPrincipal" text="%home" onAction="#onPrincipalItemClick" maxWidth="Infinity" styleClass="nav-button"/>
             <Button fx:id="btnSettings" text="%settings" onAction="#onSettingsItemClick" maxWidth="Infinity" styleClass="nav-button"/>
