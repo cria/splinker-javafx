@@ -1,6 +1,7 @@
 package br.org.cria.splinkerapp.controllers;
 
 import br.org.cria.splinkerapp.i18n.I18n;
+import br.org.cria.splinkerapp.utils.AppTheme;
 import br.org.cria.splinkerapp.enums.WindowSizes;
 import br.org.cria.splinkerapp.models.TransferResult;
 import javafx.collections.FXCollections;
@@ -111,7 +112,7 @@ public class BatchFileTransferResultController extends AbstractController {
     }
 
     private void exibirLogErro(TransferResult result) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+        Alert alert = AppTheme.apply(new Alert(Alert.AlertType.ERROR));
         alert.setTitle(I18n.text("error.log"));
         alert.setHeaderText(I18n.text("collection.label") + result.getToken());
 

@@ -1,6 +1,7 @@
 package br.org.cria.splinkerapp.controllers;
 
 import br.org.cria.splinkerapp.i18n.I18n;
+import br.org.cria.splinkerapp.utils.AppTheme;
 import br.org.cria.splinkerapp.i18n.Language;
 import br.org.cria.splinkerapp.i18n.LocalizedViews;
 import javafx.scene.control.MenuButton;
@@ -27,7 +28,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -41,7 +41,7 @@ public abstract class AbstractController implements Initializable {
     Pane pane;
     @FXML
     private MenuButton languageSelector;
-    Alert dialog = new Alert(AlertType.INFORMATION);
+    Alert dialog = AppTheme.apply(new Alert(AlertType.INFORMATION));
     String basePath = "/br/org/cria/splinkerapp/%s.fxml";
 
     @Override
@@ -90,7 +90,7 @@ public abstract class AbstractController implements Initializable {
 
     protected void showAlert(AlertType type, String title, String message) {
         if (type != null) {
-            dialog = new Alert(type);
+            dialog = AppTheme.apply(new Alert(type));
         }
 
         dialog.setTitle(title);
@@ -103,7 +103,6 @@ public abstract class AbstractController implements Initializable {
         try {
             var scene = pane.getScene();
             var stage = (Stage) scene.getWindow();
-            stage.setResizable(false);
             return stage;
         } catch (Exception ex) {
             Sentry.captureException(ex);
@@ -149,25 +148,10 @@ public abstract class AbstractController implements Initializable {
     }
 
     void paintItBlue(String lblName) {
-        var lbls = pane.getScene().getRoot().lookupAll(".label");
-        lbls.forEach((lbl) -> {
-            var id = lbl.getId();
-            var isSelected = lblName.equals(id);
-            Label label = (Label) lbl;
-            if (isSelected) {
-                label.setTextFill(Color.rgb(14, 85, 220));
-                label.setStyle(
-                        "-fx-font-weight: bold;" +
-                                "-fx-border-color: transparent;" +
-                                "-fx-border-width: 0 0 1.7px 0;"
-                );
-            } else {
-                label.setTextFill(Color.BLACK);
-                label.setStyle("");
-            }
-        });
+        var selected = javafx.css.PseudoClass.getPseudoClass("selected");
+        pane.getScene().getRoot().lookupAll(".settings-tab").forEach(tab ->
+                tab.pseudoClassStateChanged(selected, lblName.equals(tab.getId())));
     }
-
     protected void showErrorModal(String errorMessage, String detalhe) {
         ModalAlertUtil.show(errorMessage, detalhe);
     }

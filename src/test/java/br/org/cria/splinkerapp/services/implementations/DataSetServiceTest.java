@@ -2,12 +2,33 @@ package br.org.cria.splinkerapp.services.implementations;
 
 import br.org.cria.splinkerapp.models.*;
 import br.org.cria.splinkerapp.repositories.*;
+import br.org.cria.splinkerapp.facade.ConfigFacade;
 import org.junit.Test;
 import java.util.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class DataSetServiceTest extends RepositoryTestBase {
+    @Test public void metadataSyncUpdatesRequestedCollectionAndKeepsLocalDataOnNetworkFailure() throws Exception {
+        DataSetService.saveDataSet("A", DataSourceType.CSV, "A", "Local A", 1);
+        DataSetService.saveDataSet("B", DataSourceType.CSV, "B", "Local B", 2);
+        TokenRepository.setCurrentToken("B");
+        try (var http = mockStatic(HttpService.class); var backend = mockStatic(ConfigFacade.class)) {
+            http.when(() -> HttpService.getJson(anyString())).thenThrow(new java.io.IOException("offline"));
+            var sync = new MetadataSyncService(Runnable::run, () -> 0, MetadataSyncService::syncMetadata);
+            assertThrows(java.util.concurrent.CompletionException.class, () -> sync.refresh("A", false).join());
+            assertEquals("Local A", DataSetService.getDataSet("A").getDataSetName());
+            Map<String, Object> config = Map.of("dataset_id", 1.0, "dataset_name", "Server A",
+                    "dataset_acronym", "NEW-A", "data_source_type", "CSV");
+            http.when(() -> HttpService.getJson(anyString())).thenReturn(config);
+            sync.refresh("A", false).join();
+            assertEquals("Server A", DataSetService.getDataSet("A").getDataSetName());
+            assertEquals("NEW-A", DataSetService.getDataSet("A").getDataSetAcronym());
+            assertEquals("Local B", DataSetService.getDataSet("B").getDataSetName());
+            assertEquals("B", TokenRepository.getCurrentToken());
+            backend.verify(() -> ConfigFacade.HandleBackendData("A", config));
+        }
+    }
     private static List<Double> encoded(String value) {
         var result = new ArrayList<Double>(); for (byte b : value.getBytes(java.nio.charset.StandardCharsets.UTF_8)) result.add((double)(b & 255)); return result;
     }

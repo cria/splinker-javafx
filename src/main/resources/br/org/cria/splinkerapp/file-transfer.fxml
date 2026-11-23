@@ -1,25 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="234.0" prefWidth="407.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FileTransferController">
-   <children>
-      <Button id="btnCancelTransfer" fx:id="btnCancelTransfer" layoutX="169.0" layoutY="188.0" mnemonicParsing="false" onMouseClicked="#onButtonCancelClicked" prefHeight="30.0" prefWidth="75.0" styleClass="danger-button" text="%button.cancel" />
-      <ProgressBar id="progressBar" fx:id="progressBar" layoutX="22.0" layoutY="160.0" prefHeight="20.0" prefWidth="362.0" progress="0.0" />
-      <Label fx:id="lblMessage" layoutX="79.0" layoutY="29.0" prefHeight="57.0" prefWidth="255.0" text="%transfer.confirm" textAlignment="CENTER" wrapText="true">
-         <font>
-            <Font size="16.0" />
-         </font></Label>
-      <Button id="btnYes" fx:id="btnYes" layoutX="94.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#onBtnYesClicked" prefHeight="30.0" prefWidth="75.0" styleClass="primary-button" text="%button.start" />
-      <Button id="btnNo" fx:id="btnNo" layoutX="239.0" layoutY="123.0" mnemonicParsing="false" onMouseClicked="#onBtnNoClicked" prefHeight="30.0" prefWidth="75.0" styleClass="danger-button" text="%button.cancel" />
-      <ProgressIndicator id="progressIndicator" fx:id="progressIndicator" layoutX="179.0" layoutY="96.0" progress="0.0" />
-      <ImageView fitHeight="91.0" fitWidth="116.0" layoutX="147.0" layoutY="-33.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../images/splinker.png" />
-         </image>
-      </ImageView>
-   </children>
-</Pane>
+<?import javafx.geometry.Rectangle2D?>
+<VBox fx:id="pane" spacing="18" prefWidth="740" prefHeight="640" styleClass="modern-view,dialog-page,single-transfer" stylesheets="@styles.css,@file-transfer.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FileTransferController">
+    <ImageView fitWidth="150" fitHeight="40" preserveRatio="true" smooth="true" accessibleText="spLinker">
+        <image><Image url="@../../../../images/splinker.png"/></image>
+        <viewport><Rectangle2D minX="580" minY="1940" width="4320" height="850"/></viewport>
+    </ImageView>
+    <Label text="%dashboard.send" styleClass="page-heading"/>
+    <Label fx:id="lblCollection" wrapText="true" maxWidth="Infinity" styleClass="field-label"/>
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="transfer-scroll" VBox.vgrow="ALWAYS">
+        <VBox spacing="14" styleClass="form-card">
+            <Label fx:id="lblTitle" text="%single.ready" wrapText="true" styleClass="section-heading"/>
+            <Label fx:id="lblMessage" text="%single.confirm" wrapText="true" maxWidth="Infinity" styleClass="body-copy"/>
+            <Separator/>
+            <Label fx:id="stepImport" text="%single.stage.0" wrapText="true" styleClass="transfer-step"/>
+            <Label fx:id="stepGenerate" text="%single.stage.1" wrapText="true" styleClass="transfer-step"/>
+            <Label fx:id="stepCheck" text="%single.stage.2" wrapText="true" styleClass="transfer-step"/>
+            <Label fx:id="stepSend" text="%single.stage.3" wrapText="true" styleClass="transfer-step"/>
+            <Separator/>
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <ProgressIndicator fx:id="progressIndicator" progress="-1" prefWidth="24" prefHeight="24" maxWidth="24" maxHeight="24" visible="false" managed="${progressIndicator.visible}"/>
+                <Label fx:id="lblProgress" text="%single.waiting" wrapText="true" styleClass="muted-label"/>
+            </HBox>
+            <ProgressBar fx:id="progressBar" maxWidth="Infinity" progress="0" managed="${progressBar.visible}"/>
+        </VBox>
+    </ScrollPane>
+    <HBox alignment="CENTER_RIGHT" spacing="12">
+        <Button fx:id="btnNo" text="%button.cancel" onAction="#onBtnNoClicked" managed="${btnNo.visible}"/>
+        <Button fx:id="btnYes" text="%single.start" onAction="#onBtnYesClicked" styleClass="primary-button" defaultButton="true" managed="${btnYes.visible}"/>
+        <Button fx:id="btnCancelTransfer" text="%single.cancel" onAction="#onButtonCancelClicked" styleClass="danger-button" visible="false" managed="${btnCancelTransfer.visible}"/>
+    </HBox>
+</VBox>

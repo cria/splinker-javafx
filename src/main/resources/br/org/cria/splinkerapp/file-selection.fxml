@@ -1,29 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FileSelectionController">
-   <children>
-      <Label fx:id="sourceTypeTitle" layoutX="14.0" layoutY="34.0" prefHeight="25.0" prefWidth="179.0" text="%file.path">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Label>
-      <Label fx:id="sourceTypeDescription" layoutX="14.0" layoutY="98.0" prefHeight="27.0" prefWidth="409.0" text="%file.description" wrapText="true" />
-      <HBox fx:id="localBox" layoutX="14.0" layoutY="136.0" prefHeight="35.0" prefWidth="464.0" spacing="3.0">
-         <children>
-            <TextField fx:id="localFilePath" editable="false" prefHeight="35.0" prefWidth="409.0" />
-            <Button id="btnSelectFile" fx:id="btnSelectFile" mnemonicParsing="false" onMouseClicked="#onButtonSelectFileClicked" prefHeight="35.0" prefWidth="52.0" />
-         </children>
-      </HBox>
-      <HBox fx:id="remoteBox" layoutX="14.0" layoutY="136.0" managed="false" prefHeight="35.0" prefWidth="464.0" spacing="3.0" visible="false">
-         <children>
-            <TextField fx:id="remoteUrl" prefHeight="35.0" prefWidth="461.0" promptText="%file.link.prompt" />
-         </children>
-      </HBox>
-      <Label fx:id="remoteHelpLabel" layoutX="14.0" layoutY="182.0" managed="false" prefHeight="66.0" prefWidth="431.0" text="%file.link.help" visible="false" wrapText="true" />
-      <Button id="btnSave" fx:id="btnSave" layoutX="194.0" layoutY="252.0" mnemonicParsing="false" onMouseClicked="#onButtonSaveClicked" prefHeight="36.0" prefWidth="77.0" styleClass="success-button" text="%button.save" />
-   </children>
-</Pane>
+<?import org.controlsfx.control.CheckComboBox?>
+<VBox fx:id="pane" spacing="20" prefWidth="650" styleClass="modern-view,form-page" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FileSelectionController">
+    <Label fx:id="sourceTypeTitle" text="%file.path" wrapText="true" styleClass="section-heading"/>
+    <Label fx:id="sourceTypeDescription" text="%file.description" wrapText="true" styleClass="muted-label"/>
+    <HBox fx:id="localBox" spacing="10">
+        <TextField fx:id="localFilePath" editable="false" HBox.hgrow="ALWAYS" accessibleText="%file.path"/>
+        <Button fx:id="btnSelectFile" onAction="#onButtonSelectFileClicked" minWidth="44" accessibleText="%file.path"/>
+    </HBox>
+    <HBox fx:id="remoteBox" managed="false" visible="false"><TextField fx:id="remoteUrl" promptText="%file.link.prompt" HBox.hgrow="ALWAYS"/></HBox>
+    <Label fx:id="remoteHelpLabel" text="%file.link.help" managed="false" visible="false" wrapText="true" styleClass="info-note"/>
+    <HBox alignment="CENTER_RIGHT"><Button fx:id="btnSave" text="%button.save" onAction="#onButtonSaveClicked" styleClass="primary-button"/></HBox>
+</VBox>

@@ -1,8 +1,7 @@
 package br.org.cria.splinkerapp.controllers;
 
 import br.org.cria.splinkerapp.i18n.I18n;
-import br.org.cria.splinkerapp.enums.WindowSizes;
-import br.org.cria.splinkerapp.models.DataSet;
+import br.org.cria.splinkerapp.managers.EventBusManager;
 import br.org.cria.splinkerapp.models.TransferResult;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.services.implementations.DarwinCoreArchiveService;
@@ -13,11 +12,21 @@ import br.org.cria.splinkerapp.tasks.TransferFileTask;
 import br.org.cria.splinkerapp.utils.ExceptionUtils;
 import io.sentry.Sentry;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
+import javafx.stage.Screen;
 
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -25,347 +34,287 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CancellationException;
 
 public class BatchFileTransferProgressController extends AbstractController {
 
-    @FXML
-    private Label lblMessage;
+    private enum Step { PREPARE, IMPORT, ARCHIVE, SEND }
 
-    @FXML
-    private Label lblColecaoAtual;
+    private enum Status {
+        WAITING("batch.waiting", "waiting"),
+        ACTIVE("single.active", "active"),
+        COMPLETE("single.done", "complete"),
+        SKIPPED("batch.skipped", "waiting"),
+        SENT("batch.sent.status", "complete"),
+        FAILED("batch.failed", "failed");
 
-    @FXML
-    private Label lblTotal;
+        private final String textKey;
+        private final PseudoClass style;
 
-    @FXML
-    private Label lblSucesso;
+        Status(String textKey, String style) {
+            this.textKey = textKey;
+            this.style = PseudoClass.getPseudoClass(style);
+        }
 
-    @FXML
-    private Label lblErro;
+        void applyTo(Label label) {
+            label.setText(I18n.text(textKey));
+            label.pseudoClassStateChanged(ACTIVE.style, this == ACTIVE);
+            label.pseudoClassStateChanged(COMPLETE.style, this == COMPLETE || this == SENT);
+            label.pseudoClassStateChanged(FAILED.style, this == FAILED);
+        }
+    }
 
-    @FXML
-    private Label lblFaltam;
+    private static final PseudoClass CURRENT_COLLECTION = PseudoClass.getPseudoClass("current-collection");
 
-    @FXML
-    private ProgressBar progressBar;
-
-    @FXML
-    private ProgressIndicator progressIndicator;
-
-    @FXML
-    private Button btnCancelar;
-
-    @FXML
-    private TableView<TransferResult> tblResultadosParciais;
-
-    @FXML
-    private TableColumn<TransferResult, String> colStatusIcon;
-
-    @FXML
-    private TableColumn<TransferResult, String> colToken;
+    @FXML private Label lblColecaoAtual;
+    @FXML private Label lblProcessadas;
+    @FXML private Label lblSucesso;
+    @FXML private Label lblErro;
+    @FXML private Label lblFaltam;
+    @FXML private Label lblCancelamento;
+    @FXML private Label stepPrepare;
+    @FXML private Label stepImport;
+    @FXML private Label stepArchive;
+    @FXML private Label stepSend;
+    @FXML private ProgressBar progressBar;
+    @FXML private Button btnCancelar;
+    @FXML private TableView<TransferResult> tblResultadosParciais;
+    @FXML private TableColumn<TransferResult, String> colToken;
+    @FXML private TableColumn<TransferResult, TransferResult> colStatus;
 
     private final ObservableList<TransferResult> resultados = FXCollections.observableArrayList();
+    private final Object taskLock = new Object();
+    private volatile boolean cancelRequested;
+    private Task<?> currentTask;
 
-    private volatile boolean cancelRequested = false;
-    private volatile boolean processing = false;
-
-    private volatile ImportDataTask importDataTask;
-    private volatile GenerateDarwinCoreArchiveTask generateTask;
-    private volatile TransferFileTask transferTask;
-    private volatile ExecutorService executor;
-
-    private int total;
+    private List<Label> steps;
+    private int currentIndex = -1;
     private int sucesso;
     private int erro;
-    private int processadas;
 
     @Override
     protected void setScreensize() {
         var stage = getStage();
-        stage.setWidth(WindowSizes.LARGE_RECTANGULAR_SCREEN_WIDTH);
-        stage.setHeight(WindowSizes.LARGE_RECTANGULAR_SCREEN_HEIGHT);
+        var bounds = Screen.getScreensForRectangle(stage.getX(), stage.getY(), 1, 1)
+                .stream().findFirst().orElse(Screen.getPrimary()).getVisualBounds();
+        stage.setWidth(Math.min(940, bounds.getWidth()));
+        stage.setHeight(Math.min(660, bounds.getHeight()));
+        stage.setX(Math.max(bounds.getMinX(), Math.min(stage.getX(), bounds.getMaxX() - stage.getWidth())));
+        stage.setY(Math.max(bounds.getMinY(), Math.min(stage.getY(), bounds.getMaxY() - stage.getHeight())));
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        steps = List.of(stepPrepare, stepImport, stepArchive, stepSend);
+        steps.forEach(label -> Status.WAITING.applyTo(label));
         configurarTabela();
 
-        progressBar.setProgress(0);
-        progressIndicator.setProgress(0);
-
         List<String> colecoes = BatchTransferContext.getSelectedCollections();
-        total = colecoes.size();
-
-        inicializarResultadosParciais(colecoes);
-
+        for (String colecao : colecoes) {
+            resultados.add(new TransferResult(colecao, false, "", true));
+        }
         atualizarResumo();
-        lblColecaoAtual.setText("-");
 
-        btnCancelar.setOnAction(e -> cancelarProcesso());
-
-        iniciarProcessamento(colecoes);
+        Platform.runLater(() -> {
+            if (pane.getScene() != null && pane.getScene().getWindow() != null) {
+                setScreensize();
+            }
+            Thread worker = new Thread(() -> processarColecoes(colecoes), "batch-collection-transfer");
+            worker.setDaemon(true);
+            worker.start();
+        });
     }
 
     private void configurarTabela() {
-        colStatusIcon.setCellValueFactory(new PropertyValueFactory<>("statusIcon"));
-        colToken.setCellValueFactory(new PropertyValueFactory<>("token"));
+        colToken.setCellValueFactory(cell -> new ReadOnlyStringWrapper(cell.getValue().getToken()));
+        colStatus.setCellValueFactory(cell -> new ReadOnlyObjectWrapper<>(cell.getValue()));
+        colStatus.setCellFactory(column -> new TableCell<>() {
+            private final Label badge = new Label();
 
-        tblResultadosParciais.setItems(resultados);
+            {
+                badge.getStyleClass().add("batch-status");
+            }
 
-        tblResultadosParciais.setRowFactory(tv -> new TableRow<>() {
             @Override
-            protected void updateItem(TransferResult item, boolean empty) {
-                super.updateItem(item, empty);
-
-                if (item == null || empty) {
-                    setStyle("");
-                } else if (item.isPendent()) {
-                    setStyle("-fx-background-color: #fff8e1;");
-                } else if (item.isSuccess()) {
-                    setStyle("-fx-background-color: #e8f5e9;");
-                } else {
-                    setStyle("-fx-background-color: #fdecea;");
+            protected void updateItem(TransferResult result, boolean empty) {
+                super.updateItem(result, empty);
+                if (empty || result == null) {
+                    setGraphic(null);
+                    return;
                 }
+
+                Status status;
+                if (getIndex() == currentIndex) {
+                    status = Status.ACTIVE;
+                } else if (result.isPendent()) {
+                    status = Status.WAITING;
+                } else {
+                    status = result.isSuccess() ? Status.SENT : Status.FAILED;
+                }
+                status.applyTo(badge);
+                setGraphic(badge);
             }
         });
-    }
-
-    private void inicializarResultadosParciais(List<String> colecoesSelecionadas) {
-        resultados.clear();
-
-        for (String colecao : colecoesSelecionadas) {
-            resultados.add(new TransferResult(colecao, false, "", true));
-        }
-
-        Platform.runLater(() -> tblResultadosParciais.refresh());
-    }
-
-    private void iniciarProcessamento(List<String> colecoesSelecionadas) {
-        if (processing) {
-            return;
-        }
-
-        processing = true;
-
-        Thread worker = new Thread(() -> {
-            try {
-                processarColecoes(colecoesSelecionadas);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        tblResultadosParciais.setRowFactory(table -> new TableRow<>() {
+            @Override
+            protected void updateItem(TransferResult result, boolean empty) {
+                super.updateItem(result, empty);
+                pseudoClassStateChanged(CURRENT_COLLECTION, !empty && getIndex() == currentIndex);
             }
         });
-        worker.setDaemon(true);
-        worker.start();
+        tblResultadosParciais.setItems(resultados);
     }
 
-    private void processarColecoes(List<String> colecoesSelecionadas) throws InterruptedException {
-        for (String colecao : colecoesSelecionadas) {
-            if (cancelRequested) {
-                break;
-            }
+    private void processarColecoes(List<String> colecoes) {
+        for (int index = 0; index < colecoes.size() && !cancelRequested; index++) {
+            String colecao = colecoes.get(index);
+            int resultIndex = index;
+            Platform.runLater(() -> mostrarColecao(resultIndex, colecao));
 
-            atualizarColecaoAtual(colecao);
-            atualizarMensagem(I18n.text("stage.start.running") +
-                    I18n.text("stage.import.pending") +
-                    I18n.text("stage.generate.pending") +
-                    I18n.text("stage.send.pending"));
-            Thread.sleep(1000);
-
-            TransferResult resultado;
-
-            try {
-                resultado = processarColecao(colecao);
-            } catch (Exception e) {
-                var errId = Sentry.captureException(e);
-                String errorLog = br.org.cria.splinkerapp.utils.ExceptionUtils.getStackTraceAsString(e);
-                resultado = new TransferResult(
-                        colecao,
-                        false,
-                        I18n.text("transfer.unexpected") + errId,
-                        false,
-                        br.org.cria.splinkerapp.utils.ExceptionUtils.getStackTraceAsString(e)
-                );
-            }
-
-            if (resultado.isSuccess()) {
-                sucesso++;
-            } else {
-                erro++;
-            }
-
-            processadas++;
-
-            atualizarResultadoParcial(resultado);
-            atualizarResumo();
-            atualizarProgresso();
-
-            if (cancelRequested) {
-                break;
-            }
+            TransferResult resultado = processarColecao(colecao);
+            Platform.runLater(() -> {
+                currentIndex = -1;
+                if (!resultado.isPendent()) {
+                    if (resultado.isSuccess()) {
+                        sucesso++;
+                    } else {
+                        erro++;
+                    }
+                }
+                resultados.set(resultIndex, resultado);
+                atualizarResumo();
+            });
         }
-
-        BatchTransferContext.setResults(resultados);
 
         Platform.runLater(() -> {
-            processing = false;
-            loadPage("batch-file-transfer-result");
+            BatchTransferContext.setResults(resultados);
+            navigateTo("batch-file-transfer-result");
         });
     }
 
     private TransferResult processarColecao(String acronimo) {
-        executor = Executors.newSingleThreadExecutor();
-
         try {
+            verificarCancelamento();
             String token = TokenRepository.getCurrentTokenByAcronym(acronimo);
-            boolean hasConfiguration = DataSetService.hasConfiguration(token);
-
-            if (!hasConfiguration) {
-                return new TransferResult(
-                        acronimo,
-                        false,
-                        I18n.text("dataset.unconfigured"),
-                        false, I18n.text("dataset.configure")
-                );
+            if (!DataSetService.hasConfiguration(token)) {
+                return new TransferResult(acronimo, false, I18n.text("dataset.unconfigured"),
+                        false, I18n.text("dataset.configure"));
             }
 
-            DataSet ds = DataSetService.getDataSet(token);
-            DarwinCoreArchiveService dwcService = new DarwinCoreArchiveService(ds);
-
-            if (cancelRequested) {
-                return new TransferResult(acronimo, false, I18n.text("transfer.cancelled"), true);
+            verificarCancelamento();
+            var ds = DataSetService.getDataSet(token);
+            var dwcService = new DarwinCoreArchiveService(ds);
+            boolean importar = ds.isFile() || ds.isAccessDb();
+            if (importar) {
+                atualizarEtapa(Step.IMPORT, true);
+                executarTask(new ImportDataTask(ds));
             }
 
-            if (ds.isFile() || ds.isAccessDb()) {
-                atualizarMensagem(I18n.text("stage.start.done") +
-                        I18n.text("stage.import.running") +
-                        I18n.text("stage.generate.pending") +
-                        I18n.text("stage.send.pending"));
-                Thread.sleep(500);
-                importDataTask = new ImportDataTask(ds);
-                executor.submit(importDataTask);
-                importDataTask.get();
+            atualizarEtapa(Step.ARCHIVE, importar);
+            executarTask(new GenerateDarwinCoreArchiveTask(dwcService));
+
+            atualizarEtapa(Step.SEND, importar);
+            var transferTask = new TransferFileTask(dwcService);
+            try {
+                executarTask(transferTask);
+            } catch (CancellationException e) {
+                String mensagem = I18n.text(transferTask.isCancelled()
+                        ? "single.cancelled.remote" : "transfer.cancelled");
+                return new TransferResult(acronimo, false, mensagem, true);
             }
 
-            if (cancelRequested) {
-                return new TransferResult(acronimo, false, I18n.text("transfer.cancelled"), true);
-            }
-
-            atualizarMensagem(I18n.text("stage.start.done") +
-                    I18n.text("stage.import.done") +
-                    I18n.text("stage.generate.running") +
-                    I18n.text("stage.send.pending"));
-            Thread.sleep(500);
-            generateTask = new GenerateDarwinCoreArchiveTask(dwcService);
-            executor.submit(generateTask);
-            generateTask.get();
-
-            if (cancelRequested) {
-                return new TransferResult(acronimo, false, I18n.text("transfer.cancelled"), true);
-            }
-
-            atualizarMensagem(I18n.text("stage.start.done") +
-                    I18n.text("stage.import.done") +
-                    I18n.text("stage.generate.done") +
-                    I18n.text("stage.send.running"));
-            Thread.sleep(500);
-            transferTask = new TransferFileTask(dwcService);
-            executor.submit(transferTask);
-            transferTask.get();
-
-            int rowCount = dwcService.getTotalRowCount();
-            String updatedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-            var newData = new HashMap<String, String>() {{
-                put("last_rowcount", String.valueOf(rowCount));
-                put("updated_at", updatedAt);
-                put("token", token);
-            }};
-
+            var newData = new HashMap<String, String>();
+            newData.put("last_rowcount", String.valueOf(dwcService.getTotalRowCount()));
+            newData.put("updated_at", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            newData.put("token", token);
             DataSetService.updateDataSource(newData);
             DataSetService.insertTransferHistory(newData);
             dwcService.cleanData();
 
-            atualizarMensagem(I18n.text("stage.start.done") +
-                    I18n.text("stage.import.done") +
-                    I18n.text("stage.generate.done") +
-                    I18n.text("stage.send.done"));
-            Thread.sleep(500);
-
             return new TransferResult(acronimo, true, I18n.text("transfer.success"), false);
+        } catch (CancellationException e) {
+            return new TransferResult(acronimo, false, I18n.text("transfer.cancelled"), true);
         } catch (Exception e) {
             var errId = Sentry.captureException(e);
-            return new TransferResult(
-                    acronimo,
-                    false,
-                    I18n.text("transfer.unexpected") + errId,
-                    false,
-                    br.org.cria.splinkerapp.utils.ExceptionUtils.getStackTraceAsString(e)
-            );
+            return new TransferResult(acronimo, false, I18n.text("transfer.unexpected") + errId,
+                    false, ExceptionUtils.getStackTraceAsString(e));
         }
     }
 
-    private void atualizarResultadoParcial(TransferResult resultado) {
-        for (int i = 0; i < resultados.size(); i++) {
-            TransferResult atual = resultados.get(i);
-            if (atual.getToken().equals(resultado.getToken())) {
-                resultados.set(i, resultado);
-                break;
+    private void executarTask(Task<?> task) throws Exception {
+        try {
+            synchronized (taskLock) {
+                verificarCancelamento();
+                currentTask = task;
+            }
+            task.run();
+            task.get();
+        } finally {
+            synchronized (taskLock) {
+                currentTask = null;
+            }
+            EventBusManager.unregister(task);
+        }
+    }
+
+    private void verificarCancelamento() {
+        if (cancelRequested) {
+            throw new CancellationException();
+        }
+    }
+
+    @FXML
+    private void cancelarProcesso() {
+        synchronized (taskLock) {
+            cancelRequested = true;
+            if (currentTask != null) {
+                currentTask.cancel();
             }
         }
-        Platform.runLater(() -> {
-            tblResultadosParciais.refresh();
-        });
-    }
-
-    private void cancelarProcesso() {
-        cancelRequested = true;
         btnCancelar.setDisable(true);
-        atualizarMensagem(I18n.text("transfer.cancelling"));
-        cancelarTasksAtuais();
+        btnCancelar.setText(I18n.text("single.cancelling"));
+        lblCancelamento.setVisible(true);
     }
 
-    private void cancelarTasksAtuais() {
-        if (importDataTask != null && importDataTask.isRunning()) {
-            importDataTask.cancel();
+    private void mostrarColecao(int index, String colecao) {
+        if (cancelRequested) {
+            return;
         }
-        if (generateTask != null && generateTask.isRunning()) {
-            generateTask.cancel();
-        }
-        if (transferTask != null && transferTask.isRunning()) {
-            transferTask.cancel();
-        }
-        if (executor != null) {
-            executor.shutdownNow();
-        }
+        currentIndex = index;
+        lblColecaoAtual.setText(colecao);
+        mostrarEtapa(Step.PREPARE, true);
+        tblResultadosParciais.refresh();
     }
 
-    private void atualizarMensagem(String mensagem) {
-        Platform.runLater(() -> lblMessage.setText(mensagem));
-    }
-
-    private void atualizarColecaoAtual(String colecao) {
-        Platform.runLater(() -> lblColecaoAtual.setText(colecao));
-    }
-
-    private void atualizarProgresso() {
-        double progresso = total == 0 ? 0 : (double) processadas / total;
-
+    private void atualizarEtapa(Step step, boolean importar) {
         Platform.runLater(() -> {
-            progressBar.setProgress(progresso);
-            progressIndicator.setProgress(progresso);
+            if (!cancelRequested) {
+                mostrarEtapa(step, importar);
+            }
         });
+    }
+
+    private void mostrarEtapa(Step step, boolean importar) {
+        for (Step item : Step.values()) {
+            Status status = Status.WAITING;
+            if (item == step) {
+                status = Status.ACTIVE;
+            } else if (item == Step.IMPORT && !importar) {
+                status = Status.SKIPPED;
+            } else if (item.ordinal() < step.ordinal()) {
+                status = Status.COMPLETE;
+            }
+            status.applyTo(steps.get(item.ordinal()));
+        }
     }
 
     private void atualizarResumo() {
-        int faltam = Math.max(total - processadas, 0);
-
-        Platform.runLater(() -> {
-            lblTotal.setText(String.valueOf(total));
-            lblSucesso.setText(String.valueOf(sucesso));
-            lblErro.setText(String.valueOf(erro));
-            lblFaltam.setText(String.valueOf(faltam));
-        });
+        int processadas = sucesso + erro;
+        int total = resultados.size();
+        lblProcessadas.setText(I18n.text("batch.processed").formatted(processadas, total));
+        lblSucesso.setText(String.valueOf(sucesso));
+        lblErro.setText(String.valueOf(erro));
+        lblFaltam.setText(String.valueOf(total - processadas));
+        progressBar.setProgress(total == 0 ? 0 : (double) processadas / total);
     }
 }

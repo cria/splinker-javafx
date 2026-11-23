@@ -1,0 +1,9 @@
+.single-transfer .transfer-scroll, .single-transfer .transfer-scroll > .viewport {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+.single-transfer .transfer-step { -fx-text-fill: #718096; }
+.single-transfer .transfer-step.active { -fx-text-fill: #0056b3; -fx-font-weight: bold; }
+.single-transfer .transfer-step.complete, .single-transfer .transfer-success { -fx-text-fill: #187348; }
+.single-transfer .transfer-step.failed, .single-transfer .transfer-error { -fx-text-fill: #b42338; }

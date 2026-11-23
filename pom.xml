@@ -5,10 +5,11 @@
 
     <groupId>br.org.cria</groupId>
     <artifactId>splinker</artifactId>
-    <version>7.5.0</version>
+    <version>8.0.0</version>
     <name>spLinker</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <javafx.version>21.0.13</javafx.version>
         <junit.version>4.13.1</junit.version>
         <log4j.version>2.25.5</log4j.version>
         <argLine></argLine>
@@ -105,12 +106,17 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>21</version>
+            <version>${javafx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>21</version>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>${javafx.version}</version>
         </dependency>
         <!-- SQLite JDBC driver dependency -
         https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->

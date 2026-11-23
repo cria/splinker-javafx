@@ -1,37 +1,41 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="310.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FirstConfigDialogController">
-   <children>
-      <MenuButton fx:id="languageSelector" layoutX="414.0" layoutY="5.0" minWidth="-1.0" prefWidth="56.0" prefHeight="24.0" style="-fx-font-size: 11px; -fx-padding: 2 4;" accessibleText="%language" />
-      <Button id="btnAddToken" fx:id="btnAddIniciar" layoutX="198.0" layoutY="246.0" mnemonicParsing="false" onMouseClicked="#onYesButtonClicked" prefHeight="34.0" prefWidth="85.0" styleClass="primary-button" text="%button.start" />
+<VBox fx:id="pane" prefHeight="500" prefWidth="620" spacing="0" style="-fx-background-color: #f5f7f9; -fx-padding: 24 36 24 36;" styleClass="modern-view" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.FirstConfigDialogController">
 
-      <Label alignment="CENTER" layoutX="9.0" layoutY="33.0" prefHeight="49.0" prefWidth="460.0" text="%welcome" textAlignment="CENTER" wrapText="true">
-         <font>
-            <Font size="18.0" />
-         </font></Label>
-      <Label alignment="CENTER" layoutX="9.0" layoutY="74.0" prefHeight="173.0" prefWidth="460.0" text="%welcome.description" textAlignment="JUSTIFY" wrapText="true">
-         <font>
-            <Font size="16.0" />
-         </font></Label>
-      <ImageView fitHeight="130.0" fitWidth="128.0" layoutX="177.0" layoutY="-29.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../images/splinker.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="14.0" layoutY="267.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../images/cria-logo.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="36.0" fitWidth="96.0" layoutX="381.0" layoutY="267.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../images/splink-logo.gif" />
-         </image>
-      </ImageView>
-   </children>
-</Pane>
+    <HBox alignment="CENTER_RIGHT">
+        <MenuButton fx:id="languageSelector" accessibleText="%language" styleClass="language-button" />
+    </HBox>
+
+    <VBox alignment="CENTER" prefHeight="340.0" prefWidth="548.0" spacing="22" style="-fx-padding: 18 16 32 16;" VBox.vgrow="ALWAYS">
+        <ImageView accessibleText="spLinker" fitHeight="48" fitWidth="210" preserveRatio="true" smooth="true">
+            <image><Image url="@../../../../images/splinker.png" /></image>
+            <viewport><Rectangle2D height="850" minX="580" minY="1940" width="4320" /></viewport>
+        </ImageView>
+
+        <Region maxHeight="4" maxWidth="36" minHeight="4" minWidth="36" prefHeight="4" prefWidth="36" style="-fx-background-color: #007bff; -fx-background-radius: 2;" />
+
+        <VBox alignment="CENTER" maxWidth="533.0" prefHeight="156.0" prefWidth="516.0" spacing="12">
+            <Label alignment="CENTER" maxWidth="Infinity" styleClass="page-heading" text="%welcome" textAlignment="CENTER" wrapText="true" />
+            <Label alignment="CENTER" maxWidth="Infinity" style="-fx-text-fill: #62748a; -fx-line-spacing: 5;" styleClass="body-copy" text="%welcome.description" textAlignment="CENTER" wrapText="true" />
+        </VBox>
+
+        <Button fx:id="btnAddIniciar" defaultButton="true" minWidth="190" onAction="#onYesButtonClicked" prefHeight="46" style="-fx-font-size: 15px; -fx-background-radius: 23; -fx-border-radius: 23;" styleClass="primary-button" text="%button.start">
+            <VBox.margin><Insets top="6" /></VBox.margin>
+        </Button>
+    </VBox>
+
+    <HBox alignment="CENTER" spacing="24" style="-fx-padding: 18 0 0 0; -fx-border-color: #e2e8f0 transparent transparent transparent; -fx-border-width: 1 0 0 0;">
+        <ImageView accessibleText="CRIA" fitHeight="30" fitWidth="70" preserveRatio="true" smooth="true">
+            <image><Image url="@../../../../images/cria-logo.png" /></image>
+        </ImageView>
+        <Region maxHeight="22" maxWidth="1" minHeight="22" minWidth="1" prefHeight="22" prefWidth="1" style="-fx-background-color: #dce4ef;" />
+        <ImageView accessibleText="speciesLink" fitHeight="30" fitWidth="86" preserveRatio="true" smooth="true">
+            <image><Image url="@../../../../images/splink-logo.gif" /></image>
+        </ImageView>
+    </HBox>
+</VBox>

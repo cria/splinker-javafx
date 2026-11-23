@@ -3,6 +3,7 @@ import br.org.cria.splinkerapp.i18n.Language;
 import br.org.cria.splinkerapp.i18n.LocalizedViews;
 import br.org.cria.splinkerapp.controllers.AbstractController;
 import br.org.cria.splinkerapp.managers.EventBusManager;
+import br.org.cria.splinkerapp.utils.SupportBrowser;
 import com.google.common.eventbus.Subscribe;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -16,6 +17,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.MenuButton;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.web.WebView;
+import javafx.concurrent.Worker;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -32,7 +35,11 @@ public class LocalizedViewsTest {
     @BeforeClass
     public static void startJavaFx() throws Exception {
         var started = new CompletableFuture<Void>();
-        Platform.startup(() -> started.complete(null));
+        try {
+            Platform.startup(() -> started.complete(null));
+        } catch (IllegalStateException alreadyStarted) {
+            Platform.runLater(() -> started.complete(null));
+        }
         started.get(15, TimeUnit.SECONDS);
         Platform.setImplicitExit(false);
     }
@@ -64,6 +71,56 @@ public class LocalizedViewsTest {
             }
         });
         completed.get(40, TimeUnit.SECONDS);
+    }
+
+    @Test
+    public void supportBrowserRendersStyledContentInsideTheMainView() throws Exception {
+        var completed = new CompletableFuture<Void>();
+        Platform.runLater(() -> {
+            try {
+                var browser = new SupportBrowser();
+                var host = new javafx.scene.layout.StackPane(browser);
+                new Scene(host, 700, 500);
+                assertNull(browser.lookup("#openExternalBrowser"));
+                var error = browser.lookup("#supportLoadError");
+                assertFalse(error.isVisible());
+                var webView = (WebView) browser.lookup("#supportWebView");
+                var engine = webView.getEngine();
+                assertSame(engine, engine.getCreatePopupHandler().call(null));
+                var handled = new java.util.concurrent.atomic.AtomicBoolean();
+                engine.getLoadWorker().stateProperty().addListener((observable, previous, state) -> {
+                    if (state == Worker.State.SUCCEEDED && handled.compareAndSet(false, true)) {
+                        try {
+                            assertEquals("Local preview", engine.executeScript("document.body.textContent.trim()"));
+                            assertEquals("grid", engine.executeScript("getComputedStyle(document.body).display"));
+                            assertEquals("rgb(0, 129, 198)", engine.executeScript("getComputedStyle(document.body).color"));
+                            assertFalse(error.isVisible());
+                            host.getChildren().clear();
+                            assertNull(browser.getScene());
+                            assertFalse(engine.getLoadWorker().isRunning());
+                            completed.complete(null);
+                        } catch (Throwable e) {
+                            browser.close();
+                            completed.completeExceptionally(e);
+                        }
+                    } else if (state == Worker.State.FAILED && handled.compareAndSet(false, true)) {
+                        var failure = engine.getLoadWorker().getException();
+                        browser.close();
+                        completed.completeExceptionally(failure);
+                    }
+                });
+                // The donation site uses Tailwind 4: CSS layers, nesting and registered properties.
+                engine.loadContent("""
+                        <html><head><style>
+                        @property --donation-color { syntax: '<color>'; inherits: false; initial-value: #0081c6; }
+                        @layer utilities { body { display: grid; & { color: var(--donation-color); } } }
+                        </style></head><body>Local preview</body></html>
+                        """);
+            } catch (Throwable e) {
+                completed.completeExceptionally(e);
+            }
+        });
+        completed.get(20, TimeUnit.SECONDS);
     }
 
     @Test

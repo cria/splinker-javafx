@@ -1,44 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<?import org.controlsfx.control.*?>
-
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="524.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.BatchSelectFileTransferController">
-
-    <children>
-
-        <Label id="proxyLabel" fx:id="proxyLabel" layoutX="235.0" layoutY="14.0" text="%button.send">
-            <font>
-                <Font name="System Bold" size="18.0" />
-            </font>
-        </Label>
-
-        <Label layoutX="31.0" layoutY="59.0" text="%collections">
-            <font>
-                <Font name="System Bold" size="14.0" />
-            </font>
-        </Label>
-
-        <CheckComboBox fx:id="cmbToken" layoutX="31.0" layoutY="88.0" prefHeight="30.0" prefWidth="476.0" />
-
-        <Button id="btnEnviar" fx:id="btnEnviar" layoutX="269.0" layoutY="271.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" styleClass="primary-button" text="%button.send" />
-        <Button id="btnCancelar" fx:id="btnCancelar" layoutX="157.0" layoutY="272.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" styleClass="danger-button" text="%button.cancel" />
-
-
-        <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="20.0" layoutY="289.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@../../../../images/cria-logo.png" />
-            </image>
-        </ImageView>
-
-        <ImageView fitHeight="36.0" fitWidth="96.0" layoutX="378.0" layoutY="286.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@../../../../images/splink-logo.gif" />
-            </image>
-        </ImageView>
-
-    </children>
-</Pane>
+<?import org.controlsfx.control.CheckComboBox?>
+<VBox fx:id="pane" spacing="20" prefWidth="650" styleClass="modern-view,dialog-page" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.BatchSelectFileTransferController">
+    <ImageView fitWidth="150" fitHeight="40" preserveRatio="true" smooth="true" accessibleText="spLinker">
+    <image><Image url="@../../../../images/splinker.png"/></image>
+    <viewport><Rectangle2D minX="580" minY="1940" width="4320" height="850"/></viewport>
+</ImageView>
+    <Label fx:id="proxyLabel" text="%dashboard.send" styleClass="page-heading"/>
+    <VBox spacing="12" styleClass="form-card">
+        <Label text="%collections" styleClass="field-label" labelFor="$cmbToken"/>
+        <CheckComboBox fx:id="cmbToken" maxWidth="Infinity"/>
+        <HBox alignment="CENTER_RIGHT" spacing="12">
+            <Button fx:id="btnCancelar" text="%button.cancel"/>
+            <Button fx:id="btnEnviar" text="%button.send" styleClass="primary-button"/>
+        </HBox>
+    </VBox>
+</VBox>

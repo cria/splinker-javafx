@@ -1,43 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="428.0" prefWidth="629.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.BatchFileTransferResultController">
-
-    <children>
-
-        <Label layoutX="214.0" layoutY="14.0" text="%transfer.result">
-            <font>
-                <Font name="System Bold" size="18.0" />
-            </font>
-        </Label>
-
-        <TableView fx:id="tblResultados" layoutX="20.0" layoutY="78.0" prefHeight="286.0" prefWidth="599.0">
-            <placeholder><Label text="%table.empty" /></placeholder>
-
-            <columns>
-                <TableColumn fx:id="colStatusIcon" prefWidth="35.0" text="" />
-                <TableColumn fx:id="colToken" prefWidth="88.40002059936523" text="%collection" />
-                <TableColumn fx:id="colStatus" prefWidth="89.80001831054688" text="%status" />
-                <TableColumn fx:id="colMensagem" prefWidth="295.8000030517578" text="%message" />
-                <TableColumn fx:id="colAcao" prefWidth="89.79998779296875" text="" />
-            </columns>
-        </TableView>
-
-        <Button fx:id="btnFechar" layoutX="257.0" layoutY="378.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="77.0" styleClass="primary-button" text="%button.close" />
-        <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="14.0" layoutY="381.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@../../../../images/cria-logo.png" />
-            </image>
-        </ImageView>
-
-        <ImageView fitHeight="36.0" fitWidth="96.0" layoutX="525.0" layoutY="381.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@../../../../images/splink-logo.gif" />
-            </image>
-        </ImageView>
-    </children>
-</Pane>
+<?import org.controlsfx.control.CheckComboBox?>
+<VBox fx:id="pane" spacing="20" prefWidth="820" styleClass="modern-view,dialog-page" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.BatchFileTransferResultController">
+    <Label text="%transfer.result" styleClass="page-heading"/>
+    <TableView fx:id="tblResultados" prefHeight="360" VBox.vgrow="ALWAYS">
+        <placeholder><Label text="%table.empty" styleClass="muted-label"/></placeholder>
+        <columns>
+            <TableColumn fx:id="colStatusIcon" prefWidth="40" text=""/>
+            <TableColumn fx:id="colToken" prefWidth="105" text="%collection"/>
+            <TableColumn fx:id="colStatus" prefWidth="110" text="%status"/>
+            <TableColumn fx:id="colMensagem" prefWidth="360" text="%message"/>
+            <TableColumn fx:id="colAcao" prefWidth="120" text=""/>
+        </columns>
+        <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+    </TableView>
+    <HBox alignment="CENTER_RIGHT"><Button fx:id="btnFechar" text="%button.close" styleClass="primary-button"/></HBox>
+</VBox>

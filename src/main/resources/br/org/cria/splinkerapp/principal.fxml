@@ -1,54 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
-
-<Pane id="pane" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="327.0" prefWidth="471.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.PrincipalController">
-   <children>
-      <ComboBox id="cmbCollection" fx:id="cmbCollection" layoutX="20.0" layoutY="29.0" onAction="#onCmbCollectionChange" prefWidth="150.0" />
-      <Button id="syncServerBtn" fx:id="syncServerBtn" layoutX="20.0" layoutY="74.0" mnemonicParsing="false" onMouseClicked="#onSyncServerBtnClicked" prefHeight="113.0" prefWidth="150.0" text="%button.send">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-      </Button>
-      <Label id="lblCollectionName" fx:id="lblCollectionName" layoutX="208.0" layoutY="7.0" prefHeight="95.0" prefWidth="230.0" text="%collection.name" wrapText="true">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-      </Label>
-      <Label layoutX="213.0" layoutY="214.0" text="%records.sent">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-      </Label>
-      <Label layoutX="213.0" layoutY="150.0" text="%transfer.last">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-      </Label>
-      <Label id="lblLastUpdate" fx:id="lblLastUpdate" layoutX="213.0" layoutY="174.0" prefHeight="27.0" prefWidth="250.0" text="                  -" textAlignment="RIGHT">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-      </Label>
-      <Label id="lblRecordsSent" fx:id="lblRecordsSent" layoutX="212.0" layoutY="241.0" prefHeight="27.0" prefWidth="250.0" text="                   -" textAlignment="RIGHT">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-      </Label>
-      <ImageView fitHeight="35.0" fitWidth="80.0" layoutX="20.0" layoutY="289.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../images/cria-logo.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="36.0" fitWidth="96.0" layoutX="378.0" layoutY="286.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../images/splink-logo.gif" />
-         </image>
-      </ImageView>
-      <Line endX="-1.0" endY="286.0" layoutX="203.0" layoutY="30.0" startX="-1.0" startY="-15.0" />
-   </children>
-</Pane>
+<VBox fx:id="pane" spacing="22" prefWidth="650" styleClass="dashboard" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.PrincipalController">
+    <VBox spacing="6">
+        <Label text="%dashboard.title" styleClass="page-heading"/>
+        <Label text="%dashboard.subtitle" wrapText="true" styleClass="muted-label"/>
+    </VBox>
+    <VBox spacing="16" styleClass="collection-card">
+        <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+        <HBox alignment="CENTER_LEFT" spacing="16">
+            <Label text="%dashboard.collection" styleClass="eyebrow"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <ComboBox fx:id="cmbCollection" onAction="#onCmbCollectionChange" prefWidth="180" maxWidth="220" accessibleText="%dashboard.collection"/>
+        </HBox>
+        <Label fx:id="lblMetadataStatus" wrapText="true" maxWidth="440" styleClass="muted-label"/>
+        <Label fx:id="lblCollectionName" text="%collection.name" wrapText="true" minHeight="64" maxWidth="Infinity" styleClass="collection-title"/>
+        <Separator/>
+        <HBox alignment="CENTER_LEFT" spacing="20">
+            <Label text="%dashboard.send.hint" wrapText="true" maxWidth="350" styleClass="muted-label" HBox.hgrow="ALWAYS"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="syncServerBtn" text="%dashboard.send" onAction="#onSyncServerBtnClicked" minWidth="152" styleClass="send-button"/>
+        </HBox>
+    </VBox>
+    <HBox spacing="18">
+        <VBox spacing="14" styleClass="stat-card" HBox.hgrow="ALWAYS" prefWidth="310">
+            <padding><Insets top="22" right="22" bottom="22" left="22"/></padding>
+            <Label text="%transfer.last" styleClass="muted-label"/>
+            <Label fx:id="lblLastUpdate" text="—" wrapText="true" styleClass="date-value"/>
+        </VBox>
+        <VBox spacing="10" styleClass="stat-card" HBox.hgrow="ALWAYS" prefWidth="310">
+            <padding><Insets top="22" right="22" bottom="22" left="22"/></padding>
+            <Label text="%records.sent" styleClass="muted-label"/>
+            <Label fx:id="lblRecordsSent" text="—" wrapText="true" styleClass="stat-value"/>
+        </VBox>
+    </HBox>
+</VBox>

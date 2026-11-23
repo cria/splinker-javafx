@@ -1,0 +1,75 @@
+.modern-shell {
+    -fx-font-family: "Segoe UI", "System";
+    -fx-font-size: 13px;
+    -fx-background-color: #f5f7f9;
+    -fx-text-base-color: #263b50;
+    -fx-accent: #007bff;
+    -fx-focus-color: #007bff;
+    -fx-faint-focus-color: #007bff22;
+}
+.modern-shell .label { -fx-text-fill: #263b50; }
+.modern-shell .brand-caption { -fx-font-size: 11px; -fx-text-fill: #718096; }
+.sidebar { -fx-background-color: white; -fx-border-color: #e5eaf0; -fx-border-width: 0 1 0 0; }
+.modern-shell .nav-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 9;
+    -fx-text-fill: #62748a;
+    -fx-alignment: CENTER_LEFT;
+    -fx-graphic-text-gap: 12;
+    -fx-padding: 13 14;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+.modern-shell .nav-button:hover { -fx-background-color: #f0f6ff; -fx-border-color: transparent; -fx-text-fill: #0056b3; }
+.modern-shell .nav-button:selected { -fx-background-color: #e7f1ff; -fx-text-fill: #0056b3; -fx-font-weight: bold; }
+.modern-shell .nav-button:focused { -fx-border-color: #007bff; -fx-border-radius: 9; }
+.modern-shell .nav-icon {
+    -fx-fill: transparent;
+    -fx-stroke: #326ba3;
+    -fx-stroke-width: 1;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+}
+.modern-shell .nav-button:hover .nav-icon,
+.modern-shell .nav-button:selected .nav-icon { -fx-stroke: #0056b3; }
+.topbar { -fx-background-color: white; -fx-border-color: #e5eaf0; -fx-border-width: 0 0 1 0; }
+.modern-shell .topbar-title { -fx-font-size: 16px; -fx-font-weight: bold; }
+.page-scroll, .page-scroll > .viewport { -fx-background-color: transparent; }
+.page-scroll { -fx-padding: 0; -fx-background-insets: 0; }
+.dashboard { -fx-font-family: "Segoe UI", "System"; -fx-font-size: 13px; }
+.dashboard .page-heading { -fx-font-size: 27px; -fx-font-weight: bold; -fx-text-fill: #193b61; }
+.modern-shell .muted-label, .dashboard .muted-label { -fx-text-fill: #718096; -fx-font-size: 13px; }
+.collection-card, .stat-card {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 14;
+    -fx-effect: dropshadow(gaussian, #20354d10, 12, 0, 0, 3);
+}
+.dashboard .eyebrow { -fx-text-fill: #326ba3; -fx-font-size: 11px; -fx-font-weight: bold; }
+.dashboard .collection-title { -fx-font-size: 23px; -fx-font-weight: bold; -fx-text-fill: #263b50; }
+.dashboard .stat-value { -fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #0056b3; }
+.dashboard .date-value { -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #263b50; }
+.dashboard .send-button {
+    -fx-background-color: #007bff;
+    -fx-background-radius: 8;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 13 20;
+    -fx-cursor: hand;
+}
+.dashboard .send-button:hover { -fx-background-color: #0056b3; }
+.dashboard .send-button:pressed { -fx-background-color: #004085; }
+.dashboard .send-button:focused { -fx-border-color: #004085; -fx-border-radius: 8; -fx-border-width: 2; -fx-border-insets: -3; }
+.dashboard .combo-box, .modern-shell .language-button {
+    -fx-background-color: #f6f8fb;
+    -fx-border-color: #dce4ef;
+    -fx-border-radius: 7;
+    -fx-background-radius: 7;
+    -fx-padding: 5 8;
+    -fx-cursor: hand;
+}
+.dashboard .combo-box:focused, .modern-shell .language-button:focused { -fx-border-color: #007bff; }
+.modern-shell .separator .line, .dashboard .separator .line { -fx-border-color: #e8edf3; -fx-border-width: 1 0 0 0; }
