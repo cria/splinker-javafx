@@ -1,35 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import org.controlsfx.control.CheckComboBox?>
-<VBox fx:id="pane" spacing="20" prefWidth="820" styleClass="modern-view,dialog-page" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.BatchFileTransferProgressController">
-    <Label text="%transfer.progress" styleClass="page-heading"/>
-    <HBox spacing="24">
-        <VBox spacing="16" prefWidth="330" HBox.hgrow="ALWAYS" styleClass="form-card">
-            <Label text="%transfer.processing" styleClass="field-label"/>
-            <Label fx:id="lblColecaoAtual" text="—" wrapText="true" styleClass="section-heading"/>
-            <Label text="%transfer.stage" styleClass="field-label"/>
-            <Label fx:id="lblMessage" text="" wrapText="true" minHeight="80"/>
-            <ProgressIndicator fx:id="progressIndicator" prefWidth="48" prefHeight="48" maxWidth="48" progress="0"/>
-            <ProgressBar fx:id="progressBar" maxWidth="Infinity" progress="0"/>
+<VBox fx:id="pane" prefWidth="910" prefHeight="620" styleClass="modern-view,batch-transfer" stylesheets="@styles.css,@batch-file-transfer-progress.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.org.cria.splinkerapp.controllers.BatchFileTransferProgressController">
+    <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="batch-scroll" VBox.vgrow="ALWAYS">
+        <VBox spacing="16" minWidth="600" styleClass="batch-content">
+            <Label text="%batch.title" styleClass="page-heading"/>
+            <VBox spacing="14" styleClass="batch-overview">
+                <HBox alignment="BASELINE_LEFT" spacing="12">
+                    <Label text="%batch.overview" styleClass="batch-overview-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="lblProcessadas" styleClass="batch-count"/>
+                </HBox>
+                <ProgressBar fx:id="progressBar" maxWidth="Infinity" accessibleText="%batch.overview" progress="0"/>
+                <HBox spacing="24">
+                    <HBox alignment="BASELINE_LEFT" spacing="6" styleClass="batch-metric">
+                        <Label text="%batch.sent"/>
+                        <Label fx:id="lblSucesso" text="0" styleClass="batch-metric-value"/>
+                    </HBox>
+                    <HBox alignment="BASELINE_LEFT" spacing="6" styleClass="batch-metric">
+                        <Label text="%batch.failed"/>
+                        <Label fx:id="lblErro" text="0" styleClass="batch-metric-value"/>
+                    </HBox>
+                    <HBox alignment="BASELINE_LEFT" spacing="6" styleClass="batch-metric">
+                        <Label text="%batch.remaining"/>
+                        <Label fx:id="lblFaltam" text="0" styleClass="batch-metric-value"/>
+                    </HBox>
+                </HBox>
+            </VBox>
+            <HBox spacing="16" VBox.vgrow="ALWAYS">
+                <VBox prefWidth="318" minWidth="270" spacing="10" styleClass="batch-card">
+                    <Label text="%batch.current" styleClass="field-label"/>
+                    <Label fx:id="lblColecaoAtual" text="—" wrapText="true" maxWidth="Infinity" styleClass="section-heading"/>
+                    <Separator/>
+                    <GridPane hgap="12" vgap="10">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="ALWAYS" minWidth="0"/>
+                            <ColumnConstraints halignment="RIGHT"/>
+                        </columnConstraints>
+                        <Label text="%batch.stage.prepare" wrapText="true"/>
+                        <Label fx:id="stepPrepare" styleClass="batch-status" GridPane.columnIndex="1"/>
+                        <Label text="%batch.stage.import" wrapText="true" GridPane.rowIndex="1"/>
+                        <Label fx:id="stepImport" styleClass="batch-status" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <Label text="%batch.stage.archive" wrapText="true" GridPane.rowIndex="2"/>
+                        <Label fx:id="stepArchive" styleClass="batch-status" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                        <Label text="%batch.stage.send" wrapText="true" GridPane.rowIndex="3"/>
+                        <Label fx:id="stepSend" styleClass="batch-status" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                    </GridPane>
+                </VBox>
+                <VBox spacing="10" styleClass="batch-card" HBox.hgrow="ALWAYS">
+                    <Label text="%batch.queue" styleClass="section-heading"/>
+                    <TableView fx:id="tblResultadosParciais" minHeight="174" prefHeight="235" VBox.vgrow="ALWAYS">
+                        <placeholder><Label text="%table.empty"/></placeholder>
+                        <columns>
+                            <TableColumn fx:id="colToken" prefWidth="235" minWidth="75" text="%collection" sortable="false" reorderable="false"/>
+                            <TableColumn fx:id="colStatus" prefWidth="145" minWidth="123" text="%status" sortable="false" reorderable="false"/>
+                        </columns>
+                        <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN"/></columnResizePolicy>
+                    </TableView>
+                </VBox>
+            </HBox>
         </VBox>
-        <VBox spacing="14" prefWidth="340" HBox.hgrow="ALWAYS">
-            <Label text="%transfer.partial" styleClass="section-heading"/>
-            <TableView fx:id="tblResultadosParciais" prefHeight="300" VBox.vgrow="ALWAYS">
-                <placeholder><Label text="%table.empty" styleClass="muted-label"/></placeholder>
-                <columns><TableColumn fx:id="colStatusIcon" prefWidth="40" text=""/><TableColumn fx:id="colToken" prefWidth="290" text="%collections"/></columns>
-                <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
-            </TableView>
-        </VBox>
-    </HBox>
-    <HBox spacing="24" styleClass="summary-strip">
-        <VBox spacing="6"><Label text="%total.label"/><Label fx:id="lblTotal" text="0" styleClass="summary-value"/></VBox>
-        <VBox spacing="6"><Label text="%success.label"/><Label fx:id="lblSucesso" text="0" styleClass="summary-value"/></VBox>
-        <VBox spacing="6"><Label text="%error.label"/><Label fx:id="lblErro" text="0" styleClass="summary-value"/></VBox>
-        <VBox spacing="6"><Label text="%remaining.label"/><Label fx:id="lblFaltam" text="0" styleClass="summary-value"/></VBox>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="btnCancelar" text="%button.cancel" styleClass="danger-button"/>
+    </ScrollPane>
+    <HBox alignment="CENTER_RIGHT" spacing="14" styleClass="batch-footer">
+        <Label fx:id="lblCancelamento" text="%single.cancelling.detail" visible="false" managed="${lblCancelamento.visible}" wrapText="true" minWidth="0" maxWidth="Infinity" styleClass="field-label" HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnCancelar" text="%batch.cancel" onAction="#cancelarProcesso" styleClass="danger-button"/>
     </HBox>
 </VBox>

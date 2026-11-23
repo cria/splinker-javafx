@@ -1,0 +1,52 @@
+.batch-transfer .batch-scroll,
+.batch-transfer .batch-scroll > .viewport {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+.batch-transfer .batch-content { -fx-padding: 24 28 18; }
+
+.batch-transfer .batch-overview {
+    -fx-padding: 17 20;
+    -fx-background-color: #173c66;
+    -fx-background-radius: 14;
+}
+.batch-transfer .batch-overview .label { -fx-text-fill: #e1edfc; }
+.batch-transfer .batch-overview .batch-overview-title,
+.batch-transfer .batch-overview .batch-metric-value { -fx-font-weight: bold; -fx-text-fill: white; }
+.batch-transfer .batch-overview .batch-count { -fx-font-size: 19px; -fx-font-weight: bold; -fx-text-fill: white; }
+.batch-transfer .batch-overview .track { -fx-background-color: #355b85; }
+.batch-transfer .batch-overview .bar { -fx-background-color: #8bc5ff; }
+
+.batch-transfer .batch-card {
+    -fx-padding: 16;
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: #dce5ef;
+    -fx-border-radius: 14;
+}
+.batch-transfer .table-view { -fx-padding: 0; }
+.batch-transfer .table-view .column-header,
+.batch-transfer .table-view .filler { -fx-size: 34; }
+.batch-transfer .table-row-cell { -fx-cell-size: 38; }
+.batch-transfer .table-cell { -fx-padding: 5 10; }
+.batch-transfer .table-row-cell:current-collection { -fx-background-color: #ebf4ff; }
+.batch-transfer .table-row-cell:current-collection .table-cell { -fx-font-weight: bold; }
+
+.batch-transfer .batch-status {
+    -fx-padding: 3 8;
+    -fx-background-radius: 7;
+    -fx-background-color: #f0f3f7;
+    -fx-text-fill: #4c5e72;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+.batch-transfer .batch-status:active { -fx-background-color: #e5f1ff; -fx-text-fill: #0056a8; }
+.batch-transfer .batch-status:complete { -fx-background-color: #e6f5ed; -fx-text-fill: #12623b; }
+.batch-transfer .batch-status:failed { -fx-background-color: #fcecef; -fx-text-fill: #a12438; }
+
+.batch-transfer .batch-footer {
+    -fx-padding: 12 28;
+    -fx-background-color: white;
+    -fx-border-color: #dce5ef transparent transparent transparent;
+}
