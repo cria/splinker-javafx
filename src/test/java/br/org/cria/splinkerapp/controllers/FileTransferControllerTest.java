@@ -102,6 +102,7 @@ public class FileTransferControllerTest {
             assertEquals(1, fixture.transferred);
             assertTrue(fixture.lblMessage.getText().contains("12"));
             assertEquals(1, fixture.progressBar.getProgress(), 0);
+            assertTrue(fixture.progressBar.isVisible());
             assertFalse(fixture.progressIndicator.isVisible());
             assertTrue(fixture.btnNo.isVisible());
             assertFalse(fixture.btnYes.isVisible());
@@ -176,6 +177,8 @@ public class FileTransferControllerTest {
             assertEquals(0, fixture.saved);
             assertFalse(fixture.btnCancelTransfer.isVisible());
             assertTrue(fixture.stepSend.getStyleClass().contains("failed"));
+            assertFalse(fixture.progressBar.isVisible());
+            assertFalse(fixture.progressBar.isManaged());
             return null;
         });
         verify(fixture.archive, never()).cleanData();

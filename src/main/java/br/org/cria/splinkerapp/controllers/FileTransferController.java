@@ -272,6 +272,7 @@ public class FileTransferController extends AbstractController {
         btnCancelTransfer.setVisible(isBusy());
         btnCancelTransfer.setDisable(next == State.CANCELLING);
         progressIndicator.setVisible(isBusy());
+        progressBar.setVisible(next != State.FAILED);
         if (next != State.RUNNING) {
             progressBar.progressProperty().unbind();
             if (next == State.CANCELLING) progressBar.setProgress(-1);

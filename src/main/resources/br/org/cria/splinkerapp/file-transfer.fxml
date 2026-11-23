@@ -24,7 +24,7 @@
                 <ProgressIndicator fx:id="progressIndicator" progress="-1" prefWidth="24" prefHeight="24" maxWidth="24" maxHeight="24" visible="false" managed="${progressIndicator.visible}"/>
                 <Label fx:id="lblProgress" text="%single.waiting" wrapText="true" styleClass="muted-label"/>
             </HBox>
-            <ProgressBar fx:id="progressBar" maxWidth="Infinity" progress="0"/>
+            <ProgressBar fx:id="progressBar" maxWidth="Infinity" progress="0" managed="${progressBar.visible}"/>
         </VBox>
     </ScrollPane>
     <HBox alignment="CENTER_RIGHT" spacing="12">
