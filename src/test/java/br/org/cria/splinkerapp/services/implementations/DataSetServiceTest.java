@@ -40,6 +40,7 @@ public class DataSetServiceTest extends RepositoryTestBase {
             var token = type.name(); DataSetService.saveDataSet(token, type, "ACR", "Name", id++);
             assertFalse(DataSetService.hasConfiguration(token));
             if (type == DataSourceType.Access) DataSetService.saveAccessDataSource(token, "source.mdb", "secret");
+            else if (type == DataSourceType.SQLite) DataSetService.saveSQLiteDataSource(token, temp.getRoot().toPath().resolve("test.db").toString());
             else if (DataSetTest.source(type, null, null).isSQLDatabase()) DataSetService.saveSQLDataSource(token, "host.invalid", "1234", "db", "user", "secret");
             else DataSetService.saveSpreadsheetDataSource(token, "source.csv");
             assertTrue(DataSetService.hasConfiguration(token)); assertTrue(DataSetService.hasConfiguration());

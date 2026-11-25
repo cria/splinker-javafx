@@ -13,5 +13,6 @@ public enum DataSourceType {
     LibreOfficeCalc,
     CSV,
     Numbers,
+    SQLite,
 
 }

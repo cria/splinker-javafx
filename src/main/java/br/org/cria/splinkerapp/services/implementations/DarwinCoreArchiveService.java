@@ -9,6 +9,7 @@ import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.parsers.FileParser;
 import br.org.cria.splinkerapp.repositories.TokenRepository;
 import br.org.cria.splinkerapp.utils.DbConnectionUtil;
+import br.org.cria.splinkerapp.utils.SQLiteSource;
 import br.org.cria.splinkerapp.utils.SystemConfigurationUtil;
 import com.github.perlundq.yajsync.ui.YajsyncClient;
 import com.google.common.eventbus.EventBus;
@@ -74,6 +75,9 @@ public class DarwinCoreArchiveService {
         this.ds = ds;
         this.zipFile = "%s/dwca.zip".formatted(userDir);
         this.textFile = "%s/occurrence.txt".formatted(userDir);
+        if (ds.isSQLiteDb()) {
+            SQLiteSource.resolvePath(ds.getDataSetFilePath());
+        }
         Files.createDirectories(Paths.get(userDir));
         cleanWorkingDirectory();
     }
@@ -359,7 +363,9 @@ public class DarwinCoreArchiveService {
 
     public void cleanData() throws Exception {
         if (!SystemConfigurationUtil.runInDevelopment()) {
-            dropDataTables();
+            if (!ds.isSQLiteDb()) {
+                dropDataTables();
+            }
             deleteSentFiles();
         }
     }

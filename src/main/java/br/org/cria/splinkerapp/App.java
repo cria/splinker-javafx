@@ -212,6 +212,10 @@ public class App {
                 filePath=C:\\Users\\user\\Downloads\\base.accdb
                 password=123456
 
+                [dataset]
+                token=TOKEN
+                filePath=C:\\Users\\user\\Downloads\\collection.sqlite
+
                 Notes:
                 - Each [dataset] represents a configuration
                 - The token is required
@@ -286,6 +290,11 @@ public class App {
 
     private static void salvarFonte(String token, DataSourceType dsType, Map<String, String> cfg) throws Exception {
         switch (dsType) {
+            case SQLite:
+                validar(cfg, "filePath");
+                DataSetService.saveSQLiteDataSource(token, cfg.get("filePath"));
+                break;
+
             case Access:
                 validar(cfg, "filePath");
                 DataSetService.saveAccessDataSource(token, cfg.get("filePath"), cfg.get("password"));

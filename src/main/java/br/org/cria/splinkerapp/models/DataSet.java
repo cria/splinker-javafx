@@ -2,6 +2,7 @@ package br.org.cria.splinkerapp.models;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.managers.LocalDbManager;
 import br.org.cria.splinkerapp.utils.DatabaseLogUtil;
 import br.org.cria.splinkerapp.utils.DbConnectionUtil;
+import br.org.cria.splinkerapp.utils.SQLiteSource;
 
 public class DataSet {
     private int id;
@@ -150,6 +152,10 @@ public class DataSet {
     }
 
     public String getConnectionString() {
+        if (isSQLiteDb()) {
+            return dataSourceFilePath == null || dataSourceFilePath.isBlank()
+                    ? null : SQLiteSource.jdbcUrl(Path.of(dataSourceFilePath));
+        }
         return connectionString;
     }
 
@@ -185,12 +191,17 @@ public class DataSet {
         return this.type == DataSourceType.Access;
     }
 
+    public boolean isSQLiteDb() {
+        return this.type == DataSourceType.SQLite;
+    }
+
     public boolean isSQLDatabase() {
         return this.type.equals(DataSourceType.MySQL) ||
                 this.type.equals(DataSourceType.MariaDB) ||
                 this.type.equals(DataSourceType.Oracle) ||
                 this.type.equals(DataSourceType.PostgreSQL) ||
-                this.type.equals(DataSourceType.SQLServer);
+                this.type.equals(DataSourceType.SQLServer) ||
+                isSQLiteDb();
     }
 
     public static DataSet factory(String token, DataSourceType type, String filePath, String host,
@@ -229,6 +240,8 @@ public class DataSet {
                     connectionString = "jdbc:%s://%s:%s;encrypt=true;trustServerCertificate=true;databaseName=%s;user=%s;password=%s"
                             .formatted(type.name().toLowerCase(), host, port, databaseName, username, password);
                     break;
+                case SQLite:
+                    break;
                 default:
                     connectionString = System.getProperty("splinker.connection", LocalDbManager.getLocalDbConnectionString());
                     break;
@@ -244,6 +257,9 @@ public class DataSet {
     }
 
     public Connection getDataSetConnection() throws Exception {
+        if (isSQLiteDb()) {
+            return SQLiteSource.open(SQLiteSource.resolvePath(dataSourceFilePath));
+        }
         if (this.type == DataSourceType.PostgreSQL) {
             ApplicationLog.info("[POSTGRES] Abrindo conexao do DataSet PostgreSQL com fallback SSL. %s"
                     .formatted(DatabaseLogUtil.describeDataSet(this)));

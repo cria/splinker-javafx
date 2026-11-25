@@ -65,8 +65,12 @@ public class FileSelectionController extends AbstractController {
             }
 
             String normalizedPath = datasourcePath.trim();
-            validateBeforeSave(normalizedPath);
-            DataSetService.saveSpreadsheetDataSource(token, normalizedPath);
+            if (ds.isSQLiteDb()) {
+                DataSetService.saveSQLiteDataSource(token, normalizedPath);
+            } else {
+                validateBeforeSave(normalizedPath);
+                DataSetService.saveSpreadsheetDataSource(token, normalizedPath);
+            }
             navigateTo(getStage(), "home");
         } catch (Exception e) {
             handleErrors(e);
@@ -109,6 +113,16 @@ public class FileSelectionController extends AbstractController {
             sourceTypeTitle.setText(I18n.text("file.link.title"));
             sourceTypeDescription.setText(I18n.text("file.link.description"));
             remoteUrl.setTooltip(new Tooltip(I18n.text("file.link.tooltip")));
+            return;
+        }
+
+        if (ds.isSQLiteDb()) {
+            sourceTypeTitle.setText(I18n.text("file.sqlite.title"));
+            sourceTypeDescription.setText(I18n.text("file.sqlite.description"));
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter(I18n.text("file.sqlite.title"),
+                            "*.sqlite", "*.sqlite3", "*.db", "*.db3"),
+                    new FileChooser.ExtensionFilter(I18n.text("file.sqlite.all"), "*.*"));
             return;
         }
 

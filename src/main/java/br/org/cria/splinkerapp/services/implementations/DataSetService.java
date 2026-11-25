@@ -14,6 +14,8 @@ import java.util.Map;
 import br.org.cria.splinkerapp.ApplicationLog;
 import br.org.cria.splinkerapp.models.DataSet;
 import br.org.cria.splinkerapp.models.DataSourceType;
+import br.org.cria.splinkerapp.i18n.I18n;
+import br.org.cria.splinkerapp.utils.SQLiteSource;
 import br.org.cria.splinkerapp.models.EmailConfiguration;
 import br.org.cria.splinkerapp.models.TransferHistoryDataSet;
 import br.org.cria.splinkerapp.repositories.BaseRepository;
@@ -326,6 +328,22 @@ public class DataSetService extends BaseRepository {
     }
 
     public static void saveSpreadsheetDataSource(String token, String filePath) throws Exception {
+        saveFileDataSource(token, filePath);
+    }
+
+    public static void saveSQLiteDataSource(String token, String filePath) throws Exception {
+        var path = SQLiteSource.resolvePath(filePath);
+        try (var connection = SQLiteSource.open(path);
+             var statement = connection.createStatement();
+             var result = statement.executeQuery("PRAGMA schema_version")) {
+            result.next();
+        } catch (java.sql.SQLException e) {
+            throw new IllegalArgumentException(I18n.text("file.sqlite.invalid"), e);
+        }
+        saveFileDataSource(token, path.toString());
+    }
+
+    private static void saveFileDataSource(String token, String filePath) throws Exception {
         var cmd = """
                     UPDATE DataSetConfiguration
                     SET datasource_filepath = ?

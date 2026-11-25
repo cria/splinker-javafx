@@ -103,6 +103,7 @@ public class TokenLoginController extends AbstractController {
                     case LibreOfficeCalc:
                     case CSV:
                     case Numbers:
+                    case SQLite:
                         routeName = "file-selection";
                         break;
                     default:

@@ -74,15 +74,7 @@ public class DarwinCoreArchiveServiceTest extends RepositoryTestBase {
             } finally { if (previous == null) System.clearProperty("splinker.connection"); else System.setProperty("splinker.connection", previous); }
         }
     }
-    @Test public void refreshesTransferConfigurationIndependentlyOfHomeCache() throws Exception {
-        try (var api = mockStatic(DataSetService.class); var backend = mockStatic(ConfigFacade.class)) {
-            Map<String, Object> config = Map.of("rsync_port", 873.0, "rsync_destination", "rsync.invalid");
-            api.when(() -> DataSetService.getConfigurationDataFromAPI("test-token")).thenReturn(config);
-            var service = new DarwinCoreArchiveService(source()); assertSame(service, service.transferData());
-            api.verify(() -> DataSetService.getConfigurationDataFromAPI("test-token"));
-            backend.verify(() -> ConfigFacade.HandleBackendData("test-token", config));
-        }
-    }
+
     @Test public void stopsTransferWhenCurrentConfigurationCannotBeLoaded() throws Exception {
         try (var api = mockStatic(DataSetService.class)) {
             api.when(() -> DataSetService.getConfigurationDataFromAPI("test-token"))

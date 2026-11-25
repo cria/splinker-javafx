@@ -96,7 +96,7 @@ public class ConfigurationController extends AbstractController {
                 pageName = "access-db-modal";
             }
 
-            if (ds.isFile()) {
+            if (ds.isFile() || ds.isSQLiteDb()) {
                 pageName = "file-selection";
             }
 
